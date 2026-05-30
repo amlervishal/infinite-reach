@@ -68,6 +68,42 @@
 
       <p>When you combine a strong model, a good harness, and the ability to run many copies at once — that's what people now call <strong>agentic</strong>: software that takes a goal and works toward it across many steps, instead of waiting for you to prompt it each time. Opus 4.8's Dynamic Workflows is exactly this, turned up to a hundred helpers.</p>
 
+      <h2>Paper, explained: can an AI bluff its way through a deal?</h2>
+      <p class="kicker">“Cattle Trade: A Multi-Agent Benchmark for LLM Bluffing, Bidding, and Bargaining” &middot; Robert &amp; Clemens Müller &middot; <a href="https://arxiv.org/abs/2605.14537">arXiv</a></p>
+      <p>You'll never read an AI research paper — so each issue we'll read one for you and explain it plainly. This week's is genuinely fun. We usually test AI one skill at a time: can it answer a question, write some code, solve a puzzle? But real life mixes skills together. In a negotiation you bid, bluff, size up the other person, and watch your budget — all at once. These researchers wanted to know: can today's AI models juggle all of that, against <em>other</em> AIs, when nobody can see everyone's cards?</p>
+      <p>So they built a game — think a long round of Monopoly crossed with poker. Over 50–60 turns the players run auctions, make secret offers, haggle, bluff, and manage a limited pot of money. They dropped seven of the cheaper AI models — plus three simple hand-coded rule-following bots — into 242 games and watched how each one played.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 130" role="img" aria-label="The trading-game loop: auction, hidden offer, bargain, repeat — and whoever keeps their budget wins">
+          <rect x="14" y="40" width="130" height="46" rx="10" fill="#FFFFFF" stroke="#788C5D" stroke-width="2"/>
+          <text x="79" y="68" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" fill="#141413">Auction</text>
+          <rect x="180" y="40" width="130" height="46" rx="10" fill="#FFFFFF" stroke="#788C5D" stroke-width="2"/>
+          <text x="245" y="68" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" fill="#141413">Hidden offer</text>
+          <rect x="346" y="40" width="130" height="46" rx="10" fill="#FFFFFF" stroke="#788C5D" stroke-width="2"/>
+          <text x="411" y="68" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" fill="#141413">Bargain &amp; bluff</text>
+          <line x1="144" y1="63" x2="178" y2="63" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="310" y1="63" x2="344" y2="63" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="476" y1="63" x2="510" y2="63" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="493" y="58" text-anchor="middle" font-family="ui-monospace, monospace" font-size="16" fill="#87867F">↻</text>
+          <text x="493" y="80" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#87867F">×50–60</text>
+          <rect x="540" y="34" width="166" height="58" rx="10" fill="#FCEFEA" stroke="#D97757" stroke-width="2"/>
+          <text x="623" y="58" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="14" fill="#141413">Discipline wins</text>
+          <text x="623" y="76" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#87867F">not the biggest spender</text>
+        </svg>
+        <figcaption>One round of the game, repeated dozens of times. The winners weren't the big spenders — they were the careful ones.</figcaption>
+      </figure>
+
+      <p>The results are humbling for the robots. The winners weren't the ones who spent the most — they were the disciplined ones: spending efficiently, not blowing the budget, and adjusting as the game shifted. Strikingly, the <strong>simple rule-following bots beat most of the AI models.</strong> And the AIs failed in very human ways — overpaying, accidentally bidding against themselves, going broke by starting deals they couldn't afford, and not adapting to what opponents were doing.</p>
+      <p><strong>Why it's worth knowing:</strong> we're about to hand AI real tasks that involve money and other people — booking, negotiating, managing resources. This is a reminder that being clever at answering questions isn't the same as being street-smart in a competition. For now, careful and disciplined beats flashy — and plain old rules can still outplay a big model.</p>
+
+      <h2>From the people we follow</h2>
+      <p>A few worth-your-time things from the builders and teachers we keep an eye on:</p>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span><strong>nanochat</strong> — “the best ChatGPT $100 can buy.” A from-scratch, minimal codebase that trains your own little ChatGPT in ~4 hours. The clearest way to actually <em>see</em> how these models are built. <a href="https://github.com/karpathy/nanochat">github.com/karpathy/nanochat</a></span></li>
+        <li><span class="tag tech">Thariq Shihipar</span><span><strong>html-effectiveness</strong> — 20 standalone HTML pages showing how much you can communicate with plain HTML and no tools. It's literally the look of the page you're reading. <a href="https://github.com/ThariqS/html-effectiveness">github.com/ThariqS/html-effectiveness</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>The creator of Claude Code shared how he actually uses it day-to-day — surprisingly “vanilla,” because it “works great out of the box.” A nice antidote to over-tweaking your tools. <a href="https://x.com/bcherny/status/2007179832300581177">on X</a></span></li>
+      </ul>
+
       <h2>One number worth seeing</h2>
       <p>The clearest sign of how fast the ground is shifting is price. Google just cut its flagship subscription by more than half in a single move:</p>
 
@@ -116,6 +152,8 @@
         <dd>A copy of the model handed one small piece of a bigger job, working in parallel with other copies.</dd>
         <dt>Frontier model</dt>
         <dd>One of the largest, most capable AI systems at the cutting edge — e.g. Opus, Gemini, GPT.</dd>
+        <dt>Benchmark</dt>
+        <dd>A standard test used to measure and compare how good AI models are at some skill.</dd>
         <dt>IPO</dt>
         <dd>"Initial public offering" — when a private company first sells shares to the public on a stock market.</dd>
       </dl>

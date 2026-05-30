@@ -34,10 +34,13 @@
         <!-- 4 to 6 total -->
       </ul>
 
-      <h2>Deep dive: {{the concept/term to explain today}}</h2>
-      <p>{{Explain one idea or trending term from scratch, with an everyday analogy.}}</p>
+      <h2>Paper, explained: {{short plain-English name for the paper}}</h2>
+      <p class="kicker">{{Paper title}} &middot; {{authors/lab}} &middot; <a href="{{arxiv or source URL}}">source</a></p>
+      <p>{{What problem does it tackle? Why should a non-expert care?}}</p>
+      <p>{{The key idea, with an everyday analogy. No math, no undefined jargon.}}</p>
+      <p>{{What they found / the result, and the honest caveats.}}</p>
 
-      <!-- OPTIONAL but encouraged: one hand-built SVG diagram or chart.
+      <!-- Encouraged: a small SVG diagram that makes the paper's idea click.
            Keep viewBox ~720 wide. Use theme colors:
            clay #D97757, olive #788C5D, sky #6A8CAF, border #D1CFC5, ink #141413, muted #87867F.
            Fonts: ui-serif for headings, system-ui for labels, ui-monospace for tiny labels. -->
@@ -47,6 +50,14 @@
         </svg>
         <figcaption>{{What the figure shows and why it matters.}}</figcaption>
       </figure>
+
+      <h2>From the people we follow</h2>
+      <!-- Read WATCHLIST.md. 2–4 bullets of genuinely NEW things (a repo/release, an essay, a notable
+           thread). Skip anyone with nothing new; delete this whole section on a quiet day. -->
+      <ul class="hits">
+        <li><span class="tag tech">{{Name}}</span><span>{{What's new + one line on why it's worth a look.}} <a href="{{URL}}">link</a></span></li>
+        <li><span class="tag tech">{{Name}}</span><span>{{What's new + why.}} <a href="{{URL}}">link</a></span></li>
+      </ul>
 
       <h2>Why it matters</h2>
       <p>{{Zoom out: the pattern behind the week and why a non-expert should care.}}</p>

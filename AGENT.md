@@ -32,11 +32,20 @@ Copy `_template/issue-template.html` and fill it in. Sections, in order:
 3. **The one thing** — the single biggest story, in a `.callout`, 3–5 sentences.
 4. **The rest of the week, quickly** — 4–6 one-line `.hits` items with a colored tag
    (`tech` = clay, `money` = olive, `policy` = sky — pick the closest).
-5. **Deep dive** — explain ONE idea or trending term from scratch, with an everyday analogy.
-6. **A figure** — one hand-built SVG diagram or chart when it helps (see below). Optional on quiet days.
-7. **Why it matters** — zoom out to the pattern.
-8. **Sources** — every link you used.
-9. **Decoder sidebar** — a "Word of the day" + 3–5 short glossary definitions.
+5. **Paper, explained** — THE READER NEVER READS PAPERS, so this is the heart of the issue. Pick ONE
+   notable recent AI/ML paper (from arXiv, Hugging Face Papers, a lab blog, or that's making the rounds)
+   and explain it from scratch in ~250–400 words: *what problem it tackles → the key idea (with an everyday
+   analogy) → what they found → why it matters.* No math, no jargon left undefined. Add a small SVG diagram
+   if it makes the idea click. On a rare day with no worthy paper, swap in a plain-English "deep dive" on a
+   trending term instead — but prefer a paper.
+6. **From the people we follow** — read `WATCHLIST.md` and surface anything genuinely NEW from those people:
+   a new/updated GitHub repo or release, a fresh essay or blog post, or a notable thread that turned up in
+   search. 2–4 short bullets, each with a link and one line on why it's interesting. Skip anyone with
+   nothing new; omit the whole section on a quiet day rather than padding it.
+7. **A figure** — at least one hand-built SVG diagram or chart somewhere in the issue (often in §5).
+8. **Why it matters** — zoom out to the pattern.
+9. **Sources** — every link you used.
+10. **Decoder sidebar** — a "Word of the day" + 3–5 short glossary definitions.
 
 ## Figures (images, diagrams, charts)
 
@@ -57,9 +66,14 @@ Prefer **inline SVG** — it's text, so it commits cleanly and renders everywher
    **Guard:** publish at most one issue per calendar day. If `issues/<today>.html` already exists, stop and
    report "already published today" — do not overwrite it.
 2. **Find the next issue number.** Read `posts.json`; the new number is the current highest `num` + 1.
-3. **Research.** Use WebSearch (and WebFetch to read the best 1–3 results) to gather the last ~24–48h:
-   model releases, research, policy, funding/business, notable real-world uses, and **one essay or
-   long-read worth summarizing**. Aim for a handful of solid, linkable sources.
+3. **Research.** Use WebSearch (and WebFetch to read the best results) to gather the last ~24–48h. Cover:
+   - **News:** model releases, research, policy, funding/business, notable real-world uses.
+   - **A paper to explain:** find one notable recent paper (search arXiv, Hugging Face Papers, lab blogs,
+     "AI paper of the week", etc.). Read the abstract/intro (WebFetch) so your explanation is accurate.
+   - **The watchlist:** read `WATCHLIST.md`. For each person, check what's genuinely new — their GitHub
+     activity (e.g. fetch `https://github.com/<user>?tab=repositories` or the API
+     `https://api.github.com/users/<user>/events/public`), their blog/site, and any notable posts in search.
+   Use only real, linkable sources — never invent facts, numbers, quotes, repo names, or paper titles.
 4. **Write the issue.** Copy `_template/issue-template.html` → `issues/YYYY-MM-DD.html` and fill every
    `{{...}}`. Follow the voice rules. Decode the jargon. Add an SVG figure if it helps.
 5. **Update the manifest.** Prepend one object to the array in `posts.json` (newest first):
@@ -83,5 +97,6 @@ That's it. One clean issue, every morning.
 - `index.html` — homepage; paginates through `posts.json` (client-side JS). Don't change unless improving.
 - `style.css` — the shared theme. Reuse its classes; don't inline new styles.
 - `posts.json` — the manifest you append to daily.
+- `WATCHLIST.md` — people & topics the reader wants tracked. Read it every morning.
 - `issues/*.html` — one file per day.
 - `_template/issue-template.html` — copy this each day.
