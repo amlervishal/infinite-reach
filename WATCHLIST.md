@@ -15,12 +15,10 @@ so treat the X handle as a hint for search, not a guaranteed feed.
 | Andrej Karpathy | Clearest teacher in AI; ex-OpenAI/Tesla. New repos & essays are gold. | @karpathy | github.com/karpathy | karpathy.ai |
 | Thariq Shihipar | Anthropic, Claude Code; HTML-as-output ideas (this site's theme). | @trq212 | github.com/ThariqS | thariq.io |
 | Boris Cherny | Creator of Claude Code; workflow & agent tips. | @bcherny | github.com/bcherny | — |
-| Daniel Kokotajlo (CONFIRM) | ex-OpenAI governance; "AI 2027" forecast — where AI is heading. | — | — | ai-2027.com |
+| Dan Koe | Writer on the one-person business, creativity, and using AI as a solo creator; essays & newsletter. | @thedankoe | — | thedankoe.com |
+| Naval Ravikant | The Naval podcast + essays — leverage, clear thinking, wealth & philosophy. Evergreen wisdom, not news. | @naval | — | nav.al |
 | Dwarkesh Patel | The Dwarkesh Podcast — deep, smart interviews with AI researchers & thinkers. New episodes are some of the best learning anywhere. | @dwarkesh_sp | — | dwarkesh.com |
 | Garry Tan | President & CEO of Y Combinator — what startups are building, where the money & energy is going. | @garrytan | — | ycombinator.com |
-
-> ⚠️ "Daniel Kokotajlo" is an unconfirmed guess for a name the reader half-remembered as "dan kote".
-> If wrong, replace this row. Other candidates: Dan Shipper (@danshipper, Every), Dan Koe (@thedankoe).
 
 ### How to add someone
 Add a row with their name, a one-line "why", and at least one of: X handle, GitHub, or website.
