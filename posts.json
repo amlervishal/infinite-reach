@@ -1,9 +1,16 @@
 [
   {
+    "num": 2,
+    "date": "2026-05-30",
+    "slug": "issues/2026-05-30.html",
+    "title": "Eighty years, one question, one night",
+    "blurb": "An AI model cracks an 80-year geometry problem using tools from an entirely different branch of maths, and the experts who checked it were surprised."
+  },
+  {
     "num": 1,
     "date": "2026-05-29",
     "slug": "issues/2026-05-29.html",
     "title": "When software started managing itself",
-    "blurb": "A new model that runs a hundred helpers at once, Google quietly rewiring how the planet searches, and the word everyone suddenly says: “harness.”"
+    "blurb": "A new model that runs a hundred helpers at once, Google quietly rewiring how the planet searches, and the word everyone suddenly says: harness."
   }
 ]
