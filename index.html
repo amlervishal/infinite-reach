@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Infinite Reach — Notes from a fast-moving world</title>
+  <meta name="description" content="A short daily read on a fast-moving world, explained from scratch." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+    <p class="meta" id="masthead-meta">A short daily read &middot; explained from scratch</p>
+  </header>
+
+  <main class="wrap">
+    <ul class="issue-list" id="issue-list"></ul>
+
+    <nav class="pager" id="pager" hidden>
+      <button id="prev" type="button">&larr; Newer</button>
+      <span class="page-info" id="page-info"></span>
+      <button id="next" type="button">Older &rarr;</button>
+    </nav>
+  </main>
+
+  <script>
+    // Pagination over posts.json. Newest first. No dependencies.
+    const PER_PAGE = 8;
+    let posts = [];
+    let page = 0;
+
+    const listEl = document.getElementById('issue-list');
+    const pagerEl = document.getElementById('pager');
+    const prevEl = document.getElementById('prev');
+    const nextEl = document.getElementById('next');
+    const pageInfoEl = document.getElementById('page-info');
+
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, c =>
+        ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    }
+
+    function fmtDate(iso) {
+      const d = new Date(iso + 'T00:00:00');
+      if (isNaN(d)) return iso;
+      return d.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    }
+
+    function render() {
+      const start = page * PER_PAGE;
+      const slice = posts.slice(start, start + PER_PAGE);
+      listEl.innerHTML = slice.map(p => `
+        <li class="issue-card">
+          <span class="num">Issue №${esc(p.num)}</span>
+          <h2><a href="${esc(p.slug)}">${esc(p.title)}</a></h2>
+          <span class="date">${esc(fmtDate(p.date))}</span>
+          <p class="blurb">${esc(p.blurb)}</p>
+        </li>`).join('');
+
+      const totalPages = Math.max(1, Math.ceil(posts.length / PER_PAGE));
+      pageInfoEl.textContent = `Page ${page + 1} of ${totalPages}`;
+      prevEl.disabled = page === 0;
+      nextEl.disabled = page >= totalPages - 1;
+      pagerEl.hidden = posts.length <= PER_PAGE;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    prevEl.addEventListener('click', () => { if (page > 0) { page--; render(); } });
+    nextEl.addEventListener('click', () => {
+      if ((page + 1) * PER_PAGE < posts.length) { page++; render(); }
+    });
+
+    fetch('posts.json', { cache: 'no-store' })
+      .then(r => r.ok ? r.json() : [])
+      .then(data => {
+        posts = Array.isArray(data) ? data.slice().sort((a, b) => (a.date < b.date ? 1 : -1)) : [];
+        if (posts.length === 0) {
+          listEl.innerHTML = '<li class="issue-card"><p class="blurb">No issues yet — the first one lands soon.</p></li>';
+          return;
+        }
+        document.getElementById('masthead-meta').textContent =
+          `${posts.length} issue${posts.length > 1 ? 's' : ''} · latest ${fmtDate(posts[0].date)}`;
+        render();
+      })
+      .catch(() => {
+        listEl.innerHTML = '<li class="issue-card"><p class="blurb">Could not load issues.</p></li>';
+      });
+  </script>
+</body>
+</html>

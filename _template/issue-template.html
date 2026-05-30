@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №{{NUM}} — {{TITLE}} · Infinite Reach</title>
+  <meta name="description" content="{{BLURB}}" />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №{{NUM}} &middot; {{LONG_DATE}}</p>
+      <h1>{{TITLE}}</h1>
+      <p>{{STANDFIRST — one or two sentences setting up the day, plain English.}}</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>{{The single most important story, 3–5 sentences, explained simply.}}</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <!-- tag classes: tech | money | policy  (pick the closest) -->
+        <li><span class="tag tech">Label</span><span>{{One-line news item.}}</span></li>
+        <li><span class="tag money">Label</span><span>{{One-line news item.}}</span></li>
+        <li><span class="tag policy">Label</span><span>{{One-line news item.}}</span></li>
+        <!-- 4 to 6 total -->
+      </ul>
+
+      <h2>Deep dive: {{the concept/term to explain today}}</h2>
+      <p>{{Explain one idea or trending term from scratch, with an everyday analogy.}}</p>
+
+      <!-- OPTIONAL but encouraged: one hand-built SVG diagram or chart.
+           Keep viewBox ~720 wide. Use theme colors:
+           clay #D97757, olive #788C5D, sky #6A8CAF, border #D1CFC5, ink #141413, muted #87867F.
+           Fonts: ui-serif for headings, system-ui for labels, ui-monospace for tiny labels. -->
+      <figure>
+        <svg viewBox="0 0 720 300" role="img" aria-label="{{describe the figure}}">
+          <!-- diagram or chart here -->
+        </svg>
+        <figcaption>{{What the figure shows and why it matters.}}</figcaption>
+      </figure>
+
+      <h2>Why it matters</h2>
+      <p>{{Zoom out: the pattern behind the week and why a non-expert should care.}}</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="{{URL}}">{{Source name}}</a> ·
+        <a href="{{URL}}">{{Source name}}</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">{{Term}}</div>
+        <div>{{Plain-English definition with an analogy.}}</div>
+      </div>
+      <dl>
+        <dt>{{Term}}</dt><dd>{{Short definition.}}</dd>
+        <dt>{{Term}}</dt><dd>{{Short definition.}}</dd>
+        <dt>{{Term}}</dt><dd>{{Short definition.}}</dd>
+        <!-- 3 to 5 terms -->
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

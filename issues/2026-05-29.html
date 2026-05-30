@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №1 — When software started managing itself · Infinite Reach</title>
+  <meta name="description" content="A new Anthropic model that runs hundreds of helpers at once, Google rewiring its search, and a word everyone suddenly uses: 'harness'." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №1 &middot; Friday, May 29, 2026</p>
+      <h1>When software started managing itself</h1>
+      <p>A new model that runs a hundred helpers at once, Google quietly rewiring how the whole planet searches, and a word that went from niche to everywhere in a week: <em>harness</em>. Here's the week, in plain English.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Yesterday Anthropic released <strong>Opus 4.8</strong>, its most capable model so far — just 41 days after the previous one. The headline isn't that it's smarter at answering questions. It's a feature called <strong>Dynamic Workflows</strong>: the model can now spin up <em>hundreds of copies of itself</em> to work on a big job in parallel, like a manager handing pieces of a project to a hundred assistants and stitching their work back together. In a demo, this setup rewrote an entire large software project from start to finish on its own. We've quietly crossed from "AI that answers" to "AI that runs a whole job."</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Search</span><span>On May 26, <strong>Google switched its core search engine</strong> over to a model called Gemini 3.5 Flash. The thing billions of people use every day is now answered by a language model under the hood — a big bet, running live.</span></li>
+        <li><span class="tag money">Price</span><span>Google cut its top "AI Ultra" subscription from <strong>$250 to $100 a month</strong> — a 60% drop — while adding more usage and storage. A sign the providers are racing for everyday users, not just charging premium prices.</span></li>
+        <li><span class="tag money">Business</span><span><strong>OpenAI filed to go public</strong> (an IPO) and won the lawsuit Elon Musk had brought against it. <strong>Anthropic</strong> turned its first quarterly profit and is closing a funding round that values it near <strong>$900 billion</strong>. Staggering numbers for companies only a few years old.</span></li>
+        <li><span class="tag policy">Policy</span><span>Google, Microsoft and xAI agreed to let a <strong>U.S. government body test their models</strong> before public release — an early version of safety inspection for frontier systems.</span></li>
+        <li><span class="tag tech">Everyday</span><span>The <strong>NBA</strong> said it will use an automated camera system to make out-of-bounds and possession calls. AI refereeing, arriving in a place you'd actually notice it.</span></li>
+      </ul>
+
+      <h2>Deep dive: what people mean by a "harness"</h2>
+      <p>You'll hear this word constantly now, so let's demystify it. A raw language model is just a thing that predicts text. On its own it can't browse the web, run code, remember yesterday, or check its own work. A <strong>harness</strong> is the scaffolding built <em>around</em> the model that gives it those powers — tools to use, a memory, and rules for what to do step by step.</p>
+      <p>The analogy: the model is the engine; the harness is the rest of the car — wheels, steering, dashboard. A brilliant engine sitting on the floor doesn't take you anywhere. Lately, a lot of the visible progress in AI isn't a smarter engine at all — it's a <em>better car built around a similar engine</em>. That's why the same underlying model can feel dramatically more capable inside a good harness.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 300" role="img" aria-label="Diagram: an orchestrator splitting a task across subagents and merging the result">
+          <rect x="280" y="20" width="160" height="48" rx="10" fill="#FCEFEA" stroke="#D97757" stroke-width="2"/>
+          <text x="360" y="42" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="15" fill="#141413">Orchestrator</text>
+          <text x="360" y="59" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#87867F">splits the job</text>
+
+          <line x1="360" y1="68" x2="120" y2="120" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="360" y1="68" x2="360" y2="120" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="360" y1="68" x2="600" y2="120" stroke="#D1CFC5" stroke-width="1.5"/>
+
+          <rect x="40" y="120" width="160" height="46" rx="10" fill="#FFFFFF" stroke="#788C5D" stroke-width="2"/>
+          <text x="120" y="148" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" fill="#141413">Subagent · part A</text>
+          <rect x="280" y="120" width="160" height="46" rx="10" fill="#FFFFFF" stroke="#788C5D" stroke-width="2"/>
+          <text x="360" y="148" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" fill="#141413">Subagent · part B</text>
+          <rect x="520" y="120" width="160" height="46" rx="10" fill="#FFFFFF" stroke="#788C5D" stroke-width="2"/>
+          <text x="600" y="148" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" fill="#141413">Subagent · part C</text>
+
+          <line x1="120" y1="166" x2="360" y2="218" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="360" y1="166" x2="360" y2="218" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="600" y1="166" x2="360" y2="218" stroke="#D1CFC5" stroke-width="1.5"/>
+
+          <rect x="280" y="218" width="160" height="48" rx="10" fill="#F0EEE6" stroke="#6A8CAF" stroke-width="2"/>
+          <text x="360" y="240" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="15" fill="#141413">Merge &amp; check</text>
+          <text x="360" y="257" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#87867F">one finished result</text>
+        </svg>
+        <figcaption>The "Dynamic Workflows" idea in one picture: one model splits a job, many copies work in parallel, then the pieces are merged and checked.</figcaption>
+      </figure>
+
+      <p>When you combine a strong model, a good harness, and the ability to run many copies at once — that's what people now call <strong>agentic</strong>: software that takes a goal and works toward it across many steps, instead of waiting for you to prompt it each time. Opus 4.8's Dynamic Workflows is exactly this, turned up to a hundred helpers.</p>
+
+      <h2>One number worth seeing</h2>
+      <p>The clearest sign of how fast the ground is shifting is price. Google just cut its flagship subscription by more than half in a single move:</p>
+
+      <figure>
+        <svg viewBox="0 0 720 220" role="img" aria-label="Bar chart: Google AI Ultra dropped from $250 to $100 per month">
+          <line x1="120" y1="20" x2="120" y2="170" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="120" y1="170" x2="680" y2="170" stroke="#D1CFC5" stroke-width="1.5"/>
+
+          <rect x="200" y="20" width="120" height="150" rx="6" fill="#D1CFC5"/>
+          <text x="260" y="14" text-anchor="middle" font-family="ui-monospace, monospace" font-size="13" fill="#141413">$250</text>
+          <text x="260" y="188" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#87867F">Before (April)</text>
+
+          <rect x="460" y="110" width="120" height="60" rx="6" fill="#D97757"/>
+          <text x="520" y="104" text-anchor="middle" font-family="ui-monospace, monospace" font-size="13" fill="#141413">$100</text>
+          <text x="520" y="188" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#87867F">Now (May)</text>
+
+          <text x="400" y="208" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#87867F">Google AI Ultra — monthly price</text>
+        </svg>
+        <figcaption>A 60% price cut in weeks. When something this expensive drops this fast, it usually means competition is fierce and the providers want everyone in.</figcaption>
+      </figure>
+
+      <h2>Why it matters</h2>
+      <p>Step back from the individual headlines and the pattern is clear: the tools are getting cheaper, they're being wired into things you use without asking (search, sports, your inbox), and they're starting to carry out whole tasks rather than just answer questions. None of this requires you to be technical to feel it. The goal of this little daily note is to keep you fluent in what's happening — one short read at a time — so the words and ideas land before they're everywhere.</p>
+      <p>That's the week. See you tomorrow.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.neuralbuddies.com/p/ai-news-recap-may-29-2026">AI News Recap, May 29 2026 (NeuralBuddies)</a> ·
+        <a href="https://llm-stats.com/ai-news">LLM News Today (llm-stats)</a> ·
+        <a href="https://press.airstreet.com/p/state-of-ai-may-2026">State of AI, May 2026 (Air Street Press)</a> ·
+        <a href="https://www.pymnts.com/artificial-intelligence-2/2026/tech-giants-open-frontier-ai-models-to-federal-national-security-tests/">Frontier models opened to federal testing (PYMNTS)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Harness</div>
+        <div>The scaffolding built around an AI model — its tools, memory, and step-by-step rules. The model is the engine; the harness is the rest of the car.</div>
+      </div>
+      <dl>
+        <dt>Agentic</dt>
+        <dd>Software that takes a goal and works toward it over many steps on its own, instead of waiting for a new instruction each time.</dd>
+        <dt>Subagent</dt>
+        <dd>A copy of the model handed one small piece of a bigger job, working in parallel with other copies.</dd>
+        <dt>Frontier model</dt>
+        <dd>One of the largest, most capable AI systems at the cutting edge — e.g. Opus, Gemini, GPT.</dd>
+        <dt>IPO</dt>
+        <dd>"Initial public offering" — when a private company first sells shares to the public on a stock market.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

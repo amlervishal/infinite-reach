@@ -1,0 +1,220 @@
+/* Infinite Reach — shared theme
+   Design language adapted from ThariqS/html-effectiveness (concept-explainer).
+   No build step, no dependencies. */
+
+:root {
+  --bg:        #FAF9F5;  /* ivory */
+  --ink:       #141413;  /* near-black headings */
+  --body:      #3D3D3A;  /* body text */
+  --clay:      #D97757;  /* primary accent */
+  --olive:     #788C5D;  /* secondary accent */
+  --sky:       #6A8CAF;  /* tertiary accent */
+  --border:    #D1CFC5;  /* dividers */
+  --muted:     #87867F;  /* captions, meta */
+  --panel:     #FFFFFF;  /* card background */
+  --panel-alt: #F0EEE6;  /* light fill */
+
+  --serif: ui-serif, Georgia, "Times New Roman", serif;
+  --sans:  system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono:  ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--body);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- Masthead ---------- */
+.masthead {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 44px 24px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.masthead .wordmark {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 34px;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin: 0;
+  text-decoration: none;
+  display: inline-block;
+}
+.masthead .tagline {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 16px;
+  margin: 4px 0 0;
+}
+.masthead .meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 14px;
+}
+
+/* ---------- Generic layout ---------- */
+.wrap { max-width: 1100px; margin: 0 auto; padding: 40px 24px 120px; }
+
+a { color: var(--clay); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---------- Index: issue cards ---------- */
+.issue-list { list-style: none; margin: 0; padding: 0; }
+.issue-card {
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+  padding: 22px 24px;
+  margin-bottom: 16px;
+  transition: border-color .15s ease;
+}
+.issue-card:hover { border-color: var(--clay); }
+.issue-card .num {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--clay);
+}
+.issue-card h2 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 23px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 6px 0 6px;
+  line-height: 1.25;
+}
+.issue-card h2 a { color: inherit; }
+.issue-card .date { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.issue-card .blurb { margin: 10px 0 0; color: var(--body); }
+
+/* ---------- Pagination ---------- */
+.pager {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 28px; gap: 16px;
+}
+.pager button {
+  font-family: var(--sans); font-size: 14px;
+  background: var(--panel); color: var(--ink);
+  border: 1.5px solid var(--border); border-radius: 10px;
+  padding: 8px 16px; cursor: pointer;
+}
+.pager button:hover:not(:disabled) { border-color: var(--clay); color: var(--clay); }
+.pager button:disabled { opacity: .4; cursor: default; }
+.pager .page-info { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+/* ---------- Issue page: article + glossary ---------- */
+.issue-grid {
+  max-width: 1100px; margin: 0 auto; padding: 40px 24px 120px;
+  display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 48px;
+}
+.article { min-width: 0; }
+.article h1 {
+  font-family: var(--serif); font-weight: 500;
+  font-size: 33px; letter-spacing: -0.01em; line-height: 1.2;
+  color: var(--ink); margin: 0 0 8px;
+}
+.article h2 {
+  font-family: var(--serif); font-weight: 500;
+  font-size: 22px; letter-spacing: -0.005em;
+  color: var(--ink); margin: 40px 0 12px;
+}
+.article h3 {
+  font-family: var(--sans); font-weight: 600; font-size: 16px;
+  color: var(--ink); margin: 26px 0 8px;
+}
+.article p { margin: 0 0 14px; }
+.kicker {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--clay); margin: 0 0 10px;
+}
+
+/* Callout / "the one thing" */
+.callout {
+  border: 1.5px solid var(--border); border-left: 4px solid var(--clay);
+  border-radius: 12px; background: var(--panel);
+  padding: 18px 22px; margin: 18px 0 24px;
+}
+.callout .label {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--clay); margin: 0 0 6px;
+}
+
+/* Quick hits */
+.hits { list-style: none; margin: 0; padding: 0; }
+.hits li {
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+  display: flex; gap: 12px; align-items: baseline;
+}
+.hits li:last-child { border-bottom: none; }
+.hits .tag {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--panel);
+  background: var(--olive); border-radius: 5px; padding: 2px 7px;
+  white-space: nowrap; flex: 0 0 auto;
+}
+.hits .tag.policy { background: var(--sky); }
+.hits .tag.money  { background: var(--olive); }
+.hits .tag.tech   { background: var(--clay); }
+
+/* Figures (SVG / images) */
+figure { margin: 22px 0; }
+figure svg { display: block; width: 100%; height: auto;
+  border: 1.5px solid var(--border); border-radius: 14px; background: var(--panel); }
+figure img { display: block; width: 100%; height: auto;
+  border: 1.5px solid var(--border); border-radius: 14px; }
+figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; font-style: italic; }
+
+/* Glossary sidebar */
+.glossary {
+  border: 1.5px solid var(--border); border-radius: 12px;
+  background: var(--panel); padding: 18px 18px 8px;
+  align-self: start; position: sticky; top: 24px;
+}
+.glossary h3 {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--muted); margin: 0 0 12px;
+}
+.glossary dt { font-weight: 600; color: var(--ink); margin-top: 14px; }
+.glossary dd { margin: 4px 0 0; font-size: 14px; line-height: 1.55; }
+.glossary .wod {
+  border: 1.5px solid var(--clay); border-radius: 10px;
+  background: #FCEFEA; padding: 12px 14px; margin-bottom: 6px;
+}
+.glossary .wod .lbl {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--clay);
+}
+.glossary .wod .term { font-family: var(--serif); font-size: 18px; color: var(--ink); margin: 2px 0 4px; }
+
+/* Footer / back link */
+.backlink {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--muted);
+  display: inline-block; margin-bottom: 22px;
+}
+.sources { font-size: 13px; color: var(--muted); margin-top: 30px;
+  border-top: 1px solid var(--border); padding-top: 16px; }
+.sources a { word-break: break-word; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .issue-grid { grid-template-columns: 1fr; gap: 28px; }
+  .glossary { position: static; }
+  body { font-size: 15px; }
+}
