@@ -54,6 +54,8 @@ Prefer **inline SVG** — it's text, so it commits cleanly and renders everywher
 
 1. **Get today's date.** Run `date -u +%F` and also reason in US-Eastern (the reader's timezone). Use the
    Eastern calendar date for the issue filename and kicker. Filename: `issues/YYYY-MM-DD.html`.
+   **Guard:** publish at most one issue per calendar day. If `issues/<today>.html` already exists, stop and
+   report "already published today" — do not overwrite it.
 2. **Find the next issue number.** Read `posts.json`; the new number is the current highest `num` + 1.
 3. **Research.** Use WebSearch (and WebFetch to read the best 1–3 results) to gather the last ~24–48h:
    model releases, research, policy, funding/business, notable real-world uses, and **one essay or
