@@ -32,12 +32,24 @@ Copy `_template/issue-template.html` and fill it in. Sections, in order:
 3. **The one thing** — the single biggest story, in a `.callout`, 3–5 sentences.
 4. **The rest of the week, quickly** — 4–6 one-line `.hits` items with a colored tag
    (`tech` = clay, `money` = olive, `policy` = sky — pick the closest).
-5. **Paper, explained** — THE READER NEVER READS PAPERS, so this is the heart of the issue. Pick ONE
-   notable recent AI/ML paper (from arXiv, Hugging Face Papers, a lab blog, or that's making the rounds)
-   and explain it from scratch in ~250–400 words: *what problem it tackles → the key idea (with an everyday
-   analogy) → what they found → why it matters.* No math, no jargon left undefined. Add a small SVG diagram
-   if it makes the idea click. On a rare day with no worthy paper, swap in a plain-English "deep dive" on a
-   trending term instead — but prefer a paper.
+5. **Paper, explained** — THE READER NEVER READS PAPERS, so this is **the centerpiece of the issue and its
+   longest section: aim for ~550–850 words.** Pick ONE notable recent AI/ML paper (arXiv, Hugging Face
+   Papers, a lab blog, or one making the rounds), READ the abstract + intro (WebFetch) for accuracy, and
+   walk the reader all the way through it from scratch. Use these sub-beats, each as its own short paragraph
+   (you can use `<h3>` subheads inside the section):
+   - **Why it caught our eye** — one or two sentences of hook.
+   - **The problem, and why it's hard** — what question the paper asks and why it isn't obvious. Give the
+     background a newcomer needs (what people did before, what was missing).
+   - **How it works** — the method explained in plain steps, anchored by ONE everyday analogy you carry
+     through. This is where the extra length goes — really unpack the idea.
+   - **What they actually did** — the concrete experiment: what was tested, on what, how much (use the real
+     numbers from the paper; never invent figures, model names, or results).
+   - **What they found** — the results and any surprises, in plain terms. Name the failure modes / caveats.
+   - **The catch** — honest limitations: what it does NOT prove.
+   - **If you remember one thing** — a single-sentence takeaway.
+   Define every term inline or in the Decoder. Include at least one SVG diagram that makes the core idea
+   click. On a rare day with genuinely no worthy paper, swap in an equally long plain-English "deep dive"
+   on a trending term — but strongly prefer a real paper.
 6. **From the people we follow** — read `WATCHLIST.md` and surface anything genuinely NEW from those people:
    a new/updated GitHub repo or release, a fresh essay or blog post, or a notable thread that turned up in
    search. 2–4 short bullets, each with a link and one line on why it's interesting. Skip anyone with

@@ -70,8 +70,13 @@
 
       <h2>Paper, explained: can an AI bluff its way through a deal?</h2>
       <p class="kicker">“Cattle Trade: A Multi-Agent Benchmark for LLM Bluffing, Bidding, and Bargaining” &middot; Robert &amp; Clemens Müller &middot; <a href="https://arxiv.org/abs/2605.14537">arXiv</a></p>
-      <p>You'll never read an AI research paper — so each issue we'll read one for you and explain it plainly. This week's is genuinely fun. We usually test AI one skill at a time: can it answer a question, write some code, solve a puzzle? But real life mixes skills together. In a negotiation you bid, bluff, size up the other person, and watch your budget — all at once. These researchers wanted to know: can today's AI models juggle all of that, against <em>other</em> AIs, when nobody can see everyone's cards?</p>
-      <p>So they built a game — think a long round of Monopoly crossed with poker. Over 50–60 turns the players run auctions, make secret offers, haggle, bluff, and manage a limited pot of money. They dropped seven of the cheaper AI models — plus three simple hand-coded rule-following bots — into 242 games and watched how each one played.</p>
+      <p>You'll never read an AI research paper — so every issue we read one for you and explain it from the ground up. This week's is genuinely entertaining: it drops AI models into a cutthroat trading game and watches them try to out-deal each other.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Almost every AI test checks one skill at a time — can it answer a trivia question, write some code, solve a math puzzle? But the situations we actually care about mix skills together <em>and</em> involve other players who are also trying to win and who can hide what they know. Closing a deal means bidding, reading the other side, bluffing, and watching your budget — all at once, with incomplete information (researchers call this <strong>imperfect information</strong>: you can't see everyone's cards). We mostly haven't had a clean way to test whether a model can hold all of that together, against live opponents. That gap is exactly what this paper goes after.</p>
+
+      <h3>How it works</h3>
+      <p>Picture a long round of Monopoly crossed with poker. Over 50–60 turns, players move through repeating phases: <em>auctions</em> where they bid for goods, <em>hidden-offer</em> trades where you propose a deal without showing all your cards, and open <em>bargaining</em> where you haggle — and can bluff. Everyone has a limited pot of money, so every turn is a judgment call: spend now or hold? push or fold? play it straight or deceive? And crucially, you're meant to watch your rivals and adapt — what researchers call <strong>opponent modeling</strong>. Collect the most value by the end without going broke, and you win.</p>
 
       <figure>
         <svg viewBox="0 0 720 130" role="img" aria-label="The trading-game loop: auction, hidden offer, bargain, repeat — and whoever keeps their budget wins">
@@ -93,8 +98,16 @@
         <figcaption>One round of the game, repeated dozens of times. The winners weren't the big spenders — they were the careful ones.</figcaption>
       </figure>
 
-      <p>The results are humbling for the robots. The winners weren't the ones who spent the most — they were the disciplined ones: spending efficiently, not blowing the budget, and adjusting as the game shifted. Strikingly, the <strong>simple rule-following bots beat most of the AI models.</strong> And the AIs failed in very human ways — overpaying, accidentally bidding against themselves, going broke by starting deals they couldn't afford, and not adapting to what opponents were doing.</p>
-      <p><strong>Why it's worth knowing:</strong> we're about to hand AI real tasks that involve money and other people — booking, negotiating, managing resources. This is a reminder that being clever at answering questions isn't the same as being street-smart in a competition. For now, careful and disciplined beats flashy — and plain old rules can still outplay a big model.</p>
+      <h3>What they actually did</h3>
+      <p>They dropped seven of the cheaper, everyday AI models into this game — plus three simple bots that just followed fixed, hand-written rules instead of "thinking" at all. Then they ran 242 full games and logged every single move, so they could see not only who won, but <em>how</em>.</p>
+
+      <h3>What they found</h3>
+      <p>Two things stand out. First, winning had little to do with spending the most — it was about <strong>discipline</strong>: spending efficiently, keeping money in reserve, and shifting tactics as the game moved through its phases. Second, and more humbling: the dumb rule-following bots <strong>beat most of the AI models</strong>. The models lost in strikingly human ways — overpaying in auctions, accidentally bidding against their own offers, going bankrupt by kicking off trades they couldn't fund, and failing to react to what opponents were plainly doing.</p>
+
+      <h3>The catch</h3>
+      <p>This used the cheaper, "cost-efficient" models, not the absolute top-tier frontier systems — so the very smartest models might fare better. And a board-game economy isn't real business; it's a controlled stand-in. The takeaway isn't "AI is hopeless with money" — it's that juggling many strategic skills at once, against adversaries, is still a genuine weak spot.</p>
+
+      <p><strong>If you remember one thing:</strong> being clever at answering questions is not the same as being street-smart in a competition — and right now, careful, disciplined play (even from a simple rule-bot) can still beat a flashy model.</p>
 
       <h2>From the people we follow</h2>
       <p>A few worth-your-time things from the builders and teachers we keep an eye on:</p>
@@ -154,6 +167,10 @@
         <dd>One of the largest, most capable AI systems at the cutting edge — e.g. Opus, Gemini, GPT.</dd>
         <dt>Benchmark</dt>
         <dd>A standard test used to measure and compare how good AI models are at some skill.</dd>
+        <dt>Imperfect information</dt>
+        <dd>A situation where you can't see everything — like a card game where rivals' hands are hidden.</dd>
+        <dt>Opponent modeling</dt>
+        <dd>Watching how a rival behaves and adjusting your strategy to it.</dd>
         <dt>IPO</dt>
         <dd>"Initial public offering" — when a private company first sells shares to the public on a stock market.</dd>
       </dl>
