@@ -16,6 +16,8 @@ so treat the X handle as a hint for search, not a guaranteed feed.
 | Thariq Shihipar | Anthropic, Claude Code; HTML-as-output ideas (this site's theme). | @trq212 | github.com/ThariqS | thariq.io |
 | Boris Cherny | Creator of Claude Code; workflow & agent tips. | @bcherny | github.com/bcherny | — |
 | Daniel Kokotajlo (CONFIRM) | ex-OpenAI governance; "AI 2027" forecast — where AI is heading. | — | — | ai-2027.com |
+| Dwarkesh Patel | The Dwarkesh Podcast — deep, smart interviews with AI researchers & thinkers. New episodes are some of the best learning anywhere. | @dwarkesh_sp | — | dwarkesh.com |
+| Garry Tan | President & CEO of Y Combinator — what startups are building, where the money & energy is going. | @garrytan | — | ycombinator.com |
 
 > ⚠️ "Daniel Kokotajlo" is an unconfirmed guess for a name the reader half-remembered as "dan kote".
 > If wrong, replace this row. Other candidates: Dan Shipper (@danshipper, Every), Dan Koe (@thedankoe).
