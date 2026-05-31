@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №3 — The mapmakers who keep drawing the same map · Infinite Reach</title>
+  <meta name="description" content="A new study finds AI research agents cluster around existing ideas rather than exploring new ones — right as billion-dollar models arrive in biodefense and cyberattack labs." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №3 &middot; Sunday, May 31, 2026</p>
+      <h1>The mapmakers who keep drawing the same map</h1>
+      <p>A study out of Hong Kong finds that AI research assistants, despite generating ideas by the thousand, tend to cluster around familiar territory rather than push into the unknown — a quiet counterweight to a week of billion-dollar bets and unprecedented machine capabilities.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Britain's AI Safety Institute ran Anthropic's newest model — Claude Mythos Preview — through a gauntlet called "The Last Ones": a 32-step simulated enterprise cyberattack that no previous AI had completed from start to finish. Mythos cleared it. On expert-level security tasks that no model could handle before April 2025, it now succeeds 73% of the time. The Institute called this the "autonomous offensive threshold" — the point where an AI can, in principle, carry out a complex attack without a human directing each step. Anthropic confirmed a June public release and says new safeguards are being built before launch. It is the first time any government safety body has publicly said a model crosses that line.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Money</span><span>Anthropic closed a $65&thinsp;billion Series&nbsp;H at a $965&thinsp;billion post-money valuation — now the most valuable private company in Silicon Valley, with $47&thinsp;billion in annualised revenue and an IPO likely next year. <a href="https://www.anthropic.com/news/series-h">Anthropic</a></span></li>
+        <li><span class="tag tech">Tech</span><span>OpenAI launched Rosalind Biodefense on May&nbsp;29: free access to GPT-Rosalind, a reasoning model built for pandemic preparedness, drug discovery, and epidemiological modelling, offered to vetted governments and national labs. Partners include Lawrence Livermore and Johns Hopkins APL. Named after Rosalind Franklin, who helped reveal the structure of DNA. <a href="https://mlq.ai/news/openai-launches-rosalind-biodefense-offers-free-ai-model-to-governments-for-pandemic-preparedness/">MLQ.ai</a></span></li>
+        <li><span class="tag tech">Tech</span><span>Claude&nbsp;Code now runs tens to hundreds of parallel sub-agents in a single session — "dynamic workflows," in research preview. Demonstration: porting the Bun runtime from Zig to Rust — 750,000 lines of code, 99.8% of tests passing, eleven days start to finish. <a href="https://venturebeat.com/technology/the-creator-of-claude-code-just-revealed-his-workflow-and-developers-are">VentureBeat</a></span></li>
+        <li><span class="tag policy">Policy</span><span>The EU AI Act's transparency rules for general-purpose AI providers — requiring frontier labs to disclose training data, energy use, and safety evaluations — take effect August&nbsp;2026, the first hard legal deadlines of their kind anywhere in the world. <a href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai">EU Digital</a></span></li>
+        <li><span class="tag money">Money</span><span>OpenAI surpassed $25&thinsp;billion in annualised revenue and is taking early steps toward a public listing, reportedly targeting late 2026 — which would make it among the largest technology IPOs in years. <a href="https://llm-stats.com/ai-news">LLM Stats</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: when AI scientists think too much alike</h2>
+      <p class="kicker">"AI Research Agents Narrow Scientific Exploration" &middot; Yixuan Tang &amp; Yi Yang &middot; HKUST &middot; <a href="https://arxiv.org/abs/2605.27905">arxiv.org/abs/2605.27905</a></p>
+      <p>Labs and universities have been building AI "scientists" — systems that read papers, generate hypotheses, and even design experiments. The assumption was that they'd help us explore more of the map. This paper, published last week, asks whether that's actually true. The answer, carefully measured across 37,802 generated ideas, is no.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Science doesn't just need speed — it needs breadth. The discoveries that reshape fields often come from someone working at an unexpected angle: a physicist borrowing a technique from biology, a chemist chasing an odd outlier that everyone else ignored. The worry with automating research isn't that AI won't produce ideas, but that it'll produce ideas that are too similar to each other and too close to what already exists — efficient, but narrow.</p>
+      <p>Measuring breadth is surprisingly difficult. You can't ask a model to rate its own originality, and you can't simply count how many ideas it produced. Tang and Yang needed a way to compare the <em>intellectual spread</em> of thousands of AI-generated ideas against thousands of human-authored papers — to ask not "are these ideas good?" but "how much territory do they cover?"</p>
+
+      <h3>How it works</h3>
+      <p>Imagine scientific ideas as dots scattered on a map. Human researchers, over decades, spread those dots across a huge landscape — some clustered in busy areas, but many in lonely corners far from the crowd. The most important discoveries have almost always come from the lonely corners.</p>
+      <p>The authors built that map in mathematical form. They took a large collection of AI and machine-learning papers and converted each one into a <em>vector</em> — a string of numbers that captures its meaning: the subject it covers, the methods it uses, the vocabulary it reaches for. This places each paper as a dot in what mathematicians call a <em>semantic space</em>. Two papers about similar things end up close together; two papers from different corners of the field sit far apart. The distance between any two dots is measured with a tool called <em>cosine similarity</em>, a number between 0 and 1 where 1 means "virtually identical" and 0 means "nothing in common."</p>
+      <p>Then they ran four popular AI research-agent frameworks — the kind that search literature, synthesise findings, and draft new research directions — each backed by up to six different large language models including GPT-4o and Claude&nbsp;3.5 Sonnet. They fed every agent the same starting papers ("seed literature") from a defined research area and asked each to generate new research ideas. Result: 37,802 ideas in total.</p>
+      <p>The key measurement was average pairwise cosine similarity <em>within</em> each research area. Think of it as: if you connected every pair of AI-generated ideas with a line on the map, how short are those lines on average? Short lines mean ideas are bunched together — narrow exploration. Long lines mean ideas are spread out — wide exploration. They compared those numbers against the same metric computed for actual human-authored papers from the same research areas.</p>
+
+      <h3>What they actually did</h3>
+      <p>The study spanned multiple citation-defined research areas inside AI and machine learning. For each area, they ran all four agent frameworks across the six language models — 37,802 total generated ideas — and compared the spread against three baselines: (1)&nbsp;human-authored papers from the same area, (2)&nbsp;follow-on human work that emerged from the same seed literature, and (3)&nbsp;the seed literature itself. Getting all three baselines right mattered: comparing only against the original papers would have unfairly penalised agents for staying on topic, so the authors also tracked what <em>human researchers</em> produced when they, too, started from the same seeds.</p>
+
+      <h3>What they found</h3>
+      <p>Four consistent patterns emerged across every combination of agent and model tested. First, AI-generated ideas were systematically <em>more similar to each other</em> than human papers from the same area — their cosine similarity was higher, meaning their dots on the map were bunched closer together. Second, this narrowing held regardless of which agent framework or underlying language model was used — it wasn't a quirk of one system. Third, the regions where AI ideas clustered tended to correspond to parts of the existing literature with <em>lower citation counts</em> — not the influential, high-impact corners, but the safer, more-covered ground. Fourth, AI ideas were more similar to the seed literature than human follow-on work was. In other words: agents hugged the prompt. Humans pushed past it.</p>
+      <p>There were no exceptions. Every single combination of agent plus model narrowed relative to human researchers.</p>
+
+      <h3>The catch</h3>
+      <p>The study is limited to AI and machine learning — a field where agent frameworks have been most extensively developed and where training data is dense. Whether the same narrowing appears in materials science, ecology, or medicine is unknown. The paper also measures the <em>distribution</em> of ideas, not their eventual quality: it can't say whether any given AI idea was better or worse than a human one, only that the full set was less varied. And cosine similarity in a learned semantic space is a proxy for intellectual distance — useful and principled, but imperfect. An idea can look semantically close to existing work and still open an entirely new direction in practice.</p>
+      <p><strong>If you remember one thing:</strong> AI research agents produce many ideas quickly, but those ideas cluster tighter than human thinking does — which is precisely the opposite of how science makes its largest leaps.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 330" role="img" aria-label="Two scatter plots comparing spread of human research ideas versus AI-generated ideas in semantic space. Human ideas are widely scattered; AI ideas are tightly clustered.">
+          <defs>
+            <marker id="arr-l" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#788C5D"/>
+            </marker>
+            <marker id="arr-r" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#D97757"/>
+            </marker>
+          </defs>
+
+          <!-- Left panel background -->
+          <rect x="18" y="18" width="316" height="278" rx="8" fill="#F9F8F4" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="176" y="44" font-family="ui-serif,Georgia,serif" font-size="13.5" fill="#141413" text-anchor="middle" font-weight="600">Human researchers</text>
+          <text x="176" y="60" font-family="system-ui,sans-serif" font-size="10.5" fill="#87867F" text-anchor="middle">ideas scattered broadly across the map</text>
+
+          <!-- Human dots - olive, spread out -->
+          <circle cx="72"  cy="120" r="5.5" fill="#788C5D" opacity="0.82"/>
+          <circle cx="135" cy="88"  r="5"   fill="#788C5D" opacity="0.82"/>
+          <circle cx="195" cy="175" r="5.5" fill="#788C5D" opacity="0.82"/>
+          <circle cx="268" cy="105" r="5"   fill="#788C5D" opacity="0.82"/>
+          <circle cx="60"  cy="222" r="5.5" fill="#788C5D" opacity="0.78"/>
+          <circle cx="310" cy="198" r="4.5" fill="#788C5D" opacity="0.78"/>
+          <circle cx="168" cy="245" r="5.5" fill="#788C5D" opacity="0.78"/>
+          <circle cx="110" cy="158" r="4.5" fill="#788C5D" opacity="0.82"/>
+          <circle cx="245" cy="255" r="5"   fill="#788C5D" opacity="0.78"/>
+          <circle cx="292" cy="148" r="4.5" fill="#788C5D" opacity="0.82"/>
+          <circle cx="50"  cy="168" r="5"   fill="#788C5D" opacity="0.72"/>
+          <circle cx="222" cy="128" r="4.5" fill="#788C5D" opacity="0.82"/>
+          <circle cx="155" cy="205" r="5"   fill="#788C5D" opacity="0.75"/>
+          <circle cx="96"  cy="270" r="4.5" fill="#788C5D" opacity="0.78"/>
+          <circle cx="328" cy="82"  r="5"   fill="#788C5D" opacity="0.72"/>
+
+          <!-- Spread indicator for human -->
+          <line x1="48" y1="300" x2="318" y2="300" stroke="#788C5D" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-l)"/>
+          <line x1="318" y1="300" x2="48"  y2="300" stroke="#788C5D" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-l)"/>
+          <text x="176" y="316" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D" text-anchor="middle">broad spread — low cosine similarity</text>
+
+          <!-- Right panel background -->
+          <rect x="386" y="18" width="316" height="278" rx="8" fill="#F9F8F4" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="544" y="44" font-family="ui-serif,Georgia,serif" font-size="13.5" fill="#141413" text-anchor="middle" font-weight="600">AI research agents</text>
+          <text x="544" y="60" font-family="system-ui,sans-serif" font-size="10.5" fill="#87867F" text-anchor="middle">ideas piled near the seed literature</text>
+
+          <!-- AI dots - clay, tightly clustered -->
+          <circle cx="528" cy="162" r="5.5" fill="#D97757" opacity="0.9"/>
+          <circle cx="545" cy="178" r="5"   fill="#D97757" opacity="0.9"/>
+          <circle cx="515" cy="176" r="4.5" fill="#D97757" opacity="0.9"/>
+          <circle cx="557" cy="157" r="5"   fill="#D97757" opacity="0.9"/>
+          <circle cx="540" cy="146" r="4.5" fill="#D97757" opacity="0.85"/>
+          <circle cx="513" cy="162" r="5"   fill="#D97757" opacity="0.85"/>
+          <circle cx="562" cy="172" r="4.5" fill="#D97757" opacity="0.9"/>
+          <circle cx="532" cy="188" r="5"   fill="#D97757" opacity="0.85"/>
+          <circle cx="550" cy="142" r="4.5" fill="#D97757" opacity="0.85"/>
+          <circle cx="568" cy="160" r="4.5" fill="#D97757" opacity="0.85"/>
+          <circle cx="510" cy="150" r="5"   fill="#D97757" opacity="0.85"/>
+          <circle cx="537" cy="194" r="4.5" fill="#D97757" opacity="0.82"/>
+          <circle cx="572" cy="147" r="4.5" fill="#D97757" opacity="0.75"/>
+          <circle cx="521" cy="192" r="4.5" fill="#D97757" opacity="0.78"/>
+          <circle cx="560" cy="183" r="5"   fill="#D97757" opacity="0.85"/>
+
+          <!-- Narrow indicator for AI -->
+          <line x1="502" y1="300" x2="584" y2="300" stroke="#D97757" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-r)"/>
+          <line x1="584" y1="300" x2="502" y2="300" stroke="#D97757" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-r)"/>
+          <text x="544" y="316" font-family="system-ui,sans-serif" font-size="10" fill="#D97757" text-anchor="middle">tight cluster — high cosine similarity</text>
+
+          <!-- Subtle axis hints -->
+          <text x="176" y="78" font-family="system-ui,sans-serif" font-size="9.5" fill="#D1CFC5" text-anchor="middle">← idea space →</text>
+          <text x="544" y="78" font-family="system-ui,sans-serif" font-size="9.5" fill="#D1CFC5" text-anchor="middle">← idea space →</text>
+        </svg>
+        <figcaption>Each dot is one research idea placed in semantic space — a mathematical map where closeness means similarity of meaning. Human-authored work spreads broadly; AI-agent ideas pile into a tight cluster near the starting papers. Tang &amp; Yang (2026) found this pattern held across all four agent frameworks and all six language models they tested.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy's <em>autoresearch</em> repo — AI agents that run LLM training experiments overnight, keeping or discarding code changes based on a single performance metric — has crossed 80,000 GitHub stars and spawned forks in prompt optimisation, GPU kernel tuning, and build-time reduction. The idea is spreading fast as a template for self-improving software. <a href="https://github.com/karpathy/autoresearch">github.com/karpathy/autoresearch</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>The creator of Claude Code launched dynamic workflows this week — parallel sub-agents that can tackle an entire codebase or migration in one session — and published his own surprisingly minimal personal setup. Worth a look if you're trying to figure out how to use agentic coding tools without overcomplicating them. <a href="https://howborisusesclaudecode.com/">howborisusesclaudecode.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two stories this week pull in opposite directions, and both matter. The first is consolidation: a small number of labs are absorbing almost all the capital — Anthropic near a trillion, OpenAI heading toward a public listing, both deploying specialised frontier models (Rosalind, Mythos) to governments that are now building real infrastructure on top of them. These tools are no longer experimental; they are load-bearing.</p>
+      <p>The second story is quieter. The paper from Hong Kong doesn't say AI agents are useless. It says they are efficient in a particular way — fast, productive, and concentrated. They generate ideas near the centre of mass, not at the edges. For the incremental work that fills most of a research programme, that's probably fine, and may even be valuable. But science's most important moments have almost always come from the periphery — from someone who wasn't supposed to be working on that problem at all, following a hunch that didn't fit the prevailing frame. If AI agents become the primary engine of idea generation, and those agents systematically avoid the periphery, something important may quietly erode before anyone notices it is gone.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2605.27905">Tang &amp; Yang, arXiv 2605.27905</a> ·
+        <a href="https://www.science.org/content/article/ai-has-supercharged-scientists-may-have-shrunk-science">Science (AAAS)</a> ·
+        <a href="https://www.aisi.gov.uk/blog/our-evaluation-of-claude-mythos-previews-cyber-capabilities">AISI — Mythos evaluation</a> ·
+        <a href="https://computing.co.uk/news/2026/security/claude-mythos-preview-shows-unprecedented-attack-capability">Computing.co.uk</a> ·
+        <a href="https://www.anthropic.com/news/series-h">Anthropic Series&nbsp;H</a> ·
+        <a href="https://techcrunch.com/2026/05/28/anthropic-raises-65-billion-nears-1t-valuation-ahead-of-ipo/">TechCrunch — Anthropic funding</a> ·
+        <a href="https://mlq.ai/news/openai-launches-rosalind-biodefense-offers-free-ai-model-to-governments-for-pandemic-preparedness/">MLQ.ai — GPT-Rosalind</a> ·
+        <a href="https://venturebeat.com/technology/the-creator-of-claude-code-just-revealed-his-workflow-and-developers-are">VentureBeat — Claude Code workflows</a> ·
+        <a href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai">EU AI Act</a> ·
+        <a href="https://github.com/karpathy/autoresearch">karpathy/autoresearch</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Semantic space</div>
+        <div>A mathematical map of meaning. Every piece of text — a word, a sentence, a whole paper — gets converted into a list of numbers (called an <em>embedding</em>) that places it as a dot on this map. Dots close together have similar meanings; dots far apart are unrelated. The map is learned from vast amounts of text, so it encodes the associations humans have built up through all that writing. Researchers use it to measure how similar two ideas are without reading both of them by hand.</div>
+      </div>
+      <dl>
+        <dt>Cosine similarity</dt><dd>A way to measure how close two points in semantic space are: 1.0 means identical, 0 means completely unrelated. It measures the angle between two vectors rather than their length, so long papers and short papers can still be compared fairly.</dd>
+        <dt>Embedding</dt><dd>The numeric coordinates of a piece of text in semantic space — typically a list of hundreds or thousands of numbers. Converting words into these coordinates is what lets computers compare meaning by measuring distances.</dd>
+        <dt>Research agent</dt><dd>An AI system designed to conduct parts of the scientific process autonomously: searching literature, synthesising findings, proposing hypotheses, writing or running code. The "AI scientist" concept, in short.</dd>
+        <dt>Autonomous offensive threshold</dt><dd>The point at which an AI can carry out a complex, multi-step cyberattack without a human directing each individual step. The UK AI Safety Institute used this term to describe what Claude Mythos Preview crossed in their evaluation.</dd>
+        <dt>Series H</dt><dd>The eighth major round of private investment a company raises (rounds are named alphabetically). By Series H, a company is typically enormous; reaching it at Anthropic's scale is extremely rare and usually signals an IPO is close.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
