@@ -1,5 +1,12 @@
 [
   {
+    "num": 4,
+    "date": "2026-06-01",
+    "slug": "issues/2026-06-01.html",
+    "title": "One move at a time",
+    "blurb": "A new study finds language models appear to plan deeply but actually decide shallowly — just as a billion dollars lands on the startup whose AI writes 89% of its own code."
+  },
+  {
     "num": 3,
     "date": "2026-05-31",
     "slug": "issues/2026-05-31.html",
