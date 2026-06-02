@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №5 — Learning what's worth your time · Infinite Reach</title>
+  <meta name="description" content="A paper teaches software to spot great research ideas using citation patterns — and the biggest AI coding tool starts charging by the session." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №5 &middot; Monday, June 2, 2026</p>
+      <h1>Learning what's worth your time</h1>
+      <p>A paper teaches software to spot a great research idea the way a seasoned scientist does — using nothing but which papers got cited. And the biggest AI coding tool in the world just started charging by the session instead of by the month.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On June 1, GitHub switched Copilot from a flat unlimited subscription to metered billing. Every chat, code review, and agentic run now draws from a bucket of "AI Credits," consumed based on how many tokens flow back and forth. The developer backlash is loud — users are threatening to leave for direct API access. But the move was unavoidable: a complex agentic session, where an AI iterates through dozens of steps to build a feature, can consume 10–50 times more compute than a simple autocomplete. Offering those sessions at a fixed monthly price was essentially a blank cheque. Whether you use Copilot or not, this moment marks something: AI-assisted coding has crossed from exciting product into utility — and utilities have meters.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Funding</span><span>Tripo AI raised nearly $200 million and launched Project Eden, a research initiative to build persistent 3D environments that stay consistent across views and sessions — spatial infrastructure for games, robotics, and digital twins. <a href="https://www.manilatimes.net/2026/06/02/tmt-newswire/globenewswire/tripo-ai-raises-nearly-200-million-in-series-a-and-series-a-financing-to-advance-ai-3d-and-world-model-roadmap/2356154">source</a></span></li>
+        <li><span class="tag tech">Model</span><span>Alibaba's Qwen 3.7 Max handles a one-million-token context window — roughly a bookshelf of text — and ran a 35-hour fully autonomous session with 1,158 tool calls without a human in the loop. It speaks the same API format as Claude, so it's a drop-in swap for existing tooling. <a href="https://www.marktechpost.com/2026/05/21/qwen-introduces-qwen3-7-max-a-reasoning-agent-model-with-a-1m-token-context-window/">source</a></span></li>
+        <li><span class="tag tech">Tooling</span><span>At Code w/ Claude London, Boris Cherny (creator of Claude Code) announced Managed Agents: agentic sessions that run inside a sandbox you control on your own infrastructure, with live session hand-off from desktop to phone mid-task. <a href="https://claude.com/blog/code-w-claude-london-2026-rethinking-how-we-build">source</a></span></li>
+        <li><span class="tag tech">Open source</span><span>Karpathy's autoresearch repo crossed 84.7k GitHub stars. The pattern — give an agent a training script, a fixed evaluator, and a five-minute clock; let it run overnight — has spread from LLM research into build systems and compiler tuning at shops like Shopify. <a href="https://github.com/karpathy/autoresearch">source</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: Spotting the good ideas</h2>
+      <p class="kicker"><em>AI Can Learn Scientific Taste</em> &middot; OpenMOSS team &middot; <a href="https://arxiv.org/abs/2603.14473">arXiv:2603.14473</a></p>
+
+      <p>What separates a research idea that will matter from one that will languish unread? For most of science's history, only an experienced human could reliably say. A new paper from the OpenMOSS team suggests that judgement is teachable — not through lectures, but through the accumulated taste of the whole scientific community, encoded in 696,000 pairs of papers and the simple signal of which one got cited more.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Scientists talk about "taste" — the ability to tell, before an experiment is run, whether an idea is worth pursuing. It takes years to develop and is nearly impossible to articulate as a rule. Automating it is hard for two connected reasons. First, there is no clean label. Unlike a chess game (win or lose) or a translation task (accurate or not), there is no obvious signal for "was this a great idea?" Second, the large language models we have today were trained on enormous piles of scientific text, which means they absorbed a lot of content — but absorbed it the way a student who has read every textbook has: they know the material without having developed a feel for what is worth caring about. What was missing was a training signal that captured quality, not just coverage.</p>
+
+      <h3>How it works</h3>
+      <p>The paper's central insight is that the scientific community has already voted. Every citation is a signal: someone read a paper and thought it was worth referencing. That is imperfect — famous labs get cited more, incremental work sometimes beats transformative work — but across millions of papers, the signal adds up to something real.</p>
+
+      <p>The team turned this into a training dataset by playing matchmaker at scale. For each pair, they found two papers in the <em>same field</em>, published in the <em>same time window</em> — so the only variable was quality, not topic or timing. The paper with more citations becomes the "preferred" choice. Think of it like a film critic who, instead of writing reviews, tracks which films audiences return to see again: you never have to define "good" — you let the crowd's behaviour teach it.</p>
+
+      <p>That preference dataset — called SciJudgeBench — drove training for two models, both using a reinforcement-learning technique called GRPO (Group Relative Policy Optimisation). The first is the <strong>Scientific Judge</strong>: given two paper abstracts, it reasons through them and picks the one more likely to matter. The second, trained using Scientific Judge as its teacher, is the <strong>Scientific Thinker</strong>: given a research topic, it proposes a new idea and tries to make it one the Judge would score highly. The training loop is: Judge learns taste from citations → Thinker learns to propose ideas that satisfy the Judge's taste. The whole framework is called <strong>RLCF — Reinforcement Learning from Community Feedback</strong>.</p>
+
+      <!-- SVG: RLCF two-stage training pipeline -->
+      <figure>
+        <svg viewBox="0 0 720 290" role="img" aria-label="RLCF pipeline: Stage 1 trains the Scientific Judge from citation preference pairs; Stage 2 uses the Judge as a reward signal to train the Scientific Thinker">
+          <defs>
+            <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#788C5D"/>
+            </marker>
+            <marker id="arrowred" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#D97757"/>
+            </marker>
+          </defs>
+
+          <!-- Background bands -->
+          <rect x="0" y="35" width="720" height="90" rx="6" fill="#F9F8F5"/>
+          <rect x="0" y="155" width="720" height="90" rx="6" fill="#F4F2EE"/>
+
+          <!-- Stage labels -->
+          <text x="12" y="30" font-family="system-ui" font-size="11" fill="#87867F" font-weight="600">STAGE 1 — Training the Scientific Judge</text>
+          <text x="12" y="150" font-family="system-ui" font-size="11" fill="#87867F" font-weight="600">STAGE 2 — Training the Scientific Thinker</text>
+
+          <!-- STAGE 1 BOXES -->
+          <rect x="10" y="50" width="120" height="52" rx="5" fill="#EDEBE6" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="70" y="71" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413" font-weight="500">1.4M arXiv</text>
+          <text x="70" y="87" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">papers + citations</text>
+
+          <line x1="130" y1="76" x2="158" y2="76" stroke="#788C5D" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <rect x="160" y="50" width="148" height="52" rx="5" fill="#E5EBF2" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="234" y="71" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413" font-weight="500">696K preference pairs</text>
+          <text x="234" y="87" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">same field, same era (A &gt; B)</text>
+
+          <line x1="308" y1="76" x2="336" y2="76" stroke="#788C5D" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <text x="322" y="70" text-anchor="middle" font-family="system-ui" font-size="9" fill="#87867F">GRPO</text>
+
+          <rect x="338" y="50" width="175" height="52" rx="5" fill="#FAE8E0" stroke="#D97757" stroke-width="2"/>
+          <text x="425" y="71" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413" font-weight="600">Scientific Judge</text>
+          <text x="425" y="87" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">reward model · 80.6% accuracy</text>
+
+          <line x1="513" y1="76" x2="544" y2="76" stroke="#788C5D" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <rect x="546" y="50" width="160" height="52" rx="5" fill="#EDEBE6" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="626" y="71" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413" font-weight="500">Beats GPT-5.2</text>
+          <text x="626" y="87" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">and Gemini 3 Pro</text>
+
+          <!-- Connector: L-shaped reward signal -->
+          <line x1="425" y1="102" x2="425" y2="135" stroke="#D97757" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <line x1="425" y1="135" x2="500" y2="135" stroke="#D97757" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <line x1="500" y1="135" x2="500" y2="162" stroke="#D97757" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowred)"/>
+          <text x="458" y="130" text-anchor="middle" font-family="system-ui" font-size="9" fill="#D97757">reward signal</text>
+
+          <!-- STAGE 2 BOXES -->
+          <rect x="10" y="165" width="118" height="52" rx="5" fill="#EDEBE6" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="69" y="186" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413" font-weight="500">Research topic</text>
+          <text x="69" y="202" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">as a prompt</text>
+
+          <line x1="128" y1="191" x2="156" y2="191" stroke="#788C5D" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <rect x="158" y="165" width="165" height="52" rx="5" fill="#E5EBF2" stroke="#6A8CAF" stroke-width="2"/>
+          <text x="240" y="186" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413" font-weight="600">Scientific Thinker</text>
+          <text x="240" y="202" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">proposes follow-up idea</text>
+
+          <line x1="323" y1="191" x2="351" y2="191" stroke="#788C5D" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <rect x="353" y="165" width="160" height="52" rx="5" fill="#FAE8E0" stroke="#D97757" stroke-width="2"/>
+          <text x="433" y="186" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413" font-weight="600">Scientific Judge</text>
+          <text x="433" y="202" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">scores the idea</text>
+
+          <line x1="513" y1="191" x2="544" y2="191" stroke="#788C5D" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <rect x="546" y="165" width="160" height="52" rx="5" fill="#EDF1E8" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="626" y="186" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413" font-weight="500">54.2% win-rate</text>
+          <text x="626" y="202" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">vs. 30.3% for base model</text>
+
+          <text x="360" y="268" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">Stage 1 produces the Judge; Stage 2 uses the Judge as a teacher for the Thinker.</text>
+        </svg>
+        <figcaption>The RLCF two-stage pipeline. Stage 1 trains Scientific Judge on 696K citation-derived preference pairs. Stage 2 uses Scientific Judge as a reward model to train Scientific Thinker to propose higher-impact ideas.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The team assembled SciJudgeBench from 2.1 million arXiv papers published through 2024, spanning computer science, mathematics, and physics. After matching papers by field and publication window, they extracted 696,758 preference pairs from roughly 1.4 million unique papers. They fine-tuned Scientific Judge on top of Qwen3-30B, a large open-weight reasoning model from Alibaba. To test whether it learned something real — and not just memorised which papers were famous — they used 2025 papers as a held-out test set: work published after training ended, where the model had no chance of having seen the final citation counts.</p>
+
+      <h3>What they found</h3>
+      <p>Scientific Judge-Qwen3-30B reached 80.6% accuracy on in-domain pairs — correctly identifying the higher-impact paper in four out of five matchups. On the temporal held-out test (2025 papers, future-year data), it gained 55.1 points over the base model. That gap is striking: without RLCF training, the underlying model was near chance; with it, the model developed real predictive power over citation patterns it had never seen. On the idea-generation side, Scientific Thinker achieved a 54.2% head-to-head win-rate against strong baseline models, versus 30.3% for the untuned base policy — roughly doubling the rate at which its proposals were judged more impactful.</p>
+
+      <h3>The catch</h3>
+      <p>Citations are a proxy, not a definition of importance. A paper can be highly cited because it introduced a useful dataset, or because it had a clever title, or because it came from a famous lab with a large network. Some of the most genuinely transformative papers in science were ignored for years. This model would have scored a number of foundational results quite low at the time they appeared. The benchmark also skews heavily toward fields covered on arXiv — large swaths of biology, social science, and the humanities are absent. And Scientific Thinker is optimised for <em>potential impact</em>, not correctness: a plausible-sounding but wrong idea can still score well. The system doesn't know whether a proposed experiment would actually work.</p>
+
+      <p><strong>If you remember one thing:</strong> The scientific community has been voting on what matters for decades — and all those citations, taken together, are a training dataset noisy enough to ignore and large enough to learn from.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>The autoresearch repo hit 84.7k stars and keeps spreading. The three-file idea — one editable training script, one frozen evaluator, one scalar metric; agent loops overnight — is being applied to build pipelines, Liquid template engines, and GPU kernel tuning, not just neural-net research. <a href="https://github.com/karpathy/autoresearch">github.com/karpathy/autoresearch</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>At Code w/ Claude London (May 2026), the Claude Code creator detailed Managed Agents: agentic sessions that run in a sandbox you own, on infrastructure you choose (Cloudflare, Modal, Vercel, or your own servers). Also new: live session hand-off so you can pick up a running coding session on your phone. <a href="https://claude.com/blog/code-w-claude-london-2026-rethinking-how-we-build">claude.com/blog</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things happened this week that look unrelated but point at the same underlying shift. A paper taught software to judge the value of an idea by mining the crowd's revealed preferences — not asking "what do experts say is good" but watching what the community cited and building a model of quality from that. Meanwhile, GitHub flipped the switch on metered billing, making the true cost of AI-generated thinking visible on a monthly statement for the first time. In both cases, something that was previously invisible — the value of an idea, the cost of inference — became legible, measurable, even billable. That is what it looks like when a technology stops being a curiosity and starts becoming infrastructure. The meters are on. The quality signals are being quantified. The question is who builds wisely with those signals, and who simply optimises for the number.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2603.14473">arXiv:2603.14473 — AI Can Learn Scientific Taste</a> ·
+        <a href="https://github.com/tongjingqi/AI-Can-Learn-Scientific-Taste">GitHub — AI-Can-Learn-Scientific-Taste (OpenMOSS)</a> ·
+        <a href="https://github.blog/news-insights/company-news/github-copilot-is-moving-to-usage-based-billing/">GitHub Blog — Copilot usage-based billing</a> ·
+        <a href="https://www.theregister.com/ai-and-ml/2026/06/02/github-copilot-users-threaten-exit-as-metered-billing-kicks-in/5249826">The Register — developer backlash on metered billing</a> ·
+        <a href="https://www.manilatimes.net/2026/06/02/tmt-newswire/globenewswire/tripo-ai-raises-nearly-200-million-in-series-a-and-series-a-financing-to-advance-ai-3d-and-world-model-roadmap/2356154">Manila Times — Tripo AI $200M raise</a> ·
+        <a href="https://www.marktechpost.com/2026/05/21/qwen-introduces-qwen3-7-max-a-reasoning-agent-model-with-a-1m-token-context-window/">MarkTechPost — Qwen 3.7 Max</a> ·
+        <a href="https://claude.com/blog/code-w-claude-london-2026-rethinking-how-we-build">Code w/ Claude London 2026 — Boris Cherny keynote</a> ·
+        <a href="https://github.com/karpathy/autoresearch">GitHub — karpathy/autoresearch</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">RLCF</div>
+        <div>Reinforcement Learning from Community Feedback. A training method that uses signals communities already produced — citations, upvotes, forks — instead of paying humans to rate outputs. Like RLHF (from human feedback), but the humans already voted; you just have to collect the ballots.</div>
+      </div>
+      <dl>
+        <dt>Preference pair</dt><dd>A training example with two options (A and B) and a label for which is preferred. SciJudgeBench has 696,758 of these, built from citation counts.</dd>
+        <dt>GRPO</dt><dd>Group Relative Policy Optimisation — a variant of reinforcement learning that scores a batch of candidate outputs against each other, rather than against an absolute value target. Used to train both Scientific Judge and Scientific Thinker.</dd>
+        <dt>Reward model</dt><dd>A model trained to score outputs. Its scores guide a second model to produce better outputs. Here, Scientific Judge is the reward model; Scientific Thinker is what it trains.</dd>
+        <dt>Context window</dt><dd>How much text a model can process in one go. One million tokens is roughly 750,000 words — the collected works of Shakespeare, three times over.</dd>
+        <dt>Metered billing</dt><dd>Pay-per-use pricing, like electricity or a taxi meter. GitHub's switch means Copilot costs now scale with how complex your session is, not how many months you've subscribed.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
