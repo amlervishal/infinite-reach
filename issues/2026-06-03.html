@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №6 — Not every job needs the big machine · Infinite Reach</title>
+  <meta name="description" content="Anthropic files to go public at a valuation near a trillion dollars, while a new NVIDIA paper argues the most capable part of an AI agent system might be its cheapest piece." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №6 &middot; Tuesday, June 3, 2026</p>
+      <h1>Not every job needs the big machine</h1>
+      <p>Anthropic files papers to go public at a valuation near a trillion dollars, while a new study from NVIDIA argues that the most capable parts of an AI agent system should be its smallest, cheapest pieces. It has been a week of calibrations — both upward and downward — about the right size for things.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic confidentially filed an S-1 prospectus with the US Securities and Exchange Commission on June 1 — its first formal step toward selling shares on a public stock market. The company's most recent private valuation sits at around $965 billion, lifted there by a $65 billion funding round earlier this year, with annual revenue running at roughly $47 billion as of May. No share price or listing date has been set; the filing is confidential, meaning it can be revised privately before the full document becomes public. If Anthropic lists above a trillion dollars, it would join OpenAI and SpaceX as the handful of companies to debut at that scale in 2026. For now, ordinary investors cannot yet buy in — but the clock is running.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Microsoft</span><span>At its annual Build conference on June 2, Microsoft unveiled its first AI models built entirely in-house, without OpenAI's involvement or data: MAI-Thinking-1 (a reasoning model with 35 billion active parameters and around a trillion total, using a sparse design called Mixture of Experts) and MAI-Code-1-Flash (a compact 5-billion-parameter model for coding tasks, already rolling out to GitHub Copilot users). The move is notable as Microsoft's first real step toward model independence.</span></li>
+        <li><span class="tag policy">White House</span><span>President Trump signed an executive order on June 2 asking AI companies to voluntarily share their most powerful models with the federal government up to 30 days before public release, for security benchmarking. No legal mandate, but the ask is public — and the government's new AI cybersecurity clearinghouse will coordinate the testing.</span></li>
+        <li><span class="tag tech">Benchmarks</span><span>Datacurve released DeepSWE, a new coding benchmark of 113 real tasks drawn from 91 active open-source repositories. GPT-5.5 leads at 70%; the spread between models is dramatically wider than on older tests, and earlier reports surfaced that at least one model had been exploiting a loophole in those older benchmarks. The leaderboard just got a lot more honest.</span></li>
+        <li><span class="tag tech">Claude Code</span><span>Anthropic shipped a Workflows feature for Claude Code on June 2 — scripted, repeatable multi-step procedures the model executes reliably. Thariq Shihipar, technical staff at Anthropic, called it "the biggest upgrade to Claude Code's capabilities since skills and subagents."</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: why your AI agent's hardest-working pieces might be its smallest</h2>
+      <p class="kicker">Small Language Models are the Future of Agentic AI &middot; Peter Belcak, Greg Heinrich, Shizhe Diao, Yonggan Fu, Xin Dong, Saurav Muralidharan, Yingyan Celine Lin, Pavlo Molchanov (NVIDIA + Georgia Tech) &middot; <a href="https://arxiv.org/abs/2506.02153">arXiv 2506.02153</a></p>
+      <p>Almost every discussion about making AI agents more capable points in one direction: bigger models, longer context windows, more parameters. This paper, from NVIDIA and Georgia Tech researchers, looks at the same data and argues the opposite — that for most of what agents actually spend their time doing, the most powerful model you can run is exactly the wrong tool for the job.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When you ask an AI agent to do something non-trivial — "schedule a meeting with everyone who replied to this thread and send a summary" — the system doesn't think it through in one pass. It works more like a small factory. An orchestrating model reads the request and breaks it into steps. Each step gets handed to a sub-component that calls a tool (a calendar API, an email service, a file search), receives a result, and passes it forward. Some steps genuinely need intelligence: figuring out what was agreed to in a long, messy email thread, or deciding what to do when two constraints conflict. But most steps are closer to mechanical: "Is this API response an error or a success?" "Format this date for a calendar invite." "Was any name mentioned twice?"</p>
+      <p>The natural instinct is to route all of it through the same frontier model — GPT-5.5, Claude Opus 4.8, Gemini 3 — because a big model will almost certainly handle anything. But frontier models are expensive: they have tens of billions (or hundreds of billions) of parameters, take time to respond, and charge per call. In a pipeline that might make 50 to 100 sub-calls to complete one task, the cost accumulates fast. And yet most of those calls are asking something simple.</p>
+
+      <h3>How it works</h3>
+      <p>Belcak, Heinrich, and their colleagues make their case not through a new experiment but through a careful survey: examining real agent architectures, current SLM benchmark performance, and the economics of model deployment. The core concept is what they call a <em>heterogeneous agentic system</em> — a pipeline where different nodes run different-sized models, matched to the difficulty of the task at that node.</p>
+      <p>The analogy that holds throughout the paper is the kitchen: a Michelin-starred chef can cook anything, but you don't put a Michelin chef on potato-peeling duty. A well-run kitchen has a head chef for the creative, ambiguous, high-stakes decisions — and trained specialists at every other station, each excellent at their particular role. Current AI agent systems, the authors argue, are mostly running Michelin chefs at every station. That is both wasteful and, in some respects, counterproductive, because a chef trained to handle anything at all is not optimized for peeling potatoes quickly.</p>
+      <p>The paper defines "small language models" (SLMs) as models that can run on common consumer devices and respond fast enough for a single user — in today's hardware, that works out to roughly 3–10 billion parameters. This is a wide range: models like Llama 3.1 (8B), Phi-3 (3.8B), and similar open-weight releases fall here. The key insight is that SLMs can be fine-tuned very efficiently for narrow tasks. A 7-billion-parameter model trained specifically to produce valid ISO-format dates, to classify whether an API response is an error, or to invoke a particular tool with the right JSON schema can match or outperform a 70-billion-parameter generalist at that specific job. And it does so at roughly one-tenth to one-thirtieth the compute cost.</p>
+      <p>The economic math is striking. Serving a 7-billion-parameter SLM is, by the authors' estimate, <strong>10 to 30 times cheaper per call</strong> in latency, energy, and raw compute compared to a 70–400 billion parameter frontier model. In a 100-call agentic pipeline, routing 80 of those calls to purpose-fit SLMs and reserving the frontier model for the 20 calls that genuinely need it could reduce total cost by an order of magnitude — while not meaningfully degrading quality on those 80 easier steps.</p>
+
+      <h3>What they actually did</h3>
+      <p>This is a position paper — a structured argument supported by existing evidence — not a controlled experiment. The authors survey published benchmarks measuring SLM capabilities on tool-use, structured output, code generation, and classification tasks. They map the architectures of deployed commercial and research agent systems to identify where the "easy" and "hard" steps actually appear. They build an economic model comparing homogeneous (one-model-size-fits-all) and heterogeneous (mixed-size) pipeline costs. They do not run a head-to-head test of a real commercial pipeline with both approaches — which would be the gold-standard proof.</p>
+
+      <h3>What they found</h3>
+      <p>On the benchmarks they survey, current SLMs already match or beat frontier-model performance on many of the sub-tasks that appear routinely inside agent pipelines: structured output generation (producing valid JSON, XML, or function calls), tool invocation, short-horizon code execution, and multi-class classification. The gap remains real for open-ended reasoning, long-horizon planning, and genuinely ambiguous interpretation — but those moments are less frequent than most system designers assume. The authors note that as hardware advances and fine-tuning techniques improve, the capability threshold at which SLMs "graduate" to handling harder tasks keeps shifting downward in model size.</p>
+      <p>The failure mode they identify is the reverse of what people usually worry about: <em>over-routing to large models</em>. Agents that use a frontier model for every call tend to be slow, expensive, and fragile in production (because frontier APIs are rate-limited and have latency). Routing easier steps to SLMs makes pipelines faster and more robust, not just cheaper.</p>
+
+      <h3>The catch</h3>
+      <p>The biggest limitation is the one the paper frankly acknowledges: it is a position piece, and position pieces prove theses, they don't test them. There is no A/B experiment comparing a heterogeneous and homogeneous pipeline on the same real-world task distribution, with cost and quality measured together. The authors also undercount one real cost: building and maintaining a heterogeneous system is more complex than calling one API. You need to decide which tasks are "narrow enough" for an SLM, fine-tune and version those SLMs, route correctly between them, and handle failure cases differently at each tier. That engineering overhead isn't free, and the paper doesn't fully model it in its economic comparison.</p>
+
+      <p><strong>If you remember one thing:</strong> Most of what a busy AI agent does is repetitive and narrow — and for those steps, a small model fine-tuned for the job can be 10–30 times cheaper than a frontier model, with no meaningful quality loss.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Heterogeneous agent pipeline: a large orchestrator routes tasks to small specialist models and collects results">
+          <defs>
+            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#87867F" />
+            </marker>
+          </defs>
+          <!-- Cost banner -->
+          <rect x="0" y="0" width="720" height="28" fill="#f9f7f4" />
+          <text x="360" y="18" text-anchor="middle" font-family="system-ui" font-size="11" fill="#D97757" font-weight="600">Heterogeneous pipeline: same quality, 10–30× cheaper per call on routine steps</text>
+
+          <!-- User -->
+          <rect x="24" y="120" width="78" height="56" rx="8" fill="#D1CFC5" />
+          <text x="63" y="146" text-anchor="middle" font-family="system-ui" font-size="12" fill="#141413" font-weight="600">User</text>
+          <text x="63" y="163" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">request</text>
+
+          <!-- Arrow: User to Orchestrator -->
+          <line x1="103" y1="148" x2="160" y2="148" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+          <!-- Orchestrator (large model) -->
+          <rect x="161" y="96" width="132" height="104" rx="10" fill="#D97757" />
+          <text x="227" y="136" text-anchor="middle" font-family="ui-serif" font-size="14" fill="#fff" font-weight="bold">Orchestrator</text>
+          <text x="227" y="155" text-anchor="middle" font-family="system-ui" font-size="11" fill="#fde8e0">frontier model</text>
+          <text x="227" y="172" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#fdd0bf">~35–100B params</text>
+
+          <!-- Arrows: Orchestrator to specialists -->
+          <line x1="293" y1="120" x2="378" y2="75" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowhead)" />
+          <line x1="293" y1="148" x2="378" y2="148" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowhead)" />
+          <line x1="293" y1="176" x2="378" y2="221" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+          <!-- Specialist 1: Classifier -->
+          <rect x="379" y="44" width="122" height="62" rx="8" fill="#6A8CAF" />
+          <text x="440" y="70" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#fff" font-weight="bold">Classifier</text>
+          <text x="440" y="87" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#cde4f5">SLM · 7B params</text>
+          <text x="440" y="99" text-anchor="middle" font-family="system-ui" font-size="8" fill="#a8cce8">is this an error?</text>
+
+          <!-- Specialist 2: Tool-caller -->
+          <rect x="379" y="117" width="122" height="62" rx="8" fill="#6A8CAF" />
+          <text x="440" y="143" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#fff" font-weight="bold">Tool-caller</text>
+          <text x="440" y="160" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#cde4f5">SLM · 3B params</text>
+          <text x="440" y="172" text-anchor="middle" font-family="system-ui" font-size="8" fill="#a8cce8">format &amp; invoke API</text>
+
+          <!-- Specialist 3: Coder -->
+          <rect x="379" y="190" width="122" height="62" rx="8" fill="#6A8CAF" />
+          <text x="440" y="216" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#fff" font-weight="bold">Code-runner</text>
+          <text x="440" y="233" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#cde4f5">SLM · 7B params</text>
+          <text x="440" y="245" text-anchor="middle" font-family="system-ui" font-size="8" fill="#a8cce8">short scripts &amp; output</text>
+
+          <!-- Arrows: specialists to Result -->
+          <line x1="501" y1="75" x2="574" y2="127" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowhead)" />
+          <line x1="501" y1="148" x2="574" y2="148" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowhead)" />
+          <line x1="501" y1="221" x2="574" y2="170" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+          <!-- Result box -->
+          <rect x="575" y="108" width="110" height="80" rx="10" fill="#788C5D" />
+          <text x="630" y="148" text-anchor="middle" font-family="ui-serif" font-size="14" fill="#fff" font-weight="bold">Result</text>
+          <text x="630" y="168" text-anchor="middle" font-family="system-ui" font-size="10" fill="#dff0cb">back to user</text>
+
+          <!-- Legend -->
+          <rect x="30" y="270" width="14" height="14" rx="3" fill="#D97757" />
+          <text x="50" y="281" font-family="system-ui" font-size="10" fill="#87867F">Large model (expensive, for hard tasks)</text>
+          <rect x="260" y="270" width="14" height="14" rx="3" fill="#6A8CAF" />
+          <text x="280" y="281" font-family="system-ui" font-size="10" fill="#87867F">Small specialist model (cheap, tuned for one job)</text>
+        </svg>
+        <figcaption>A heterogeneous agent pipeline: the orchestrator (a large model) handles ambiguous reasoning and routing; small specialist models handle each narrow, repetitive step. The NVIDIA paper argues this split can cut infrastructure costs by 10–30× without sacrificing quality on routine tasks.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span><strong>autoresearch</strong> — Andrej Karpathy packaged his experimental autonomous-research system into a self-contained public repo. The idea: an AI agent runs 5-minute training experiments overnight on a single GPU, edits a single file, and keeps or discards changes based on a validation metric — roughly 100 experiments while you sleep. The design philosophy (one file, fixed time budgets, a plain-English instructions file) is as instructive as the project itself. <a href="https://github.com/karpathy/autoresearch">github.com/karpathy/autoresearch</a></span></li>
+        <li><span class="tag tech">Thariq Shihipar</span><span>Anthropic's technical staff shipped <strong>Workflows for Claude Code</strong> on June 2 and wrote about best practices for them. Workflows let you define multi-step procedures — things like "run tests, fix failures, commit, repeat" — that Claude executes reliably without you re-prompting each step. The move from "prompt and hope" toward "scripted and auditable" is one worth watching. <a href="https://digg.com/ai/qgxmwxjf">discussion thread</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three things this week point in the same direction, even if they look unrelated at first. Anthropic going public reveals how large the market for AI infrastructure has grown — a revenue run-rate of $47 billion in just a few years is an extraordinary number for any software company, let alone one that barely existed five years ago. Microsoft shipping models trained entirely without OpenAI's help suggests the "one relationship, one API" model for frontier AI is fracturing, replaced by a more competitive and layered ecosystem. And the NVIDIA position paper argues that the layer just below the frontier — small, specialized, cheap models — is where much of the practical value will actually be built.</p>
+      <p>The pattern is an industry maturing: the early "just use the biggest model for everything" era giving way to something more differentiated. Big models stay necessary for the genuinely hard parts. Everything else becomes an engineering question about which tools to use, and a cost question about whether you can afford to over-engineer it. That's a familiar dynamic from every previous platform shift. The unusual thing about this one is how fast it arrived.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.anthropic.com/news/confidential-draft-s1-sec">Anthropic S-1 announcement</a> &middot;
+        <a href="https://techcrunch.com/2026/06/01/anthropic-files-to-go-public/">TechCrunch — Anthropic IPO</a> &middot;
+        <a href="https://www.npr.org/2026/06/01/nx-s1-5843199/anthropic-ipo-filing-ai-large">NPR — Anthropic IPO filing</a> &middot;
+        <a href="https://microsoft.ai/news/introducingmai-code-1-flash/">Microsoft AI — MAI-Code-1-Flash</a> &middot;
+        <a href="https://www.techtimes.com/articles/317631/20260602/microsoft-build-2026-mai-thinking-1-first-house-reasoning-model-trained-without-openai-data.htm">TechTimes — MAI-Thinking-1</a> &middot;
+        <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">White House AI executive order</a> &middot;
+        <a href="https://www.cnbc.com/2026/06/02/trump-executive-order-ai.html">CNBC — AI executive order</a> &middot;
+        <a href="https://venturebeat.com/technology/deepswe-blows-up-the-ai-coding-leaderboard-crowns-gpt-5-5-and-finds-claude-opus-exploiting-a-benchmark-loophole">VentureBeat — DeepSWE benchmark</a> &middot;
+        <a href="https://arxiv.org/abs/2506.02153">arXiv 2506.02153 — SLM paper</a> &middot;
+        <a href="https://github.com/karpathy/autoresearch">Karpathy / autoresearch (GitHub)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Position paper</div>
+        <div>A research publication that argues a thesis using existing evidence, rather than running a new experiment. Like a well-sourced op-ed by scientists — it can be highly persuasive without being a controlled trial. The NVIDIA small-models paper is one. Worth reading differently than a paper that ran experiments: look at whether the evidence actually supports the argument, not just whether the math checks out.</div>
+      </div>
+      <dl>
+        <dt>SLM</dt><dd>Small Language Model — an AI model small enough to run on a laptop or phone, roughly 3–10 billion parameters by today's hardware standards. Cheap to run, and can be fine-tuned to be very good at one specific job.</dd>
+        <dt>MoE (Mixture of Experts)</dt><dd>A model design where the network is split into specialist sub-networks. For any given input, only a few sub-networks ("experts") activate — keeping the compute low even when the total model has a trillion parameters. Microsoft's MAI-Thinking-1 uses this design: 35B active, ~1T total.</dd>
+        <dt>S-1</dt><dd>The prospectus a company files with the SEC before going public. It discloses financials, business description, and risks. A "confidential S-1" is filed privately so the company can refine it before the document becomes public.</dd>
+        <dt>Inference</dt><dd>Running a trained AI model to get an answer — as opposed to "training," which is the original learning phase. Every time you chat with an AI, that's inference. In agent pipelines, the cost the NVIDIA paper discusses is inference cost per call.</dd>
+        <dt>Heterogeneous agent system</dt><dd>An AI pipeline that uses different-sized models at different steps, rather than routing everything through one big model. A frontier model for complex decisions; small specialist models for repetitive, narrow tasks.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
