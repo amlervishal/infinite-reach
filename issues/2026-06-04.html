@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №7 — All that deliberation, and yet · Infinite Reach</title>
+  <meta name="description" content="A study finds reasoning models write deep plans but pick moves on first impressions alone — the week Microsoft unveiled its first AI built entirely without OpenAI." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №7 &middot; Thursday, June 4, 2026</p>
+      <h1>All that deliberation, and yet</h1>
+      <p>A new study strips apart the reasoning traces of language models and finds a gap between how deep they appear to plan and how far ahead they actually look. The same week, Microsoft debuts its first AI models built without any help from OpenAI, and Washington sets new ground rules for frontier labs.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On June 2, at its Build 2026 developer conference, Microsoft announced MAI-Thinking-1 and MAI-Code-1-Flash — the first AI models the company has trained entirely from scratch, using only commercially licensed data, with no involvement from OpenAI. MAI-Thinking-1 is a reasoning model with 35 billion active parameters inside a sparse Mixture-of-Experts architecture totalling roughly a trillion parameters, a 256,000-token context window, and scores of 97.0% on AIME 2025 and 94.5% on AIME 2026. MAI-Code-1-Flash is a 5-billion-parameter coding model now rolling out inside GitHub Copilot, with a 16-point lead over Claude Haiku 4.5 on SWE-Bench Pro. Independent human evaluators preferred MAI-Thinking-1 over Claude Sonnet 4.6 in blind side-by-side comparisons. For a company that has backed and relied on OpenAI since 2019, building a foundation model from scratch signals something new: Microsoft wants its own foundational building blocks, not just a licence to borrow someone else's.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Anthropic</span><span>Claude Opus 4.8, released May 28, scores 69.2% on SWE-Bench Pro (up from 64.3% for Opus 4.7), introduces &ldquo;dynamic workflows&rdquo; for large-scale coding tasks, and makes fast mode — at 2.5&times; speed — now 3&times; cheaper than on the previous Opus.</span></li>
+        <li><span class="tag policy">White House</span><span>An executive order on AI innovation and security, signed June 2, establishes voluntary benchmarking for frontier models and frames advanced AI development as a national-security matter — framing that may shape how safety testing is treated going forward.</span></li>
+        <li><span class="tag policy">Colorado</span><span>The US&rsquo;s first state-level law governing &ldquo;high-risk&rdquo; AI systems takes effect June 30; companies have weeks to assess compliance, and no federal preemption law is in place yet to simplify the picture.</span></li>
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy joined Anthropic&rsquo;s pre-training team in May to lead a group that will use Claude to accelerate how Anthropic trains its next models — his first institutional role since leaving OpenAI in 2023.</span></li>
+        <li><span class="tag money">Google</span><span>Gemini 3.5 Pro is expected this month; the Pro tier follows Flash, which launched at Google I/O in May and already outperforms Gemini 3.1 Pro on most benchmarks at 4&times; the speed.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~680 words -->
+      <h2>Paper, explained: when writing deep isn&rsquo;t thinking deep</h2>
+      <p class="kicker">Extracting Search Trees from LLM Reasoning Traces Reveals Myopic Planning &middot; Sixing Chen, Ji-An Li, Saner Cakir, Sinan Akcali, Kayla Lee, Marcelo G. Mattar &middot; <a href="https://arxiv.org/abs/2605.06840">arXiv:2605.06840</a></p>
+
+      <p>Modern reasoning models write out their thinking in long paragraphs before answering. The text looks like deliberate planning — considering futures, weighing consequences, exploring options several moves out. This paper asks the uncomfortable question: does any of that written-out depth actually drive the final decision?</p>
+
+      <h3>The problem, and why it&rsquo;s hard</h3>
+      <p>When you prompt a language model with a hard problem and it produces a thousand words of chain-of-thought reasoning, it can look remarkably like a chess player&rsquo;s annotation: &ldquo;if I do X, then my opponent might do Y, and then I could reply with Z.&rdquo; For years, that writing has been taken at some face value — a sign that the model is genuinely simulating future states before deciding. But the written text and the underlying computation are not the same thing. Studying whether writing about depth-3 futures actually influences a depth-0 choice is hard, because you&rsquo;d need to separate what the model wrote from what it computed. Before this paper, no one had done that cleanly for strategic reasoning tasks.</p>
+
+      <h3>How it works</h3>
+      <p>The researchers built their test around a single game: four-in-a-row, a grid game where you win by placing four pieces in a line (think Connect Four, or the game you doodle on graph paper). It&rsquo;s a good choice — hard enough to reward genuine planning, small enough that you can trace every &ldquo;move&rdquo; the model considers in its text. Whenever the model&rsquo;s chain of thought mentioned evaluating a particular board position, the researchers recorded it as a node in a tree. Over many games, they assembled these trees for each position: nodes at depth 1 for immediate next moves, depth 2 for the opponent&rsquo;s possible responses, depth 3 for the model&rsquo;s replies to those responses, and so on.</p>
+      <p>From those trees, they measured two things: <em>depth</em> (how far down the tree the model wrote) and <em>breadth</em> (how many options the model considered at each level). Then they built two competing models to explain which actual move the LLM picked. The first was a <em>full model</em> using all nodes in the tree. The second was a <em>myopic model</em> — it ignores everything below depth 1, using only the model&rsquo;s written evaluations of immediate next moves. Think of it as asking: can we predict what move the model picks, using only its first-level survey of options — and deliberately throwing away everything it wrote about futures two or three moves out?</p>
+      <p>They also ran a causal test by selectively deleting paragraphs from the chain of thought. If shallow nodes (depth 1) are what drives the decision, removing them should hurt performance more than removing deep nodes. If the model truly acts on its deep futures, the reverse should hold. This pruning experiment turns a correlation into something closer to a cause.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team tested multiple language models on four-in-a-row, parsing each reasoning trace into a structured search tree. They fit the myopic and full predictive models to thousands of game positions, comparing which better predicted the observed choices. They ran the paragraph-deletion intervention across many positions, measuring performance drop per deleted layer. They also compared the LLMs&rsquo; tree shapes with those of human players studied in analogous cognitive-science research.</p>
+
+      <h3>What they found</h3>
+      <p>The myopic model was the better predictor of move choice — even when the language model had written three or four levels of future board states into its reasoning trace. Deleting shallow paragraphs meaningfully hurt performance; deleting deep paragraphs did not. LLMs&rsquo; search trees were also shallower overall than human players&rsquo;. And where human performance scales with <em>depth</em> — better players look further ahead — LLM performance scaled with <em>breadth</em>: models did better when they considered more first-level options, not when their traces went deeper. That inversion is the paper&rsquo;s most striking finding. The dimension that predicts human planning skill (depth) is not the one that predicts LLM performance (breadth).</p>
+
+      <h3>The catch</h3>
+      <p>This is a single game. Whether the pattern holds across open-ended tasks — writing, coding, scientific reasoning — is not demonstrated. It is also possible that the model uses deep nodes in ways not visible in the written text; the paper studies the trace, not the model&rsquo;s internal activations. &ldquo;Myopic&rdquo; doesn&rsquo;t mean &ldquo;wrong&rdquo;: a model that evaluates first-level options very accurately can still make excellent choices. The authors are careful to say this is a finding about where the predictive signal lives, not a claim that deep chains of thought are useless.</p>
+
+      <p><strong>If you remember one thing:</strong> When a language model writes out paragraphs of deep planning, the decision that comes out is driven by its first-level survey of the options — not by the depth of what it wrote.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 280" role="img" aria-label="Two-panel diagram. Left panel shows an LLM reasoning trace as a tree going three levels deep. Right panel shows the myopic model that best predicts the actual move — only depth-1 nodes highlighted, deeper nodes faded, with an arrow pointing to Move chosen.">
+          <defs>
+            <marker id="ar7" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+              <polygon points="0 0, 8 3, 0 6" fill="#6A8CAF"/>
+            </marker>
+          </defs>
+
+          <!-- LEFT PANEL: the written reasoning trace, a deep tree -->
+          <rect x="10" y="8" width="330" height="264" rx="8" fill="#F5F4F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="175" y="33" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="bold">The chain of thought</text>
+          <text x="175" y="51" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">written reasoning — goes 3+ levels deep</text>
+
+          <!-- Root node -->
+          <circle cx="175" cy="79" r="13" fill="#141413"/>
+          <text x="175" y="83" font-family="system-ui,sans-serif" font-size="9" fill="white" text-anchor="middle">board</text>
+
+          <!-- Lines to depth-1 nodes -->
+          <line x1="164" y1="90" x2="88" y2="118" stroke="#D97757" stroke-width="1.5"/>
+          <line x1="175" y1="92" x2="175" y2="118" stroke="#D97757" stroke-width="1.5"/>
+          <line x1="186" y1="90" x2="262" y2="118" stroke="#D97757" stroke-width="1.5"/>
+
+          <!-- Depth-1 nodes (clay) -->
+          <circle cx="88"  cy="130" r="11" fill="#D97757"/>
+          <circle cx="175" cy="130" r="11" fill="#D97757"/>
+          <circle cx="262" cy="130" r="11" fill="#D97757"/>
+
+          <!-- breadth label -->
+          <text x="175" y="151" font-family="system-ui,sans-serif" font-size="8" fill="#D97757" text-anchor="middle">&larr; breadth at depth 1 predicts LLM skill &rarr;</text>
+
+          <!-- Lines to depth-2 nodes -->
+          <line x1="79"  y1="140" x2="50"  y2="170" stroke="#788C5D" stroke-width="1.2"/>
+          <line x1="97"  y1="140" x2="115" y2="170" stroke="#788C5D" stroke-width="1.2"/>
+          <line x1="166" y1="140" x2="152" y2="170" stroke="#788C5D" stroke-width="1.2"/>
+          <line x1="184" y1="140" x2="198" y2="170" stroke="#788C5D" stroke-width="1.2"/>
+          <line x1="253" y1="140" x2="237" y2="170" stroke="#788C5D" stroke-width="1.2"/>
+          <line x1="271" y1="140" x2="288" y2="170" stroke="#788C5D" stroke-width="1.2"/>
+
+          <!-- Depth-2 nodes (olive) -->
+          <circle cx="50"  cy="181" r="9" fill="#788C5D"/>
+          <circle cx="115" cy="181" r="9" fill="#788C5D"/>
+          <circle cx="152" cy="181" r="9" fill="#788C5D"/>
+          <circle cx="198" cy="181" r="9" fill="#788C5D"/>
+          <circle cx="237" cy="181" r="9" fill="#788C5D"/>
+          <circle cx="288" cy="181" r="9" fill="#788C5D"/>
+
+          <!-- Lines to depth-3 nodes -->
+          <line x1="43"  y1="190" x2="30"  y2="218" stroke="#D1CFC5" stroke-width="0.8"/>
+          <line x1="57"  y1="190" x2="68"  y2="218" stroke="#D1CFC5" stroke-width="0.8"/>
+          <line x1="108" y1="190" x2="98"  y2="218" stroke="#D1CFC5" stroke-width="0.8"/>
+          <line x1="122" y1="190" x2="132" y2="218" stroke="#D1CFC5" stroke-width="0.8"/>
+          <line x1="230" y1="190" x2="220" y2="218" stroke="#D1CFC5" stroke-width="0.8"/>
+
+          <!-- Depth-3 nodes (muted/border) -->
+          <circle cx="30"  cy="226" r="7" fill="#D1CFC5"/>
+          <circle cx="68"  cy="226" r="7" fill="#D1CFC5"/>
+          <circle cx="98"  cy="226" r="7" fill="#D1CFC5"/>
+          <circle cx="132" cy="226" r="7" fill="#D1CFC5"/>
+          <circle cx="220" cy="226" r="7" fill="#D1CFC5"/>
+
+          <!-- Depth labels on right edge -->
+          <text x="337" y="83"  font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="end">start</text>
+          <text x="337" y="134" font-family="system-ui,sans-serif" font-size="9" fill="#D97757"  text-anchor="end">depth 1</text>
+          <text x="337" y="185" font-family="system-ui,sans-serif" font-size="9" fill="#788C5D"  text-anchor="end">depth 2</text>
+          <text x="337" y="229" font-family="system-ui,sans-serif" font-size="9" fill="#D1CFC5"  text-anchor="end">depth 3</text>
+
+          <!-- RIGHT PANEL: myopic model — only depth 1 matters -->
+          <rect x="350" y="8" width="360" height="264" rx="8" fill="#F5F4F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="530" y="33" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="bold">What predicts the move</text>
+          <text x="530" y="51" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">myopic model (depth 1 only) wins</text>
+
+          <!-- Root node -->
+          <circle cx="530" cy="79" r="13" fill="#141413"/>
+          <text x="530" y="83" font-family="system-ui,sans-serif" font-size="9" fill="white" text-anchor="middle">board</text>
+
+          <!-- Lines to depth-1 nodes (thicker, highlighted) -->
+          <line x1="519" y1="90" x2="443" y2="118" stroke="#D97757" stroke-width="2"/>
+          <line x1="530" y1="92" x2="530" y2="118" stroke="#D97757" stroke-width="2"/>
+          <line x1="541" y1="90" x2="617" y2="118" stroke="#D97757" stroke-width="2"/>
+
+          <!-- Depth-1 nodes — highlighted with dark outline -->
+          <circle cx="443" cy="130" r="13" fill="#D97757" stroke="#141413" stroke-width="2"/>
+          <circle cx="530" cy="130" r="13" fill="#D97757" stroke="#141413" stroke-width="2"/>
+          <circle cx="617" cy="130" r="13" fill="#D97757" stroke="#141413" stroke-width="2"/>
+          <text x="443" y="153" font-family="system-ui,sans-serif" font-size="8" fill="#D97757" text-anchor="middle">used &#x2713;</text>
+          <text x="530" y="153" font-family="system-ui,sans-serif" font-size="8" fill="#D97757" text-anchor="middle">used &#x2713;</text>
+          <text x="617" y="153" font-family="system-ui,sans-serif" font-size="8" fill="#D97757" text-anchor="middle">used &#x2713;</text>
+
+          <!-- Dashed lines hinting at deeper nodes that exist but don't matter -->
+          <line x1="432" y1="143" x2="408" y2="176" stroke="#E0DDD6" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="454" y1="143" x2="472" y2="176" stroke="#E0DDD6" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="520" y1="143" x2="506" y2="176" stroke="#E0DDD6" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="540" y1="143" x2="554" y2="176" stroke="#E0DDD6" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="607" y1="143" x2="594" y2="176" stroke="#E0DDD6" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="627" y1="143" x2="640" y2="176" stroke="#E0DDD6" stroke-width="1" stroke-dasharray="3,3"/>
+
+          <!-- deeper nodes label -->
+          <text x="530" y="200" font-family="system-ui,sans-serif" font-size="10" fill="#D1CFC5" text-anchor="middle">deeper nodes: written, but not used</text>
+
+          <!-- Arrow down to Move chosen box -->
+          <line x1="530" y1="159" x2="530" y2="244" stroke="#6A8CAF" stroke-width="2.5" marker-end="url(#ar7)"/>
+          <rect x="463" y="248" width="134" height="24" rx="5" fill="#6A8CAF"/>
+          <text x="530" y="265" font-family="ui-serif,Georgia,serif" font-size="12" fill="white" text-anchor="middle">Move chosen</text>
+        </svg>
+        <figcaption>Left: an LLM&rsquo;s written reasoning goes three or more levels deep. Right: the myopic model — using only depth-1 evaluations — is the better predictor of the actual move chosen. Deleting shallow paragraphs from the chain of thought hurts performance; deleting deep ones does not. The signal is at the top of the tree, not the bottom.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Joined Anthropic&rsquo;s pre-training team in May to lead a group using Claude itself to speed up training research — his first institutional role since leaving OpenAI in 2023. <a href="https://techcrunch.com/2026/05/19/openai-co-founder-andrej-karpathy-joins-anthropics-pre-training-team/">TechCrunch</a></span></li>
+        <li><span class="tag tech">Karpathy</span><span>The <a href="https://github.com/karpathy/autoresearch">autoresearch</a> repo is an open project where an AI agent runs real training experiments overnight on a single GPU — modifies code, trains for five minutes, evaluates and loops. A concrete early model of what autonomous research tooling looks like.</span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>Code with Claude London 2026 unveiled auto mode (a classifier that handles agent permission decisions), remote control (continue a session from your phone), and self-hosted sandboxes for enterprise deployments — the direction: fewer interruptions, your infrastructure. <a href="https://claude.com/blog/code-w-claude-london-2026-rethinking-how-we-build">Claude blog</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three things this week point in the same direction: capability is spreading outward, and easy assumptions are developing cracks. Microsoft trained its own foundation models rather than licencing someone else&rsquo;s. Colorado legislated rather than waiting for Washington. And the myopic-planning paper quietly redraws what we should expect from reasoning models: writing deep plans is not the same as making decisions with deep foresight. That last finding matters practically. If a model&rsquo;s choices are driven by its first survey of options rather than by genuine multi-step simulation, then asking it to &ldquo;plan in detail&rdquo; is really asking for a wide brainstorm, not a chess player&rsquo;s lookahead. Breadth of options, not simulated depth, is where the signal lives — for now, and until the field finds a way to make the deep nodes count.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2605.06840">arXiv:2605.06840</a> &middot;
+        <a href="https://microsoft.ai/news/introducing-mai-thinking-1/">Microsoft AI — MAI-Thinking-1</a> &middot;
+        <a href="https://www.cnbc.com/2026/06/02/microsoft-unveils-new-ai-models-lessen-reliance-on-openai-lower-costs.html">CNBC — Microsoft MAI</a> &middot;
+        <a href="https://datanorth.ai/news/microsoft-launches-mai-thinking-1-and-mai-code-1-flash">DataNorth — Build 2026</a> &middot;
+        <a href="https://www.anthropic.com/news/claude-opus-4-8">Anthropic — Claude Opus 4.8</a> &middot;
+        <a href="https://artificialanalysis.ai/articles/claude-opus-4-8-analysis-and-benchmarks">Artificial Analysis — Opus 4.8</a> &middot;
+        <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">White House EO on AI</a> &middot;
+        <a href="https://techcrunch.com/2026/05/19/openai-co-founder-andrej-karpathy-joins-anthropics-pre-training-team/">TechCrunch — Karpathy/Anthropic</a> &middot;
+        <a href="https://github.com/karpathy/autoresearch">karpathy/autoresearch</a> &middot;
+        <a href="https://claude.com/blog/code-w-claude-london-2026-rethinking-how-we-build">Claude blog — Code w/ Claude London</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Myopic</div>
+        <div>Literally nearsighted. In the planning paper, a &ldquo;myopic model&rdquo; is one that only looks one step ahead and ignores everything further out. The surprise: this turns out to describe how language models actually pick their moves — even when they have written paragraphs about distant futures.</div>
+      </div>
+      <dl>
+        <dt>Chain-of-thought</dt><dd>A technique where a language model writes out its reasoning step by step before giving a final answer. Helps on hard problems — but this week&rsquo;s paper asks whether the steps past the first level actually change the choice that comes out.</dd>
+        <dt>Search breadth</dt><dd>In a planning tree, how many different options you explore at each level. LLMs improve with more breadth at depth 1; deeper search does not predict better performance the same way it does for humans.</dd>
+        <dt>Search depth</dt><dd>How many moves ahead a planning model looks before evaluating. Human chess players improve with depth; this paper finds LLMs don&rsquo;t scale the same way on a game-playing task.</dd>
+        <dt>MoE (Mixture of Experts)</dt><dd>An architecture where only a fraction of a model&rsquo;s total parameters are active for any given input. MAI-Thinking-1 activates 35 billion of roughly a trillion total parameters — far cheaper to run than a &ldquo;dense&rdquo; model of the same total size.</dd>
+        <dt>SWE-Bench Pro</dt><dd>A benchmark that tests whether an AI model can fix real software bugs in real codebases. Used to compare frontier coding models; harder than SWE-bench Verified. Claude Opus 4.8 scored 69.2% on it.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

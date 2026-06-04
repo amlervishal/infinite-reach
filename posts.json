@@ -1,5 +1,12 @@
 [
   {
+    "num": 7,
+    "date": "2026-06-04",
+    "slug": "issues/2026-06-04.html",
+    "title": "All that deliberation, and yet",
+    "blurb": "A study finds reasoning models write deep plans but pick moves on first impressions alone — the week Microsoft unveiled its first AI built entirely without OpenAI."
+  },
+  {
     "num": 6,
     "date": "2026-06-03",
     "slug": "issues/2026-06-03.html",
