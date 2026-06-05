@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №8 — Before the states could disagree · Infinite Reach</title>
+  <meta name="description" content="Congress drafts one federal AI law to replace fifty different state rules — the same week a new technique quietly gives AI models a better working memory." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №8 &middot; Thursday, June 5, 2026</p>
+      <h1>Before the states could disagree</h1>
+      <p>A bipartisan bill lands in Congress to freeze fifty different state AI rules into one federal standard — the same week a new technique quietly gives AI models a better working memory. Both stories are really about what happens when a system gets bigger and something has to give.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On Thursday, six lawmakers — three Democrats, three Republicans — unveiled a 269-page discussion draft called <em>The Great American Artificial Intelligence Act</em>. The bill's central clause would override any state law "specifically regulating the development" of an AI model for three years. That means safety and transparency requirements recently passed in California and New York would be paused at the federal level. The draft was expected for months and is still far from becoming law, but it is the clearest signal yet that Congress wants to own the question of what AI companies must do before they ship — and it drew immediate opposition from safety advocates, who called federal preemption of state rules a "generational mistake."</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Models</span><span>Anthropic's Claude Opus 4.8 (released May 28) is scoring 88.6% on SWE-bench Verified and 69.2% on the harder SWE-bench Pro — the highest on both tests of any model yet — with a "fast mode" that costs 3× less for lighter tasks. <a href="https://www.anthropic.com/news/claude-opus-4-8">anthropic.com</a></span></li>
+        <li><span class="tag tech">Models</span><span>Google's Gemini 3.5 Flash is now fully available globally — 4× faster output than comparable frontier models, priced at $1.50/$9 per million tokens input/output. <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/">blog.google</a></span></li>
+        <li><span class="tag money">Business</span><span>OpenAI launches GPT-5.5 as its new flagship for complex reasoning and coding; a specialized variant called GPT-Rosalind targets drug discovery and genomics at enterprise scale. <a href="https://releasebot.io/updates/openai">releasebot.io</a></span></li>
+        <li><span class="tag money">Infrastructure</span><span>Foxconn and Intel announce a joint push on AI data-center build-out; France separately courts more than €110 billion in AI investments, while US data centers run into hard limits from power grids and local zoning. <a href="https://imfounder.com/science-tech/explosive-tech-news-june-2026-ai-lawsuits-ipos-cyberattacks/">imfounder.com</a></span></li>
+        <li><span class="tag policy">Policy</span><span>Days before the House draft dropped, the White House signed an executive order establishing voluntary federal agency reviews for new frontier AI models — a softer, opt-in counterpart to the bill's harder preemption. <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">whitehouse.gov</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: giving AI a better working memory</h2>
+      <p class="kicker"><em>KVarN: Variance-Normalized KV-Cache Quantization Mitigates Error Accumulation in Reasoning Tasks</em> &middot; Huawei Computing Systems Lab &middot; <a href="https://arxiv.org/abs/2606.03458">arxiv.org/abs/2606.03458</a></p>
+
+      <p>As AI models get better at "thinking longer" before they answer — reconsidering, checking, refining — they hit a quiet wall: memory. A new paper from Huawei's computing lab cracks open that wall without sacrificing accuracy, and the method is clean enough to drop straight into production with a single line of configuration.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Every time a language model generates text, it keeps a running record of the conversation so far. This record is called the KV-cache — short for "key-value cache" — and it acts like the model's working notepad. Each new word the model writes is influenced by everything on that notepad, so the notepad grows continuously. For a short exchange this is fine. But one of the most effective techniques in modern AI is <em>test-time scaling</em>: letting the model spend more time reasoning before it commits to an answer, which means much longer sequences, which means a much fatter notepad.</p>
+
+      <p>GPU memory is finite. Engineers deal with this through <em>quantization</em> — compressing the notepad by storing numbers in a coarser form. Instead of writing 3.14159265, you write 3.14. The problem is that during <em>autoregressive decoding</em> — the process of generating one word at a time, each word depending on all prior ones — those rounding errors don't stay put. They compound. Each new token is generated slightly wrong, which nudges the next one slightly wronger, in a chain that drifts further from full precision the longer the model reasons. Prior benchmarks missed this because they measured compression quality in "prefill mode" (processing a fixed input all at once), not in generation mode (producing output token by token). The error profile is different, and it turns out much worse for reasoning tasks.</p>
+
+      <h3>How it works</h3>
+      <p>The authors traced the compounding error to a single cause: the values inside the KV-cache have wildly unequal "loudness" across channels. Some dimensions of the cache hold very large numbers; others hold tiny ones. Any rounding scheme that treats every channel the same will mangle the loud channels badly and waste precision on the quiet ones.</p>
+
+      <p>Imagine a sound engineer trying to record a band where the drummer plays at 100 decibels and the triangle player at 40. If you set the recording level for the average, you clip the drums into distortion and lose the triangle entirely. The trick is to give each instrument its own level before mixing down.</p>
+
+      <p>KVarN does this in two steps. First, it applies a <em>Hadamard rotation</em> — a well-known mathematical transformation that takes all the "loudness" in the cache and spreads it evenly across every channel, eliminating the outliers. Think of it as scrambling the band's seats so no single player dominates any one microphone. Second, it applies <em>dual-scaling variance normalization</em>, equalizing the remaining variance across both dimensions of the key and value matrices at once — rows and columns simultaneously — using an iterative method borrowed from optimal-transport mathematics (the Sinkhorn algorithm, used elsewhere to solve shipping and assignment problems). At read time, a folded scale factor undoes the normalization with almost no extra computation. The whole pipeline is calibration-free: no warm-up batch of examples needed. You flip a flag in vLLM — the most widely used open-source AI inference server — and it is on.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team tested on Qwen3-32B, a capable 32-billion-parameter open model, against AIME25 math competition problems (long-horizon reasoning requiring 16,000-token contexts) and HumanEval coding challenges. They used 4-bit compression for key matrices and an aggressive 2-bit compression for value matrices — the tighter the compression, the harder the challenge. They compared against FP16 (uncompressed full precision) and against TurboQuant, the previous state-of-the-art KV-cache quantization method.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 280" role="img" aria-label="Chart showing error accumulation in naive quantization vs. KVarN across decoding steps">
+          <rect width="720" height="280" fill="#FAF9F6" rx="6"/>
+          <text x="360" y="28" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413">Quantization error during autoregressive decoding (schematic)</text>
+          <text x="22" y="165" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" transform="rotate(-90,22,165)">Accumulated error</text>
+          <text x="430" y="268" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">Decoding steps (tokens generated)</text>
+          <line x1="70" y1="45" x2="70" y2="220" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="70" y1="220" x2="660" y2="220" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="66" y1="220" x2="70" y2="220" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="66" y1="175" x2="70" y2="175" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="66" y1="130" x2="70" y2="130" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="66" y1="85" x2="70" y2="85" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="62" y="224" text-anchor="end" font-family="ui-monospace, monospace" font-size="10" fill="#87867F">0</text>
+          <text x="62" y="179" text-anchor="end" font-family="ui-monospace, monospace" font-size="10" fill="#87867F">low</text>
+          <text x="62" y="134" text-anchor="end" font-family="ui-monospace, monospace" font-size="10" fill="#87867F">med</text>
+          <text x="62" y="89" text-anchor="end" font-family="ui-monospace, monospace" font-size="10" fill="#87867F">high</text>
+          <line x1="70" y1="220" x2="70" y2="224" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="250" y1="220" x2="250" y2="224" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="430" y1="220" x2="430" y2="224" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="610" y1="220" x2="610" y2="224" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="70" y="234" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#87867F">0</text>
+          <text x="250" y="234" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#87867F">1K</text>
+          <text x="430" y="234" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#87867F">8K</text>
+          <text x="610" y="234" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#87867F">16K</text>
+          <polyline points="70,218 130,212 190,202 250,188 310,168 370,143 430,112 490,82 550,60 610,50" fill="none" stroke="#D97757" stroke-width="2.5" stroke-linejoin="round"/>
+          <polyline points="70,218 130,216 190,215 250,214 310,213 370,212 430,211 490,210 550,209 610,208" fill="none" stroke="#788C5D" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="6,3"/>
+          <rect x="480" y="56" width="170" height="52" rx="4" fill="white" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="492" y1="73" x2="518" y2="73" stroke="#D97757" stroke-width="2.5"/>
+          <text x="525" y="77" font-family="system-ui, sans-serif" font-size="11" fill="#141413">Standard quantization</text>
+          <line x1="492" y1="95" x2="518" y2="95" stroke="#788C5D" stroke-width="2.5" stroke-dasharray="6,3"/>
+          <text x="525" y="99" font-family="system-ui, sans-serif" font-size="11" fill="#141413">KVarN (Hadamard + VarNorm)</text>
+        </svg>
+        <figcaption>Schematic of how rounding errors accumulate in the KV-cache during long generation runs. Standard quantization drifts steadily from the correct answer as more tokens are produced; KVarN's variance normalization keeps the error nearly flat even at 16,000 tokens.</figcaption>
+      </figure>
+
+      <h3>What they found</h3>
+      <p>On AIME25 at 16K context, KVarN matches FP16 accuracy — meaning full-precision output quality at a fraction of the memory cost. It delivers 3–5× more KV-cache capacity than uncompressed FP16, and up to ~1.3× the throughput. Against TurboQuant it achieves ~2.4× the throughput at higher accuracy. The improvements held on HumanEval coding problems as well as math, suggesting the method generalizes beyond one task type.</p>
+
+      <h3>The catch</h3>
+      <p>All the headline results are on one model family (Qwen3-32B) and two benchmarks. The 2-bit value quantization is aggressive — it works on math and code, which have regular, structured outputs, but it has not been rigorously tested on more open-ended generation (storytelling, multi-turn dialogue) where error patterns may differ. The paper comes from an industry lab with obvious incentives to ship; independent replication on other model families would strengthen the claims. It is also worth noting that "calibration-free" does not mean zero overhead — the Hadamard rotation and Sinkhorn passes add a small upfront cost.</p>
+
+      <p><strong>If you remember one thing:</strong> Compressing an AI's working memory used to cause errors to snowball over long conversations; KVarN shows you can halve the memory cost with near-zero accuracy loss by equalizing each memory channel's "loudness" before you round it down.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>A new discussion on his <a href="https://github.com/karpathy/autoresearch/discussions/275">autoresearch repo</a> this week asks how to set "Research Worlds" — persistent goals and constraints for AI agents running unsupervised overnight experiments. Worth reading if you've wondered what responsible autonomous research loops actually look like in practice.</span></li>
+        <li><span class="tag money">Garry Tan</span><span>YC Summer 2026 batch decisions go out today, and Tan has been writing about treating AI not as a chatbot but as an "operating system" for personal and company knowledge — <a href="https://www.gate.com/news/detail/garry-tan-i-now-rarely-prompt-ai-yc-ceo-explains-compounding-ai-workflows-20979889">his framing of "compounding AI workflows"</a> is one of the cleaner descriptions of where solo builders are actually seeing returns.</span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The week's two biggest stories cut in opposite directions, but they share a structure. In Washington, Congress wants to consolidate — replace fifty state-level experiments with one federal standard, at least for three years, on the theory that too many different rules make a coherent national industry impossible. In the lab, the KVarN paper's entire contribution is the opposite move: spread the load out, equalize the variance, stop any one channel from monopolizing the error budget. Both are responses to the same underlying pressure — a system that grew faster than its original architecture could handle. In regulation, as in engineering, the answer is the same: if you don't normalize, everything piles up in one place and something breaks.</p>
+
+      <p>The practical question for the bill is whether a three-year pause on state safety laws is a calibration step or a capitulation. Safety groups say the strongest state laws are the only real guardrails in place right now. Industry argues that fifty inconsistent standards make it impossible to ship anything responsibly at scale. Both are making a quantization argument: how much precision can you afford to lose before the answer is simply wrong?</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://rollcall.com/2026/06/04/bipartisan-ai-draft-proposes-three-year-preemption-of-state-laws/">Roll Call — bipartisan AI draft</a> ·
+        <a href="https://www.nextgov.com/artificial-intelligence/2026/06/lawmakers-propose-ai-framework-would-preempt-state-laws-3-years/413975/">Nextgov — Great American AI Act</a> ·
+        <a href="https://www.dailysignal.com/2026/06/04/scoop-lawmakers-to-introduce-bill-preempting-some-state-ai-regulations-for-three-years/">Daily Signal — bill preview</a> ·
+        <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">White House — executive order</a> ·
+        <a href="https://arxiv.org/abs/2606.03458">arXiv — KVarN paper</a> ·
+        <a href="https://github.com/huawei-csl/KVarN">GitHub — KVarN repo</a> ·
+        <a href="https://www.anthropic.com/news/claude-opus-4-8">Anthropic — Claude Opus 4.8</a> ·
+        <a href="https://venturebeat.com/technology/anthropics-claude-opus-4-8-is-here-with-3x-cheaper-fast-mode-and-near-mythos-level-alignment">VentureBeat — Opus 4.8 analysis</a> ·
+        <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/">Google Blog — Gemini 3.5</a> ·
+        <a href="https://techcrunch.com/2026/05/19/with-gemini-3-5-flash-google-bets-its-next-ai-wave-on-agents-not-chatbots/">TechCrunch — Gemini 3.5 Flash</a> ·
+        <a href="https://github.com/karpathy/autoresearch/discussions/275">GitHub — autoresearch Research Worlds discussion</a> ·
+        <a href="https://www.gate.com/news/detail/garry-tan-i-now-rarely-prompt-ai-yc-ceo-explains-compounding-ai-workflows-20979889">Gate.com — Garry Tan on AI workflows</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Preemption</div>
+        <div>In US law, when a higher level of government passes a rule that "pre-empts" — overrides — a lower level's rule. Like a building fire code from the state marshal that overrides a local landlord's lease requirements. The House AI bill would preempt state laws the same way: federal standard wins, state rule paused.</div>
+      </div>
+      <dl>
+        <dt>KV-cache</dt>
+        <dd>The running memory an AI keeps of everything said in a conversation. Stands for "key-value cache." The longer the exchange, the larger the cache — and the more GPU memory it consumes.</dd>
+
+        <dt>Quantization</dt>
+        <dd>Storing numbers in a compressed, coarser form to save memory and speed up computation. Like writing "3.14" instead of "3.14159265." Saves space, but introduces small rounding errors.</dd>
+
+        <dt>Test-time scaling</dt>
+        <dd>Letting an AI spend more computation <em>at answer time</em> — thinking longer, re-checking — to produce better results. Works well but makes the KV-cache balloon.</dd>
+
+        <dt>Hadamard rotation</dt>
+        <dd>A mathematical transformation that spreads information evenly across all dimensions of a matrix. Named after French mathematician Jacques Hadamard. Used here to eliminate outlier values before compression.</dd>
+
+        <dt>Autoregressive decoding</dt>
+        <dd>The way language models generate text: one word (token) at a time, each new word depending on all previous ones. This is why errors in the working memory accumulate — each step builds on the last.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
