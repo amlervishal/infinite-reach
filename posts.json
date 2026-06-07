@@ -1,5 +1,12 @@
 [
   {
+    "num": 10,
+    "date": "2026-06-07",
+    "slug": "issues/2026-06-07.html",
+    "title": "The art of seeing without being taught",
+    "blurb": "Meta's new vision model trained on 1.7 billion unlabeled photos and outperformed specialists — as Anthropic filed to go public near a trillion-dollar valuation."
+  },
+  {
     "num": 9,
     "date": "2026-06-06",
     "slug": "issues/2026-06-06.html",
