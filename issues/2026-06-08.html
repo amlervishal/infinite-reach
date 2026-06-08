@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №11 — Twenty-six minutes of thought · Infinite Reach</title>
+  <meta name="description" content="Apple handed Siri's brain to Google at WWDC — the same day researchers published the most concrete evidence yet that AI agents don't just do the same work faster, they shift what work you attempt." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №11 &middot; June 8, 2026</p>
+      <h1>Twenty-six minutes of thought</h1>
+      <p>Apple handed Siri's brain to Google this morning — Tim Cook's final act at his last developer conference before stepping down as CEO in September. Separately, researchers at Harvard and Perplexity published the clearest data yet on what changes when you give people an autonomous agent instead of a chatbot: not just faster answers, but a different ceiling on what gets attempted.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>At WWDC 2026, Tim Cook unveiled a rebuilt Siri powered by a custom 1.2-trillion-parameter Gemini model that Apple licenses from Google for roughly <strong>$1 billion a year</strong>. The deal is Apple admitting it could not build frontier cloud intelligence on its own. iOS 27 introduces <em>Extensions</em> — a new system letting users choose any AI model, including Claude, as their default assistant. Apple's contract prevents Google from using Apple users' Siri queries to train future Gemini models, a notable privacy carve-out. Cook, who confirmed he steps down as CEO on September 1, called this his final developer conference.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Speed</span><span>Google's Gemini 3.5 Flash is now generally available — producing output at over 280 tokens per second, roughly four times faster than comparable flagship models, while matching them on key reasoning benchmarks.</span></li>
+        <li><span class="tag policy">Military</span><span>The Pentagon confirmed it is testing OpenAI and Google models to replace Anthropic's Claude in classified systems, after a fallout in March when Anthropic refused to lift restrictions on autonomous-weapons targeting and mass surveillance use.</span></li>
+        <li><span class="tag tech">Coding</span><span>Claude Opus 4.8 scores 88.6% on SWE-bench Verified and 69.2% on the harder SWE-bench Pro — plus a new 2.5× fast mode and parallel-subagent workflows in Claude Code.</span></li>
+        <li><span class="tag money">Markets</span><span>SpaceX's IPO roadshow began today, following Cerebras's May listing. Series A rounds for AI startups now average $51.9 million — about 30% above non-AI peers — and Q1 2026 saw more than $300 billion in global venture investment.</span></li>
+        <li><span class="tag policy">Regulation</span><span>The EU AI Act's high-risk rules — covering AI in healthcare, critical infrastructure, law enforcement, and hiring — take effect August 2, now 55 days away. Non-compliance fines reach €35 million or 7% of global annual turnover.</span></li>
+        <li><span class="tag policy">Security</span><span>A June 2 White House executive order on AI innovation and security directed creation of an AI cybersecurity clearinghouse within 30 days to coordinate vulnerability scanning and remediation across federal systems.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: How agents change the shape of work</h2>
+      <p class="kicker">How AI Agents Reshape Knowledge Work: Autonomy, Efficiency, and Scope &middot; Jeremy Yang (Harvard Business School), Kate Zyskowski, Noah Yonack, Jerry Ma (Perplexity AI) &middot; <a href="https://arxiv.org/abs/2606.07489">arXiv:2606.07489</a></p>
+      <p>Nearly every AI lab claims its agents are transforming how people work. This paper actually checked — with real production data from millions of sessions — and found that autonomous agents shift not just how fast work gets done, but what work people attempt at all.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>We have good intuitions about what AI assistants are useful for: they answer questions faster than a search engine, summarise documents, draft emails. But <em>agents</em> — systems that can autonomously plan and execute multi-step tasks without someone guiding every move — are supposed to be different in kind, not just degree. The question is whether that's really true, or whether it's marketing.</p>
+      <p>Proving it is harder than it sounds. If you show that agent users get better results, you can't rule out that agent users are simply more sophisticated people with more complex needs. They self-selected into a different product. To isolate the tool's contribution, you need to compare users who asked similar questions but got different tools — and you need real work, not an experimental prompt designed by a researcher. The team at Harvard and Perplexity had access to exactly that.</p>
+
+      <h3>How it works — and the analogy that unlocks it</h3>
+      <p>Picture the difference between a taxi and a moving company. A taxi takes you somewhere quickly; a moving company handles an entire relocation while you do something else entirely. Both are "transportation," but they're designed for different jobs at different scales of complexity.</p>
+      <p>Perplexity Search is the taxi: you ask a specific question, get a cited answer in seconds, and decide what to do next. Perplexity Computer is the moving company: you describe a goal — "research the three best cloud providers for a startup, compare pricing, and draft a recommendation memo" — and the system decomposes that into subtasks, routes each one to whichever of its 19 specialised models is best suited (one for browsing, one for writing, one for data analysis, and so on), and hands you a finished result. You come back later.</p>
+      <p>The paper builds a precise framework around this taxi-versus-moving-company distinction. Every task has a <em>fixed delegation cost</em> — the overhead of handing it off: explaining the goal clearly enough for the agent to act unsupervised, reviewing its output. Agents are slower to start than a quick search. But once running, agents have a much lower <em>marginal execution cost</em> per step: each additional sub-task the agent completes costs you almost nothing in attention, because the system handles it. That means agents only make sense above some threshold of task complexity. For a quick factual question, Search wins. For a 40-step research project, the overhead of Search (you'd have to orchestrate each search yourself, synthesise the results, decide what to look up next) becomes the bottleneck. The agent removes that bottleneck.</p>
+      <p>This shifts what the researchers call the <em>affordable task frontier</em> — the set of tasks a person will realistically attempt given their time and attention. With an agent, that frontier expands upward into territory that was previously too costly to enter.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team matched near-identical initial queries between Perplexity Search (available on the $20/month Pro plan) and Perplexity Computer (available on the $200/month Max plan). Using matched pairs controls for the content of the starting question; any difference in what happens next reflects the tool, not the question. They measured three things: how much autonomous work the system performed per session, what types of follow-up queries users sent after the initial result, and how often users expressed dissatisfaction with responses.</p>
+
+      <!-- SVG figure -->
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Chart comparing Perplexity Search and Computer on autonomous work time, task type, and satisfaction" xmlns="http://www.w3.org/2000/svg">
+          <rect width="720" height="310" fill="#FAFAF8"/>
+
+          <!-- Title -->
+          <text x="360" y="30" text-anchor="middle" font-family="ui-serif" font-size="15" fill="#141413" font-weight="bold">Search vs. Computer: three measures from production data</text>
+
+          <!-- Section 1: Time -->
+          <text x="145" y="60" text-anchor="middle" font-family="system-ui" font-size="12" fill="#87867F">Autonomous work / session</text>
+          <rect x="80" y="130" width="8" height="100" fill="#6A8CAF" rx="2"/>
+          <text x="84" y="125" text-anchor="middle" font-family="system-ui" font-size="11" fill="#6A8CAF">33 s</text>
+          <text x="84" y="245" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Search</text>
+          <rect x="140" y="70" width="50" height="160" fill="#D97757" rx="2"/>
+          <text x="165" y="65" text-anchor="middle" font-family="system-ui" font-size="11" fill="#D97757">26 min</text>
+          <text x="165" y="245" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Computer</text>
+          <line x1="60" y1="230" x2="230" y2="230" stroke="#D1CFC5" stroke-width="1"/>
+
+          <!-- Divider -->
+          <line x1="250" y1="50" x2="250" y2="265" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+
+          <!-- Section 2: Task type shift -->
+          <text x="415" y="60" text-anchor="middle" font-family="system-ui" font-size="12" fill="#87867F">Follow-up query type (share)</text>
+          <rect x="275" y="100" width="55" height="130" fill="#6A8CAF" opacity="0.7" rx="2"/>
+          <rect x="275" y="80" width="55" height="20" fill="#788C5D" opacity="0.7" rx="2"/>
+          <text x="302" y="245" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Search</text>
+          <rect x="360" y="150" width="55" height="80" fill="#6A8CAF" opacity="0.7" rx="2"/>
+          <rect x="360" y="80" width="55" height="70" fill="#D97757" opacity="0.85" rx="2"/>
+          <text x="387" y="245" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Computer</text>
+          <rect x="272" y="258" width="12" height="10" fill="#6A8CAF" opacity="0.7" rx="1"/>
+          <text x="288" y="268" font-family="system-ui" font-size="10" fill="#87867F">First-answer</text>
+          <rect x="355" y="258" width="12" height="10" fill="#D97757" opacity="0.85" rx="1"/>
+          <text x="371" y="268" font-family="system-ui" font-size="10" fill="#87867F">Verify / extend</text>
+
+          <!-- Divider -->
+          <line x1="450" y1="50" x2="450" y2="265" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+
+          <!-- Section 3: Dissatisfaction -->
+          <text x="590" y="60" text-anchor="middle" font-family="system-ui" font-size="12" fill="#87867F">Per-query dissatisfaction rate</text>
+          <rect x="490" y="100" width="50" height="130" fill="#6A8CAF" opacity="0.8" rx="2"/>
+          <text x="515" y="95" text-anchor="middle" font-family="system-ui" font-size="11" fill="#6A8CAF">baseline</text>
+          <text x="515" y="245" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Search</text>
+          <rect x="570" y="171" width="50" height="59" fill="#788C5D" opacity="0.9" rx="2"/>
+          <text x="595" y="165" text-anchor="middle" font-family="system-ui" font-size="11" fill="#788C5D">−55%</text>
+          <text x="595" y="245" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Computer</text>
+          <line x1="470" y1="230" x2="640" y2="230" stroke="#D1CFC5" stroke-width="1"/>
+        </svg>
+        <figcaption>Three measures from the paper's production comparison of near-identical queries on Perplexity Search vs. Computer. Left: autonomous work per session (26 minutes vs. 33 seconds). Middle: task type shifts toward verification and extension on Computer. Right: per-query dissatisfaction 55% lower on Computer. All figures from arXiv:2606.07489.</figcaption>
+      </figure>
+
+      <h3>What they found</h3>
+      <p>Three numbers define the paper. First: Computer performed <strong>26 minutes</strong> of autonomous work per session, compared to <strong>33 seconds</strong> for Search on near-identical starting queries. That's not a modest speedup — it's a change in kind. Second: users of Computer shifted their follow-up activity toward <em>verification and extension</em> — reviewing the agent's work, asking it to go deeper — rather than the first-answer queries that dominate Search sessions. They were acting as editors reviewing a draft, not searchers hunting for an answer. Third: per-query dissatisfaction rates were <strong>55% lower</strong> on Computer than Search. Users were getting better results on harder tasks.</p>
+      <p>The task-type shift is the conceptually important finding. It suggests that agents pull users toward more ambitious tasks — not because users became more ambitious, but because the agent absorbed the overhead that previously made those tasks impractical to start.</p>
+
+      <h3>The catch</h3>
+      <p>This is one company, two products, at one price point. The two user bases may differ in ways the query-matching approach cannot fully control: someone paying $200/month is probably a more sophisticated user to begin with. The paper is honest about this but cannot eliminate the selection effect entirely. More importantly, the paper measures satisfaction, not outcomes — users were less likely to express frustration with Computer, but whether agents produced <em>better decisions, better work, or better business results</em> remains unmeasured. The expanded task frontier may produce more ambitious failures as well as more ambitious successes.</p>
+
+      <p><strong>If you remember one thing:</strong> Agents don't just do the same work faster — they shift what work you attempt in the first place, expanding the ceiling of what a single person considers worth starting.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>His <a href="https://github.com/karpathy/autoresearch">autoresearch</a> loop — give an agent a real training setup, let it run experiments overnight, keep what works — has spread well beyond ML research. Red Hat ran it on OpenShift AI for 24 hours, executing 198 experiments with zero human intervention and improving validation loss 2.3%. Shopify reportedly ran it on their templating engine and claimed 53% faster rendering from 93 automated commits (the result is contested and unmerged as of May). The pattern is now being applied to GPU kernel tuning, prompt optimisation, and test-suite acceleration.</span></li>
+        <li><span class="tag tech">Dwarkesh Patel</span><span>His <a href="https://thezvi.substack.com/p/on-dwarkesh-patels-2026-podcast-with">2026 episode with Dario Amodei</a> is still circulating — the conversation covers continual learning, how models might accumulate knowledge between training runs rather than requiring full retraining, and what Anthropic actually believes about the pace of capability gains. Worth listening if you haven't.</span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things happened today that, read together, describe the same underlying shift. Apple — the most hardware-centric, vertically-integrated company in consumer technology — licensed the intelligence layer of its flagship product from a competitor, because building frontier AI from scratch turned out to be harder than building iPhones. The $1 billion a year it's paying Google is a measure of how much the balance of power has shifted in one decade. And the Perplexity paper showed, with real data, that autonomous agents are already changing the ceiling of what individuals attempt: not slightly more, but tasks that wouldn't have been started at all. The question is no longer whether this technology changes how work gets done. The question is whether the people, institutions, and companies deploying these tools will expand their ambitions as fast as the tools are expanding.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2606.07489">arXiv:2606.07489 — Yang et al., "How AI Agents Reshape Knowledge Work"</a> ·
+        <a href="https://www.heygotrade.com/en/news/apple-wwdc-2026-siri-ai-gemini/">HeyGoTrade — Gemini-Powered Siri Headlines WWDC 2026</a> ·
+        <a href="https://www.technobezz.com/news/apple-licenses-google-gemini-model-for-rebuilt-siri-at-wwdc-2026">Technobezz — Apple licenses Gemini for Siri</a> ·
+        <a href="https://www.techtimes.com/articles/317902/20260606/wwdc-2026-opens-monday-gemini-powers-rebuilt-siri-iphone-11-faces-ios-27-cut.htm">TechTimes — WWDC 2026</a> ·
+        <a href="https://wavespeed.ai/blog/posts/gemini-3-5-flash-shipped-leads-agent-benchmarks/">WaveSpeed — Gemini 3.5 Flash GA</a> ·
+        <a href="https://opentools.ai/news/pentagon-tests-openai-google-ai-replace-anthropic-claude">OpenTools — Pentagon replacing Claude</a> ·
+        <a href="https://www.anthropic.com/news/claude-opus-4-8">Anthropic — Claude Opus 4.8</a> ·
+        <a href="https://compliancehub.wiki/eu-ai-act-august-2-2026-60-day-countdown-synthesis/">ComplianceHub — EU AI Act countdown</a> ·
+        <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">White House — AI executive order, June 2 2026</a> ·
+        <a href="https://venturebeat.com/technology/perplexity-launches-computer-ai-agent-that-coordinates-19-models-priced-at">VentureBeat — Perplexity Computer launch</a> ·
+        <a href="https://github.com/karpathy/autoresearch">GitHub — karpathy/autoresearch</a> ·
+        <a href="https://developers.redhat.com/articles/2026/04/07/autoresearch-on-red-hat-openshift-ai-198-experiments-zero-intervention">Red Hat — 198 autoresearch experiments</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Extensions (iOS 27)</div>
+        <div>Apple's new system that lets you swap out the AI model powering Siri for any third-party one — Claude, ChatGPT, Gemini, or others. Think of it as a socket in iOS where the default occupant (Siri's cloud model) can be replaced. What's unusual is that Apple, which famously controls every pixel of the iPhone experience, decided to make this swap possible at all.</div>
+      </div>
+      <dl>
+        <dt>Mixture of Experts (MoE)</dt>
+        <dd>A model architecture where only a fraction of the total parameters activates for any given query. Gemini's 1.2-trillion-parameter model does not run all 1.2 trillion parameters at once — it routes each input to a specialist subset, which is how a model that large can be fast enough for a real-time assistant.</dd>
+        <dt>SWE-bench</dt>
+        <dd>A benchmark where an AI is given real, unresolved GitHub issues from popular open-source software and must fix the code without hints. It is harder than most coding tests because the problems are genuine, not designed to be tractable.</dd>
+        <dt>Affordable task frontier</dt>
+        <dd>From the Perplexity paper: the set of tasks a person will realistically attempt given their time and attention budget. The paper's key claim is that agents push this frontier outward — making it worthwhile to start tasks that previously required too much manual overhead.</dd>
+        <dt>Agentic</dt>
+        <dd>Describes an AI system that takes a sequence of actions on its own — browsing, writing code, calling external tools — rather than just producing one response and stopping. Perplexity Computer is agentic; Perplexity Search is not.</dd>
+        <dt>Delegation cost</dt>
+        <dd>The overhead of handing a task to an agent: articulating the goal precisely enough for it to act unsupervised, then reviewing its output. This fixed cost is why agents make most sense for complex, multi-step work rather than quick questions — the delegation cost becomes a smaller fraction of total effort the more steps the agent handles.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
