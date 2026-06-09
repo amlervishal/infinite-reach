@@ -1,5 +1,12 @@
 [
   {
+    "num": 12,
+    "date": "2026-06-09",
+    "slug": "issues/2026-06-09.html",
+    "title": "The physics they taught a machine to feel",
+    "blurb": "A British startup raised $300 million to replace days-long engineering simulations with deep learning — and a Meta paper found that compressing a reasoning model makes it talk itself out of answers it had already found."
+  },
+  {
     "num": 11,
     "date": "2026-06-08",
     "slug": "issues/2026-06-08.html",

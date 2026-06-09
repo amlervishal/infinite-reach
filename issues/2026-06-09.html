@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №12 — The physics they taught a machine to feel · Infinite Reach</title>
+  <meta name="description" content="A British startup just raised $300 million to replace days-long engineering simulations with deep-learning models. And a paper from Meta's research lab found that compressing a reasoning model has a strange side effect: it makes the model talk itself out of correct answers it had already found." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №12 &middot; Monday, June 9, 2026</p>
+      <h1>The physics they taught a machine to feel</h1>
+      <p>A British startup just raised $300 million on one idea: that deep learning can replace the long, expensive computer simulations engineers use to test physical objects before building them. On the same day, a paper from Meta's research lab described something quietly strange — compressing an AI reasoning model doesn't just make it less accurate, it makes it <em>talk itself out of answers it had already found</em>.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p><strong>PhysicsX</strong>, a UK startup founded by two former Formula 1 engineers, closed a <strong>$300 million Series C at a $2.4 billion valuation</strong> on June 8. Temasek led the round; NVIDIA, Siemens, Applied Materials, and General Catalyst are also in. The company builds what it calls <em>Large Physics Models</em> — deep-learning models trained not on text but on the physical equations that describe how engines, turbines, aerodynamic surfaces, and microchips behave under heat, stress, and airflow. Traditional simulations of this kind (called CFD or FEA) take hours to days on specialist computers; PhysicsX's models return results in seconds. The company's revenue more than quadrupled over two years and headcount grew from 150 to 350 people in the past year alone. The underlying bet: most complex hardware in the world is still designed the slow way, and the slow way is about to get much faster.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Security</span><span>Anthropic's unreleased <strong>Claude Mythos</strong> model has now found <strong>more than 10,000 critical or high-severity security flaws</strong> across power grids, water systems, healthcare networks, and communications infrastructure through Project Glasswing, which now includes 150+ partner organisations in 15+ countries. Data-security firm Cohesity is the latest to announce access. <a href="https://www.anthropic.com/project/glasswing">anthropic.com/project/glasswing</a></span></li>
+        <li><span class="tag tech">Agents</span><span>Claude Code creator <strong>Boris Cherny</strong>, speaking at Fortune Brainstorm Tech on June 8, said Anthropic's teams now run <strong>tens of thousands of autonomous agents in a single day</strong>, and a new "dreaming" mode lets agents prompt themselves rather than waiting for a human instruction. <a href="https://tech.yahoo.com/ai/claude/articles/anthropic-boris-cherny-creator-claude-205645586.html">Yahoo Tech</a></span></li>
+        <li><span class="tag money">Standards</span><span>The Model Context Protocol (MCP) — the connector standard that lets AI agents plug into external tools and databases — now has <strong>9,400 registered servers</strong>, up 58% quarter-over-quarter, as enterprises settle on how to wire their agents into the rest of their software. <a href="https://www.buildfastwithai.com/blogs/ai-news-today-june-8-2026">BuildFastWithAI</a></span></li>
+        <li><span class="tag policy">Colorado</span><span>The <strong>Colorado Consumer Protections for Artificial Intelligence Act</strong> takes effect <strong>June 30</strong> — the first real AI enforcement deadline on US soil, requiring developers and deployers of high-risk AI systems to manage bias and notify users who are adversely affected. <a href="https://www.gunder.com/en/news-insights/insights/2026-ai-laws-update-key-regulations-and-practical-guidance">Gunderson Dettmer</a></span></li>
+        <li><span class="tag policy">EU</span><span>The EU AI Act's <strong>transparency requirements enter force in August 2026</strong> — companies will be required to label AI-generated content, disclose when users are talking to a chatbot, and begin audits of high-risk systems. <a href="https://www.hklaw.com/en/insights/publications/2026/04/us-companies-face-eu-ai-acts-possible-august-2026-compliance-deadline">Holland &amp; Knight</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: the model that already had the answer — and kept going anyway</h2>
+      <p class="kicker">"Quantized Reasoning Models Think They Need to Think Longer, but They Do Not" &middot; Sanae Lotfi, Polina Kirichenko, Steven Li &amp; Zechun Liu (Meta FAIR) &middot; May 29, 2026 &middot; <a href="https://arxiv.org/abs/2606.00206">arXiv:2606.00206</a></p>
+
+      <p>Researchers at Meta's fundamental AI research lab compressed a set of strong reasoning models and discovered something that shouldn't happen by the theory: the smaller the models got, the <em>more</em> they wrote. Longer chains of reasoning, more hedging, more second-guessing — and worse final answers. The paper pins down exactly why, and patches the problem without touching the model's weights at all.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Modern reasoning models — the kind that visibly "think" before giving an answer — work by generating a long internal monologue called a <em>chain of thought</em>. You've probably seen it: the model writes "First, let me consider… actually, wait… the key insight here is…" before it arrives at a final answer. This visible thinking generally improves accuracy on hard problems: by writing out intermediate steps, the model checks its own work as it goes. The tradeoff is cost — every extra word it generates uses more compute and more time.</p>
+
+      <p>One common and well-tested way to make models cheaper is <em>quantization</em>: compressing the model's stored numbers from full floating-point precision down to lower-precision integers. Think of it like going from a high-resolution photo to a compressed JPEG — the image looks recognisably the same, but fine detail is lost. For most language tasks, quantization costs little. For reasoning models, the researchers found that the lost detail doesn't just reduce accuracy — it changes the model's behaviour in a specific, diagnosable direction.</p>
+
+      <h3>How it works</h3>
+      <p>Here's the analogy that carries through the whole paper. Imagine a student solving a maths problem aloud. When sharp and well-rested, they write a few clear steps, arrive at an answer, and stop. Now imagine the same student slightly tired, their thinking just a little fuzzier. They reach an answer, but instead of trusting it, they keep second-guessing: they cross out their answer, try another approach, arrive at the same place, cross that out too, and eventually write down something different. They <em>talked themselves out of the correct answer they already had</em>.</p>
+
+      <p>This is precisely what quantization does to reasoning models. The compression slightly degrades the model's internal confidence in each step — technically, it makes the probability distributions over the next token noisier. That added noise has an asymmetric effect: it doesn't make the model stop sooner, it makes it less likely to commit. The model becomes more inclined to generate what the researchers call <em>overthinking markers</em> — phrases like "wait, let me reconsider," "actually, upon reflection," "however, I should double-check." These phrases don't just express hesitation; in the model's logic, they signal continuation. Once the model generates one, it keeps going — past a correct intermediate answer, down a different path, toward a wrong final one.</p>
+
+      <p>The researchers confirmed this by measuring <em>KL divergence</em> — a numerical way of asking "how different is one probability distribution from another?" — between the full-precision and quantized models at each token position. The biggest differences showed up not in the reasoning steps themselves, but specifically at these continuation phrases. The compression had, in effect, made the model particularly sensitive to its own linguistic cues for "keep going."</p>
+
+      <h3>What they actually did</h3>
+      <p>The team tested <strong>five models</strong> ranging from <strong>1.5 billion to 32 billion parameters</strong> — spanning the practical range from "fast and cheap" to "medium, powerful" — under <strong>three different quantization methods</strong>, which are the main industrial techniques for compressing neural network weights. They evaluated performance on <strong>five standard benchmarks</strong> covering maths, coding, and science question-answering. That's 75 distinct model-configuration-benchmark combinations, enough to make the patterns statistically reliable.</p>
+
+      <p>Their fix is intentionally minimal: a <em>training-free logit penalty</em>. This is a small downward nudge applied to a curated list of specific tokens and phrases associated with overthinking — applied at inference time, when the model is actually running and generating output. No retraining, no new data, no changes to the model's weights. Just a lightweight thumb on the scales that says: stop generating these particular hesitation phrases so readily.</p>
+
+      <h3>What they found</h3>
+      <p>Two numbers stand out. First: in <strong>up to 52% of the failures</strong> studied, the quantized model had <em>already reached the correct answer</em> in an intermediate reasoning step — and then failed to output it as the final answer. The model knew, then talked itself out of knowing. Second: the logit penalty reduced chain-of-thought length by <strong>12–23%</strong> while preserving or improving accuracy on the benchmarks tested, and the specific category of "overthinking errors" dropped by <strong>up to 58%</strong>. A model that had been making itself worse by thinking too hard could be substantially improved just by adjusting which hesitation phrases it uses at generation time.</p>
+
+      <h3>The catch</h3>
+      <p>The paper only studies post-training quantization — compressing a finished model. It doesn't address models trained from scratch at lower precision, or ones fine-tuned after quantization. The list of "overthinking markers" is curated by the researchers from the test distributions they used, which means a different model family or domain might need a different list. And the results don't confirm that the fix holds on tasks outside the five benchmarks tested — there's a real possibility that penalising certain hedging phrases could hurt performance in contexts where genuine uncertainty should be expressed.</p>
+
+      <p><strong>If you remember one thing:</strong> When you compress a reasoning model, it often already finds the correct answer — it just doesn't stop there. A simple nudge at generation time, with no retraining, can cut that extra wandering by more than half.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 258" role="img" aria-label="How quantization causes reasoning models to overthink past the correct answer">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <path d="M0,1 L7,4 L0,7 Z" fill="#141413"/>
+            </marker>
+            <marker id="arr-red" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <path d="M0,1 L7,4 L0,7 Z" fill="#D97757"/>
+            </marker>
+          </defs>
+
+          <!-- Background -->
+          <rect width="720" height="258" fill="#F9F8F4" rx="8"/>
+
+          <!-- Title -->
+          <text x="360" y="25" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="600">The overthinking gap</text>
+
+          <!-- Row 1: Full precision -->
+          <text x="8" y="71" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">Full</text>
+          <text x="8" y="84" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">precision</text>
+
+          <!-- Step 1 -->
+          <rect x="68" y="55" width="86" height="36" rx="5" fill="#6A8CAF" fill-opacity="0.14" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="111" y="77" font-family="system-ui, sans-serif" font-size="11" fill="#141413" text-anchor="middle">Step 1</text>
+          <line x1="154" y1="73" x2="170" y2="73" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Step 2 -->
+          <rect x="172" y="55" width="86" height="36" rx="5" fill="#6A8CAF" fill-opacity="0.14" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="215" y="77" font-family="system-ui, sans-serif" font-size="11" fill="#141413" text-anchor="middle">Step 2</text>
+          <line x1="258" y1="73" x2="274" y2="73" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Correct answer (olive, full opacity) -->
+          <rect x="276" y="55" width="122" height="36" rx="5" fill="#788C5D" fill-opacity="0.82" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="337" y="77" font-family="system-ui, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="600">&#x2713; Correct answer</text>
+          <line x1="398" y1="73" x2="414" y2="73" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Stops -->
+          <rect x="416" y="55" width="90" height="36" rx="5" fill="#D1CFC5" stroke="#87867F" stroke-width="1.5"/>
+          <text x="461" y="77" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">Stops &#x2713;</text>
+
+          <!-- Divider -->
+          <line x1="40" y1="118" x2="680" y2="118" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="5 4"/>
+
+          <!-- Row 2: Quantized -->
+          <text x="8" y="157" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">Quantized</text>
+          <text x="8" y="170" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">(compressed)</text>
+
+          <!-- Step 1 -->
+          <rect x="68" y="141" width="86" height="36" rx="5" fill="#6A8CAF" fill-opacity="0.14" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="111" y="163" font-family="system-ui, sans-serif" font-size="11" fill="#141413" text-anchor="middle">Step 1</text>
+          <line x1="154" y1="159" x2="170" y2="159" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Step 2 -->
+          <rect x="172" y="141" width="86" height="36" rx="5" fill="#6A8CAF" fill-opacity="0.14" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="215" y="163" font-family="system-ui, sans-serif" font-size="11" fill="#141413" text-anchor="middle">Step 2</text>
+          <line x1="258" y1="159" x2="274" y2="159" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Correct answer reached but faded -->
+          <rect x="276" y="141" width="122" height="36" rx="5" fill="#788C5D" fill-opacity="0.30" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="337" y="163" font-family="system-ui, sans-serif" font-size="11" fill="#344a27" text-anchor="middle">&#x2713; Correct answer&#x2026;</text>
+          <!-- Dashed red arrow past it -->
+          <line x1="398" y1="159" x2="414" y2="159" stroke="#D97757" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr-red)"/>
+
+          <!-- Overthink label above the arrow -->
+          <text x="403" y="137" font-family="ui-monospace, monospace" font-size="9" fill="#D97757" text-anchor="middle">&#x201C;wait, actually&#x2026;&#x201D;</text>
+
+          <!-- Wrong final answer -->
+          <rect x="416" y="141" width="122" height="36" rx="5" fill="#D97757" fill-opacity="0.18" stroke="#D97757" stroke-width="1.5"/>
+          <text x="477" y="163" font-family="system-ui, sans-serif" font-size="11" fill="#c05a3b" text-anchor="middle" font-weight="600">&#x2717; Wrong answer</text>
+
+          <!-- Fix bar -->
+          <rect x="68" y="204" width="470" height="30" rx="5" fill="#6A8CAF" fill-opacity="0.08" stroke="#6A8CAF" stroke-width="1"/>
+          <text x="303" y="223" font-family="system-ui, sans-serif" font-size="10.5" fill="#4a6a8c" text-anchor="middle">Fix: logit penalty on &#x201C;overthinking markers&#x201D; &#x2192; CoT 12&#x2013;23% shorter, accuracy restored</text>
+        </svg>
+        <figcaption>In the full-precision model (top), the chain of thought reaches the correct answer and stops. After quantization (bottom), the model continues past the correct answer — in up to 52% of failures studied, it had already found the right answer before talking itself into the wrong one.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>Cherny gave a keynote at Fortune Brainstorm Tech (June 8) explaining how Anthropic now runs tens of thousands of simultaneous autonomous agents and outlined a new <em>dreaming mode</em> where agents prompt themselves rather than waiting for human input — the most concrete public description yet of how agentic pipelines work at scale. <a href="https://tech.yahoo.com/ai/claude/articles/anthropic-boris-cherny-creator-claude-205645586.html">Yahoo Tech</a></span></li>
+        <li><span class="tag tech">Karpathy</span><span>A gist updated June 7 posts a clean, dependency-free Python implementation of a minimal character-level language model — train and inference in a single file, vanilla RNN, pure NumPy. Typical Karpathy: strip everything back to first principles so the idea is impossible to miss. <a href="https://gist.github.com/karpathy">gist.github.com/karpathy</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things converged this week that point in the same direction: deep learning is moving from operating on words to operating on the laws of nature (PhysicsX), while the internal workings of the models doing that operating are still surprising their own creators (the Meta paper). The PhysicsX raise is a financial statement that serious money now believes AI can model physical reality well enough to replace years of simulation infrastructure. The quantization paper is a reminder that even as these models expand their reach, they carry blind spots — and that those blind spots sometimes emerge not from the model's core ideas but from the mundane practicalities of making it run cheaply enough to ship. The field is growing in both directions simultaneously: outward into the physical world, and inward toward better self-understanding.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.physicsx.ai/newsroom/physicsx-announces-300m-series-c-to-accelerate-physics-ai-for-industrial-engineering">PhysicsX press release</a> ·
+        <a href="https://thenextweb.com/news/physicsx-temasek-300m-series-c-ai-simulation">The Next Web</a> ·
+        <a href="https://siliconangle.com/2026/06/08/physicsx-reels-300m-speed-hardware-design-ai/">SiliconANGLE</a> ·
+        <a href="https://technode.global/2026/06/09/temasek-leads-uks-ai-firm-physicsx-300m-series-c-funding/">TechNode Global</a> ·
+        <a href="https://arxiv.org/abs/2606.00206">arXiv:2606.00206 (Lotfi et al., Meta FAIR)</a> ·
+        <a href="https://www.anthropic.com/project/glasswing">Anthropic / Project Glasswing</a> ·
+        <a href="https://techcrunch.com/2026/06/02/anthropic-scales-claude-mythos-to-critical-infrastructure-in-15-countries/">TechCrunch / Glasswing expansion</a> ·
+        <a href="https://www.cohesity.com/newsroom/press/cohesity-access-anthropic-claude-mythos-preview-project-glasswing/">Cohesity press release</a> ·
+        <a href="https://tech.yahoo.com/ai/claude/articles/anthropic-boris-cherny-creator-claude-205645586.html">Yahoo Tech / Boris Cherny</a> ·
+        <a href="https://www.gunder.com/en/news-insights/insights/2026-ai-laws-update-key-regulations-and-practical-guidance">Gunderson Dettmer / Colorado AI Act</a> ·
+        <a href="https://www.hklaw.com/en/insights/publications/2026/04/us-companies-face-eu-ai-acts-possible-august-2026-compliance-deadline">Holland &amp; Knight / EU AI Act</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Quantization</div>
+        <div>Making a neural network smaller and faster by rounding its stored numbers to lower precision — the way a JPEG compresses a photo. The model takes up less memory and runs faster, but fine detail in the weights is lost. For most tasks the tradeoff is worth it; this paper shows that for reasoning models the effects can be oddly specific.</div>
+      </div>
+      <dl>
+        <dt>Chain of thought</dt><dd>The written-out reasoning steps a model generates before giving a final answer. Visible in "thinking" models as the text that appears before the response.</dd>
+        <dt>Large Physics Model</dt><dd>Like a large language model but trained on physics equations and simulation outputs rather than text. Designed to approximate what traditional simulation software produces, but in seconds instead of hours or days.</dd>
+        <dt>CFD / FEA</dt><dd>Computational fluid dynamics and finite element analysis — the standard engineering software used to simulate airflow, heat, and mechanical stress on a design. Accurate but slow.</dd>
+        <dt>Logit penalty</dt><dd>A small downward nudge applied at generation time that reduces the probability of specific tokens being produced. No retraining required — the model's weights are unchanged.</dd>
+        <dt>Post-training quantization (PTQ)</dt><dd>Compressing a model's weights after training is finished, without any further training steps. The most common way to make a large model small enough to ship.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
