@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №13 — The reader who never tires · Infinite Reach</title>
+  <meta name="description" content="At the world's biggest AI research conference, a machine reviewed 22,977 papers overnight — and scientists rated it better than human reviewers on most criteria. Meanwhile, Anthropic shipped its most capable model yet." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №13 &middot; Wednesday, June 10, 2026</p>
+      <h1>The reader who never tires</h1>
+      <p>This year's biggest AI research conference handed every submitted paper to a machine reviewer — and the scientists whose work it read mostly said they preferred it to the human alternative. That finding landed the same week Anthropic released its most capable model yet, one that introduces a new tier in the company's lineup.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic released Claude Fable 5 on June 9 — its first &ldquo;Mythos-class&rdquo; model, a tier above Claude Opus 4.8. Third-party testing puts it around 80% on SWE-Bench Pro, a coding-challenge benchmark where anything above 50% is considered very strong. It ships with a one-million-token context window, up to 128,000 tokens of output per response, and is priced at $10&nbsp;/&nbsp;$50 per million input/output tokens — roughly double Opus 4.8. Pro, Max, Team, and Enterprise subscribers can use it without extra charge through June 22. The release cements Anthropic's lead on autonomous-coding evaluations and is the first time the company has opened a new capability tier above Opus.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Agents</span><span>Boris Cherny shipped nested subagent support for Claude Code on June 9, capping depth at five layers — enough for complex delegation without the context window collapsing under the weight of its own sub-tasks.</span></li>
+        <li><span class="tag money">Robotics</span><span>Standard Bots closed a $200 million Series C at a $1 billion valuation on June 9. Its AI-native robot arms — taught by demonstration rather than code — are already deployed at Amazon, Lockheed Martin, NASA, and the US Army.</span></li>
+        <li><span class="tag policy">White House</span><span>The White House signed an executive order on AI innovation and security, directing the Office of Management and Budget to identify federal grant funding that can flow toward applicants developing AI vulnerability detection.</span></li>
+        <li><span class="tag money">Scale</span><span>In a one-year retrospective on June 8, Boris Cherny reported Claude Code has an annualised revenue run-rate above $2.5 billion, manages &ldquo;tens of thousands&rdquo; of concurrent agents on peak mornings, and now signs roughly 4% of all public commits on GitHub.</span></li>
+        <li><span class="tag tech">Models</span><span>Gemini 3.5 Pro remains unlaunched as of today despite Google's May 19 promise it was &ldquo;next month.&rdquo; Gemini 3.5 Flash — already generally available — runs four times faster than comparable frontier models at $1.50&nbsp;/&nbsp;$9 per million tokens.</span></li>
+      </ul>
+
+      <h2>Paper, explained: Twenty-two thousand papers, one overnight shift</h2>
+      <p class="kicker">AI-Assisted Peer Review at Scale: The AAAI-26 AI Review Pilot &middot; Qiyao Wei et al. &middot; <a href="https://arxiv.org/abs/2604.13940">arXiv 2604.13940</a></p>
+      <p>Researchers and conference organizers have complained for years that the system for vetting science is quietly breaking down. This paper describes the first full-scale test of what happens when you put a machine into the reviewer's chair alongside the humans.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Before a research paper can be published at a serious venue, it goes through <em>peer review</em>: qualified experts read the draft, check the math, spot the weaknesses, and recommend whether it clears the bar. For decades, that process depended on the voluntary goodwill of scientists willing to donate their time. When conferences received a few hundred submissions a year, the system worked. Now it is struggling.</p>
+      <p>The leading machine-learning conferences — NeurIPS, ICML, and ICLR — now receive so many submissions that finding enough competent reviewers is a logistics crisis. Reviews have grown shorter, more generic, and more inconsistent. Researchers describe conflicting verdicts, missed errors, and feedback that reads as if the reviewer only skimmed the abstract. Previous attempts at automation produced boilerplate so obvious that authors spotted the machine immediately. The question the AAAI-26 team asked was whether frontier models had finally crossed the threshold where they could do the job properly — not as a replacement for humans, but running openly alongside them.</p>
+
+      <h3>How it works</h3>
+      <p>Think of the system as a diligent research assistant who works through the night. They start by reading the whole paper and sketching its structure. Then they verify: do the papers cited in the references actually say what the authors claim? Do the numbers in the results table follow logically from the methods section? Then they write a structured critique — in the same format as a human review — and hand it off for a sanity check before it goes to the author.</p>
+      <p>The pipeline at AAAI-26 followed exactly that logic in three stages. A frontier language model read each submission and drafted a review. A tool-use layer cross-checked citations and internal consistency. A safeguard filter caught any hallucinated references before they reached the author. Every output was clearly labelled as AI-generated; nothing was hidden. Authors knew when they received their reviews which one came from a machine and which from a human.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 260" role="img" aria-label="Flow diagram showing the three-stage AI review pipeline and the survey results">
+          <rect x="0" y="0" width="720" height="260" fill="#FAFAF8" rx="6"/>
+
+          <text x="30" y="30" font-family="ui-serif" font-size="14" font-weight="600" fill="#141413">The AAAI-26 AI review pipeline — and what authors said</text>
+
+          <rect x="30" y="52" width="140" height="56" rx="5" fill="#D97757" opacity="0.18"/>
+          <rect x="30" y="52" width="140" height="56" rx="5" fill="none" stroke="#D97757" stroke-width="1.5"/>
+          <text x="100" y="76" font-family="system-ui" font-size="11" font-weight="600" fill="#141413" text-anchor="middle">LLM reads paper</text>
+          <text x="100" y="93" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">drafts review</text>
+
+          <line x1="170" y1="80" x2="208" y2="80" stroke="#D1CFC5" stroke-width="2"/>
+          <polygon points="208,75 218,80 208,85" fill="#D1CFC5"/>
+
+          <rect x="218" y="52" width="140" height="56" rx="5" fill="#788C5D" opacity="0.18"/>
+          <rect x="218" y="52" width="140" height="56" rx="5" fill="none" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="288" y="76" font-family="system-ui" font-size="11" font-weight="600" fill="#141413" text-anchor="middle">Tool use</text>
+          <text x="288" y="93" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">checks citations &amp; logic</text>
+
+          <line x1="358" y1="80" x2="396" y2="80" stroke="#D1CFC5" stroke-width="2"/>
+          <polygon points="396,75 406,80 396,85" fill="#D1CFC5"/>
+
+          <rect x="406" y="52" width="140" height="56" rx="5" fill="#6A8CAF" opacity="0.18"/>
+          <rect x="406" y="52" width="140" height="56" rx="5" fill="none" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="476" y="76" font-family="system-ui" font-size="11" font-weight="600" fill="#141413" text-anchor="middle">Safeguard filter</text>
+          <text x="476" y="93" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">removes hallucinations</text>
+
+          <line x1="546" y1="80" x2="580" y2="80" stroke="#D1CFC5" stroke-width="2"/>
+          <polygon points="580,75 590,80 580,85" fill="#D1CFC5"/>
+
+          <rect x="590" y="58" width="100" height="44" rx="5" fill="#141413" opacity="0.08"/>
+          <rect x="590" y="58" width="100" height="44" rx="5" fill="none" stroke="#141413" stroke-width="1"/>
+          <text x="640" y="76" font-family="system-ui" font-size="10" font-weight="600" fill="#141413" text-anchor="middle">Labelled AI</text>
+          <text x="640" y="90" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">review sent</text>
+
+          <text x="30" y="136" font-family="system-ui" font-size="10" fill="#87867F">22,977 papers · processed in under 24 hours · cost &lt; $1 per paper</text>
+
+          <text x="30" y="162" font-family="ui-serif" font-size="12" font-weight="600" fill="#141413">Survey of 5,834 authors and programme committee members</text>
+
+          <text x="240" y="185" font-family="system-ui" font-size="10" fill="#141413" text-anchor="end">Found AI review helpful</text>
+          <rect x="248" y="172" width="380" height="17" rx="2" fill="#D1CFC5"/>
+          <rect x="248" y="172" width="205" height="17" rx="2" fill="#D97757"/>
+          <text x="460" y="185" font-family="ui-monospace" font-size="11" font-weight="700" fill="#141413">53.9%</text>
+
+          <text x="240" y="213" font-family="system-ui" font-size="10" fill="#141413" text-anchor="end">Want AI reviewing to continue</text>
+          <rect x="248" y="200" width="380" height="17" rx="2" fill="#D1CFC5"/>
+          <rect x="248" y="200" width="234" height="17" rx="2" fill="#788C5D"/>
+          <text x="489" y="213" font-family="ui-monospace" font-size="11" font-weight="700" fill="#141413">61.5%</text>
+
+          <text x="240" y="241" font-family="system-ui" font-size="10" fill="#141413" text-anchor="end">Said AI depth exceeded expectations</text>
+          <rect x="248" y="228" width="380" height="17" rx="2" fill="#D1CFC5"/>
+          <rect x="248" y="228" width="211" height="17" rx="2" fill="#6A8CAF"/>
+          <text x="466" y="241" font-family="ui-monospace" font-size="11" font-weight="700" fill="#141413">55.6%</text>
+        </svg>
+        <figcaption>The pipeline ran every submission through three stages before sending a clearly labelled AI review to authors. AI reviews were preferred over human reviews on 6 of 9 quality criteria; statistically significant advantages in identifying technical errors (p &lt; 0.01).</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>For AAAI-26 — the flagship annual conference of the Association for the Advancement of Artificial Intelligence, held in February 2026 — the programme chairs gave every main-track submission exactly one AI review, running alongside its human reviews. The system processed all 22,977 full-track papers in under 24 hours at a cost of less than $1 per paper. Afterwards, the team collected 5,834 survey responses from authors and programme committee members, asking them to rate both the AI review and their human reviews across nine quality dimensions on a five-point scale.</p>
+
+      <h3>What they found</h3>
+      <p>On six of the nine quality dimensions, survey respondents preferred the AI review or rated it at least as good as the human one. The clearest advantage was in identifying technical errors — statistically significant at p&nbsp;&lt;&nbsp;0.01. 55.6% of respondents said the AI's technical depth exceeded what they had expected. 53.9% called the review helpful; 61.5% said they want it to continue at future conferences. The three areas where humans still led: avoiding the habit of elevating a minor quibble into a reason for rejection; catching subtle errors buried deep in long, complex proofs; and avoiding suggestions that were technically correct but practically impossible to implement. In the words of one summary in the literature: &ldquo;AI often gets stuck in a rut and magnifies trivial details into fatal problems.&rdquo;</p>
+
+      <h3>The catch</h3>
+      <p>This was one conference, one pipeline, and one survey — and &ldquo;preferred by respondents&rdquo; is not the same as &ldquo;correct.&rdquo; Authors with weaker papers may have welcomed an AI reviewer that was less likely to find their real flaws. Reviewers who disliked AI most strongly were probably also less likely to complete the survey, which skews the positive numbers up. The paper measures perception, not ground truth: we have no independent measure of whether the papers AAAI ultimately accepted, under a mixed human-and-AI reviewing regime, are better or worse than they would have been under an all-human process. The authors acknowledge all of this explicitly.</p>
+
+      <p><strong>If you remember one thing:</strong> When 61% of scientists at an AI conference vote to keep the machine reviewer, the argument has moved on from &ldquo;should we try this?&rdquo; to &ldquo;how do we do it right?&rdquo;</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>On June 9, Cherny shipped <strong>nested subagent support</strong> for Claude Code — agents can now spawn agents up to five levels deep, letting complex jobs delegate cleanly without exhausting the model's working memory. <a href="https://digg.com/ai/megudrsi">link</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>His <strong>one-year retrospective</strong> on June 8 is worth a full read: &ldquo;some mornings I'm managing tens of thousands of agents,&rdquo; code production inside Anthropic is up eightfold since January, and Claude Code now signs ~4% of all public GitHub commits. <a href="https://fortune.com/2026/06/08/anthropics-boris-cherny-creator-of-claude-code-says-there-are-days-he-manages-tens-of-thousands-of-ai-agents-at-once/">link</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two currents crossed this week. One is the familiar race for more capable models — Fable 5 is a clear marker on that track. The other is subtler and slower, but may be more consequential: AI embedding itself into the processes that generate and validate knowledge. Reviewing papers. Auditing code. Grading work. The AAAI experiment did not ask whether AI <em>could</em> do this; it asked whether doing it transparently, at full scale, in parallel with humans, produced results the scientific community would accept. Most said yes, and most said do it again. That is not a verdict on the technology — it is the beginning of a negotiation about what kind of role we want it to play in how science gets done.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2604.13940">arXiv 2604.13940 — AAAI-26 AI Review Pilot</a> ·
+        <a href="https://eu.36kr.com/en/p/3773078234268168">36Kr — AAAI 2026 AI review detail</a> ·
+        <a href="https://codersera.com/blog/claude-fable-5-launch-guide-2026/">Claude Fable 5 launch guide (Codersera)</a> ·
+        <a href="https://claude5.com/">Claude 5 Hub — Fable 5 specs</a> ·
+        <a href="https://digg.com/ai/megudrsi">Boris Cherny — nested subagent support (Digg)</a> ·
+        <a href="https://fortune.com/2026/06/08/anthropics-boris-cherny-creator-of-claude-code-says-there-are-days-he-manages-tens-of-thousands-of-ai-agents-at-once/">Boris Cherny one-year retrospective (Fortune)</a> ·
+        <a href="https://fortune.com/2026/06/09/boris-cherny-claude-code-says-comparing-ai-costs-to-wrong-thing-anthropic/">Boris Cherny on AI costs (Fortune)</a> ·
+        <a href="https://www.roboticstomorrow.com/news/2026/06/09/standard-bots-raises-200-million-series-c-at-1-billion-valuation-to-scale-american-made-ai-native-industrial-robots/26688/">Standard Bots $200M Series C (Robotics Tomorrow)</a> ·
+        <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">White House EO on AI Innovation and Security</a> ·
+        <a href="https://llm-stats.com/blog/research/gemini-3.5-flash-launch">Gemini 3.5 Flash specs (LLM Stats)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Peer review</div>
+        <div>The process where, before a research paper can be published at a reputable venue, it is sent anonymously to several experts in the same field who read it, check the claims, and recommend acceptance or rejection. Think of it as the editorial committee for science — slow, imperfect, but still the main thing standing between an unverified idea and the scientific record.</div>
+      </div>
+      <dl>
+        <dt>SWE-Bench Pro</dt><dd>A test of how well a model can fix real bugs in popular open-source software. Scores above 50% are very strong; 80% is frontier-class. Unlike toy puzzles, the bugs come from real GitHub issues.</dd>
+        <dt>Context window</dt><dd>How much text a model can &ldquo;hold in mind&rdquo; at once — the conversation, any documents you've shared, its own response-in-progress. Fable 5's one-million-token window fits roughly the length of six novels.</dd>
+        <dt>Nested subagents</dt><dd>An AI agent that spawns another agent to handle a piece of work, which can itself spawn another, and so on. Useful for breaking up complex jobs; needs a depth cap so it doesn't recurse forever.</dd>
+        <dt>Mythos-class</dt><dd>Anthropic's internal tier name for models above Opus — the designation given to Fable 5. A new row at the top of their capability ladder.</dd>
+        <dt>arXiv</dt><dd>A free online server where researchers post papers before (or instead of) formal journal publication. Papers there have not been peer-reviewed — which gives the AAAI study something of a recursive quality.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
