@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №14 — What a model holds in mind · Infinite Reach</title>
+  <meta name="description" content="Google's TurboQuant paper compresses AI's working memory up to six times over; Microsoft ships seven homegrown AI models with no OpenAI code inside." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №14 &middot; Thursday, June 11, 2026</p>
+      <h1>What a model holds in mind</h1>
+      <p>Every time an AI reads a long document, it keeps a running record of what it has noticed — a structure that grows with every word and costs real money to keep. A new paper from Google shows how to make that record up to six times lighter without losing a single answer. It arrived the same week Microsoft announced it no longer needs to borrow anyone else's brains.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Microsoft launched seven AI models it built entirely in-house — trained on clean, licensed data, with no distillation from OpenAI or any other lab. Called MAI, the family covers text reasoning (MAI-Thinking-1), coding (MAI-Code-1-Flash), image generation, transcription, and voice synthesis. MAI-Thinking-1 scored 97% on the AIME 2025 mathematics benchmark, and in blind side-by-side evaluations run by an independent rating firm called Surge, it was preferred over Claude Sonnet 4.6. MAI-Code-1-Flash leads Claude Haiku 4.5 by 16 points on SWE-Bench Pro (51.2% vs. 35.2%). For a company that has spent billions bankrolling OpenAI, the message is clear: that partnership has been a runway, not a destination.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Funding</span><span>A startup funding report published June 10 found that AI companies — just 36% of funded firms — absorbed 57% of all disclosed capital in Q1 2026; global venture investment in the quarter hit $297 billion. <a href="https://markets.financialcontent.com/stocks/article/abnewswire-2026-6-10-q1-2026-startup-funding-report-ai-takes-57-of-all-capital">Report</a></span></li>
+        <li><span class="tag policy">Policy</span><span>OpenAI launched its Economic Research Exchange on June 8: $25,000 grants for academic economists to study AI's effects on workers and wages, with structured access to privacy-safe usage data. Applications close July 5. <a href="https://openai.com/index/economic-research-exchange/">Announcement</a></span></li>
+        <li><span class="tag tech">Open</span><span>Google Gemma 4 12B — released June 3 — fits unified vision and audio processing into a 12-billion-parameter model that runs on a 16 GB laptop, free under the Apache 2.0 licence. <a href="https://www.techtimes.com/articles/317758/20260604/google-gemma-4-12b-brings-multimodal-ai-16gb-laptops-free-under-apache-20.htm">TechTimes</a></span></li>
+        <li><span class="tag tech">Speed</span><span>Google's Gemini 3.1 Flash-Lite is now generally available: 2.5× faster time-to-first-token than its predecessor at $0.25 per million input tokens, setting a new cost floor for high-volume AI work. <a href="https://cloud.google.com/blog/products/ai-machine-learning/gemini-3-1-flash-lite-is-now-generally-available">Google Cloud</a></span></li>
+        <li><span class="tag money">Investment</span><span>Microsoft pledged a four-year, $10 billion investment in Japan: AI data centres, deep cybersecurity cooperation, and a commitment to train one million engineers and developers by 2030. <a href="https://blogs.microsoft.com/blog/2026/06/02/microsoft-build-2026-be-yourself-at-work/">Microsoft Blog</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE: Paper, explained -->
+      <h2>Paper, explained: how to give AI a smaller scratchpad</h2>
+      <p class="kicker">TurboQuant: Online Vector Quantization with Near-optimal Distortion Rate &middot; Zandieh, Daliri, Hadian &amp; Mirrokni · Google Research &amp; NYU · ICLR 2026 · <a href="https://arxiv.org/abs/2504.19874">arXiv:2504.19874</a></p>
+
+      <p>When a language model reads a long document, it does not simply hold the text in a list. It encodes everything it has seen into a structure that grows with every word — and that structure is eating a growing share of the cost of running modern AI. TurboQuant, a paper from Google Research and NYU accepted at ICLR 2026, found a way to compress that structure by three to six times, with no loss in output quality, no retraining, and no calibration data required.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Every transformer-based language model — which includes nearly every major AI system in use today — processes text by encoding each word into two numbers per layer: a <em>key</em> and a <em>value</em>. Together these accumulate into what engineers call the KV cache: the model's live working memory, updated with every token it reads. For a large model handling a long document, this cache can swell to tens of gigabytes of GPU memory — frequently more than the model weights themselves. It is what makes long conversations expensive: every extra word you add expands the cache and costs more to keep alive.</p>
+      <p>Researchers have tried compressing KV caches by storing values at lower precision — say, 4 bits instead of the 16-bit floating-point default. But naive rounding is destructive. Small errors compound across tens of thousands of tokens, and the model's answers degrade noticeably. The challenge is to compress heavily while losing almost nothing, and to do it on the fly as the model reads — not as a slow offline process that requires gathering calibration data first. No previous method had achieved what the authors call a "near-optimal distortion rate" — the theoretical sweet spot where you get maximum compression for minimum error. TurboQuant is the first to reach it.</p>
+
+      <h3>How it works</h3>
+      <p>Think of a skilled court reporter who takes shorthand notes during a trial. Instead of writing every word verbatim — the equivalent of storing everything in full 16-bit precision — they use a compact symbol system. TurboQuant is essentially that court reporter, but with four specific tricks that make the shorthand far more accurate than anything tried before.</p>
+      <p><strong>Step 1 — Level the playing field.</strong> A shorthand system only works well if no single word is so unusual that it breaks your symbol table. TurboQuant begins by applying a random orthogonal rotation to every key and value vector before compressing it. Rotation sounds alarming — aren't you scrambling the data? — but the same rotation is reversed on retrieval, so the meaning is perfectly preserved. What the rotation actually does is redistribute the signal evenly: after it, every coordinate of the vector follows a predictable, well-behaved statistical distribution, regardless of what the model was reading. The same compression scheme then works equally well for a legal contract, a medical paper, or a recipe.</p>
+      <p><strong>Step 2 — Use the optimal shorthand.</strong> Once the values are well-distributed, TurboQuant applies a classical 1D compression method called Lloyd-Max quantization to each coordinate separately. Lloyd-Max is special because it places its compression buckets exactly where the data is densest — minimising the information thrown away. Crucially, the lookup table of allowed values (the codebook) can be pre-computed once and reused for every inference run indefinitely. The court reporter only has to learn the shorthand system once; every subsequent trial uses the same symbols.</p>
+      <p><strong>Step 3 — Handle the exceptions.</strong> Even after rotation, some channels carry unusually large values — the rare technical term that cannot safely be abbreviated. TurboQuant detects these high-magnitude channels automatically and allocates them full precision, while leaving the rest compressed to three or four bits. This per-channel outlier protection is what makes aggressive sub-4-bit compression viable at all; without it, quality drops visibly.</p>
+      <p><strong>Step 4 — Read the shorthand directly.</strong> Normally, using a compressed KV cache requires decompressing everything before running the attention computation — the equivalent of transcribing all your shorthand into longhand before you can read it. TurboQuant computes attention directly on the compressed representations using centroid lookups: the model scans the abbreviations without ever writing out the full words. This is what drives TurboQuant's speed gains, not just its memory savings.</p>
+
+      <h3>What they actually did</h3>
+      <p>The authors applied TurboQuant to Mistral-7B running on an NVIDIA A100 GPU. They tested 4-bit and 3.5-bit compression at a context length of 16,000 tokens — a long but realistic setting for document-processing tasks. They also validated all three core algorithms against the paper's formal theoretical error bounds, running 30 independent checks on each.</p>
+
+      <h3>What they found</h3>
+      <p>At 4-bit and 3.5-bit compression, TurboQuant reduced KV cache memory by 3.8 to 5.7 times compared to the float16 baseline, with no measurable degradation in output quality. Attention computation itself ran 1.85 times faster at 16,000-token contexts, because the model no longer needed a decompression round-trip before every attention pass. All 30 theoretical checks passed. The per-channel outlier step proved essential at sub-4-bit levels: disabling it caused visible quality loss, confirming the architecture as a whole is load-bearing, not decorative.</p>
+
+      <h3>The catch</h3>
+      <p>TurboQuant compresses only the KV cache — not the model weights themselves, which remain in full precision. On short prompts where the cache stays small, the memory saving is modest. The experiments ran on Mistral-7B; whether the same ratios hold for very large or differently-architected models — mixture-of-experts systems in particular — is not yet tested. And while attention is faster, end-to-end inference speedup depends on where the bottleneck actually sits in a given deployment: some setups will see more benefit than others.</p>
+
+      <p><strong>If you remember one thing:</strong> Every conversation you have with a long-context AI builds a growing record of what the model has noticed — and TurboQuant just made that record up to six times cheaper to keep without losing a word of what it learned.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 245" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="TurboQuant pipeline: four steps compress AI working memory up to six times with no quality loss">
+          <rect width="720" height="245" fill="#FAFAF8" rx="6"/>
+
+          <!-- Section title -->
+          <text x="360" y="23" text-anchor="middle" font-family="ui-serif, serif" font-size="13" fill="#141413" font-weight="bold">TurboQuant — What Happens to Every Token Written to the KV Cache</text>
+
+          <!-- Input box -->
+          <rect x="14" y="42" width="95" height="72" rx="4" fill="#F5F5F2" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="61" y="69" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413" font-weight="600">KV Vector</text>
+          <text x="61" y="83" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">(input)</text>
+          <text x="61" y="99" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#87867F">float16 · 16 bits</text>
+
+          <!-- Arrow 1 -->
+          <line x1="109" y1="78" x2="130" y2="78" stroke="#D1CFC5" stroke-width="1.5"/>
+          <polygon points="130,74 138,78 130,82" fill="#D1CFC5"/>
+
+          <!-- Step 1: Random Rotation (sky) -->
+          <rect x="138" y="42" width="112" height="72" rx="4" fill="#E8EEF4" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="194" y="67" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413" font-weight="600">&#x2460; Random</text>
+          <text x="194" y="81" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413" font-weight="600">Rotation</text>
+          <text x="194" y="99" text-anchor="middle" font-family="ui-monospace, monospace" font-size="8" fill="#6A8CAF">even distribution</text>
+
+          <!-- Arrow 2 -->
+          <line x1="250" y1="78" x2="271" y2="78" stroke="#D1CFC5" stroke-width="1.5"/>
+          <polygon points="271,74 279,78 271,82" fill="#D1CFC5"/>
+
+          <!-- Step 2: Lloyd-Max Quantization (clay) -->
+          <rect x="279" y="42" width="112" height="72" rx="4" fill="#FAF0EB" stroke="#D97757" stroke-width="1.5"/>
+          <text x="335" y="67" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413" font-weight="600">&#x2461; Lloyd-Max</text>
+          <text x="335" y="81" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413" font-weight="600">Quantization</text>
+          <text x="335" y="99" text-anchor="middle" font-family="ui-monospace, monospace" font-size="8" fill="#D97757">optimal codebook</text>
+
+          <!-- Arrow 3 -->
+          <line x1="391" y1="78" x2="412" y2="78" stroke="#D1CFC5" stroke-width="1.5"/>
+          <polygon points="412,74 420,78 412,82" fill="#D1CFC5"/>
+
+          <!-- Step 3: Outlier Protection (olive) -->
+          <rect x="420" y="42" width="112" height="72" rx="4" fill="#ECF0E8" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="476" y="67" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413" font-weight="600">&#x2462; Outlier</text>
+          <text x="476" y="81" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413" font-weight="600">Protection</text>
+          <text x="476" y="99" text-anchor="middle" font-family="ui-monospace, monospace" font-size="8" fill="#788C5D">rare values kept full</text>
+
+          <!-- Arrow 4 -->
+          <line x1="532" y1="78" x2="553" y2="78" stroke="#D1CFC5" stroke-width="1.5"/>
+          <polygon points="553,74 561,78 553,82" fill="#D1CFC5"/>
+
+          <!-- Output: Compressed KV (clay filled) -->
+          <rect x="561" y="42" width="145" height="72" rx="4" fill="#D97757" stroke="#D97757" stroke-width="1.5"/>
+          <text x="633" y="65" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="white" font-weight="600">Compressed KV Cache</text>
+          <text x="633" y="79" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="rgba(255,255,255,0.92)">3–4 bits per value</text>
+          <text x="633" y="93" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="rgba(255,255,255,0.92)">attention: 1.85× faster</text>
+
+          <!-- Memory bar chart section -->
+          <text x="200" y="148" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">Memory used by KV cache — before vs. after</text>
+
+          <!-- Before bar -->
+          <rect x="110" y="158" width="50" height="60" rx="2" fill="#D1CFC5"/>
+          <text x="135" y="153" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#87867F">100%</text>
+          <text x="135" y="232" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">float16</text>
+          <text x="135" y="243" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">(before)</text>
+
+          <!-- After bar -->
+          <rect x="190" y="205" width="50" height="13" rx="2" fill="#D97757"/>
+          <text x="215" y="201" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#D97757">~18%</text>
+          <text x="215" y="232" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">3–4 bit</text>
+          <text x="215" y="243" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">(after)</text>
+
+          <!-- Bracket label -->
+          <line x1="162" y1="176" x2="190" y2="176" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="256" y="172" text-anchor="start" font-family="system-ui, sans-serif" font-size="10" fill="#141413" font-weight="600">3.8–5.7× reduction in memory</text>
+          <text x="256" y="187" text-anchor="start" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">no quality loss · no retraining · no calibration data</text>
+          <text x="256" y="202" text-anchor="start" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">tested: Mistral-7B on NVIDIA A100, 16K-token contexts</text>
+        </svg>
+        <figcaption>TurboQuant's four-step pipeline, applied every time a token is written to the KV cache. The key insight is step four: quantized attention reads directly from the compressed cache using centroid lookups, so there is no decompression round-trip before every attention pass. That is what produces the 1.85× speed gain on top of the memory saving.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy was active on GitHub on June 10, updating his minimal character-level language model gist — a single-file Python/NumPy RNN that teaches the basics of sequence modelling without any dependencies. A good first read for anyone starting from scratch. <a href="https://gist.github.com/karpathy">Karpathy's gists</a></span></li>
+        <li><span class="tag tech">Garry Tan</span><span>Tan's recent writing on "compound AI workflows" — the idea that most people treat AI as a chat window rather than as a system that can accumulate memory and connect tasks over time — is circulating widely this week and worth ten minutes. <a href="https://www.gate.com/news/detail/garry-tan-i-now-rarely-prompt-ai-yc-ceo-explains-compounding-ai-workflows-20979889">Link</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The thread running through this week is not smarter — it is cheaper and more self-sufficient. Microsoft's decision to build its own AI stack signals that the era of the single upstream AI partner is ending; enough money, time, and talent and you can train your own. TurboQuant makes long-context AI dramatically less expensive to operate — and cheaper infrastructure is historically what turns an expensive novelty into something everyone uses. The Q1 funding numbers confirm the stakes: $297 billion in a single quarter, 57% of it flowing to AI companies. That kind of capital concentration tends to produce breakthroughs and infrastructure at the same time, the same way it did during the internet build-out. What is unglamorous about compression — saving memory, shaving cost, squeezing six times more out of the same hardware — is also what tends to show up in the history books as the inflection point.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://microsoft.ai/news/building-a-hillclimbing-machine-launching-seven-new-mai-models/">Microsoft AI — seven MAI models</a> ·
+        <a href="https://llm-stats.com/models/mai-thinking-1">MAI-Thinking-1 benchmarks</a> ·
+        <a href="https://arxiv.org/abs/2504.19874">arXiv:2504.19874 (TurboQuant)</a> ·
+        <a href="https://github.com/OmarHory/turboquant">TurboQuant open-source implementation</a> ·
+        <a href="https://markets.financialcontent.com/stocks/article/abnewswire-2026-6-10-q1-2026-startup-funding-report-ai-takes-57-of-all-capital">Q1 2026 Startup Funding Report</a> ·
+        <a href="https://openai.com/index/economic-research-exchange/">OpenAI Economic Research Exchange</a> ·
+        <a href="https://www.techtimes.com/articles/317758/20260604/google-gemma-4-12b-brings-multimodal-ai-16gb-laptops-free-under-apache-20.htm">Google Gemma 4 12B</a> ·
+        <a href="https://cloud.google.com/blog/products/ai-machine-learning/gemini-3-1-flash-lite-is-now-generally-available">Gemini 3.1 Flash-Lite GA</a> ·
+        <a href="https://blogs.microsoft.com/blog/2026/06/02/microsoft-build-2026-be-yourself-at-work/">Microsoft Build 2026 Japan investment</a> ·
+        <a href="https://gist.github.com/karpathy">Karpathy GitHub gists</a> ·
+        <a href="https://www.gate.com/news/detail/garry-tan-i-now-rarely-prompt-ai-yc-ceo-explains-compounding-ai-workflows-20979889">Garry Tan on compound AI workflows</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">KV cache</div>
+        <div>Short for Key-Value cache. When a language model reads a document word by word, it encodes each word into two numbers — a key and a value — and stores them as it goes. These accumulate into the KV cache: the model's live working memory. The longer the document, the bigger the cache, and the more GPU memory (and money) it requires. TurboQuant makes that memory three to six times smaller.</div>
+      </div>
+      <dl>
+        <dt>Quantization</dt><dd>Storing a number using fewer bits than full precision — like rounding $3.97 to $4. Lossy by nature, but done cleverly it loses almost nothing. TurboQuant keeps that loss near zero.</dd>
+        <dt>Distortion rate</dt><dd>In information theory, the trade-off between how much you compress something and how much accuracy you sacrifice. TurboQuant achieves a "near-optimal" distortion rate — maximum compression for minimum error, as good as the mathematics says is possible.</dd>
+        <dt>Lloyd-Max quantization</dt><dd>A 1950s algorithm that places its compression levels exactly where the data is most concentrated, minimising the information thrown away. Still the optimal 1D solution seven decades later.</dd>
+        <dt>Orthogonal rotation</dt><dd>A mathematical operation that rotates a vector without stretching or compressing it — like rotating a table without changing what's on it. TurboQuant uses it to normalise the statistics of the KV cache before compression, so every coordinate is equally easy to compress.</dd>
+        <dt>Distillation</dt><dd>Training one model by having it imitate the outputs of a more capable model, rather than learning from raw data. Microsoft deliberately avoided this for its MAI family — they learned from scratch, with no OpenAI outputs in the training loop.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

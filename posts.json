@@ -1,5 +1,12 @@
 [
   {
+    "num": 14,
+    "date": "2026-06-11",
+    "slug": "issues/2026-06-11.html",
+    "title": "What a model holds in mind",
+    "blurb": "Google's TurboQuant paper compresses AI's working memory up to six times without losing a single answer — the same week Microsoft shipped seven AI models it built entirely without OpenAI."
+  },
+  {
     "num": 13,
     "date": "2026-06-10",
     "slug": "issues/2026-06-10.html",
