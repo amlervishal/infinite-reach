@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №15 — The recipe, at last · Infinite Reach</title>
+  <meta name="description" content="Princeton ran 300 experiments to unlock the recipe for world-class image generation — and published every answer, as OpenAI quietly filed to go public at $852 billion." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №15 &middot; Friday, June 12, 2026</p>
+      <h1>The recipe, at last</h1>
+      <p>A Princeton team spent months running 300 controlled experiments to find the exact decisions that make a world-class image generator — then gave every answer away, in the same week the AI industry’s biggest names began racing to go public.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On June 8, OpenAI quietly filed a confidential S-1 registration statement with the SEC — the first formal step toward a public offering. Goldman Sachs and Morgan Stanley are signed on as underwriters, with a late-2026 listing widely reported. The headline numbers are striking: ChatGPT now has 900 million weekly users, annual recurring revenue has crossed $20 billion (tripling each year since 2023), and the targeted valuation sits around $852 billion, with some analysts saying it could clear $1 trillion on listing day. There is a notable wrinkle: the company is projecting a $14 billion loss in 2026 and does not expect to be profitable until 2029. That is the particular accounting of this moment — the most widely used software tool in the world is preparing to go public while it still burns more money than almost any company in history. Investors, it seems, are willing to pay for future value even without present profit, which raises a genuine question about whether markets are pricing capability or momentum.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">IPO</span><span>SpaceX began trading on Nasdaq today as <strong>$SPCX</strong>, priced at $135 per share and targeting a valuation between $1.75 trillion and $1.8 trillion — the largest public offering in recorded history. Total demand exceeded $250 billion and the deal was oversubscribed roughly four times over. SpaceX reserved 30% of shares for retail investors, far above the typical 5–10%.</span></li>
+        <li><span class="tag money">Robotics</span><span>German humanoid robot maker <strong>NEURA Robotics</strong> closed a record Series C of up to $1.4 billion, backed by Amazon, NVIDIA, Qualcomm, Tether, Bosch, and the European Investment Bank, at a $7 billion valuation. The company is building what it calls the Neuraverse — a shared intelligence platform for robots — and aims to scale to millions of units by 2030.</span></li>
+        <li><span class="tag policy">Policy</span><span>The White House issued an executive order on AI innovation and security, creating a <em>voluntary</em> framework under which frontier AI developers can share pre-release models with the federal government for up to 30 days. The order explicitly prohibits any mandatory licensing or permitting requirements for building or releasing AI — a direct rebuke to regulatory proposals circulating in Congress.</span></li>
+        <li><span class="tag tech">Cloud</span><span>Oracle and OpenAI announced that enterprise customers can now access OpenAI models — including GPT-5.5 and Codex — through existing Oracle Universal Credits, with no new contract required. It narrows the gap between the two companies’ cloud platforms and is useful for large organisations already locked into Oracle infrastructure.</span></li>
+        <li><span class="tag tech">Models</span><span>Google confirmed that <strong>Gemini 3.5 Pro</strong> — the full successor to Flash, released at I/O in May — is already in internal use and will roll out in July. Flash already outperforms the previous Gemini 3.1 Pro on coding and agentic benchmarks while delivering output tokens four times faster, and at roughly 40% lower cost than its predecessor’s Pro tier.</span></li>
+      </ul>
+
+      <h2>Paper, explained: the open notebook for making images from words</h2>
+      <p class="kicker">i1: A Simple and Fully Open Recipe for Strong Text-to-Image Models &middot; Zeng, Luo, Pu, Shen, Lu, Sarch &amp; Liu &middot; Princeton University &middot; <a href="https://arxiv.org/abs/2606.11289">arXiv:2606.11289</a></p>
+      <p>Almost every impressive image-generating model — Midjourney, DALL-E 3, Adobe Firefly — is a black box. You can use them, but you have no idea which decisions made them good. This week, researchers at Princeton University published not just a model that matches the closed leaders, but the entire recipe that produced it.</p>
+
+      <h3>The problem, and why it’s hard</h3>
+      <p>Generating a photorealistic image from a text description works through a technique called <em>diffusion</em>: take a real photograph, add random noise to it step by step until it resembles television static, then train a neural network to run that process in reverse — starting from static and cleaning it up, guided by a text description, until a coherent picture emerges. A text prompt like “a fox in snow” nudges every cleaning step toward the right scene, so the network learns that different descriptions produce different images.</p>
+      <p>The core technique is well understood and shared across many labs. What separates good models from great ones is all the other decisions: which training datasets to use, how to mix them, how large to make the component that converts text into guidance, which learning rates and schedules to apply, and hundreds of similar choices that compound on each other. Commercial labs run thousands of internal experiments and publish the winning model without revealing what they learned. Everyone else is left guessing. The practical result: open-source image generation has lagged far behind the closed leaders, even though the underlying method is identical.</p>
+
+      <h3>How it works</h3>
+      <p>Think of developing a bread recipe for a bakery. Any baker already knows you need flour, water, yeast, and heat. But a great bakery has a notebook: the exact hydration ratio, the temperature for proving the dough, whether bread flour or all-purpose gives the better crust. The recipe — not the concept of bread — is the competitive advantage.</p>
+      <p>The Princeton team decided to write the notebook publicly. They ran more than 300 controlled experiments, changing one variable at a time while holding everything else fixed — a method called <em>ablation study</em>. Each experiment produced a measurable score on image quality. They worked through the choices that matter most: how to weight different curated datasets when mixing them, how large to make the adapter that converts text descriptions into step-by-step guidance, and how to structure the training schedule over time. Then they combined the winning choices into a single model — <strong>i1</strong>, a 3-billion-parameter diffusion model trained entirely on publicly available data.</p>
+      <p>Two findings turned out to matter practically. First: <em>equal weighting is a strong default</em> when mixing curated datasets. Many researchers assumed they needed elaborate, hand-tuned weighting schemes; the experiments say simpler works fine. Second: <em>larger text encoder adapters improve image quality with surprisingly few extra parameters</em>, meaning the cost of the improvement is much lower than people had assumed. These are exactly the kinds of hard-won insights that commercial labs typically keep to themselves.</p>
+
+      <h3>What they actually did</h3>
+      <p>The experiments alone consumed more than <strong>700,000 TPU v6e hours</strong> — Google’s specialised AI training hardware running around the clock. (A rough comparison: a single high-end GPU would take several thousand years to match the same compute.) The final i1-3B model was evaluated on five benchmarks: <strong>GenEval</strong> (does the model render the described scene correctly?), <strong>DPG-Bench</strong> (detail and accuracy), <strong>PRISM</strong>, <strong>CVTG-2K</strong>, and <strong>LongText-Bench</strong> (can it render readable text inside an image — historically a weak spot for all generators?). The team also released everything: model checkpoints in both JAX and PyTorch formats, training code, data processing pipeline, and the dataset itself.</p>
+
+      <h3>What they found</h3>
+      <p>i1 is competitive with the leading closed models across all five benchmarks. Against the best previously existing fully open model, it wins by an average of <strong>29.5 percentage points</strong> — a large margin, suggesting that earlier open models were held back more by unanswered design questions than by any fundamental limitation of the approach. The model was particularly strong at rendering text inside images, a domain that had been a persistent weakness across the open-source ecosystem.</p>
+
+      <h3>The catch</h3>
+      <p>i1 generates images at 1024-resolution with 3 billion parameters — serious work, but not at the absolute frontier. Top commercial models are larger, higher-resolution, and have seen more compute. The 700,000-hour experiment budget, while now fully documented, remains out of reach for most academic teams who would want to explore their own variations of the recipe. And the paper shows <em>what</em> choices work; it does not fully explain <em>why</em> they work at a theoretical level. Following the recipe produces a great model; understanding it deeply enough to improve on it requires further research.</p>
+
+      <p><strong>If you remember one thing:</strong> The gap between the best open and closed image generators was not a secret technology — it was an unpublished notebook of design decisions, and now the notebook is out.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 210" role="img" aria-label="Flow diagram showing i1's recipe pipeline: 300 experiments leading to discovered design choices, then the i1 model, then benchmark results">
+          <rect width="720" height="210" fill="#FAFAF8" rx="4"/>
+
+          <!-- Title -->
+          <text x="360" y="26" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="bold">The i1 pipeline: from experiments to a published recipe</text>
+
+          <!-- Box 1: Experiments -->
+          <rect x="18" y="48" width="158" height="105" fill="#D97757" rx="8" opacity="0.88"/>
+          <text x="97" y="78" font-family="system-ui,sans-serif" font-size="11.5" fill="#fff" text-anchor="middle" font-weight="600">300+ experiments</text>
+          <text x="97" y="98" font-family="system-ui,sans-serif" font-size="10" fill="#ffe8df" text-anchor="middle">change one variable,</text>
+          <text x="97" y="112" font-family="system-ui,sans-serif" font-size="10" fill="#ffe8df" text-anchor="middle">measure the result</text>
+          <text x="97" y="130" font-family="ui-monospace,monospace" font-size="9.5" fill="#ffe8df" text-anchor="middle">700K+ TPU v6e hrs</text>
+
+          <!-- Arrow 1 to 2 -->
+          <line x1="178" y1="100" x2="218" y2="100" stroke="#D1CFC5" stroke-width="2"/>
+          <polygon points="218,95 232,100 218,105" fill="#D1CFC5"/>
+
+          <!-- Box 2: Recipe found -->
+          <rect x="232" y="48" width="158" height="105" fill="#788C5D" rx="8" opacity="0.88"/>
+          <text x="311" y="78" font-family="system-ui,sans-serif" font-size="11.5" fill="#fff" text-anchor="middle" font-weight="600">Recipe found</text>
+          <text x="311" y="98" font-family="system-ui,sans-serif" font-size="10" fill="#eefce8" text-anchor="middle">equal dataset mixing</text>
+          <text x="311" y="112" font-family="system-ui,sans-serif" font-size="10" fill="#eefce8" text-anchor="middle">larger text adapter</text>
+          <text x="311" y="130" font-family="system-ui,sans-serif" font-size="10" fill="#eefce8" text-anchor="middle">public data only</text>
+
+          <!-- Arrow 2 to 3 -->
+          <line x1="392" y1="100" x2="432" y2="100" stroke="#D1CFC5" stroke-width="2"/>
+          <polygon points="432,95 446,100 432,105" fill="#D1CFC5"/>
+
+          <!-- Box 3: i1 model -->
+          <rect x="446" y="48" width="130" height="105" fill="#141413" rx="8"/>
+          <text x="511" y="92" font-family="ui-serif,Georgia,serif" font-size="26" fill="#D97757" text-anchor="middle" font-weight="bold">i1</text>
+          <text x="511" y="112" font-family="system-ui,sans-serif" font-size="10" fill="#D1CFC5" text-anchor="middle">3B parameters</text>
+          <text x="511" y="127" font-family="system-ui,sans-serif" font-size="10" fill="#D1CFC5" text-anchor="middle">fully open-source</text>
+
+          <!-- Arrow 3 to Result -->
+          <line x1="578" y1="100" x2="618" y2="100" stroke="#D1CFC5" stroke-width="2"/>
+          <polygon points="618,95 632,100 618,105" fill="#D1CFC5"/>
+
+          <!-- Box 4: Results -->
+          <rect x="632" y="48" width="76" height="105" fill="#6A8CAF" rx="8" opacity="0.9"/>
+          <text x="670" y="74" font-family="system-ui,sans-serif" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="600">vs. closed:</text>
+          <text x="670" y="88" font-family="system-ui,sans-serif" font-size="9.5" fill="#fff" text-anchor="middle">competitive</text>
+          <line x1="641" y1="100" x2="699" y2="100" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+          <text x="670" y="114" font-family="system-ui,sans-serif" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="600">vs. open:</text>
+          <text x="670" y="128" font-family="system-ui,sans-serif" font-size="9.5" fill="#fff" text-anchor="middle">+29.5 pp</text>
+
+          <!-- Footer note -->
+          <text x="360" y="185" font-family="system-ui,sans-serif" font-size="9.5" fill="#87867F" text-anchor="middle">Princeton z-lab · arXiv:2606.11289 · June 9, 2026</text>
+        </svg>
+        <figcaption>The i1 pipeline: 300+ ablation experiments reveal the best design choices, which feed into a 3-billion-parameter model that matches closed commercial leaders and beats the previous best fully open model by 29.5 percentage points on average across five benchmarks.</figcaption>
+      </figure>
+
+      <h2>Why it matters</h2>
+      <p>Two things happened in the same week. One company filed documents to go public at nearly $1 trillion while projecting years of losses — a bet that scale and market position will eventually translate into profit. Another published its entire scientific notebook for free — a bet that open knowledge accelerates the whole field faster than secrecy protects any single player. The 29.5-percentage-point gap in the i1 paper is a direct measurement of the cost of the second kind of secrecy. That improvement was sitting in the unpublished notebooks of commercial labs, available to anyone willing to run the experiments. The AI industry gets better for everyone when the notebooks are written down and shared, and this week one lab decided it was.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://openai.com/index/openai-submits-confidential-s-1/">OpenAI S-1 announcement</a> &middot;
+        <a href="https://fortune.com/2026/06/09/openai-files-confidential-s-1-sec-ipo/">Fortune — OpenAI IPO</a> &middot;
+        <a href="https://news.bitcoin.com/openai-files-draft-s-1-at-852b-valuation-as-chatgpt-hits-900m-weekly-users/">OpenAI S-1 filing details</a> &middot;
+        <a href="https://arxiv.org/abs/2606.11289">i1 paper (arXiv:2606.11289)</a> &middot;
+        <a href="https://github.com/zlab-princeton/i1">i1 code release (GitHub)</a> &middot;
+        <a href="https://neura-robotics.com/record-series-c/">NEURA Robotics Series C announcement</a> &middot;
+        <a href="https://www.cnbc.com/2026/06/10/neura-robotics-funding-ai-humanoid-robots.html">CNBC — NEURA Robotics</a> &middot;
+        <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">White House EO on AI Innovation and Security</a> &middot;
+        <a href="https://www.cnbc.com/2026/05/20/spacex-ipo-live-updates.html">CNBC — SpaceX IPO live updates</a> &middot;
+        <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/">Google — Gemini 3.5 announcement</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Diffusion model</div>
+        <div>A type of image generator that learns by studying what photos look like as you bury them in random static — then runs that process in reverse. Feed it noise and a text description, and it cleans the static into a picture, guided step by step by your words.</div>
+      </div>
+      <dl>
+        <dt>Ablation study</dt><dd>A research method where you remove or change one ingredient at a time to find out which parts of a recipe actually matter — like pulling one spice from a dish to see whether the flavour changes.</dd>
+        <dt>TPU</dt><dd>Tensor Processing Unit — Google’s specialised chips designed for AI training. Much faster than standard processors for the particular maths AI models use, and measured in v6e “versions” that improve each generation.</dd>
+        <dt>Text encoder adapter</dt><dd>The component of an image model that reads your text prompt and converts it into a signal the rest of the model can act on. Making it larger gives the model a richer, more nuanced grasp of language.</dd>
+        <dt>Open weights</dt><dd>A model where the trained numerical values — the weights — are publicly released, so anyone can download, run, or build on it. The opposite is a model you can only access through a company’s API.</dd>
+        <dt>Benchmark</dt><dd>A standardised test used to compare AI models fairly. Like a standardised exam: it doesn’t capture everything, but it lets you compare two models on the same questions.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
