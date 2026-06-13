@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №16 — Everything at once · Infinite Reach</title>
+  <meta name="description" content="Google's new text engine doesn't write word by word — it starts with noise and resolves the whole page at once, running four times faster than every model built the old way." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №16 &middot; Saturday, June 13, 2026</p>
+      <h1>Everything at once</h1>
+      <p>Google released a language model this week that doesn’t write words from left to right. It starts with a blizzard of noise and resolves the whole page simultaneously — running four times faster than every model built the old way. Meanwhile, Anthropic quietly crossed a threshold its own researchers once treated as a hard ceiling.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On June 10, Google DeepMind open-sourced DiffusionGemma, a 26-billion-parameter language model that generates text through <em>diffusion</em> rather than the word-by-word method every other major model uses. Instead of predicting one token, appending it, then predicting the next — the approach every GPT-style system has used since 2018 — DiffusionGemma fills a 256-token canvas with random placeholders and refines them all in parallel over up to 48 passes, reaching over 1,000 tokens per second on a single server chip. That is roughly four times faster than comparable models. The weights are free to download under Apache 2.0.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Anthropic</span><span>Fable 5 — the first model from Anthropic’s new top-tier “Mythos class” — became available to all Pro and Team subscribers on June 9. It scores 80.3% on SWE-Bench Pro, the strongest coding number any model has publicly posted; rivals trail by more than ten points. For queries touching cybersecurity, biology, or chemistry, the model automatically routes to a less capable system as a precaution.</span></li>
+        <li><span class="tag tech">Benchmarks</span><span>Researchers extended the standard MMLU intelligence test from 4-choice to 10-choice questions, pruned trivial items, and published 12,000+ curated questions across 14 domains — making it meaningfully harder to guess your way to a good score.</span></li>
+        <li><span class="tag money">Cognition AI</span><span>The company behind Devin — the autonomous coding agent — reported a $492M annualized revenue run rate by May 2026, up from $37M a year earlier. One of the steeper growth curves in software history.</span></li>
+        <li><span class="tag policy">Colorado</span><span>Colorado’s AI Act — the most ambitious U.S. state AI law, which would have required annual algorithmic risk assessments for software making consequential decisions about housing, employment, or healthcare — was repealed and replaced by a softer disclosure-only framework on May 14, weeks before its June 30 effective date.</span></li>
+        <li><span class="tag tech">Claude Code</span><span>Boris Cherny, who created Claude Code, told <em>Fortune</em> he has not written a line of code by hand in eight months and on busy days manages fleets of tens of thousands of AI sub-agents. Claude Code is generating over $2.5 billion in annualized revenue.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~650 words. -->
+      <h2>Paper, explained: the model that writes in clouds</h2>
+      <p class="kicker">DiffusionGemma 26B &middot; Google DeepMind &middot; June 10, 2026 &middot; <a href="https://ai.google.dev/gemma/docs/diffusiongemma/model_card">model card &amp; weights</a></p>
+
+      <p>Every language model you’ve ever used writes text the same way: predict the next word, commit to it, predict the one after, commit to that, repeat to the end. DiffusionGemma does something that would have sounded implausible five years ago — it fills in all 256 words at once, refining them simultaneously until they cohere. This is not a minor optimization. It’s a different theory of what language generation is.</p>
+
+      <h3>The problem, and why it’s hard</h3>
+      <p>The word-by-word approach (called <em>autoregressive</em> generation) has a built-in bottleneck: every token requires a separate trip through the entire model. The chip’s computing cores sit mostly idle while the model waits for each word to finish before starting the next. This is a memory-bandwidth problem — the model has to reload billions of parameters for each single output word. Researchers have known for years that if you could generate text in parallel, you’d break this ceiling. The difficulty is coherence: word 50 depends on word 12. Write word 50 without knowing what word 12 said, and you’re guessing.</p>
+
+      <p>Image-generation models — Stable Diffusion and others — solved a similar problem for pictures. They start from a canvas of pure noise and <em>denoise</em> it in many passes, gradually clarifying the image from a probabilistic blur into something specific. Could the same trick work for words? The challenge is that words are not continuous like pixel intensities. A pixel can be 40% red; a word is either “cat” or “dog.” This is the discrete diffusion problem, and earlier attempts could not match autoregressive quality at scale.</p>
+
+      <h3>How it works</h3>
+
+      <p>The clearest way to picture DiffusionGemma is a darkroom photograph developing. When you submerge an exposed print in developer solution, the image doesn’t appear from top to bottom or left to right. High-contrast edges come first — the bright window, the dark hair — then the midtones resolve, then fine grain, until the whole image clicks into focus simultaneously. Nothing is committed until the entire sheet has had time to cohere. DiffusionGemma develops text the same way.</p>
+
+      <p>The process has five steps. First, the model reads your prompt normally and caches the result — that part is unchanged. Second, the model creates a “canvas” of 256 placeholder tokens: imagine 256 blank tiles on a Scrabble rack. Third, unlike standard models that can only look backwards, DiffusionGemma uses <em>bidirectional attention</em> during generation — token 50 can look at token 200 and vice versa. This lets the model reason about the shape of the whole response at once. Fourth, over up to 48 passes, the model locks in the tiles it’s most certain about, leaving ambiguous ones as placeholders — or re-randomizing them if new context from newly locked neighbours suggests an earlier guess was wrong. This is the self-correction step that purely sequential models fundamentally cannot do. Fifth, once all 256 tiles are resolved, the block is committed to memory and a fresh 256-tile canvas begins, conditioned on everything that came before. Google calls this Block Autoregressive Diffusion.</p>
+
+      <h3>What they actually did</h3>
+      <p>Google DeepMind built DiffusionGemma on the Gemma 4 backbone — a 26-billion-parameter Mixture-of-Experts model that activates only about 3.8 billion parameters per forward pass. They replaced the standard output head with a diffusion head and trained the model to reconstruct text that had been randomly corrupted (tokens replaced with masks). At inference, a sampler called Entropy-Bounded Denoising with Adaptive Stopping runs up to 48 refinement passes per canvas, with temperature — essentially how adventurous the model is in its guesses — declining from 0.8 to 0.4 as the block solidifies. The model accepts text, image, and video as input and produces text; the weights are free under Apache 2.0.</p>
+
+      <h3>What they found</h3>
+      <p>On a single NVIDIA H100 server chip, DiffusionGemma sustained over 1,000 tokens per second — roughly four times the throughput of the autoregressive Gemma 4 of similar size. On a high-end consumer card (RTX 5090), it hit 700+ tokens per second. On quality benchmarks: 77.6% on MMLU Pro, 73.2% on GPQA Diamond (a graduate-level science test), and 70.5% on MATH-Vision. Google disclosed the downside clearly: DiffusionGemma scores lower than the standard autoregressive Gemma 4 on most established benchmarks.</p>
+
+      <h3>The catch</h3>
+      <p>DiffusionGemma does not stream text word by word — each 256-token block arrives all at once. For chat applications where the “typing” feel matters, this is a regression. The model can also produce incoherent passages when the denoising process over-corrects: a token locked in early can destabilize if too many neighbours get revised simultaneously. And the quality gap versus autoregressive models, while publicly acknowledged, is not yet closed. This is a research-grade release, and Google said so plainly.</p>
+
+      <p><strong>If you remember one thing:</strong> Text generation does not have to be word by word — DiffusionGemma proves that parallel diffusion can work at scale, even if quality still has ground to close.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 285" role="img" aria-label="Comparison of autoregressive and diffusion text generation" xmlns="http://www.w3.org/2000/svg">
+          <!-- Left panel: Autoregressive -->
+          <rect x="10" y="10" width="330" height="265" fill="#FAFAF8" stroke="#D1CFC5" stroke-width="1.5" rx="6"/>
+          <text x="175" y="36" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="bold">Standard LLM</text>
+          <text x="175" y="52" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">one token at a time · cannot revise</text>
+
+          <!-- Token row: committed tokens -->
+          <rect x="30" y="65" width="44" height="26" rx="4" fill="#D97757"/>
+          <text x="52" y="83" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#fff">The</text>
+          <rect x="80" y="65" width="44" height="26" rx="4" fill="#D97757"/>
+          <text x="102" y="83" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#fff">sky</text>
+          <rect x="130" y="65" width="44" height="26" rx="4" fill="#D97757"/>
+          <text x="152" y="83" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#fff">was</text>
+          <!-- Pending -->
+          <rect x="180" y="65" width="44" height="26" rx="4" fill="#D1CFC5"/>
+          <text x="202" y="83" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#87867F">???</text>
+          <rect x="230" y="65" width="44" height="26" rx="4" fill="#D1CFC5"/>
+          <text x="252" y="83" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#87867F">???</text>
+          <rect x="280" y="65" width="44" height="26" rx="4" fill="#D1CFC5"/>
+          <text x="302" y="83" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#87867F">???</text>
+
+          <!-- Arrow: left to right only -->
+          <line x1="30" y1="108" x2="315" y2="108" stroke="#D97757" stroke-width="1.5"/>
+          <polygon points="315,104 323,108 315,112" fill="#D97757"/>
+          <text x="175" y="125" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">Each word waits for the previous one.</text>
+          <text x="175" y="140" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">Committed words cannot be revised.</text>
+
+          <rect x="55" y="210" width="240" height="42" rx="5" fill="#FDF4F1"/>
+          <text x="175" y="228" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#D97757" font-weight="bold">~250 tokens / second</text>
+          <text x="175" y="244" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">memory-bandwidth limited</text>
+
+          <!-- Right panel: DiffusionGemma -->
+          <rect x="380" y="10" width="330" height="265" fill="#FAFAF8" stroke="#D1CFC5" stroke-width="1.5" rx="6"/>
+          <text x="545" y="36" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="bold">DiffusionGemma</text>
+          <text x="545" y="52" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">all 256 tokens refined in parallel · self-corrects</text>
+
+          <!-- Pass 1: all noise (grey) -->
+          <text x="390" y="72" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">Pass 1 — noise canvas</text>
+          <rect x="390" y="76" width="26" height="16" rx="3" fill="#D1CFC5"/>
+          <rect x="420" y="76" width="26" height="16" rx="3" fill="#D1CFC5"/>
+          <rect x="450" y="76" width="26" height="16" rx="3" fill="#D1CFC5"/>
+          <rect x="480" y="76" width="26" height="16" rx="3" fill="#D1CFC5"/>
+          <rect x="510" y="76" width="26" height="16" rx="3" fill="#D1CFC5"/>
+          <rect x="540" y="76" width="26" height="16" rx="3" fill="#D1CFC5"/>
+          <text x="576" y="88" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">…×256</text>
+
+          <!-- Pass 2: some locked (sky blue) -->
+          <text x="390" y="108" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">Pass 24 — confident tokens lock in</text>
+          <rect x="390" y="112" width="26" height="16" rx="3" fill="#6A8CAF"/>
+          <text x="403" y="124" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8" fill="#fff">The</text>
+          <rect x="420" y="112" width="26" height="16" rx="3" fill="#D1CFC5"/>
+          <rect x="450" y="112" width="26" height="16" rx="3" fill="#6A8CAF"/>
+          <text x="463" y="124" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8" fill="#fff">was</text>
+          <rect x="480" y="112" width="26" height="16" rx="3" fill="#D1CFC5"/>
+          <rect x="510" y="112" width="26" height="16" rx="3" fill="#D1CFC5"/>
+          <rect x="540" y="112" width="26" height="16" rx="3" fill="#6A8CAF"/>
+          <text x="553" y="124" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8" fill="#fff">blue</text>
+
+          <!-- Pass 3: all locked (olive) -->
+          <text x="390" y="144" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">Pass 48 — full block resolved</text>
+          <rect x="390" y="148" width="26" height="16" rx="3" fill="#788C5D"/>
+          <text x="403" y="160" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8" fill="#fff">The</text>
+          <rect x="420" y="148" width="26" height="16" rx="3" fill="#788C5D"/>
+          <text x="433" y="160" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8" fill="#fff">sky</text>
+          <rect x="450" y="148" width="26" height="16" rx="3" fill="#788C5D"/>
+          <text x="463" y="160" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8" fill="#fff">was</text>
+          <rect x="480" y="148" width="26" height="16" rx="3" fill="#788C5D"/>
+          <text x="493" y="160" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8" fill="#fff">clear</text>
+          <rect x="510" y="148" width="26" height="16" rx="3" fill="#788C5D"/>
+          <text x="523" y="160" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8" fill="#fff">and</text>
+          <rect x="540" y="148" width="26" height="16" rx="3" fill="#788C5D"/>
+          <text x="553" y="160" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8" fill="#fff">blue</text>
+
+          <!-- Bidirectional arrows -->
+          <line x1="390" y1="175" x2="690" y2="175" stroke="#6A8CAF" stroke-width="1" stroke-dasharray="3,3"/>
+          <polygon points="390,171 382,175 390,179" fill="#6A8CAF"/>
+          <polygon points="690,171 698,175 690,179" fill="#6A8CAF"/>
+          <text x="545" y="188" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#6A8CAF">bidirectional — every token sees every other</text>
+
+          <rect x="425" y="210" width="240" height="42" rx="5" fill="#F1F4F0"/>
+          <text x="545" y="228" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#788C5D" font-weight="bold">1,000+ tokens / second</text>
+          <text x="545" y="244" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">compute-bound · parallel · H100</text>
+        </svg>
+        <figcaption>Left: standard autoregressive generation — each word waits for the previous; no revision possible. Right: DiffusionGemma starts from a noise canvas and refines all 256 tokens in parallel, locking in the most confident choices first and revising others as context sharpens. The olive block is the final committed output.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>The autoresearch loop (github.com/karpathy/autoresearch) has crossed 80,000 GitHub stars since its March release. This week, PostHog published a case study: the loop ran overnight on their query engine, found a three-year-old bug, and improved performance by 11% — without a human in the loop. <a href="https://posthog.com/blog/karpathy-autoresearch-query-engine-bug">case study →</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>Claude Code’s creator told <em>Fortune</em> he hasn’t written code by hand in eight months and manages fleets of tens of thousands of AI sub-agents on busy days. A useful data point about how the builders of these tools actually live inside them. <a href="https://fortune.com/2026/06/11/anthropic-claude-boris-cherny-doesnt-write-code-by-hand-anymore/">interview →</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two of this week’s biggest stories share the same underlying idea: constraints that looked fundamental turned out to be engineering choices. Autoregressive generation — one word at a time — seemed like the only viable approach for nearly a decade. DiffusionGemma shows it was never a physical law, just a well-worn path. Similarly, Anthropic’s Fable 5 represents capabilities that were, until recently, considered too sensitive to release widely. The “Mythos class” existed but was cordoned off. Now it ships in a Pro subscription.</p>
+
+      <p>The pattern worth tracking: each “hard ceiling” in this field tends to last about eighteen months before someone finds a way through it. Speed ceilings, quality ceilings, safety thresholds. The ceiling doesn’t disappear — it gets raised one layer at a time, and then the work begins on the next one up.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.marktechpost.com/2026/06/10/google-ai-releases-diffusiongemma-a-26b-moe-open-model-using-text-diffusion-for-up-to-4x-faster-generation/">MarkTechPost — DiffusionGemma</a> ·
+        <a href="https://www.oflight.co.jp/en/columns/diffusiongemma-google-text-diffusion-2026-06">Oflight — DiffusionGemma deep dive</a> ·
+        <a href="https://ai.google.dev/gemma/docs/diffusiongemma/model_card">Google AI — model card</a> ·
+        <a href="https://mlq.ai/news/google-deepmind-releases-diffusiongemma-a-26b-open-source-model-that-generates-text-4x-faster-via-diffusion/">MLQ.ai — DiffusionGemma</a> ·
+        <a href="https://developer.nvidia.com/blog/run-diffusiongemma-on-nvidia-for-developer-ready-high-throughput-text-generation/">NVIDIA — throughput details</a> ·
+        <a href="https://www.theregister.com/ai-and-ml/2026/06/11/googles-diffusiongemma-uses-diffusion-tech-to-speed-text-generation/5254406">The Register — DiffusionGemma</a> ·
+        <a href="https://www.mangomindbd.com/blog/claude-fable-5-benchmarks">MangoMind — Fable 5 benchmarks</a> ·
+        <a href="https://www.vellum.ai/blog/claude-fable-5-and-mythos-5-benchmarks-explained">Vellum — Fable 5 benchmark breakdown</a> ·
+        <a href="https://www.nbcnews.com/tech/security/fable-5-anthropic-release-public-mythos-claude-model-rcna349104">NBC News — Fable 5</a> ·
+        <a href="https://posthog.com/blog/karpathy-autoresearch-query-engine-bug">PostHog — autoresearch case study</a> ·
+        <a href="https://fortune.com/2026/06/11/anthropic-claude-boris-cherny-doesnt-write-code-by-hand-anymore/">Fortune — Boris Cherny</a> ·
+        <a href="https://news.crunchbase.com/venture/record-breaking-funding-ai-global-q1-2026/">Crunchbase — Q1 2026 AI funding</a> ·
+        <a href="https://www.hunton.com/privacy-and-cybersecurity-law-blog/colorado-ai-act-amended-and-effective-date-delayed">Hunton — Colorado AI Act</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Discrete diffusion</div>
+        <div>A way of turning random junk into coherent text by repeatedly un-hiding masked tokens. “Discrete” means the choices are categorical — a word is either “cat” or “dog,” never somewhere between the two. Think of it as a crossword solver that fills in the most confident squares first, then uses those answers to resolve the ambiguous ones — except it runs 48 rounds in under a second.</div>
+      </div>
+      <dl>
+        <dt>Autoregressive</dt><dd>Predicting the next item from all previous items, in strict order. Every major LLM — GPT, Claude, Gemma — is autoregressive. Once a word is written, it cannot be revised.</dd>
+        <dt>Bidirectional attention</dt><dd>A way of reading where every token in a sequence can see every other token — including those that come later. Standard LLMs use causal (one-way) attention; DiffusionGemma switches to bidirectional during denoising, allowing it to revise earlier choices as later ones firm up.</dd>
+        <dt>Denoising</dt><dd>The process of cleaning up a corrupted signal. In diffusion models, “noise” means randomly masked or scrambled tokens; denoising means predicting what they should be, one pass at a time.</dd>
+        <dt>Mixture of Experts (MoE)</dt><dd>An architecture where a large model is divided into many specialist sub-networks, but only a handful activates for each input. DiffusionGemma has 26 billion total parameters but uses roughly 3.8 billion per forward pass — keeping it fast and memory-light.</dd>
+        <dt>Throughput</dt><dd>How many tokens a model can generate per second at full tilt — the factory-floor measure of AI speed. Higher throughput means more simultaneous users or faster responses at scale, independent of how good any single answer is.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

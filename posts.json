@@ -1,5 +1,12 @@
 [
   {
+    "num": 16,
+    "date": "2026-06-13",
+    "slug": "issues/2026-06-13.html",
+    "title": "Everything at once",
+    "blurb": "Google's DiffusionGemma rewrites how text is generated — starting from noise and resolving all 256 words in parallel, four times faster — while Anthropic's Fable 5 quietly crossed the quality threshold once considered too sensitive to release."
+  },
+  {
     "num": 15,
     "date": "2026-06-12",
     "slug": "issues/2026-06-12.html",
