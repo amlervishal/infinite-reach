@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №17 — What the hand no longer writes · Infinite Reach</title>
+  <meta name="description" content="A quiet milestone: more than 80% of new code shipping into production at one of the world's leading labs was written by its own model — up from low single digits just sixteen months ago." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №17 &middot; Sunday, June 14, 2026</p>
+      <h1>What the hand no longer writes</h1>
+      <p>A quiet set of numbers emerged this week: more than 80% of new code shipped into production at one of the world's most scrutinised labs was written by its own model — up from low single digits in early 2025. Meanwhile, a Penn Engineering team published a paper that solves one of science's hardest computation problems by borrowing a mathematical trick from the 1940s.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic published figures this week showing that as of May 2026, more than 80% of the code merged into its primary production codebase was authored by Claude — its own model. In February 2025, before Claude Code launched, that number was in the low single digits. The company reports its engineers are now merging roughly eight times as much code per day as in 2024. As a concrete example: Claude autonomously shipped over 800 individual fixes for a persistent API error class, reducing the error rate by a factor of 1,000 — work Anthropic estimates would have taken four human-years to complete. Co-founder Jack Clark said in an interview that reaching 100% autonomous code is possible within two years.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Open source</span><span>Moonshot AI released Kimi K2.7-Code, a 1-trillion-parameter open-source coding model (32 billion parameters active per pass, 384 experts, 256K context) under a Modified MIT license. It reports +21.8% on Kimi Code Bench v2 and +31.5% on MLS Bench Lite versus its predecessor; API pricing is $0.95 / $4.00 per million input/output tokens.</span></li>
+        <li><span class="tag money">OpenAI / Codex</span><span>OpenAI announced it will acquire Ona — officially Gitpod GmbH, the German startup whose cloud sandboxes let software agents keep working for hours or days after a developer closes their laptop. More than 5 million people use Codex each week, up 400% this year. The entire Ona team joins OpenAI; terms were not disclosed.</span></li>
+        <li><span class="tag money">Legal AI</span><span>Legora, a legal-work AI platform, raised $550 million in a Series D at a $5.55 billion valuation, with nearly every top-tier venture firm in its cap table — one of the larger enterprise AI rounds of 2026.</span></li>
+        <li><span class="tag policy">EU AI Act</span><span>The August 2, 2026 compliance deadline for the EU AI Act is seven weeks out. Any company deploying "high-risk" AI systems — those making consequential decisions in hiring, credit, healthcare, or law enforcement — in EU markets must now meet the Act's transparency and documentation requirements or face penalties.</span></li>
+        <li><span class="tag tech">Voice</span><span>OpenAI launched three real-time audio models for conversational agents, speech-to-speech translation, and transcription — an incremental but practical step toward making AI-driven voice calls indistinguishable from human ones in commercial support contexts.</span></li>
+        <li><span class="tag tech">Gemini</span><span>Google rolled out Gemini M5 — a 128-billion-parameter model — in developer beta, with on-chip neural processing optimisations that Google says reduce thermal throttling by 40% versus its predecessor through a dynamic load-balancing algorithm across 16 parallel processing cores.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~750 words. -->
+      <h2>Paper, explained: teaching physics models to stop amplifying noise</h2>
+      <p class="kicker">Mollifier Layers: Enabling Efficient High-Order Derivatives in Inverse PDE Learning &middot; Vinayak Vinayak, Ananyae Kumar Bhartari, Vivek B. Shenoy &middot; Penn Engineering &middot; <a href="https://arxiv.org/abs/2505.11682">arXiv 2505.11682</a></p>
+
+      <p>Penn Engineering published a paper in <em>Transactions on Machine Learning Research</em> that makes AI-driven physics models six to ten times more efficient — using a mathematical idea that has been sitting in textbooks since the 1940s. It is the kind of result that reads like a correction rather than an invention: something that, in retrospect, should have been tried earlier.</p>
+
+      <h3>The problem, and why it's hard</h3>
+
+      <p>Many scientific questions require working backwards from data to hidden causes. You have a grid of temperature readings across a room and want to know the thermal conductivity equation driving them. You have chemical concentrations measured across a tissue sample and want to recover the reaction rates that produced them. This "working backwards" problem is called an <em>inverse PDE</em> problem. (A PDE — partial differential equation — is the language science uses to describe anything that varies through both space and time: heat, flow, diffusion, elasticity.)</p>
+
+      <p>The standard AI approach for inverse PDEs is called a <em>Physics-Informed Neural Network</em>, or PINN. The network learns a function that fits your data, and you bake the governing equation directly into the training loss — essentially penalising the network whenever its output violates the physics. To check whether it's violating the physics, you need the network's derivatives with respect to its inputs: rate of change, curvature, and so on. The tool for computing those derivatives is <em>automatic differentiation</em> (autodiff), which traces the chain rule back through the network layer by layer.</p>
+
+      <p>For a first-order equation, this is fine. But many important equations — diffusion, reaction-diffusion, structural mechanics — are second, third, or fourth order, meaning you have to differentiate through an already-differentiated network, repeatedly. Each pass amplifies numerical noise and roughly doubles the memory required. The Penn team's benchmark made the severity concrete: adding a fourth-order PDE loss to a reaction-diffusion problem pushed peak memory from 0.21 gigabytes to 2.70 gigabytes — a thirteen-fold increase. Training slows. Convergence degrades. At high enough order, the model simply cannot learn.</p>
+
+      <h3>How it works</h3>
+
+      <p>Here is the core analogy: imagine you are trying to measure how steeply a hillside slopes, using a map whose elevation readings have random speckle noise on every pixel. If you compute the slope directly — subtracting adjacent readings — the noise dominates. But if you first apply a gentle blur to the map and <em>then</em> measure the slope, the noise averages away and the gradient is clean and stable. The blur you apply is called a <em>mollifier</em> in mathematics — a smooth, bell-shaped kernel that was formalised by the French mathematician Laurent Schwartz in the late 1940s as part of distribution theory.</p>
+
+      <p>Mollifier Layers do exactly this, but for neural network outputs. Before computing any derivatives, the method slides a smooth Gaussian-like kernel over the network's raw output using convolution. Crucially: because the mollifier kernel is analytically defined (a known, smooth mathematical function rather than something learned), its own derivatives are available in closed form. That means you can compute the derivatives of the <em>smoothed</em> output directly using the convolution theorem — no recursive autodiff required at all for those high-order terms. The recursive, noise-amplifying cascade is replaced by a single, stable convolution step.</p>
+
+      <p>The module slots in as a thin layer between the network's output and the PDE loss. It requires no change to the underlying network architecture — PINNs, DeepONets, neural operators, anything works. The only hyperparameter introduced is the mollifier's bandwidth: how wide the blur kernel is. Too narrow and noise creeps back; too wide and real structure gets erased. In practice, the bandwidth is chosen once per problem class and held fixed.</p>
+
+      <h3>What they actually did</h3>
+
+      <p>Vinayak Vinayak, Ananyae Kumar Bhartari, and Vivek B. Shenoy (senior author, Eduardo D. Glandt President's Distinguished Professor at Penn) tested Mollifier Layers on a benchmark suite spanning first-, second-, and fourth-order PDEs: Langevin dynamics (stochastic particle motion), heat diffusion, and reaction-diffusion systems. They compared against standard autodiff-based PINNs on both memory usage and accuracy of recovered parameters. They also applied the method to a real-world inverse problem: using super-resolution microscopy images of cell nuclei to infer spatially varying epigenetic reaction rates — the rates at which genes switch on and off in different regions of a chromosome.</p>
+
+      <h3>What they found</h3>
+
+      <p>Across the benchmark suite, Mollifier Layers cut memory footprint and training time by 6 to 10 times. Accuracy of parameter recovery improved substantially for fourth-order problems, where standard autodiff methods failed to converge reliably. On the chromatin imaging application, the method successfully recovered spatially varying rate constants that conventional PINNs could not estimate stably. The paper is published in <em>Transactions on Machine Learning Research</em> and is scheduled for presentation at NeurIPS 2026.</p>
+
+      <h3>The catch</h3>
+
+      <p>The method has been validated on a carefully chosen set of PDE types in controlled settings. Whether it holds up across the enormous variety of real-world inverse problems — seismology, aerodynamics, plasma physics — is untested. The bandwidth hyperparameter, while simple in principle, requires some tuning for each new problem class; the paper does not provide an automatic selection procedure. The authors also note that very sparse observation data (only a handful of measurement points) may not give the convolution enough local context to smooth effectively. This is a research paper, not a production tool.</p>
+
+      <p><strong>If you remember one thing:</strong> You can make AI physics models 6–10 times faster and more accurate — not by redesigning the network, but by blurring its output before measuring, using a 1940s mathematical trick.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 300" role="img" aria-label="Comparison of standard autodiff versus Mollifier Layers for computing high-order derivatives in physics-informed neural networks" xmlns="http://www.w3.org/2000/svg">
+
+          <!-- Left panel: Standard autodiff -->
+          <rect x="10" y="10" width="330" height="280" fill="#FAFAF8" stroke="#D1CFC5" stroke-width="1.5" rx="6"/>
+          <text x="175" y="35" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="bold">Standard autodiff (PINN)</text>
+          <text x="175" y="51" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">derivatives computed by recursive chain rule</text>
+
+          <!-- Neural network box -->
+          <rect x="55" y="65" width="240" height="34" rx="5" fill="#D97757" opacity="0.85"/>
+          <text x="175" y="87" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#fff">Neural network output u(x)</text>
+
+          <!-- Arrow down -->
+          <line x1="175" y1="99" x2="175" y2="115" stroke="#D1CFC5" stroke-width="1.5"/>
+          <polygon points="171,115 179,115 175,122" fill="#D1CFC5"/>
+
+          <!-- Autodiff box 1 -->
+          <rect x="60" y="122" width="228" height="30" rx="5" fill="#FDF4F1" stroke="#D97757" stroke-width="1"/>
+          <text x="174" y="141" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">∂u/∂x — 1st order autodiff</text>
+          <text x="280" y="141" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">noise ×1</text>
+
+          <line x1="175" y1="152" x2="175" y2="165" stroke="#D1CFC5" stroke-width="1.5"/>
+          <polygon points="171,165 179,165 175,172" fill="#D1CFC5"/>
+
+          <!-- Autodiff box 2 — more noise -->
+          <rect x="60" y="172" width="228" height="30" rx="5" fill="#FDF4F1" stroke="#D97757" stroke-width="1.5"/>
+          <text x="174" y="191" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">∂²u/∂x² — 2nd order</text>
+          <text x="280" y="191" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">noise ×4</text>
+
+          <line x1="175" y1="202" x2="175" y2="215" stroke="#D1CFC5" stroke-width="1.5"/>
+          <polygon points="171,215 179,215 175,222" fill="#D1CFC5"/>
+
+          <!-- Autodiff box 4 — very noisy, red -->
+          <rect x="60" y="222" width="228" height="30" rx="5" fill="#FDF4F1" stroke="#D97757" stroke-width="2.5"/>
+          <text x="174" y="241" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">∂⁴u/∂x⁴ — 4th order</text>
+          <text x="280" y="241" font-family="system-ui,sans-serif" font-size="9" fill="#D97757">noise ×64</text>
+
+          <!-- Memory warning -->
+          <rect x="55" y="260" width="240" height="20" rx="4" fill="#FDF4F1"/>
+          <text x="175" y="274" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#D97757">Peak memory: 0.21 GB → 2.70 GB at 4th order</text>
+
+          <!-- Right panel: Mollifier Layers -->
+          <rect x="380" y="10" width="330" height="280" fill="#FAFAF8" stroke="#D1CFC5" stroke-width="1.5" rx="6"/>
+          <text x="545" y="35" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="bold">Mollifier Layers</text>
+          <text x="545" y="51" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">smooth first, then differentiate analytically</text>
+
+          <!-- Neural network box -->
+          <rect x="425" y="65" width="240" height="34" rx="5" fill="#788C5D" opacity="0.85"/>
+          <text x="545" y="87" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#fff">Neural network output u(x)</text>
+
+          <!-- Arrow down -->
+          <line x1="545" y1="99" x2="545" y2="115" stroke="#D1CFC5" stroke-width="1.5"/>
+          <polygon points="541,115 549,115 545,122" fill="#D1CFC5"/>
+
+          <!-- Mollifier box -->
+          <rect x="430" y="122" width="228" height="34" rx="5" fill="#6A8CAF" opacity="0.9"/>
+          <text x="544" y="141" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#fff">Convolution with mollifier kernel</text>
+          <text x="544" y="153" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#D1CFC5">(smooth Gaussian blur — noise removed)</text>
+
+          <!-- Arrow down -->
+          <line x1="545" y1="156" x2="545" y2="175" stroke="#D1CFC5" stroke-width="1.5"/>
+          <polygon points="541,175 549,175 545,182" fill="#D1CFC5"/>
+
+          <!-- Single analytical derivative block -->
+          <rect x="430" y="182" width="228" height="58" rx="5" fill="#F1F4F0" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="544" y="203" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D">All orders computed analytically</text>
+          <text x="544" y="218" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#788C5D">∂u/∂x · ∂²u/∂x² · ∂⁴u/∂x⁴</text>
+          <text x="544" y="233" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">no recursion · noise stable · one pass</text>
+
+          <!-- Memory win -->
+          <rect x="425" y="260" width="240" height="20" rx="4" fill="#F1F4F0"/>
+          <text x="545" y="274" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#788C5D">6–10× less memory and training time</text>
+        </svg>
+        <figcaption>Left: standard autodiff in a Physics-Informed Neural Network — each extra order of derivative amplifies noise and nearly doubles peak memory. Right: Mollifier Layers insert one convolution step that smooths the signal before differentiation, so all derivative orders are computed analytically in a single stable pass. The key result: 6–10× reduction in memory and training time, with better accuracy at 4th order.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>The autoresearch repo (github.com/karpathy/autoresearch) gained a notable community discussion this week: Discussion #603 asks whether Anthropic's newly published recursive self-improvement progress is "just autoresearch at scale, or a different paradigm?" — a meta-moment where the community connects Karpathy's three-file loop directly to Anthropic's 80% figure. The thread is worth reading for how people are thinking about where the line is. <a href="https://github.com/karpathy/autoresearch/discussions/603">discussion →</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>One year on from Claude Code's general availability, Cherny published a thread (June 8) reflecting on how his own practice has changed: no code written by hand in eight months, and his work increasingly starts on his phone, handing off to fleets of agents. The 1-year milestone is a useful anchor for how quickly the workflow around agent-assisted development has shifted. <a href="https://pasqualepillitteri.it/en/news/4564/claude-code-boris-cherny-one-year-on-phone">summary →</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The Anthropic statistic — 80% autonomous code — is easy to misread. It's not a claim that the software is finished or that human engineers are redundant. What it actually shows is that the definition of "writing code" has already shifted. The eight-times productivity multiplier means engineers are doing more, not fewer things. The 800-fix API repair job is the clearest illustration: no human team was going to spend four years on a single error class. The AI didn't replace the decision to fix it; it just made the fixing tractable.</p>
+
+      <p>The OpenAI-Ona acquisition fits the same pattern from a different angle. Coding agents that run only while your laptop is open are useful. Agents that keep working overnight, in a cloud sandbox, with persistent state and memory, are a different category of tool. The acquisition suggests OpenAI sees the shift from "assistant you call" to "colleague who keeps going" as the next commercial frontier in developer tooling.</p>
+
+      <p>And the Mollifier Layers paper, modest as it sounds, belongs in this context too. The bottleneck it removes is exactly the kind that slows down physics AI at the frontier: not compute, not data, but numerical stability. Making the machinery more reliable is how you go from proof-of-concept to deployment in materials science, drug discovery, and climate modeling. Progress in those fields increasingly depends on incremental unblockings like this one.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://opentools.ai/news/anthropic-80-percent-production-code-authored-by-claude">OpenTools — Anthropic 80% code</a> ·
+        <a href="https://venturebeat.com/technology/anthropic-says-80-of-its-new-production-code-is-now-authored-by-claude-how-your-enterprise-can-keep-up">VentureBeat — Anthropic autonomous code</a> ·
+        <a href="https://cryptobriefing.com/claude-authors-80-percent-own-code/">CryptoBriefing — Claude 80% code</a> ·
+        <a href="https://openai.com/index/openai-to-acquire-ona/">OpenAI — Ona acquisition</a> ·
+        <a href="https://www.cnbc.com/2026/06/11/open-ai-ona-acquisition-codex.html">CNBC — OpenAI / Ona</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-06-11/openai-to-acquire-cloud-platform-ona-to-support-ai-agents">Bloomberg — OpenAI acquires Ona</a> ·
+        <a href="https://cryptobriefing.com/kimi-k2-7-code-open-source-release/">CryptoBriefing — Kimi K2.7-Code</a> ·
+        <a href="https://www.marktechpost.com/2026/06/12/moonshot-ai-releases-kimi-k2-7-code-a-coding-model-reporting-21-8-on-kimi-code-bench-v2-over-k2-6/">MarkTechPost — Kimi K2.7-Code</a> ·
+        <a href="https://arxiv.org/abs/2505.11682">arXiv — Mollifier Layers paper</a> ·
+        <a href="https://www.seas.upenn.edu/stories/ai-method-tackles-one-of-sciences-hardest-math-problems/">Penn Engineering — Mollifier Layers</a> ·
+        <a href="https://openreview.net/forum?id=6mFVZSzyev">OpenReview — Mollifier Layers</a> ·
+        <a href="https://www.hklaw.com/en/insights/publications/2026/04/us-companies-face-eu-ai-acts-possible-august-2026-compliance-deadline">Holland &amp; Knight — EU AI Act deadline</a> ·
+        <a href="https://github.com/karpathy/autoresearch/discussions/603">GitHub — Karpathy autoresearch discussion #603</a> ·
+        <a href="https://pasqualepillitteri.it/en/news/4564/claude-code-boris-cherny-one-year-on-phone">Pasquale Pillitteri — Boris Cherny one year on</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Mollifier</div>
+        <div>A smooth, bell-shaped mathematical function used to "tame" rough signals. In the 1940s, Laurent Schwartz formalised the idea as a way to take derivatives of functions that aren't technically differentiable — you blur the function slightly first, take the derivative of the smooth version, then let the blur shrink to zero. Think of it as pre-cleaning a noisy sensor reading before you try to measure how fast it's changing.</div>
+      </div>
+      <dl>
+        <dt>Inverse PDE</dt><dd>Working backwards: you observe the result (temperature readings, chemical concentrations) and want to recover the governing equation's hidden parameters. The "forward" problem — given the equation, predict the result — is easier; the inverse is hard because many different equations can produce similar observations.</dd>
+        <dt>Autodiff</dt><dd>Automatic differentiation — software that traces through a computation and applies the chain rule automatically to produce exact gradients. Used in every modern neural network training; becomes numerically unstable and memory-hungry when applied recursively for high-order derivatives.</dd>
+        <dt>PINN</dt><dd>Physics-Informed Neural Network — a model trained to fit observed data <em>and</em> satisfy a known governing equation simultaneously. The equation acts as a constraint in the loss function, keeping the network's predictions physically plausible even between measurement points.</dd>
+        <dt>Recursive self-improvement</dt><dd>When an AI system improves the very tools and code that build future versions of itself. Not necessarily dramatic: Anthropic's 80% figure is a real-world instance — Claude writing Claude's own codebase is a mild, supervised form of this loop.</dd>
+        <dt>Context window</dt><dd>The maximum amount of text a language model can "see" at once — its working memory. Kimi K2.7-Code's 256,000-token window means it can hold roughly 200,000 words of code and conversation in mind simultaneously before it starts forgetting the beginning.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

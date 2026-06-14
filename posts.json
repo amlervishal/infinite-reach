@@ -1,5 +1,12 @@
 [
   {
+    "num": 17,
+    "date": "2026-06-14",
+    "slug": "issues/2026-06-14.html",
+    "title": "What the hand no longer writes",
+    "blurb": "More than 80% of new code shipping at one of the world's leading labs was written by its own model — while a Penn Engineering paper borrows a 1940s maths trick to make physics AI 6–10 times more efficient."
+  },
+  {
     "num": 16,
     "date": "2026-06-13",
     "slug": "issues/2026-06-13.html",
