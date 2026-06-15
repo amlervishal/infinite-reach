@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №18 — Three days, then a directive · Infinite Reach</title>
+  <meta name="description" content="Anthropic's two most powerful new models launched on Monday, earned the highest marks on every tested benchmark, and were pulled offline by the US government on Thursday — the first time an official order has ever forced a frontier model off the market." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №18 &middot; Monday, June 15, 2026</p>
+      <h1>Three days, then a directive</h1>
+      <p>Anthropic's two most powerful models launched Monday, drew wide praise from engineers, and were pulled from every server on Thursday — by the first government order ever to force a deployed frontier model offline. While that played out, a quiet paper from a Chinese lab showed how to cut one of AI's most stubborn bottlenecks by fourteen times, and new spending data confirmed that Anthropic has, for real now, overtaken OpenAI in business adoption.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On June 9, Anthropic released Claude Fable 5 and Claude Mythos 5 — its most capable models to date. In the three days they were live, they set new marks on nearly every tested benchmark, and Stripe used Fable 5 to migrate a 50-million-line codebase in a single working day. Then, on June 12, Anthropic received an export control directive from the US government requiring suspension of all access to both models by any foreign national — including Anthropic's own foreign national employees, anywhere in the world. Because Anthropic cannot filter users by nationality in real time, the only way to comply was to switch both models off for everyone. Anthropic published a statement disagreeing with the decision, calling the government's stated concern — a narrow potential jailbreak that could identify software vulnerabilities — non-universal and insufficient to justify pulling a commercial product from hundreds of millions of users. No return date has been given. It is the first time a government has ordered a frontier AI model offline.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">OpenAI IPO</span><span>OpenAI filed a confidential S-1 with the SEC on June 8, targeting a public listing as soon as September 2026 at a valuation between $730 billion and $850 billion — days after Anthropic filed its own S-1. Goldman Sachs and Morgan Stanley are managing the OpenAI offering. Both major US frontier labs are now in the public-markets queue simultaneously.</span></li>
+        <li><span class="tag money">Adoption</span><span>Ramp's June 2026 AI Index — drawn from actual payment data across more than 50,000 US businesses, not a survey — shows Anthropic now leads in business subscriptions for the second straight month: 41% of companies vs. OpenAI's 39.5%. A year ago Anthropic was in the low single digits. The same index found a 680-fold spending gap between the most AI-intensive businesses and the median.</span></li>
+        <li><span class="tag money">Robots</span><span>EngineAI, a Shenzhen humanoid robot startup founded in 2023, filed confidentially for a Hong Kong IPO. Its factory, which opened June 1, produces one T800 humanoid every fifteen minutes at full capacity, targeting 10,000 units per year. Unitree, the sector leader, separately filed for a $7 billion IPO — part of a wave of Chinese robotics companies seeking public capital.</span></li>
+        <li><span class="tag policy">White House</span><span>A June 2 executive order on AI innovation and security directs agencies to harden federal systems with AI-enabled cyber defenses and creates a voluntary framework in which developers give the US government up to 30 days of early access to frontier models before public release — the first such formal mechanism in US policy. Key deliverables are due by August 1.</span></li>
+        <li><span class="tag tech">Long context</span><span>MiniMax published a paper on the attention architecture for its upcoming M3 model: by first scoring which blocks of text are worth attending to and then reading only those blocks, it achieves a 14.2× prefill speedup and 7.6× decoding speedup on H800 GPUs at one-million-token contexts. The inference kernel is open-source. (More in the Paper section below.)</span></li>
+        <li><span class="tag tech">YC</span><span>Y Combinator's first AI Startup School opens Tuesday in San Francisco — a free two-day event for students and early founders, with YC-backed researchers and builders presenting. YC president Garry Tan has also published gstack (github.com/garrytan/gstack), an open-source toolkit that turns Claude Code into a virtual software team: CEO, designer, engineering manager, release manager, and QA, all scriptable.</span></li>
+      </ul>
+
+      <h2>Paper, explained: making long memories cheap</h2>
+      <p class="kicker">MiniMax Sparse Attention &middot; MiniMax team &middot; June 11, 2026 &middot; <a href="https://arxiv.org/abs/2606.13392">arXiv 2606.13392</a></p>
+
+      <p>A paper released Wednesday by the MiniMax team takes one of the most persistent cost problems in large language models and makes it feel, almost abruptly, solvable. The question: how do you let a model hold a million tokens in mind — an entire codebase, a legal archive, a year's worth of documents — without the computation spiralling out of control? The answer they found is not a new mathematical breakthrough; it's a smarter order of operations.</p>
+
+      <h3>The problem, and why it's hard</h3>
+
+      <p>Every modern language model uses an operation called <em>attention</em>. The idea is intuitive: to understand any word, the model checks how relevant every other word in the document is. The word "steep" in "The bank by the river was steep" looks at everything around it and learns to weight "bank" and "river" most heavily — that's how it knows the bank is a riverbank, not a financial institution. Attention is what lets models understand meaning across long distances in a text.</p>
+
+      <p>The problem is that this scales badly. Checking every token against every other token means the work grows as the <em>square</em> of length. Double the document and you quadruple the computation. At one million tokens — the context window many frontier models now advertise — that is roughly one trillion pair-comparisons. On today's hardware, the two expensive moments are <em>prefill</em> (reading and encoding the entire input, which happens once per query) and <em>decoding</em> (generating the output one token at a time, each step looking back at the full input). Both suffer at long contexts. The result is that million-token models, even when technically capable of using that context, are too slow and expensive to deploy usefully at scale.</p>
+
+      <h3>How it works</h3>
+
+      <p>Here is the everyday analogy: a research assistant facing a 10,000-page archive. One approach is to read every page before answering a question. A smarter approach is to spend five minutes with the index and table of contents first — score which sections look relevant — then read only those deeply. You get the same answer. You spend a fraction of the time.</p>
+
+      <p>MiniMax Sparse Attention (MSA) is the index-first approach for transformer attention. It introduces two parallel paths. The <strong>Index Branch</strong> is the quick index skim: a lightweight function that divides the context into fixed-size blocks and assigns each block a relevance score for the current query. It is deliberately cheap — just enough to rank the blocks, not to understand them. The <strong>Main Branch</strong> is the deep read: it performs full, exact attention, but only over the blocks the Index Branch scored highest. If the full context is one million tokens organised into ten thousand blocks, the Main Branch might attend to five hundred of them — 5% of the work, for the passages that actually matter.</p>
+
+      <p>A key design choice makes this practical for real deployment. MSA is built on top of <em>Grouped Query Attention</em> (GQA), the attention variant that most modern models — including the one you are reading this with — already use. GQA bundles attention heads into groups that share a key-value cache. MSA's Index Branch scores at the level of GQA groups, meaning each group can independently choose its own highest-scoring blocks. A group specialised in code syntax and a group specialised in variable names can each find the most useful sections of a codebase without being forced to look at the same set. The Main Branch then performs exact sparse attention — not an approximation — over only the selected blocks, using a co-designed GPU kernel built for H800 hardware. The only new tuning knob is the bandwidth: how many blocks the Index Branch is allowed to select. Set it low and you gain the most speed but risk missing context; set it high and you preserve more information at some cost in efficiency. The authors found that a fixed bandwidth chosen once per problem class works reliably.</p>
+
+      <p>The architecture slots in as a drop-in upgrade rather than a ground-up redesign. Any model already using GQA — which is most current frontier models — can adopt MSA without changing its training recipe, weight format, or serving infrastructure. That is an unusually low barrier for a speedup of this magnitude.</p>
+
+      <h3>What they actually did</h3>
+
+      <p>The MiniMax team benchmarked MSA against standard full attention on H800 GPUs at context lengths ranging from 64,000 to 1,000,000 tokens, measuring wall-clock time separately for the prefill phase and the decoding phase. They also ran standard long-context quality evaluations to verify that sparse block selection does not degrade accuracy relative to attending to every token. The paper presents MSA as the attention design for MiniMax M3, the lab's next model, which has not yet been publicly released. The inference kernel used for the benchmarks is published alongside the paper.</p>
+
+      <h3>What they found</h3>
+
+      <p>At one million tokens, MSA achieved a <strong>14.2× prefill speedup</strong> and a <strong>7.6× decoding speedup</strong> compared to standard full attention on the same H800 hardware. Accuracy on long-context benchmarks was preserved: the sparse block selection did not measurably degrade answer quality versus full attention at the tested context lengths. The speedup grows with context length, which is the right direction — the problem gets worse as contexts get longer, and so does the gain from solving it.</p>
+
+      <p>The authors note one harder case: tasks where the relevant information is genuinely isolated — a single crucial sentence buried in a million tokens, with nothing around it that would score highly on a block-level index. The Index Branch may miss such needles because their surrounding context gives no signal. For tasks with more distributed relevance — code that builds on itself across many sections, a document where themes recur — the method works well.</p>
+
+      <h3>The catch</h3>
+
+      <p>The benchmarks are from MiniMax's own infrastructure, evaluating a model (M3) that is not yet publicly released or independently testable. The long-context quality evaluations are a standard set of existing benchmarks, not an adversarial evaluation designed to find the failure mode the authors themselves describe (sparse needles). Whether the method generalises equally well to all deployment contexts — not just the ones favourable to block-level scoring — is an open question. This is, in short, a strong paper from a credible lab, but the evidence is from the lab that built it. Independent replication will matter.</p>
+
+      <p><strong>If you remember one thing:</strong> The costliest thing a long-context model does is read — MSA skims the index first, cuts that reading by 14×, and loses almost nothing in the process.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 320" role="img" aria-label="Comparison of standard full attention versus MiniMax Sparse Attention block selection at long context" xmlns="http://www.w3.org/2000/svg">
+
+          <!-- ===== LEFT PANEL: Full attention ===== -->
+          <rect x="10" y="10" width="335" height="300" fill="#FAFAF8" stroke="#D1CFC5" stroke-width="1.5" rx="6"/>
+          <text x="178" y="36" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="bold">Full attention</text>
+          <text x="178" y="52" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">every token compares itself to every other</text>
+
+          <!-- Row 1 -->
+          <circle cx="68"  cy="82" r="11" fill="#D97757" opacity="0.9"/>
+          <circle cx="110" cy="82" r="11" fill="#D1CFC5"/>
+          <circle cx="152" cy="82" r="11" fill="#D1CFC5"/>
+          <circle cx="194" cy="82" r="11" fill="#D1CFC5"/>
+          <circle cx="236" cy="82" r="11" fill="#D1CFC5"/>
+          <circle cx="278" cy="82" r="11" fill="#D1CFC5"/>
+          <!-- Row 2 -->
+          <circle cx="68"  cy="126" r="11" fill="#D1CFC5"/>
+          <circle cx="110" cy="126" r="11" fill="#D1CFC5"/>
+          <circle cx="152" cy="126" r="11" fill="#D1CFC5"/>
+          <circle cx="194" cy="126" r="11" fill="#D1CFC5"/>
+          <circle cx="236" cy="126" r="11" fill="#D1CFC5"/>
+          <circle cx="278" cy="126" r="11" fill="#D1CFC5"/>
+          <!-- Row 3 -->
+          <circle cx="68"  cy="170" r="11" fill="#D1CFC5"/>
+          <circle cx="110" cy="170" r="11" fill="#D1CFC5"/>
+          <circle cx="152" cy="170" r="11" fill="#D1CFC5"/>
+          <circle cx="194" cy="170" r="11" fill="#D1CFC5"/>
+          <circle cx="236" cy="170" r="11" fill="#D1CFC5"/>
+          <circle cx="278" cy="170" r="11" fill="#D1CFC5"/>
+          <!-- Row 4 -->
+          <circle cx="68"  cy="214" r="11" fill="#D1CFC5"/>
+          <circle cx="110" cy="214" r="11" fill="#D1CFC5"/>
+          <circle cx="152" cy="214" r="11" fill="#D1CFC5"/>
+          <circle cx="194" cy="214" r="11" fill="#D1CFC5"/>
+          <circle cx="236" cy="214" r="11" fill="#D1CFC5"/>
+          <circle cx="278" cy="214" r="11" fill="#D1CFC5"/>
+
+          <!-- Attention lines from highlighted token -->
+          <line x1="68" y1="82" x2="110" y2="82"  stroke="#D97757" stroke-width="0.9" opacity="0.65"/>
+          <line x1="68" y1="82" x2="152" y2="82"  stroke="#D97757" stroke-width="0.9" opacity="0.65"/>
+          <line x1="68" y1="82" x2="194" y2="82"  stroke="#D97757" stroke-width="0.9" opacity="0.65"/>
+          <line x1="68" y1="82" x2="236" y2="82"  stroke="#D97757" stroke-width="0.9" opacity="0.65"/>
+          <line x1="68" y1="82" x2="278" y2="82"  stroke="#D97757" stroke-width="0.9" opacity="0.65"/>
+          <line x1="68" y1="82" x2="68"  y2="126" stroke="#D97757" stroke-width="0.9" opacity="0.55"/>
+          <line x1="68" y1="82" x2="110" y2="126" stroke="#D97757" stroke-width="0.9" opacity="0.50"/>
+          <line x1="68" y1="82" x2="152" y2="126" stroke="#D97757" stroke-width="0.9" opacity="0.50"/>
+          <line x1="68" y1="82" x2="194" y2="126" stroke="#D97757" stroke-width="0.9" opacity="0.50"/>
+          <line x1="68" y1="82" x2="236" y2="126" stroke="#D97757" stroke-width="0.9" opacity="0.50"/>
+          <line x1="68" y1="82" x2="278" y2="126" stroke="#D97757" stroke-width="0.9" opacity="0.50"/>
+          <line x1="68" y1="82" x2="68"  y2="170" stroke="#D97757" stroke-width="0.9" opacity="0.40"/>
+          <line x1="68" y1="82" x2="110" y2="170" stroke="#D97757" stroke-width="0.9" opacity="0.38"/>
+          <line x1="68" y1="82" x2="152" y2="170" stroke="#D97757" stroke-width="0.9" opacity="0.36"/>
+          <line x1="68" y1="82" x2="194" y2="170" stroke="#D97757" stroke-width="0.9" opacity="0.36"/>
+          <line x1="68" y1="82" x2="236" y2="170" stroke="#D97757" stroke-width="0.9" opacity="0.36"/>
+          <line x1="68" y1="82" x2="278" y2="170" stroke="#D97757" stroke-width="0.9" opacity="0.36"/>
+          <line x1="68" y1="82" x2="68"  y2="214" stroke="#D97757" stroke-width="0.9" opacity="0.27"/>
+          <line x1="68" y1="82" x2="110" y2="214" stroke="#D97757" stroke-width="0.9" opacity="0.25"/>
+          <line x1="68" y1="82" x2="152" y2="214" stroke="#D97757" stroke-width="0.9" opacity="0.25"/>
+          <line x1="68" y1="82" x2="194" y2="214" stroke="#D97757" stroke-width="0.9" opacity="0.25"/>
+          <line x1="68" y1="82" x2="236" y2="214" stroke="#D97757" stroke-width="0.9" opacity="0.25"/>
+          <line x1="68" y1="82" x2="278" y2="214" stroke="#D97757" stroke-width="0.9" opacity="0.25"/>
+
+          <text x="178" y="244" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">Complexity: O(n²)</text>
+          <rect x="44" y="255" width="268" height="18" rx="4" fill="#FDF4F1"/>
+          <text x="178" y="268" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#D97757">At 1 million tokens ≈ 1 trillion pair-comparisons</text>
+          <text x="178" y="295" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#87867F">speed: 1×  (baseline)</text>
+
+          <!-- ===== RIGHT PANEL: MiniMax Sparse Attention ===== -->
+          <rect x="375" y="10" width="335" height="300" fill="#FAFAF8" stroke="#D1CFC5" stroke-width="1.5" rx="6"/>
+          <text x="543" y="36" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="bold">MiniMax Sparse Attention</text>
+          <text x="543" y="52" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">score blocks first · read only the best ones</text>
+
+          <!-- Index Branch box -->
+          <rect x="408" y="60" width="270" height="28" rx="5" fill="#6A8CAF" opacity="0.9"/>
+          <text x="543" y="78" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#fff">① Index Branch — lightweight block scoring</text>
+
+          <!-- Arrow down -->
+          <line x1="543" y1="88" x2="543" y2="100" stroke="#D1CFC5" stroke-width="1.5"/>
+          <polygon points="539,100 547,100 543,107" fill="#D1CFC5"/>
+
+          <!-- Block A (selected) -->
+          <rect x="408" y="108" width="78" height="66" rx="4" fill="#788C5D" opacity="0.18" stroke="#788C5D" stroke-width="1.8"/>
+          <circle cx="427" cy="128" r="9" fill="#788C5D" opacity="0.85"/>
+          <circle cx="450" cy="128" r="9" fill="#788C5D" opacity="0.85"/>
+          <circle cx="427" cy="152" r="9" fill="#788C5D" opacity="0.85"/>
+          <circle cx="450" cy="152" r="9" fill="#788C5D" opacity="0.85"/>
+          <text x="438" y="185" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8" fill="#788C5D">A ★</text>
+
+          <!-- Block B (not selected) -->
+          <rect x="503" y="108" width="78" height="66" rx="4" fill="#D1CFC5" opacity="0.2" stroke="#D1CFC5" stroke-width="1"/>
+          <circle cx="522" cy="128" r="9" fill="#D1CFC5"/>
+          <circle cx="545" cy="128" r="9" fill="#D1CFC5"/>
+          <circle cx="522" cy="152" r="9" fill="#D1CFC5"/>
+          <circle cx="545" cy="152" r="9" fill="#D1CFC5"/>
+          <text x="533" y="185" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8" fill="#87867F">B</text>
+
+          <!-- Block C (selected) -->
+          <rect x="598" y="108" width="78" height="66" rx="4" fill="#788C5D" opacity="0.18" stroke="#788C5D" stroke-width="1.8"/>
+          <circle cx="617" cy="128" r="9" fill="#788C5D" opacity="0.85"/>
+          <circle cx="640" cy="128" r="9" fill="#788C5D" opacity="0.85"/>
+          <circle cx="617" cy="152" r="9" fill="#788C5D" opacity="0.85"/>
+          <circle cx="640" cy="152" r="9" fill="#788C5D" opacity="0.85"/>
+          <text x="628" y="185" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8" fill="#788C5D">C ★</text>
+
+          <!-- Block D (not selected) -->
+          <rect x="408" y="194" width="78" height="66" rx="4" fill="#D1CFC5" opacity="0.2" stroke="#D1CFC5" stroke-width="1"/>
+          <circle cx="427" cy="214" r="9" fill="#D1CFC5"/>
+          <circle cx="450" cy="214" r="9" fill="#D1CFC5"/>
+          <circle cx="427" cy="238" r="9" fill="#D1CFC5"/>
+          <circle cx="450" cy="238" r="9" fill="#D1CFC5"/>
+          <text x="438" y="271" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8" fill="#87867F">D</text>
+
+          <!-- Block E (selected) -->
+          <rect x="503" y="194" width="78" height="66" rx="4" fill="#788C5D" opacity="0.18" stroke="#788C5D" stroke-width="1.8"/>
+          <circle cx="522" cy="214" r="9" fill="#788C5D" opacity="0.85"/>
+          <circle cx="545" cy="214" r="9" fill="#788C5D" opacity="0.85"/>
+          <circle cx="522" cy="238" r="9" fill="#788C5D" opacity="0.85"/>
+          <circle cx="545" cy="238" r="9" fill="#788C5D" opacity="0.85"/>
+          <text x="533" y="271" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8" fill="#788C5D">E ★</text>
+
+          <!-- Block F (not selected) -->
+          <rect x="598" y="194" width="78" height="66" rx="4" fill="#D1CFC5" opacity="0.2" stroke="#D1CFC5" stroke-width="1"/>
+          <circle cx="617" cy="214" r="9" fill="#D1CFC5"/>
+          <circle cx="640" cy="214" r="9" fill="#D1CFC5"/>
+          <circle cx="617" cy="238" r="9" fill="#D1CFC5"/>
+          <circle cx="640" cy="238" r="9" fill="#D1CFC5"/>
+          <text x="628" y="271" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8" fill="#87867F">F</text>
+
+          <text x="543" y="293" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#788C5D">② Main Branch: exact attention on ★ only · 14.2× prefill · 7.6× decoding</text>
+        </svg>
+        <figcaption>Left: standard full attention — one highlighted token must compare itself to all others, making cost grow as the square of document length; at one million tokens that is roughly one trillion comparisons. Right: MiniMax Sparse Attention — a lightweight Index Branch scores blocks of context (A–F), then the Main Branch performs exact attention only on the highest-scoring blocks (marked ★). Skipped blocks (B, D, F) cost almost nothing. Result: 14.2× faster prefill, 7.6× faster decoding, accuracy preserved.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Garry Tan</span><span>Tan published gstack — an open-source toolkit at <a href="https://github.com/garrytan/gstack">github.com/garrytan/gstack</a> that turns Claude Code into a virtual software development team, with distinct roles for CEO, designer, engineering manager, release manager, and QA. Worth examining as a template for how founders are structuring agent-assisted development; the repo is the clearest public articulation yet of "Claude Code as a team, not a tool." YC's first AI Startup School also opens Tuesday in San Francisco, free and open to all.</span></li>
+        <li><span class="tag tech">Karpathy</span><span>Now nearly four weeks into Anthropic's pre-training team (he joined May 19), Karpathy's autoresearch repo (<a href="https://github.com/karpathy/autoresearch">github.com/karpathy/autoresearch</a>) is drawing some of the more thoughtful community discussions on how minimal self-training loops — 630 lines of code, a single GPU, overnight runs — relate to the larger recursive self-improvement questions that Anthropic's 80% code figure raised last week. The discussions are worth reading as community thinking in real time.</span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The Fable 5 episode is the clearest signal yet that frontier AI is being treated, increasingly, like export-controlled technology — more like cryptography or semiconductors than like software. Until this week the assumption was that governments would influence AI through regulation, standards, and procurement: slow-moving, negotiated levers. A direct order to pull a deployed commercial model within 72 hours of launch is different in kind. It suggests the government believes it already has the legal authority to intervene at the model level, at any point, when it judges a capability threshold has been crossed.</p>
+
+      <p>The timing is pointed. Both Anthropic and OpenAI are weeks away from their public filings. A government that can pull a product off the shelf on 24 hours' notice creates a different category of risk factor than one that merely writes rules about it. The White House executive order's request for 30-day pre-release access to frontier models now reads less like a courtesy arrangement and more like the infrastructure for a faster, smoother version of what just happened to Fable 5.</p>
+
+      <p>The MiniMax paper sits in a different part of the picture, but it matters for the same long-term reason. Long-context AI — the kind that can hold an entire codebase or a year of documents in mind — is where the most consequential enterprise use cases live. Cutting the reading cost by fourteen times is not incremental; it is the difference between a service that requires a rack of expensive GPUs per user and one that can run at something closer to consumer scale. That matters, in the end, for who eventually gets access to the most capable versions of these tools.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.cnbc.com/2026/06/12/anthropic-disables-access-to-fable-5-and-mythos-5-to-comply-with-government-directive.html">CNBC — Fable 5 / Mythos 5 shutdown</a> ·
+        <a href="https://www.anthropic.com/news/fable-mythos-access">Anthropic — official statement</a> ·
+        <a href="https://techcrunch.com/2026/06/09/anthropics-claude-fable-5-is-a-version-of-mythos-the-public-can-access-today/">TechCrunch — Fable 5 launch</a> ·
+        <a href="https://www.anthropic.com/news/claude-fable-5-mythos-5">Anthropic — Fable 5 and Mythos 5 release</a> ·
+        <a href="https://thenewstack.io/us-gov-orders-anthropic-to-pull-fable-5-and-mythos-5-three-days-after-launch/">The New Stack — government order</a> ·
+        <a href="https://www.marktechpost.com/2026/06/13/anthropic-disables-claude-fable-5-and-mythos-5-after-us-government-order/">MarkTechPost — government order details</a> ·
+        <a href="https://arxiv.org/abs/2606.13392">arXiv — MiniMax Sparse Attention</a> ·
+        <a href="https://venturebeat.com/technology/minimax-teases-upcoming-m3-model-with-new-sparse-attention-mechanism-and-15-6x-response-speed-boost">VentureBeat — MiniMax M3 and MSA</a> ·
+        <a href="https://ramp.com/leading-indicators/ai-index-june-2026">Ramp — June 2026 AI Index</a> ·
+        <a href="https://aiweekly.co/alerts/openai-files-confidential-ipo-targeting-850b-valuation">AI Weekly — OpenAI confidential IPO</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-06-12/humanoid-robot-manufacturer-engineai-is-said-to-file-for-hong-kong-ipo">Bloomberg — EngineAI IPO filing</a> ·
+        <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">White House — AI executive order</a> ·
+        <a href="https://github.com/garrytan/gstack">GitHub — garrytan/gstack</a> ·
+        <a href="https://www.ycombinator.com/library/OW-inside-garry-tan-s-ai-coding-setup">YC Library — Garry Tan AI coding setup</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Export control</div>
+        <div>A government rule that restricts who can receive a technology — originally designed for weapons, nuclear materials, and semiconductors. The rules do not ban a product outright; they ban transferring it to foreign nationals or to entities in specific countries. When the US government applied this framework to Fable 5 and Mythos 5 this week, it was the first time an export control directive has been used to remove a live AI model from the commercial market.</div>
+      </div>
+      <dl>
+        <dt>Attention</dt><dd>The mechanism that lets a language model figure out which words in a document are most relevant to the word it is currently processing. Essential for understanding meaning across long texts, but expensive: the computation grows as the square of document length.</dd>
+        <dt>Prefill</dt><dd>The phase where an AI reads and encodes the entire input — the question, the codebase, the document — before generating anything. It happens once per query. For long documents this is the dominant bottleneck; MSA's 14.2× speedup applies here.</dd>
+        <dt>Decoding</dt><dd>The phase where an AI generates its answer, one token at a time. Each new token must still look back at the full input, so long contexts slow decoding too. MSA achieves a 7.6× speedup here.</dd>
+        <dt>Context window</dt><dd>The maximum amount of text a model can hold in working memory at once, measured in tokens (roughly ¾ of a word each). A one-million-token context can hold roughly 750,000 words — about ten copies of War and Peace.</dd>
+        <dt>GQA (Grouped Query Attention)</dt><dd>A memory-efficient variant of attention in which heads are bundled into groups that share a key-value cache. Most modern frontier models use GQA. MiniMax Sparse Attention is built on top of it, meaning it slots in without requiring a new architecture.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
