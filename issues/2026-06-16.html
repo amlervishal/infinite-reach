@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №19 — The mark before the grade · Infinite Reach</title>
+  <meta name="description" content="A new paper teaches AI to build its own answer key for open-ended tasks — removing the biggest bottleneck in machine learning training — while Washington signs the first formal framework for inspecting frontier models before they ship." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №19 &middot; Monday, June 16, 2026</p>
+      <h1>The mark before the grade</h1>
+      <p>A paper published two weeks ago quietly cracked one of machine learning's most stubborn puzzles: how do you teach a model to improve at tasks where there is no single right answer? Meanwhile, Washington formalized a process for the same problem at a different scale — should someone check a model before it reaches the world?</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On June 2, the White House signed an executive order titled "Promoting Advanced Artificial Intelligence Innovation and Security" — the first formal US government architecture for inspecting frontier AI before public release. The order invites AI labs to voluntarily give the government up to 30 days of early access to new models before wider deployment, in exchange for a light regulatory touch rather than mandatory oversight. Federal agencies have 60 days to build the review framework; a separate directive focuses enforcement on criminal misuse of AI. It is voluntary, not mandated — but it is the first time the United States has formalized a process for looking at frontier models before the rest of the world does. Whether voluntary participation holds as models grow more capable is the question the order deliberately leaves open.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Funding</span><span>China's Moonshot AI — maker of the Kimi chatbot — is seeking up to $2 billion at a $30 billion valuation, its third funding round in six months. It was valued at $4 billion last December; it may be worth seven times that by summer's end.</span></li>
+        <li><span class="tag tech">Throughput</span><span>OpenAI's APIs now process more than 15 billion tokens per minute globally, driven by GPT-5.4 adoption in agentic workflows — a number that gestures at the sheer scale of automated work now running on these systems around the clock.</span></li>
+        <li><span class="tag money">Partnership</span><span>The US and Japan launched the $1 billion Genesis Mission — 12 American national laboratories paired with 12 Japanese research institutions — to collaborate on AI-driven science including quantum computing, fusion energy, and biotechnology.</span></li>
+        <li><span class="tag policy">Sovereignty</span><span>Canada committed $890 million to build its own domestic AI compute infrastructure — hardware that does not depend on US cloud providers — partnering with the UK, Australia, India, and France on shared governance standards.</span></li>
+        <li><span class="tag tech">Shutdown</span><span>OpenAI's video-generation tool Sora, launched in late 2024, was discontinued in April. The economics did not work: video burns orders of magnitude more compute per request than text, and consumer subscriptions never covered the cost.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: How to build the answer key when there isn't one</h2>
+      <p class="kicker">Deep Research as Rubric for Reinforcement Learning &middot; Wangyi Mei et al. &middot; <a href="https://arxiv.org/abs/2606.01091">arxiv.org/abs/2606.01091</a></p>
+      <p>This paper is about teaching machines to write their own marking guides. It matters because without a marking guide, the most powerful training method in AI — reinforcement learning — gets stuck on most of the tasks we actually care about.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Reinforcement learning (RL) is the technique behind the dramatic capability jumps in today's reasoning models. The basic idea: the model generates an answer, something evaluates it and gives it a score, and the model adjusts to score higher next time. Repeat billions of times and you get a remarkably capable system.</p>
+      <p>The bottleneck is that evaluation step. For tasks with clear right answers — maths problems, code that compiles, chess moves — a computer can check the answer mechanically and return a score instantly. But most of what we'd want a smart model to do doesn't work that way. Write a clear explanation of mRNA vaccines for a teenager. Summarise this scientific paper in plain English. Draft a research proposal. There is no single correct answer, which means you cannot score the output automatically — and if you cannot score it, you cannot run RL on it at scale. Researchers call this the <em>verification problem</em>, and it has been the hard ceiling on applying RL to writing, research, and complex reasoning for years.</p>
+      <p>The workarounds all have costs. Human raters are slow and expensive. Using another language model as a judge is cheaper, but someone still has to specify what "good" looks like — the <em>rubric</em>. Writing that rubric has itself been a manual, expert task, which means the whole pipeline still bottlenecks on a human.</p>
+
+      <h3>How it works</h3>
+      <p>The paper's central move is to treat rubric-writing as a research problem and give it to an AI agent to solve. The analogy: imagine a teacher assigned to grade essays on a topic she hasn't marked before. A conscientious teacher doesn't just wing it — she spends a day reading the relevant literature, consulting syllabi, cataloguing common errors, and writing a detailed marking guide before she reads a single student paper. That deliberate preparation is what the authors are automating.</p>
+      <p>The framework, called DR-Rubric, has two stages. In Stage I, a deep research agent takes the task description and goes to work — performing iterative, multi-turn web searches, gathering domain facts, identifying what a good answer must include ("must cite evidence"), and cataloguing failure modes ("answers that confuse correlation with causation"). The agent follows its own curiosity across multiple rounds, the way a researcher browses rather than typing a single query into a search box.</p>
+      <p>In Stage II, everything gathered is distilled into atomic, interpretable rules. "Atomic" is the key word: not "the answer should be thorough" (too vague to score) but "the answer must identify at least three distinct causal mechanisms" (specific and checkable). These rules form the rubric. An output that satisfies more rules earns a higher reward; the RL algorithm uses that score to nudge the model's weights in the right direction.</p>
+      <p>The authors also test a bootstrap variant, where the process iterates: a model trained on one version of the rubric helps refine the rubric, which trains a better model, across three successive rounds — the marking guide and the student improving together.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team tested DR-Rubric across multiple agent safety and expert reasoning benchmarks, comparing three rubric sources: rubrics generated by GPT-5, rubrics generated by Gemini, and the self-refining bootstrap variant. They kept training sets deliberately small — 1,000 to 3,000 examples — to isolate the effect of rubric quality rather than data volume.</p>
+
+      <h3>What they found</h3>
+      <p>GPT-5-generated rubrics produced the best breadth of coverage on agentic tasks, catching the widest variety of error types. Gemini-generated rubrics gave the most balanced performance across both agentic tasks and expert reasoning problems. The bootstrap rubrics achieved the best overall performance by the third iteration, with gains compounding each round. The message is clear: there is no universal best rubric source, but any auto-generated rubric outperforms having no rubric at all — and the self-refining version keeps improving.</p>
+
+      <h3>The catch</h3>
+      <p>The rubric is only as good as the research agent that builds it. If Stage I misses important domain knowledge, or if the source material has gaps or biases, those limitations get baked into the rubric and inherited by the trained model. The method also does not fully answer whether atomic rules can capture everything that makes a complex answer excellent — qualities like clarity, elegance, and genuine insight resist decomposition into checkboxes. The authors are candid that the approach works best where factual correctness and structural completeness can be meaningfully verified.</p>
+
+      <p><strong>If you remember one thing:</strong> A machine can now automatically build the answer key for tasks that don't have one — opening reinforcement learning to writing, research, and reasoning at a scale that simply wasn't possible before.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 290" role="img" aria-label="The DR-Rubric two-stage pipeline from open-ended task to RL training">
+          <defs>
+            <marker id="arr19" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <path d="M0,0 L8,3 L0,6 Z" fill="#D1CFC5"/>
+            </marker>
+            <marker id="arr19b" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <path d="M0,0 L8,3 L0,6 Z" fill="#D97757"/>
+            </marker>
+          </defs>
+
+          <!-- Task entry label -->
+          <text x="78" y="32" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">open-ended task</text>
+          <text x="78" y="48" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="#87867F">"explain X clearly"</text>
+          <line x1="78" y1="54" x2="78" y2="78" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr19)"/>
+
+          <!-- Stage I box -->
+          <rect x="18" y="78" width="120" height="70" rx="8" fill="#6A8CAF" opacity="0.13" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="78" y="102" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413" font-weight="600">Stage I</text>
+          <text x="78" y="118" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">Deep Research</text>
+          <text x="78" y="134" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">multi-turn web search</text>
+
+          <!-- Arrow Stage I to Stage II with label -->
+          <line x1="138" y1="113" x2="198" y2="113" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr19)"/>
+          <text x="168" y="107" text-anchor="middle" font-family="system-ui" font-size="8.5" fill="#87867F">facts, constraints,</text>
+          <text x="168" y="119" text-anchor="middle" font-family="system-ui" font-size="8.5" fill="#87867F">failure modes</text>
+
+          <!-- Stage II box -->
+          <rect x="198" y="78" width="130" height="70" rx="8" fill="#788C5D" opacity="0.13" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="263" y="102" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413" font-weight="600">Stage II</text>
+          <text x="263" y="118" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">Rubric Distillation</text>
+          <text x="263" y="134" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">evidence → rules</text>
+
+          <!-- Arrow Stage II to Rubric -->
+          <line x1="328" y1="113" x2="388" y2="113" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr19)"/>
+
+          <!-- Rubric box -->
+          <rect x="388" y="78" width="140" height="70" rx="8" fill="#D97757" opacity="0.13" stroke="#D97757" stroke-width="1.5"/>
+          <text x="458" y="102" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413" font-weight="600">Rubric</text>
+          <text x="458" y="118" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">atomic, checkable rules</text>
+          <text x="458" y="134" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">→ reward signal</text>
+
+          <!-- Arrow Rubric to RL -->
+          <line x1="528" y1="113" x2="590" y2="113" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr19)"/>
+
+          <!-- RL Training box -->
+          <rect x="590" y="78" width="112" height="70" rx="8" fill="#141413" opacity="0.05" stroke="#141413" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="646" y="106" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413" font-weight="600">RL Training</text>
+          <text x="646" y="122" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">model learns</text>
+          <text x="646" y="138" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">from scored outputs</text>
+
+          <!-- Arrow RL to Better Model down -->
+          <line x1="646" y1="148" x2="646" y2="192" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr19)"/>
+
+          <!-- Better Model box -->
+          <rect x="582" y="192" width="128" height="52" rx="8" fill="#141413" opacity="0.05" stroke="#87867F" stroke-width="1"/>
+          <text x="646" y="215" text-anchor="middle" font-family="system-ui" font-size="10.5" fill="#141413" font-weight="600">Better model</text>
+          <text x="646" y="232" text-anchor="middle" font-family="system-ui" font-size="9" fill="#87867F">iterate → bootstrap</text>
+
+          <!-- Bootstrap curved arrow back to Stage I -->
+          <path d="M582 228 Q400 268 138 220 Q100 210 78 150" stroke="#D97757" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#arr19b)"/>
+          <text x="350" y="268" text-anchor="middle" font-family="system-ui" font-size="9" fill="#D97757">bootstrap: each iteration refines the rubric further (3 rounds tested)</text>
+        </svg>
+        <figcaption>The DR-Rubric pipeline. A research agent first gathers domain knowledge (Stage I), then distils it into atomic, checkable rules (Stage II). Those rules score model outputs during RL training. In the bootstrap variant (dashed orange), each trained model helps improve the rubric in the next round — the marking guide and the student sharpen together.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>His <em>autoresearch</em> repo now has 87,000 GitHub stars. The premise: give an AI agent a single GPU and a training file overnight, and it runs its own machine-learning experiments — modifying the code, training for five minutes, keeping what improves, discarding what doesn't. A working prototype of self-directed AI research, and the active community discussion asking whether this is recursive self-improvement at small scale is worth reading. <a href="https://github.com/karpathy/autoresearch">github.com/karpathy/autoresearch</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>The creator of Claude Code told Fortune this week he has not handwritten a line of code in eight months. On some mornings he oversees tens of thousands of AI agents at once. Claude Code is now generating more than $2.5 billion in annualised revenue — a product category that did not exist two years ago. <a href="https://fortune.com/2026/06/11/anthropic-claude-boris-cherny-doesnt-write-code-by-hand-anymore/">fortune.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two pressures are building simultaneously and pulling in opposite directions. Technically, AI systems are becoming better at training themselves: DR-Rubric automates the hardest part of reinforcement learning, Karpathy's agents run their own experiments overnight, and Boris Cherny now manages more agents than any human team could directly supervise. The loop of model-improving-model is tightening with each week. Institutionally, the opposite reflex is forming: the White House voluntary review framework, Canada building sovereign compute, the US-Japan research partnership — all of these are governments and alliances trying to keep a hand on the wheel as the car accelerates. The voluntary 30-day window in the executive order is modest, but it establishes a precedent: frontier models are no longer purely a product launch. They are, at least in principle, a policy event. Whether voluntary is enough — and what follows if it isn't — is the question the next few years will answer.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2606.01091">DR-Rubric paper (arXiv)</a> ·
+        <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">White House EO</a> ·
+        <a href="https://www.insideprivacy.com/artificial-intelligence/white-house-releases-executive-order-on-advanced-ai-innovation-and-security/">EO analysis (Inside Privacy)</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-06-08/china-s-moonshot-ai-seeks-30-billion-value-in-new-funding-talks">Moonshot AI (Bloomberg)</a> ·
+        <a href="https://fortune.com/2026/06/11/anthropic-claude-boris-cherny-doesnt-write-code-by-hand-anymore/">Boris Cherny interview (Fortune)</a> ·
+        <a href="https://github.com/karpathy/autoresearch">karpathy/autoresearch (GitHub)</a> ·
+        <a href="https://www.gurufocus.com/news/8901733/us-and-japan-launch-1b-ai-partnership-to-propel-scientific-advancements">US-Japan Genesis Mission</a> ·
+        <a href="https://shadowaiwatch.com/governance/canada-sovereign-ai-compute-infrastructure-program-2026/">Canada sovereign compute</a> ·
+        <a href="https://help.openai.com/en/articles/20001152-what-to-know-about-the-sora-discontinuation">Sora discontinuation (OpenAI)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Rubric</div>
+        <div>Not the ruler — the marking guide. In education, a rubric is a checklist of criteria a piece of work must satisfy to score well: "cites at least three sources," "defines all technical terms," "reaches a conclusion." In today's paper, it is the same idea applied to AI training: a set of specific, checkable rules that tell the reinforcement learning algorithm whether the model's output is good. The breakthrough is that generating this checklist no longer requires a human expert — an AI agent can research and write it.</div>
+      </div>
+      <dl>
+        <dt>Reinforcement learning (RL)</dt><dd>Training an AI by rewarding good outputs and penalising bad ones, repeated billions of times. The technique behind the biggest recent capability gains in reasoning models.</dd>
+        <dt>Reward signal</dt><dd>The score the RL algorithm uses to judge an output. Easy to compute for maths or code; very hard to compute for writing, research, or nuanced reasoning — which is why the verification problem matters.</dd>
+        <dt>Verification problem</dt><dd>The core RL bottleneck: if you cannot check an answer mechanically, you cannot train on it at scale. DR-Rubric is a new approach to breaking this limit for open-ended tasks.</dd>
+        <dt>Agentic search</dt><dd>An AI that searches the web across multiple rounds, following its own sub-questions — the way a researcher browses, not the way a search bar works.</dd>
+        <dt>Frontier model</dt><dd>The most capable AI model available at any given moment — before it becomes standard technology. The White House executive order is specifically aimed at this tier.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

@@ -1,5 +1,12 @@
 [
   {
+    "num": 19,
+    "date": "2026-06-16",
+    "slug": "issues/2026-06-16.html",
+    "title": "The mark before the grade",
+    "blurb": "A new paper solves reinforcement learning's open-ended grading problem by teaching AI to build its own answer key — while the White House signs the first formal framework for inspecting frontier models before they ship."
+  },
+  {
     "num": 18,
     "date": "2026-06-15",
     "slug": "issues/2026-06-15.html",
