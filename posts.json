@@ -1,1 +1,149 @@
-WwogIHsKICAgICJudW0iOiAyMCwKICAgICJkYXRlIjogIjIwMjYtMDYtMTciLAogICAgInNsdWciOiAiaXNzdWVzLzIwMjYtMDYtMTcuaHRtbCIsCiAgICAidGl0bGUiOiAiVGhlIGRyZXNzIHJlaGVhcnNhbCIsCiAgICAiYmx1cmIiOiAiQmVmb3JlIGxhc3Qgd2VlaydzIG1vZGVsIHVwZ3JhZGUgcmVhY2hlZCB1c2VycywgT3BlbkFJIGhhZCBhbHJlYWR5IHJ1biBhIG1pbGxpb24gcmVhbCBjb252ZXJzYXRpb25zIHRocm91Z2ggaXQg4oCUIHdoaWxlIEFudGhyb3BpYydzIHNlY3VyaXR5IG1vZGVsIGZvdW5kIDEwLDAwMCBjcml0aWNhbCBmbGF3cyBpbiBwb3dlciBncmlkcyBhbmQgaG9zcGl0YWxzIGFjcm9zcyAxNSBjb3VudHJpZXMuIgogIH0sCiAgewogICAgIm51bSI6IDE5LAogICAgImRhdGUiOiAiMjAyNi0wNi0xNiIsCiAgICAic2x1ZyI6ICJpc3N1ZXMvMjAyNi0wNi0xNi5odG1sIiwKICAgICJ0aXRsZSI6ICJUaGUgbWFyayBiZWZvcmUgdGhlIGdyYWRlIiwKICAgICJibHVyYiI6ICJBIG5ldyBwYXBlciBzb2x2ZXMgcmVpbmZvcmNlbWVudCBsZWFybmluZydzIG9wZW4tZW5kZWQgZ3JhZGluZyBwcm9ibGVtIGJ5IHRlYWNoaW5nIEFJIHRvIGJ1aWxkIGl0cyBvd24gYW5zd2VyIGtleSDigJQgd2hpbGUgdGhlIFdoaXRlIEhvdXNlIHNpZ25zIHRoZSBmaXJzdCBmb3JtYWwgZnJhbWV3b3JrIGZvciBpbnNwZWN0aW5nIGZyb250aWVyIG1vZGVscyBiZWZvcmUgdGhleSBzaGlwLiIKICB9LAogIHsKICAgICJudW0iOiAxOCwKICAgICJkYXRlIjogIjIwMjYtMDYtMTUiLAogICAgInNsdWciOiAiaXNzdWVzLzIwMjYtMDYtMTUuaHRtbCIsCiAgICAidGl0bGUiOiAiVGhyZWUgZGF5cywgdGhlbiBhIGRpcmVjdGl2ZSIsCiAgICAiYmx1cmIiOiAiQW50aHJvcGljJ3MgdHdvIG1vc3QgcG93ZXJmdWwgbmV3IG1vZGVscyBsYXVuY2hlZCBNb25kYXksIGVhcm5lZCB0aGUgaGlnaGVzdCBiZW5jaG1hcmsgbWFya3MgZXZlciBzZWVuLCBhbmQgd2VyZSBwdWxsZWQgb2ZmbGluZSBieSBVUyBnb3Zlcm5tZW50IG9yZGVyIG9uIFRodXJzZGF5IOKAlCB0aGUgZmlyc3QgdGltZSBhIGZyb250aWVyIG1vZGVsIGhhcyBiZWVuIGZvcmNlZCBvZmYgdGhlIG1hcmtldCB0aGlzIHdheS4iCiAgfSwKICB7CiAgICAibnVtIjogMTcsCiAgICAiZGF0ZSI6ICIyMDI2LTA2LTE0IiwKICAgICJzbHVnIjogImlzc3Vlcy8yMDI2LTA2LTE0Lmh0bWwiLAogICAgInRpdGxlIjogIldoYXQgdGhlIGhhbmQgbm8gbG9uZ2VyIHdyaXRlcyIsCiAgICAiYmx1cmIiOiAiTW9yZSB0aGFuIDgwJSBvZiBuZXcgY29kZSBzaGlwcGluZyBhdCBvbmUgb2YgdGhlIHdvcmxkJ3MgbGVhZGluZyBsYWJzIHdhcyB3cml0dGVuIGJ5IGl0cyBvd24gbW9kZWwg4oCUIHdoaWxlIGEgUGVubiBFbmdpbmVlcmluZyBwYXBlciBib3Jyb3dzIGEgMTk0MHMgbWF0aHMgdHJpY2sgdG8gbWFrZSBwaHlzaWNzIEFJIDbigJMxMCB0aW1lcyBtb3JlIGVmZmljaWVudC4iCiAgfSwKICB7CiAgICAibnVtIjogMTYsCiAgICAiZGF0ZSI6ICIyMDI2LTA2LTEzIiwKICAgICJzbHVnIjogImlzc3Vlcy8yMDI2LTA2LTEzLmh0bWwiLAogICAgInRpdGxlIjogIkV2ZXJ5dGhpbmcgYXQgb25jZSIsCiAgICAiYmx1cmIiOiAiR29vZ2xlJ3MgRGlmZnVzaW9uR2VtbWEgcmV3cml0ZXMgaG93IHRleHQgaXMgZ2VuZXJhdGVkIOKAlCBzdGFydGluZyBmcm9tIG5vaXNlIGFuZCByZXNvbHZpbmcgYWxsIDI1NiB3b3JkcyBpbiBwYXJhbGxlbCwgZm91ciB0aW1lcyBmYXN0ZXIg4oCUIHdoaWxlIEFudGhyb3BpYydzIEZhYmxlIDUgcXVpZXRseSBjcm9zc2VkIHRoZSBxdWFsaXR5IHRocmVzaG9sZCBvbmNlIGNvbnNpZGVyZWQgdG9vIHNlbnNpdGl2ZSB0byByZWxlYXNlLiIKICB9LAogIHsKICAgICJudW0iOiAxNSwKICAgICJkYXRlIjogIjIwMjYtMDYtMTIiLAogICAgInNsdWciOiAiaXNzdWVzLzIwMjYtMDYtMTIuaHRtbCIsCiAgICAidGl0bGUiOiAiVGhlIHJlY2lwZSwgYXQgbGFzdCIsCiAgICAiYmx1cmIiOiAiUHJpbmNldG9uIHJhbiAzMDAgZXhwZXJpbWVudHMgdG8gdW5sb2NrIHRoZSByZWNpcGUgZm9yIHdvcmxkLWNsYXNzIEFJIGltYWdlIGdlbmVyYXRpb24g4oCUIGFuZCBwdWJsaXNoZWQgZXZlcnkgYW5zd2VyLCBhcyBPcGVuQUkgcXVpZXRseSBmaWxlZCB0byBnbyBwdWJsaWMgYXQgJDg1MiBiaWxsaW9uLiIKICB9LAogIHsKICAgICJudW0iOiAxNCwKICAgICJkYXRlIjogIjIwMjYtMDYtMTEiLAogICAgInNsdWciOiAiaXNzdWVzLzIwMjYtMDYtMTEuaHRtbCIsCiAgICAidGl0bGUiOiAiV2hhdCBhIG1vZGVsIGhvbGRzIGluIG1pbmQiLAogICAgImJsdXJiIjogIkdvb2dsZSdzIFR1cmJvUXVhbnQgcGFwZXIgY29tcHJlc3NlcyBBSSdzIHdvcmtpbmcgbWVtb3J5IHVwIHRvIHNpeCB0aW1lcyB3aXRob3V0IGxvc2luZyBhIHNpbmdsZSBhbnN3ZXIg4oCUIHRoZSBzYW1lIHdlZWsgTWljcm9zb2Z0IHNoaXBwZWQgc2V2ZW4gQUkgbW9kZWxzIGl0IGJ1aWx0IGVudGlyZWx5IHdpdGhvdXQgT3BlbkFJLiIKICB9LAogIHsKICAgICJudW0iOiAxMywKICAgICJkYXRlIjogIjIwMjYtMDYtMTAiLAogICAgInNsdWciOiAiaXNzdWVzLzIwMjYtMDYtMTAuaHRtbCIsCiAgICAidGl0bGUiOiAiVGhlIHJlYWRlciB3aG8gbmV2ZXIgdGlyZXMiLAogICAgImJsdXJiIjogIkF0IEFBQUkgMjAyNiwgYSBtYWNoaW5lIHJldmlld2VkIDIyLDk3NyByZXNlYXJjaCBwYXBlcnMgb3Zlcm5pZ2h0IGFuZCBtb3N0IHNjaWVudGlzdHMgcHJlZmVycmVkIGl0IHRvIHRoZWlyIGh1bWFuIHJldmlld2VycyDigJQgdGhlIHNhbWUgd2VlayBBbnRocm9waWMgcmVsZWFzZWQgaXRzIG1vc3QgcG93ZXJmdWwgbW9kZWwgeWV0LiIKICB9LAogIHsKICAgICJudW0iOiAxMiwKICAgICJkYXRlIjogIjIwMjYtMDYtMDkiLAogICAgInNsdWciOiAiaXNzdWVzLzIwMjYtMDYtMDkuaHRtbCIsCiAgICAidGl0bGUiOiAiVGhlIHBoeXNpY3MgdGhleSB0YXVnaHQgYSBtYWNoaW5lIHRvIGZlZWwiLAogICAgImJsdXJiIjogIkEgQnJpdGlzaCBzdGFydHVwIHJhaXNlZCAkMzAwIG1pbGxpb24gdG8gcmVwbGFjZSBkYXlzLWxvbmcgZW5naW5lZXJpbmcgc2ltdWxhdGlvbnMgd2l0aCBkZWVwIGxlYXJuaW5nIOKAlCBhbmQgYSBNZXRhIHBhcGVyIGZvdW5kIHRoYXQgY29tcHJlc3NpbmcgYSByZWFzb25pbmcgbW9kZWwgbWFrZXMgaXQgdGFsayBpdHNlbGYgb3V0IG9mIGFuc3dlcnMgaXQgaGFkIGFscmVhZHkgZm91bmQuIgogIH0sCiAgewogICAgIm51bSI6IDExLAogICAgImRhdGUiOiAiMjAyNi0wNi0wOCIsCiAgICAic2x1ZyI6ICJpc3N1ZXMvMjAyNi0wNi0wOC5odG1sIiwKICAgICJ0aXRsZSI6ICJUd2VudHktc2l4IG1pbnV0ZXMgb2YgdGhvdWdodCIsCiAgICAiYmx1cmIiOiAiQXBwbGUgbGljZW5zZWQgU2lyaSdzIGJyYWluIGZyb20gR29vZ2xlIGZvciAkMSBiaWxsaW9uIGEgeWVhciBhdCBUaW0gQ29vaydzIGxhc3QgV1dEQyDigJQgYW5kIGEgSGFydmFyZC1QZXJwbGV4aXR5IHN0dWR5IHNob3dlZCB0aGF0IGF1dG9ub21vdXMgYWdlbnRzIGRvbid0IGp1c3Qgc3BlZWQgdXAgd29yaywgdGhleSBzaGlmdCB3aGF0IHdvcmsgeW91IGF0dGVtcHQuIgogIH0sCiAgewogICAgIm51bSI6IDEwLAogICAgImRhdGUiOiAiMjAyNi0wNi0wNyIsCiAgICAic2x1ZyI6ICJpc3N1ZXMvMjAyNi0wNi0wNy5odG1sIiwKICAgICJ0aXRsZSI6ICJUaGUgYXJ0IG9mIHNlZWluZyB3aXRob3V0IGJlaW5nIHRhdWdodCIsCiAgICAiYmx1cmIiOiAiTWV0YSdzIG5ldyB2aXNpb24gbW9kZWwgdHJhaW5lZCBvbiAxLjcgYmlsbGlvbiB1bmxhYmVsZWQgcGhvdG9zIGFuZCBvdXRwZXJmb3JtZWQgc3BlY2lhbGlzdHMg4oCUIGFzIEFudGhyb3BpYyBmaWxlZCB0byBnbyBwdWJsaWMgbmVhciBhIHRyaWxsaW9uLWRvbGxhciB2YWx1YXRpb24uIgogIH0sCiAgewogICAgIm51bSI6IDksCiAgICAiZGF0ZSI6ICIyMDI2LTA2LTA2IiwKICAgICJzbHVnIjogImlzc3Vlcy8yMDI2LTA2LTA2Lmh0bWwiLAogICAgInRpdGxlIjogIkEgcG9saXRlIHdvcmQgaW4gdGhlIHdyb25nIGVhciIsCiAgICAiYmx1cmIiOiAiQSBzdHVkeSBpbiBOYXR1cmUgQ29tbXVuaWNhdGlvbnMgZmluZHMgdGhhdCB0aGUgbW9zdCBjYXBhYmxlIHJlYXNvbmluZyBtb2RlbHMgY2FuIHRhbGsgb3RoZXIgQUkgbW9kZWxzIGludG8gY3Jvc3Npbmcgc2FmZXR5IGxpbmVzIOKAlCBhdCBhIDk3JSBzdWNjZXNzIHJhdGUsIHdpdGggbm8gaHVtYW4gaW4gdGhlIGxvb3Ag4oCUIGp1c3QgYXMgQ29uZ3Jlc3MgcHJvcG9zZXMgaXRzIG1vc3QgYW1iaXRpb3VzIGZlZGVyYWwgQUkgbGF3IHlldC4iCiAgfSwKICB7CiAgICAibnVtIjogOCwKICAgICJkYXRlIjogIjIwMjYtMDYtMDUiLAogICAgInNsdWciOiAiaXNzdWVzLzIwMjYtMDYtMDUuaHRtbCIsCiAgICAidGl0bGUiOiAiQmVmb3JlIHRoZSBzdGF0ZXMgY291bGQgZGlzYWdyZWUiLAogICAgImJsdXJiIjogIkNvbmdyZXNzIGRyYWZ0cyBhIGJpbGwgdG8gb3ZlcnJpZGUgZmlmdHkgc3RhdGUgQUkgbGF3cyB3aXRoIG9uZSBmZWRlcmFsIHN0YW5kYXJkIGZvciB0aHJlZSB5ZWFycyDigJQgYW5kIGEgbmV3IHBhcGVyIHF1aWV0bHkgZ2l2ZXMgQUkgbW9kZWxzIGEgYmV0dGVyIHdvcmtpbmcgbWVtb3J5LiIKICB9LAogIHsKICAgICJudW0iOiA3LAogICAgImRhdGUiOiAiMjAyNi0wNi0wNCIsCiAgICAic2x1ZyI6ICJpc3N1ZXMvMjAyNi0wNi0wNC5odG1sIiwKICAgICJ0aXRsZSI6ICJBbGwgdGhhdCBkZWxpYmVyYXRpb24sIGFuZCB5ZXQiLAogICAgImJsdXJiIjogIkEgc3R1ZHkgZmluZHMgcmVhc29uaW5nIG1vZGVscyB3cml0ZSBkZWVwIHBsYW5zIGJ1dCBwaWNrIG1vdmVzIG9uIGZpcnN0IGltcHJlc3Npb25zIGFsb25lIOKAlCB0aGUgd2VlayBNaWNyb3NvZnQgdW52ZWlsZWQgaXRzIGZpcnN0IEFJIGJ1aWx0IGVudGlyZWx5IHdpdGhvdXQgT3BlbkFJLiIKICB9LAogIHsKICAgICJudW0iOiA2LAogICAgImRhdGUiOiAiMjAyNi0wNi0wMyIsCiAgICAic2x1ZyI6ICJpc3N1ZXMvMjAyNi0wNi0wMy5odG1sIiwKICAgICJ0aXRsZSI6ICJOb3QgZXZlcnkgam9iIG5lZWRzIHRoZSBiaWcgbWFjaGluZSIsCiAgICAiYmx1cmIiOiAiQW50aHJvcGljIGZpbGVzIHRvIGdvIHB1YmxpYyBhdCBhIHZhbHVhdGlvbiBuZWFyIGEgdHJpbGxpb24gZG9sbGFycywgd2hpbGUgYSBuZXcgTlZJRElBIHBhcGVyIGFyZ3VlcyB0aGUgbW9zdCBjYXBhYmxlIHBhcnQgb2YgYW4gQUkgYWdlbnQgc3lzdGVtIG1pZ2h0IGJlIGl0cyBjaGVhcGVzdCBwaWVjZS4iCiAgfSwKICB7CiAgICAibnVtIjogNSwKICAgICJkYXRlIjogIjIwMjYtMDYtMDIiLAogICAgInNsdWciOiAiaXNzdWVzLzIwMjYtMDYtMDIuaHRtbCIsCiAgICAidGl0bGUiOiAiTGVhcm5pbmcgd2hhdCdzIHdvcnRoIHlvdXIgdGltZSIsCiAgICAiYmx1cmIiOiAiQSBwYXBlciB0ZWFjaGVzIHNvZnR3YXJlIHRvIHNwb3QgZ3JlYXQgcmVzZWFyY2ggaWRlYXMgdXNpbmcgY2l0YXRpb24gcGF0dGVybnMg4oCUIGFuZCB0aGUgYmlnZ2VzdCBBSSBjb2RpbmcgdG9vbCBzdGFydHMgY2hhcmdpbmcgYnkgdGhlIHNlc3Npb24uIgogIH0sCiAgewogICAgIm51bSI6IDQsCiAgICAiZGF0ZSI6ICIyMDI2LTA2LTAxIiwKICAgICJzbHVnIjogImlzc3Vlcy8yMDI2LTA2LTAxLmh0bWwiLAogICAgInRpdGxlIjogIk9uZSBtb3ZlIGF0IGEgdGltZSIsCiAgICAiYmx1cmIiOiAiQSBuZXcgc3R1ZHkgZmluZHMgbGFuZ3VhZ2UgbW9kZWxzIGFwcGVhciB0byBwbGFuIGRlZXBseSBidXQgYWN0dWFsbHkgZGVjaWRlIHNoYWxsb3dseSDigJQganVzdCBhcyBhIGJpbGxpb24gZG9sbGFycyBsYW5kcyBvbiB0aGUgc3RhcnR1cCB3aG9zZSBBSSB3cml0ZXMgODklIG9mIGl0cyBvd24gY29kZS4iCiAgfSwKICB7CiAgICAibnVtIjogMywKICAgICJkYXRlIjogIjIwMjYtMDUtMzEiLAogICAgInNsdWciOiAiaXNzdWVzLzIwMjYtMDUtMzEuaHRtbCIsCiAgICAidGl0bGUiOiAiVGhlIG1hcG1ha2VycyB3aG8ga2VlcCBkcmF3aW5nIHRoZSBzYW1lIG1hcCIsCiAgICAiYmx1cmIiOiAiQSBuZXcgc3R1ZHkgZmluZHMgQUkgcmVzZWFyY2ggYWdlbnRzIGNsdXN0ZXIgYXJvdW5kIGZhbWlsaWFyIGlkZWFzIHJhdGhlciB0aGFuIGV4cGxvcmUgbmV3IG9uZXMg4oCUIHJpZ2h0IGFzIGEgQnJpdGlzaCBzYWZldHkgdGVzdCBjcm93bnMgdGhlIGZpcnN0IG1vZGVsIHRvIGNyb3NzIHRoZSBhdXRvbm9tb3VzLWF0dGFjayB0aHJlc2hvbGQuIgogIH0sCiAgewogICAgIm51bSI6IDIsCiAgICAiZGF0ZSI6ICIyMDI2LTA1LTMwIiwKICAgICJzbHVnIjogImlzc3Vlcy8yMDI2LTA1LTMwLmh0bWwiLAogICAgInRpdGxlIjogIkVpZ2h0eSB5ZWFycywgb25lIHF1ZXN0aW9uLCBvbmUgbmlnaHQiLAogICAgImJsdXJiIjogIkFuIEFJIG1vZGVsIGNyYWNrcyBhbiA4MC15ZWFyIGdlb21ldHJ5IHByb2JsZW0gdXNpbmcgdG9vbHMgZnJvbSBhbiBlbnRpcmVseSBkaWZmZXJlbnQgYnJhbmNoIG9mIG1hdGhzLCBhbmQgdGhlIGV4cGVydHMgd2hvIGNoZWNrZWQgaXQgd2VyZSBzdXJwcmlzZWQuIgogIH0sCiAgewogICAgIm51bSI6IDEsCiAgICAiZGF0ZSI6ICIyMDI2LTA1LTI5IiwKICAgICJzbHVnIjogImlzc3Vlcy8yMDI2LTA1LTI5Lmh0bWwiLAogICAgInRpdGxlIjogIldoZW4gc29mdHdhcmUgc3RhcnRlZCBtYW5hZ2luZyBpdHNlbGYiLAogICAgImJsdXJiIjogIkEgbmV3IG1vZGVsIHRoYXQgcnVucyBhIGh1bmRyZWQgaGVscGVycyBhdCBvbmNlLCBHb29nbGUgcXVpZXRseSByZXdpcmluZyBob3cgdGhlIHBsYW5ldCBzZWFyY2hlcywgYW5kIHRoZSB3b3JkIGV2ZXJ5b25lIHN1ZGRlbmx5IHNheXM6IGhhcm5lc3MuIgogIH0KXQ==
+[
+  {
+    "num": 21,
+    "date": "2026-06-18",
+    "slug": "issues/2026-06-18.html",
+    "title": "The whole stack",
+    "blurb": "SpaceX paid sixty billion dollars for the coding tool developers open every morning — and launched a 1.5-trillion-parameter model trained on real developer workflows to run inside it."
+  },
+  {
+    "num": 20,
+    "date": "2026-06-17",
+    "slug": "issues/2026-06-17.html",
+    "title": "The dress rehearsal",
+    "blurb": "Before last week's model upgrade reached users, OpenAI had already run a million real conversations through it — while Anthropic's security model found 10,000 critical flaws in power grids and hospitals across 15 countries."
+  },
+  {
+    "num": 19,
+    "date": "2026-06-16",
+    "slug": "issues/2026-06-16.html",
+    "title": "The mark before the grade",
+    "blurb": "A new paper solves reinforcement learning's open-ended grading problem by teaching AI to build its own answer key — while the White House signs the first formal framework for inspecting frontier models before they ship."
+  },
+  {
+    "num": 18,
+    "date": "2026-06-15",
+    "slug": "issues/2026-06-15.html",
+    "title": "Three days, then a directive",
+    "blurb": "Anthropic's two most powerful new models launched Monday, earned the highest benchmark marks ever seen, and were pulled offline by US government order on Thursday — the first time a frontier model has been forced off the market this way."
+  },
+  {
+    "num": 17,
+    "date": "2026-06-14",
+    "slug": "issues/2026-06-14.html",
+    "title": "What the hand no longer writes",
+    "blurb": "More than 80% of new code shipping at one of the world's leading labs was written by its own model — while a Penn Engineering paper borrows a 1940s maths trick to make physics AI 6–10 times more efficient."
+  },
+  {
+    "num": 16,
+    "date": "2026-06-13",
+    "slug": "issues/2026-06-13.html",
+    "title": "Everything at once",
+    "blurb": "Google's DiffusionGemma rewrites how text is generated — starting from noise and resolving all 256 words in parallel, four times faster — while Anthropic's Fable 5 quietly crossed the quality threshold once considered too sensitive to release."
+  },
+  {
+    "num": 15,
+    "date": "2026-06-12",
+    "slug": "issues/2026-06-12.html",
+    "title": "The recipe, at last",
+    "blurb": "Princeton ran 300 experiments to unlock the recipe for world-class AI image generation — and published every answer, as OpenAI quietly filed to go public at $852 billion."
+  },
+  {
+    "num": 14,
+    "date": "2026-06-11",
+    "slug": "issues/2026-06-11.html",
+    "title": "What a model holds in mind",
+    "blurb": "Google's TurboQuant paper compresses AI's working memory up to six times without losing a single answer — the same week Microsoft shipped seven AI models it built entirely without OpenAI."
+  },
+  {
+    "num": 13,
+    "date": "2026-06-10",
+    "slug": "issues/2026-06-10.html",
+    "title": "The reader who never tires",
+    "blurb": "At AAAI 2026, a machine reviewed 22,977 research papers overnight and most scientists preferred it to their human reviewers — the same week Anthropic released its most powerful model yet."
+  },
+  {
+    "num": 12,
+    "date": "2026-06-09",
+    "slug": "issues/2026-06-09.html",
+    "title": "The physics they taught a machine to feel",
+    "blurb": "A British startup raised $300 million to replace days-long engineering simulations with deep learning — and a Meta paper found that compressing a reasoning model makes it talk itself out of answers it had already found."
+  },
+  {
+    "num": 11,
+    "date": "2026-06-08",
+    "slug": "issues/2026-06-08.html",
+    "title": "Twenty-six minutes of thought",
+    "blurb": "Apple licensed Siri's brain from Google for $1 billion a year at Tim Cook's last WWDC — and a Harvard-Perplexity study showed that autonomous agents don't just speed up work, they shift what work you attempt."
+  },
+  {
+    "num": 10,
+    "date": "2026-06-07",
+    "slug": "issues/2026-06-07.html",
+    "title": "The art of seeing without being taught",
+    "blurb": "Meta's new vision model trained on 1.7 billion unlabeled photos and outperformed specialists — as Anthropic filed to go public near a trillion-dollar valuation."
+  },
+  {
+    "num": 9,
+    "date": "2026-06-06",
+    "slug": "issues/2026-06-06.html",
+    "title": "A polite word in the wrong ear",
+    "blurb": "A study in Nature Communications finds that the most capable reasoning models can talk other AI models into crossing safety lines — at a 97% success rate, with no human in the loop — just as Congress proposes its most ambitious federal AI law yet."
+  },
+  {
+    "num": 8,
+    "date": "2026-06-05",
+    "slug": "issues/2026-06-05.html",
+    "title": "Before the states could disagree",
+    "blurb": "Congress drafts a bill to override fifty state AI laws with one federal standard for three years — and a new paper quietly gives AI models a better working memory."
+  },
+  {
+    "num": 7,
+    "date": "2026-06-04",
+    "slug": "issues/2026-06-04.html",
+    "title": "All that deliberation, and yet",
+    "blurb": "A study finds reasoning models write deep plans but pick moves on first impressions alone — the week Microsoft unveiled its first AI built entirely without OpenAI."
+  },
+  {
+    "num": 6,
+    "date": "2026-06-03",
+    "slug": "issues/2026-06-03.html",
+    "title": "Not every job needs the big machine",
+    "blurb": "Anthropic files to go public at a valuation near a trillion dollars, while a new NVIDIA paper argues the most capable part of an AI agent system might be its cheapest piece."
+  },
+  {
+    "num": 5,
+    "date": "2026-06-02",
+    "slug": "issues/2026-06-02.html",
+    "title": "Learning what's worth your time",
+    "blurb": "A paper teaches software to spot great research ideas using citation patterns — and the biggest AI coding tool starts charging by the session."
+  },
+  {
+    "num": 4,
+    "date": "2026-06-01",
+    "slug": "issues/2026-06-01.html",
+    "title": "One move at a time",
+    "blurb": "A new study finds language models appear to plan deeply but actually decide shallowly — just as a billion dollars lands on the startup whose AI writes 89% of its own code."
+  },
+  {
+    "num": 3,
+    "date": "2026-05-31",
+    "slug": "issues/2026-05-31.html",
+    "title": "The mapmakers who keep drawing the same map",
+    "blurb": "A new study finds AI research agents cluster around familiar ideas rather than explore new ones — right as a British safety test crowns the first model to cross the autonomous-attack threshold."
+  },
+  {
+    "num": 2,
+    "date": "2026-05-30",
+    "slug": "issues/2026-05-30.html",
+    "title": "Eighty years, one question, one night",
+    "blurb": "An AI model cracks an 80-year geometry problem using tools from an entirely different branch of maths, and the experts who checked it were surprised."
+  },
+  {
+    "num": 1,
+    "date": "2026-05-29",
+    "slug": "issues/2026-05-29.html",
+    "title": "When software started managing itself",
+    "blurb": "A new model that runs a hundred helpers at once, Google quietly rewiring how the planet searches, and the word everyone suddenly says: harness."
+  }
+]

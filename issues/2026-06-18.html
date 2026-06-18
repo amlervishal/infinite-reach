@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №21 — The whole stack · Infinite Reach</title>
+  <meta name="description" content="SpaceX paid sixty billion dollars for the coding tool its engineers open every morning — and a quiet paper made the case for why the AI behind it should hand off every maths problem to a proper computer algebra system." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №21 &middot; Wednesday, June 18, 2026</p>
+      <h1>The whole stack</h1>
+      <p>SpaceX paid sixty billion dollars for the coding tool its engineers open every morning, while launching a 1.5-trillion-parameter model trained specifically on the way real developers work. Somewhere quieter — and yet related — a new paper made the case that an AI mathematician should never be trusted to actually do the maths itself.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>SpaceX has agreed to acquire Cursor — the AI-augmented code editor built by San Francisco startup Anysphere — for $60 billion in an all-stock deal expected to close in the third quarter. SpaceX and Cursor had spent months jointly training a model together: Grok V9-Medium, 1.5 trillion parameters, built from scratch on 100,000 NVIDIA Blackwell GPUs, trained explicitly on Cursor developer workflows. That model shipped this week inside both Cursor and SpaceX's Grok Build product. The deal gives SpaceX's AI division — formed when it absorbed Elon Musk's xAI in February — the hardware (Colossus 2's 550,000-GPU supercluster), the model, and the coding interface in one continuous chain. Cursor's annualised revenue was $2.6 billion before the deal. SpaceX's market value briefly crossed $2.94 trillion — past Microsoft — on the day of the announcement.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Model launch</span><span>Grok V9-Medium is now generally available inside Cursor and Grok Build. At 1.5 trillion parameters it is three times larger than the model it replaces, and unlike most coding models it was trained on real developer workflows rather than only public code repositories.</span></li>
+        <li><span class="tag money">Compute</span><span>SpaceX's Colossus 2 in Memphis, Tennessee — 550,000 NVIDIA GB200 and GB300 GPUs, the world's first confirmed gigawatt-scale AI training facility — is currently training Grok 5, a six-trillion-parameter Mixture-of-Experts model. The acquisition of Cursor funnels more real-world developer data into that pipeline.</span></li>
+        <li><span class="tag policy">White House</span><span>The June 2 executive order "Promoting Advanced AI Innovation and Security" takes shape: a voluntary pre-release framework gives the US government secure early access to frontier models for up to 30 days before wider release, and a Treasury-run cybersecurity clearinghouse must be stood up within 30 days of the order. No mandatory licensing, but a formal front door for the first time.</span></li>
+        <li><span class="tag policy">EU AI Act</span><span>The Act becomes fully applicable on August 2 — five weeks away. The final version includes simplified rules for small and mid-sized companies and wider access to regulatory sandboxes, after a political agreement on amendments reached in May.</span></li>
+        <li><span class="tag tech">Google</span><span>Gemini 3.1 Flash Image (preview) will be deprecated June 25 with no stable successor; developers are directed to Gemini 3.5 Flash, which graduated to a generally available release this week.</span></li>
+      </ul>
+
+      <h2>Paper, explained: when AI acts as translator, not calculator</h2>
+      <p class="kicker">AXIOM: A Trust-First Neuro-Symbolic Execution Architecture for Verifiable Mathematical Reasoning &middot; Alessio Bruno &middot; <a href="https://arxiv.org/abs/2606.00671">arXiv&nbsp;2606.00671</a></p>
+
+      <p>This paper caught our eye because it solves a problem that everyone who has tried to use an AI for maths has bumped into — and it does so by questioning something most AI labs take for granted.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Ask a large language model to solve a maths problem and it will often give you a confident-sounding answer that is quietly wrong. Not dramatically wrong — it might get the setup right, name the correct formula, walk through every step in plausible prose — and then give the wrong number at the end. This is called hallucination, and maths is one of the places it hurts most, because unlike an opinion or a summary, a maths answer is either right or wrong. A 2% rounding error in a financial calculation or an engineering model is not "close enough."</p>
+
+      <p>The standard response from AI labs has been: give models more training, more compute, more chain-of-thought reasoning steps. Those improvements help. But the failure mode persists, because the underlying approach asks the model to do something it fundamentally was not designed for. Language models are trained to predict the most plausible next token. Arithmetic has a correct answer that is not always the most plausible-sounding one. The two goals are in friction.</p>
+
+      <h3>How it works</h3>
+      <p>AXIOM's core idea is a clean division of labour. Think of it like a translation booth at a technical conference. On one side is a human expert (the language model) who is outstanding at understanding what someone means — the nuance, the context, the phrasing — but is not a mathematician. On the other side is a Computer Algebra System (CAS): a piece of deterministic software that has done nothing but maths for forty years and makes zero arithmetic errors, but needs to be told exactly what to compute in its own formal language. AXIOM puts those two specialists in series, not competition.</p>
+
+      <p>The language model in AXIOM does only one job: it reads the natural-language problem and rewrites it into a narrow formal schema — a structured representation that the CAS can consume. It is a canonicalizer, not a solver. The CAS then receives this schema and runs a deterministic derivation. Either it produces a verified answer, or it says "I cannot solve this" — abstaining is a first-class output, not a failure. There is no step where an AI is asked to guess a number.</p>
+
+      <p>To handle the enormous variety of maths problems, AXIOM ships with over 3,100 routing rules — each one a 1:1:1 mapping between a problem-shape pattern (identified by a regular expression), a schema-specific prompt for the language model, and a closed-form CAS handler. When a new problem arrives, the system matches its shape to the closest route, calls the language model with the matching prompt, and dispatches to the right CAS function. Routing is deterministic. The only probabilistic step — the language model's translation — is tightly constrained by the schema.</p>
+
+      <h3>What they actually did</h3>
+      <p>Bruno evaluated AXIOM on four categories from the MATH benchmark — a standard academic dataset of competition-level mathematics. The four categories covered a combined 2,747 problems. AXIOM was configured with zero LOST_CORRECT regressions across 250+ consecutive code ship commits, meaning that no previously-solved problem was broken by any update: the engineering discipline was part of the evaluation, not just the end state.</p>
+
+      <h3>What they found</h3>
+      <p>AXIOM answered 2,592 of the 2,747 problems (94.36% coverage) and got every single one of those correct — 100% accuracy on the problems it chose to answer, and zero confident-wrong answers in the entire dataset. The remaining 155 problems (5.64%) received an abstention: the system said it could not solve them rather than guessing. From a trust standpoint, that trade-off is the point. A user who knows that AXIOM never answers a maths problem incorrectly — and simply declines on the ones it cannot verify — can rely on its output without checking every step.</p>
+
+      <h3>The catch</h3>
+      <p>The method works only within the problems its 3,100+ routing rules cover. Novel problem types, mixed-domain questions, or maths that requires the kind of creative reformulation a human mathematician would apply are invisible to a routing table. AXIOM is extraordinarily reliable inside its scope and completely silent outside it. It is also a single-author research project: the routing library is large but not yet independently peer-reviewed at scale. The result of "zero confident-wrong answers" is striking — and worth scrutinising carefully as the approach is extended to harder categories.</p>
+
+      <p><strong>If you remember one thing:</strong> the safest AI mathematician might be one that never does the maths itself — and says so when it cannot hand the problem off properly.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 260" role="img" aria-label="AXIOM pipeline: natural language problem passes through LLM canonicalizer, router, and CAS solver to produce a verified answer or abstention">
+          <rect width="720" height="260" fill="#FAFAF8" rx="4"/>
+          <text x="360" y="26" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" font-weight="600" fill="#141413">The AXIOM pipeline: translator → router → solver</text>
+          <rect x="20" y="50" width="140" height="80" rx="7" fill="#6A8CAF" fill-opacity="0.12" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="90" y="82" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="12" fill="#141413">Maths problem</text>
+          <text x="90" y="99" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">natural language</text>
+          <text x="90" y="114" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">"Find x if 3x + 7 = 22"</text>
+          <line x1="161" y1="90" x2="201" y2="90" stroke="#D1CFC5" stroke-width="1.5"/>
+          <polygon points="201,85 212,90 201,95" fill="#D1CFC5"/>
+          <rect x="213" y="50" width="148" height="80" rx="7" fill="#D97757" fill-opacity="0.12" stroke="#D97757" stroke-width="1.5"/>
+          <text x="287" y="78" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="12" fill="#141413">LLM canonicalizer</text>
+          <text x="287" y="95" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">translates to formal</text>
+          <text x="287" y="110" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">schema only</text>
+          <line x1="362" y1="90" x2="402" y2="90" stroke="#D1CFC5" stroke-width="1.5"/>
+          <polygon points="402,85 413,90 402,95" fill="#D1CFC5"/>
+          <text x="382" y="83" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">3,100+</text>
+          <text x="382" y="103" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">routes</text>
+          <rect x="414" y="50" width="148" height="80" rx="7" fill="#788C5D" fill-opacity="0.12" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="488" y="78" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="12" fill="#141413">CAS solver</text>
+          <text x="488" y="95" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">deterministic</text>
+          <text x="488" y="110" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">algebraic engine</text>
+          <line x1="563" y1="75" x2="613" y2="55" stroke="#788C5D" stroke-width="1.5"/>
+          <polygon points="609,50 621,53 614,62" fill="#788C5D"/>
+          <text x="597" y="60" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#788C5D">solvable</text>
+          <rect x="622" y="36" width="80" height="36" rx="5" fill="#788C5D" fill-opacity="0.18" stroke="#788C5D" stroke-width="1"/>
+          <text x="662" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413" font-weight="600">x = 5 ✓</text>
+          <text x="662" y="68" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">verified</text>
+          <line x1="563" y1="105" x2="613" y2="125" stroke="#87867F" stroke-width="1.5"/>
+          <polygon points="609,120 621,127 614,119" fill="#87867F"/>
+          <text x="597" y="121" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">out of scope</text>
+          <rect x="622" y="108" width="80" height="36" rx="5" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="662" y="126" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" font-weight="600">I can't answer</text>
+          <text x="662" y="140" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">abstain</text>
+          <line x1="30" y1="162" x2="690" y2="162" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="360" y="182" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="12" font-weight="600" fill="#141413">Results on 4 MATH benchmark categories (2,747 problems)</text>
+          <rect x="130" y="198" width="200" height="16" rx="3" fill="#D97757" fill-opacity="0.25"/>
+          <rect x="130" y="198" width="189" height="16" rx="3" fill="#D97757"/>
+          <text x="125" y="211" text-anchor="end" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">answered</text>
+          <text x="323" y="211" font-family="system-ui, sans-serif" font-size="10" fill="#141413" font-weight="600"> 94.36%</text>
+          <rect x="130" y="222" width="200" height="16" rx="3" fill="#788C5D" fill-opacity="0.25"/>
+          <rect x="130" y="222" width="200" height="16" rx="3" fill="#788C5D"/>
+          <text x="125" y="235" text-anchor="end" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">correct (of answered)</text>
+          <text x="334" y="235" font-family="system-ui, sans-serif" font-size="10" fill="#141413" font-weight="600"> 100%</text>
+          <text x="360" y="256" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">Zero confident-wrong answers across the full dataset</text>
+        </svg>
+        <figcaption>AXIOM separates understanding (LLM) from computation (CAS). The LLM only translates; a deterministic algebra engine does the actual solving. When it cannot verify an answer, it abstains — which is why it can claim 100% accuracy on everything it does answer.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>His "Software 3.0" framing — published on June 17 as a write-up of his Sequoia Ascent conference talk — extends the 2017 "Software 2.0" thesis. The new layer: AI selects what to automate based on what it can verify and iterate on, not just what can be described with training data. One of the cleaner frameworks for thinking about where human judgment still sits in the loop. <a href="https://www.startuphub.ai/ai-news/ai-figures/2026/figure-andrej-karpathy-software-thesis-evolution-2026-06-17">summary</a> · <a href="https://karpathy.ai/">karpathy.ai</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>The head of Claude Code told Fortune on June 11 that he hasn't written a line of code by hand in eight months, and that Claude Code is now writing its own code and conducting its own security reviews. "It's starting to get to the point where it has ideas," he said — looking at GitHub to figure out what to build next. <a href="https://fortune.com/2026/06/11/anthropic-claude-boris-cherny-doesnt-write-code-by-hand-anymore/">fortune.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three stories this week all pull on the same thread: who owns the pipeline between an idea and working code? SpaceX's answer is blunt — buy the hardware, train the model, and own the editor too. Its Colossus 2 supercluster already runs at a gigawatt. Its model was trained on real developer workflows, not just public repositories. Its new coding tool will ship on hardware optimised for its own weights. That is the complete vertical stack, assembled in roughly four months.</p>
+
+      <p>The AXIOM paper offers a contrasting philosophy. Rather than scaling one system to do everything, it breaks the problem apart: use the tool best suited to each sub-task. Language models are astonishing at understanding natural language; they are mediocre at arithmetic. Computer Algebra Systems are perfectly reliable at symbolic maths; they cannot read a word problem. Route each job to its specialist, verify the handoff, and refuse to guess. The result is a system that makes zero errors on the problems it handles and clearly says so on the problems it cannot.</p>
+
+      <p>Both approaches — vertical integration at massive scale and principled decomposition into specialists — are coherent responses to the same underlying challenge: making AI output reliable enough to act on. The question of which scales is still open.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.cnbc.com/2026/06/16/spacex-spcx-cursor-acquisition-ipo.html">CNBC — SpaceX acquires Cursor (June 16, 2026)</a> ·
+        <a href="https://techcrunch.com/2026/06/16/spacex-to-acquire-cursor-for-60b-in-stock-days-after-blockbuster-ipo/">TechCrunch — SpaceX/Cursor deal</a> ·
+        <a href="https://www.kucoin.com/news/flash/spacex-surpasses-microsoft-at-2-94t-valuation-after-60b-cursor-acquisition">KuCoin — SpaceX valuation</a> ·
+        <a href="https://www.techtimes.com/articles/318495/20260616/grok-v9-medium-arrives-spacex-seals-cursor-developers-face-model-choice-risk.htm">TechTimes — Grok V9-Medium launch</a> ·
+        <a href="https://arxiv.org/abs/2606.00671">arXiv 2606.00671 — AXIOM paper</a> ·
+        <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">White House — AI executive order</a> ·
+        <a href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai">European Commission — EU AI Act</a> ·
+        <a href="https://ai.google.dev/gemini-api/docs/changelog">Google — Gemini API changelog</a> ·
+        <a href="https://fortune.com/2026/06/11/anthropic-claude-boris-cherny-doesnt-write-code-by-hand-anymore/">Fortune — Boris Cherny (June 11, 2026)</a> ·
+        <a href="https://karpathy.ai/">Andrej Karpathy — karpathy.ai</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Neuro-symbolic</div>
+        <div>A hybrid approach that combines the pattern-recognition strengths of neural networks (AI trained on data) with the precise, rule-following strengths of symbolic systems (formal logic, algebra solvers). The idea: let each side do what it is actually good at, and connect them. AXIOM is a neuro-symbolic system: neural for language understanding, symbolic for computation.</div>
+      </div>
+      <dl>
+        <dt>Canonicalizer</dt><dd>In AXIOM, the language model's only job: take a natural-language maths problem and rewrite it into a formal, structured representation the computer algebra system can consume. It translates; it does not solve.</dd>
+        <dt>CAS (Computer Algebra System)</dt><dd>Deterministic software that manipulates mathematical expressions symbolically — solving equations, simplifying expressions, computing derivatives — without ever approximating. Unlike a calculator, it works with exact symbolic values (like π or √2), not floating-point approximations.</dd>
+        <dt>Mixture-of-Experts (MoE)</dt><dd>An architecture where a very large model is actually many smaller specialist sub-models. For each new input, a routing layer picks which specialists to activate. You get the quality of a huge model at the inference cost of a smaller one. Grok 5 (6 trillion parameters) uses this design.</dd>
+        <dt>Abstention</dt><dd>When a model or system declines to answer rather than guessing. Treated as a failure in most evaluations, but a design goal in AXIOM: it is better to say "I cannot verify this" than to produce a confident wrong answer.</dd>
+        <dt>Vertical integration</dt><dd>Owning the full chain from raw inputs to finished product — in SpaceX's case: the compute (Colossus 2), the foundation model (Grok), and the developer tool (Cursor). The alternative is to buy each layer from different suppliers.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
