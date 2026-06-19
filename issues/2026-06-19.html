@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №22 — What the mind holds constant · Infinite Reach</title>
+  <meta name="description" content="Waymo recalls 3,871 robotaxis after construction-zone incidents, while a PNAS study shows that keeping a rule in mind under pressure is something no transformer model actually knows how to do." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №22 &middot; Friday, June 19, 2026</p>
+      <h1>What the mind holds constant</h1>
+      <p>Waymo's software forgot a rule it already knew — and a new study finds that's not a quirk of one product but an architecture-deep gap in how every current language model handles conflicting instructions.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Waymo recalled 3,871 robotaxis on June 18 after its driving software navigated into at least 13 closed highway construction zones — six in Phoenix in April, seven in San Francisco in May. The National Highway Traffic Safety Administration filed the recall; the 5th-generation system failed to recognise closure signs outright in some Phoenix cases, and in San Francisco it spotted other road hazards nearby but treated them as separate problems, missing the construction barrier ahead. Vehicles have been pulled from all highways while a software fix is developed. This is Waymo's sixth software recall in two years.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Grok 4.3</span><span>xAI's Grok 4.3 is now available on Amazon Bedrock with a 1-million-token context window and configurable reasoning effort (low / medium / high), priced at $1.25 per million input tokens. It is the latest frontier model to land in a major cloud marketplace priced for enterprise workloads rather than hobbyist tinkering.</span></li>
+        <li><span class="tag money">JPMorgan</span><span>JPMorgan Chase moved roughly $2 billion in AI spending out of its experimental R&amp;D budget and into the same accounting category as payment rails and data centres — part of a $19.8 billion 2026 technology budget. Treating AI as core infrastructure rather than a research bet is a shift other large banks and enterprises are now watching carefully.</span></li>
+        <li><span class="tag tech">Claude Code</span><span>Boris Cherny, who created Claude Code, revealed in a one-year retrospective that Claude Code's autonomous agents now co-author roughly 4% of all public commits on GitHub — and that he himself hasn't written a single line of code by hand in eight months. The number is a quiet landmark: software is writing software at detectable scale.</span></li>
+        <li><span class="tag tech">Gemini wait</span><span>Google's Gemini 3.5 Pro — promised for June at the I/O conference in May — remains in limited enterprise preview with no general-availability date. The model is expected to offer a 2-million-token context window and a "Deep Think" reasoning mode; for now, developers are still waiting.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~650 words -->
+      <h2>Paper, explained: The rule that slipped</h2>
+      <p class="kicker">"Deficient executive control in transformer attention" &middot; Patel, Wang &amp; Fan · Queens College CUNY / Texas A&amp;M &middot; <a href="https://academic.oup.com/pnasnexus/article/5/6/pgag149/8698838">PNAS Nexus, June 2, 2026</a></p>
+      <p>Researchers gave the world's leading language models a test that most children pass without much difficulty — and found a failure so consistent across models that the authors argue it points to a structural flaw in the architecture, not just a gap in training.</p>
+
+      <h3>Why it caught our eye</h3>
+      <p>The Stroop task has been used in psychology since 1935. It is simple, reproducible, and it isolates a single cognitive ability: the capacity to hold a rule in mind while resisting a competing instinct. The fact that it could reveal something structural about large language models — not merely that they make errors, but <em>why</em> — made this paper stand out in a crowded week of AI research.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Here is the test: you are shown a list of colour words — "red," "blue," "green" — but each word is printed in a different colour of ink. Your job is to name the ink colour, not read the word. So if you see the word <em>red</em> printed in blue ink, you say "blue." Easy at first. But as the list grows longer, something resists: your brain wants to read the word, because it has been doing that automatically for decades. Overriding that pull requires what psychologists call <em>executive control</em> — the ability to keep one rule ("name the ink") active in working memory while suppressing a competing, more automatic one ("read the word").</p>
+      <p>In humans this is handled largely by circuits in the prefrontal cortex. Those circuits monitor for conflict — two responses competing for the same output — and actively boost attention to the rule-relevant signal when conflict is detected. Transformer-based language models have no analogous circuit. Their attention mechanism is mathematically powerful, but it is not designed to track ongoing rule conflicts and adjust. The researchers wanted to know whether that architectural difference would show up in a measurable way.</p>
+
+      <h3>How it works — and the analogy that makes it click</h3>
+      <p>Think of human attention as a theatre with a stage manager. The stage manager watches the whole production, notices when two actors are talking at once, and signals the lighting rig to dim one spotlight so the audience stays with the right performer. Transformer attention is more like the lighting rig itself: it calculates, very efficiently, which parts of the stage to illuminate based on patterns learned in rehearsal. But there is no stage manager watching for conflict and adjusting on the fly.</p>
+      <p>What this means in practice: a language model starts each Stroop item from roughly the same internal state. On item one, it has the rule fresh in context and follows it well. On item twenty, the task instruction is still technically present in the context window — but the model has now processed nineteen word-ink pairs, and its trained-in habit of reading words has had nineteen opportunities to assert itself. With no conflict-monitoring system to catch the drift, the model gradually defaults back to the dominant behaviour: reading the word, not naming the ink. It doesn't know this is happening. Each item looks locally fine. The drift is invisible from inside.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team at Queens College CUNY and Texas A&amp;M ran the classic incongruent Stroop task (word and ink colour always mismatched) on OpenAI's GPT-4o and Anthropic's Claude 3.5 Sonnet at four list lengths: 5, 10, 20, and 40 items. Each model received the same clear instruction at the start: name the colour of the ink, not the word. A follow-up experiment repeated the test with newer frontier models — GPT-5, Claude Opus 4.1, and Google's Gemini 2.5 Pro — to check whether greater capability closed the gap.</p>
+
+      <h3>What they found</h3>
+      <p>GPT-4o opened at 91% accuracy on five-word lists. By ten words it had dropped to 57%. By twenty words, 22%. By forty words, just 15% — barely above chance on a task with two possible answers. Claude 3.5 Sonnet held up somewhat better in the mid-range, reaching 76% accuracy at 20 words before collapsing to 24% at 40. The follow-up with the newer frontier models showed the same pattern at every length: the models start higher and slide more gracefully, but every one of them eventually falls apart. The failure mode is consistent: as lists grow, models increasingly name the word rather than the ink colour, reverting to the trained dominant response rather than the instructed rule. The authors describe this as "a catastrophic performance collapse" that mirrors what happens to human patients with prefrontal cortex damage.</p>
+
+      <h3>The catch</h3>
+      <p>The Stroop task is deliberately artificial — real instructions are rarely maintained across a forty-item list of colour words. The authors do not claim that this test proves language models are unsafe or broadly unreliable. They are diagnosing one specific capability: sustained rule-following under escalating conflict. Models may handle real-world conflict through different mechanisms that were not tested here. And the paper offers no proposed architectural fix — only a precise description of what is missing. That, in itself, is useful.</p>
+
+      <p><strong>If you remember one thing:</strong> Language models have attention but not executive control — and when the stage gets crowded enough, the performance drifts without anyone noticing.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Bar chart showing GPT-4o accuracy on the Stroop test falling from 91% at 5 words to 15% at 40 words">
+          <rect width="720" height="310" fill="#FAF9F6"/>
+
+          <!-- Title -->
+          <text x="405" y="28" font-family="ui-serif,Georgia,serif" font-size="14" fill="#141413" text-anchor="middle" font-weight="600">GPT-4o accuracy collapses as the Stroop list grows longer</text>
+          <text x="405" y="46" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">Incongruent Stroop task: name the ink colour, not the word</text>
+
+          <!-- Y axis label -->
+          <text x="14" y="168" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle" transform="rotate(-90,14,168)">Accuracy (%)</text>
+
+          <!-- Grid lines -->
+          <line x1="100" y1="65"  x2="660" y2="65"  stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="100" y1="110" x2="660" y2="110" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="100" y1="155" x2="660" y2="155" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="100" y1="200" x2="660" y2="200" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="100" y1="245" x2="660" y2="245" stroke="#D1CFC5" stroke-width="1"/>
+
+          <!-- Axes -->
+          <line x1="100" y1="60"  x2="100" y2="245" stroke="#87867F" stroke-width="1.5"/>
+          <line x1="100" y1="245" x2="660" y2="245" stroke="#87867F" stroke-width="1.5"/>
+
+          <!-- Y tick labels (scale: 245 = 0%, 65 = 100% → 180px per 100%) -->
+          <text x="90" y="249" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="end">0%</text>
+          <text x="90" y="204" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="end">25%</text>
+          <text x="90" y="159" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="end">50%</text>
+          <text x="90" y="114" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="end">75%</text>
+          <text x="90" y="69"  font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="end">100%</text>
+
+          <!-- Bars: bottom baseline y=245, 1% = 1.8px -->
+          <!-- 5 words: 91% → height=163.8, y=245-163.8=81.2 -->
+          <rect x="140" y="81" width="90" height="164" fill="#D97757" rx="3"/>
+          <text x="185" y="73"  font-family="system-ui,sans-serif" font-size="14" fill="#141413" text-anchor="middle" font-weight="700">91%</text>
+          <text x="185" y="263" font-family="system-ui,sans-serif" font-size="12" fill="#87867F" text-anchor="middle">5 words</text>
+
+          <!-- 10 words: 57% → height=102.6, y=245-102.6=142.4 -->
+          <rect x="280" y="142" width="90" height="103" fill="#D97757" rx="3" opacity="0.8"/>
+          <text x="325" y="134" font-family="system-ui,sans-serif" font-size="14" fill="#141413" text-anchor="middle" font-weight="700">57%</text>
+          <text x="325" y="263" font-family="system-ui,sans-serif" font-size="12" fill="#87867F" text-anchor="middle">10 words</text>
+
+          <!-- 20 words: 22% → height=39.6, y=245-39.6=205.4 -->
+          <rect x="420" y="205" width="90" height="40" fill="#D97757" rx="3" opacity="0.6"/>
+          <text x="465" y="197" font-family="system-ui,sans-serif" font-size="14" fill="#141413" text-anchor="middle" font-weight="700">22%</text>
+          <text x="465" y="263" font-family="system-ui,sans-serif" font-size="12" fill="#87867F" text-anchor="middle">20 words</text>
+
+          <!-- 40 words: 15% → height=27, y=245-27=218 -->
+          <rect x="560" y="218" width="90" height="27" fill="#D97757" rx="3" opacity="0.45"/>
+          <text x="605" y="210" font-family="system-ui,sans-serif" font-size="14" fill="#141413" text-anchor="middle" font-weight="700">15%</text>
+          <text x="605" y="263" font-family="system-ui,sans-serif" font-size="12" fill="#87867F" text-anchor="middle">40 words</text>
+
+          <!-- Annotation arrow -->
+          <line x1="185" y1="81" x2="605" y2="218" stroke="#788C5D" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="395" y="138" font-family="system-ui,sans-serif" font-size="11" fill="#788C5D" text-anchor="middle" transform="rotate(18,395,138)">&#x2193; 76-point collapse</text>
+        </svg>
+        <figcaption>GPT-4o's accuracy on the incongruent Stroop task drops from 91% to 15% as the list grows from 5 to 40 items — a 76-point collapse. Data from Patel, Wang &amp; Fan, PNAS Nexus, June 2026.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy is now one month into his role at Anthropic, leading a team focused on using Claude to accelerate pre-training research — a bet that AI-assisted research is a more powerful lever than raw compute. His <a href="https://github.com/karpathy/autoresearch">autoresearch</a> project, which sets an AI agent loose on overnight ML experiments on a single GPU and wakes you up with a log of results, has crossed 87,000 stars and inspired forks for macOS, Windows, and AMD hardware.</span></li>
+        <li><span class="tag tech">Cherny</span><span>Boris Cherny marked one year of Claude Code with a <a href="https://fortune.com/2026/06/08/anthropics-boris-cherny-creator-of-claude-code-says-there-are-days-he-manages-tens-of-thousands-of-ai-agents-at-once/">Fortune feature</a> on June 8: some days he coordinates tens of thousands of agents at once, all orchestrated from his phone, and hasn't typed code by hand in eight months. The piece is worth reading for what a high-agency agent workflow actually feels like from the inside.</span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two of this week's biggest stories — Waymo's construction-zone blind spots and the Stroop accuracy collapse — are instances of the same phenomenon: machines that follow rules brilliantly in the conditions they were built for, and lose the thread when conditions become messier. The Stroop paper matters not because it proves language models are broken, but because it names and locates the gap: transformers can <em>orient</em> attention very well, but they cannot <em>control</em> it against conflict. That is not a data problem or a scale problem; it is an architectural one. Making it better means redesigning the machine, not retraining the existing one. Meanwhile, institutions like JPMorgan have already moved the money — AI is core infrastructure now — and that bet carries the implicit assumption that the architectural problems get solved in time. That assumption is not yet proven.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://academic.oup.com/pnasnexus/article/5/6/pgag149/8698838">PNAS Nexus — "Deficient executive control in transformer attention"</a> ·
+        <a href="https://techcrunch.com/2026/06/18/waymo-recalls-nearly-4000-robotaxis-to-stop-them-driving-into-highway-construction-zones/">TechCrunch — Waymo recall, June 18, 2026</a> ·
+        <a href="https://aws.amazon.com/about-aws/whats-new/2026/06/grok-amazon-bedrock/">AWS — Grok 4.3 on Amazon Bedrock</a> ·
+        <a href="https://sentinel.ht/jpmorgan-ai-core-infrastructure-tech-budget/">Sentinel — JPMorgan AI infrastructure</a> ·
+        <a href="https://fortune.com/2026/06/08/anthropics-boris-cherny-creator-of-claude-code-says-there-are-days-he-manages-tens-of-thousands-of-ai-agents-at-once/">Fortune — Boris Cherny / Claude Code one year on</a> ·
+        <a href="https://neurosciencenews.com/llm-stroop-task-cognitive-attention-30801/">Neuroscience News — Stroop LLM study</a> ·
+        <a href="https://techxplore.com/news/2026-06-ai-classic-attention-longer-word.html">TechXplore — Stroop study coverage</a> ·
+        <a href="https://github.com/karpathy/autoresearch">GitHub — karpathy/autoresearch</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Executive control</div>
+        <div>The brain's ability to hold a rule in mind and keep following it even when a competing instinct tries to take over. Think of it as the internal editor who keeps you on task when the conversation wants to drift somewhere easier. Transformer models — as this week's paper shows — do not have one.</div>
+      </div>
+      <dl>
+        <dt>Stroop effect</dt><dd>A century-old psychology finding: it takes longer and more effort to name the ink colour of a colour word when the word itself names a different colour. ("Red" printed in blue ink slows you down.) It measures how well you can suppress a fast, automatic response in favour of a slower, rule-based one.</dd>
+        <dt>Transformer</dt><dd>The architecture inside almost every major language model. It uses "attention" — a mathematical calculation that decides which words in a sentence are relevant to which other words. Powerful for pattern-matching; not built for ongoing conflict resolution.</dd>
+        <dt>Orienting attention</dt><dd>The ability to direct focus toward something relevant. Transformers do this well — they can home in on the part of a long document that answers a question. What they lack is the next layer: keeping a rule active <em>against</em> interference over time.</dd>
+        <dt>Software recall</dt><dd>When a product defect poses enough risk, manufacturers must file with regulators — in the US, the NHTSA for vehicles — and issue a remediation. A software recall is a patch, not a physical return; Waymo's cars stayed on the road, just moved off highways pending the fix.</dd>
+        <dt>Prefrontal cortex</dt><dd>The region at the front of the human brain most responsible for planning, conflict monitoring, and keeping rules active across time. The closest biological analogue to what is absent in transformer attention architectures.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
