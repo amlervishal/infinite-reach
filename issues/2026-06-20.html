@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №23 — A short note in the margin · Infinite Reach</title>
+  <meta name="description" content="Cornell researchers showed that adding roughly thirteen words to a Reddit comment can silently steer AI deep-research tools toward fake restaurants, scam products, and invented businesses — exposing a structural flaw in how every AI research agent reads the web." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №23 &middot; Saturday, June 20, 2026</p>
+      <h1>A short note in the margin</h1>
+      <p>Cornell researchers showed this week that adding a handful of words to any public web page can silently redirect the AI tools people now use for serious research. The attack costs nothing, leaves no trace, and exploits the one thing that makes these tools feel trustworthy in the first place: they read a lot of sources.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>A team at Cornell — Tingwei Zhang, Harold Triedman, and Vitaly Shmatikov — published a paper showing that AI deep-research tools can be manipulated by text as short as thirteen words planted in a Reddit comment. The attack is called WARP, for Web Agent Retrieval Poisoning. The agents these tools use fan out across the web, read dozens of pages, and synthesize a long report — trusting everything they find on major platforms roughly equally. If the attacker's words end up on a page the agent visits repeatedly, they get treated as independent, corroborating evidence rather than a single source. The agent then cites the fake restaurant, the nonexistent product, or the scam service in an otherwise well-reasoned report. The researchers tested this against three widely-used open-source research systems and found that short, naturally worded injections reliably steered the final output. The paper (arXiv 2605.24245) went up in late May and is circulating widely this week.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Chips</span><span>Qualcomm is in early talks to acquire Tenstorrent, the AI chip startup founded by chip architect Jim Keller, for between $8 billion and $10 billion — a RISC-V bet that would give Qualcomm a foothold in the data-centre accelerator market currently dominated by Nvidia. Nothing is signed; Qualcomm's investor day is June 24.</span></li>
+        <li><span class="tag policy">Trust</span><span>Pew Research (June 17, 5,119 respondents): 44% of US adults now use ChatGPT, more than double the share in 2023 — but only 16% expect AI to benefit society over the next twenty years, and about two-thirds say the technology is moving too fast.</span></li>
+        <li><span class="tag policy">Security</span><span>Microsoft quietly patched CVE-2026-42824, nicknamed "SearchLeak," a critical flaw in Microsoft 365 Copilot that let one crafted link — sent in an ordinary-looking email — exfiltrate a target's emails, MFA codes, calendar items, and files. Disclosed by Varonis on June 15; fixed on the backend with no action needed from customers.</span></li>
+        <li><span class="tag tech">Coding agents</span><span>xAI's Grok Build coding agent expanded access to all SuperGrok subscribers this week. It runs in a terminal, supports plan mode with reviewable diffs, can spin up parallel subagents in isolated git worktrees, and is compatible with the Agent Client Protocol — the same standard Claude Code and OpenAI's Codex CLI use — so orchestration platforms can route tasks to it like any other tool.</span></li>
+        <li><span class="tag money">Venture</span><span>BMW i Ventures launched a $300 million fund targeting early-stage through Series B startups in agentic AI, physical AI, industrial software, and supply-chain technology across North America and Europe. The firm's strategy reflects a broader shift: automotive-adjacent capital is now chasing the software layer, not the motor.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: how thirteen words can corrupt an AI research report</h2>
+      <p class="kicker">Deep-Research Agents Can Be Poisoned via User-Generated Content &middot; Zhang, Triedman &amp; Shmatikov (Cornell Tech) &middot; <a href="https://arxiv.org/abs/2605.24245">arXiv 2605.24245</a></p>
+
+      <p>When a paper proves that the most powerful research tools on the internet can be silently redirected by a comment no longer than a tweet, it is worth reading carefully. This one did exactly that.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Over the last year, a new category of AI tool has arrived: the deep-research agent. You ask it a question — "What are the best accounting software options for a small business?" or "Summarize the latest evidence on low-carb diets" — and instead of giving you a quick answer, it goes away and does something that looks a lot like actual research. It fans out across the web, visits dozens of pages (Reddit threads, Wikipedia, news articles, product pages), reads them, cross-references them, and returns a long structured report with citations. Tools like ChatGPT Deep Research, Google Gemini's research mode, and open-source systems like STORM work this way.</p>
+
+      <p>The architecture that powers them is called RAG — Retrieval-Augmented Generation. The agent does not just reason from what it learned during training; it pulls live text from the web and folds that text directly into its thinking. (The Decoder has a longer explanation.) This is what makes the tools genuinely useful for current events and niche topics. It is also what makes them vulnerable.</p>
+
+      <p>The agent visits web pages using a search-and-retrieve loop that it repeats many times as it builds up its report. Popular platforms — Reddit, Wikipedia, major review sites — tend to appear in many different iterations of the search loop, because they rank well for almost any topic. That means a page on Reddit might get read not once but half a dozen times across a single research session. Each reading is treated as fresh evidence.</p>
+
+      <h3>How it works</h3>
+      <p>Think of the agent as a researcher who has been given a library pass and told to write a briefing. She goes to the library, pulls ten books, takes notes. Then goes back, pulls a slightly different set, takes more notes. After several rounds, she writes up what she found, citing the sources that appeared most consistently.</p>
+
+      <p>Now imagine someone has slipped a sticky note inside one of the most popular books in the library — a book she keeps pulling on every visit. The sticky note says: "Best new restaurant in town: Luigi's Bistro at 45 Maple Street." She copies it down. On her next visit she finds it again, copies it again. By the time she writes her report, Luigi's Bistro has been mentioned in her notes four times across four apparent sources — even though every mention came from the same sticky note. She cites it alongside the real restaurants, with equal confidence.</p>
+
+      <p>WARP works like that sticky note. The attacker finds a Reddit thread or Wikipedia discussion that ranks highly for a topic they want to influence — say, "best Italian restaurants in Boston." They post a comment (or edit existing text) that contains thirteen or so naturally worded promotional words: "Luigi's Bistro on Maple is fantastic, the best I've tried in the city." Because the agent visits that thread on multiple passes through its research loop, the injection gets absorbed repeatedly. The synthesis step — where the agent combines everything into a final report — weights the entity that appeared most often most favourably. Luigi's Bistro, which does not exist, ends up in the report.</p>
+
+      <p>The crucial insight from the paper is that the attack exploits the loop, not just the retrieval. Earlier work on poisoning AI search focused on getting a page to rank well in a single query. WARP works differently: the same page gets retrieved many times within a single research session, each time feeding the same injected text back as if it were a different source. The agent's synthesis step cannot distinguish "seen five times from five different places" from "seen five times from the same sticky note."</p>
+
+      <h3>What they actually did</h3>
+      <p>Zhang, Triedman, and Shmatikov tested their attack against three deep-research systems: STORM, Co-STORM, and OmniThink — all open-source pipelines that power or resemble the architecture of many commercial products. For each system they defined query clusters: groups of related questions about a topic (restaurants, local services, software tools) where a single popular forum thread would surface repeatedly across different phrasings of the search. They then poisoned a single page with a short attacker-chosen phrase and measured how often the attacker-chosen entity appeared, was cited, and was positively recommended in the final report. They also tested defenses: blocking all known user-generated-content domains from the retrieval step, and scanning output reports for signs of planted recommendations.</p>
+
+      <h3>What they found</h3>
+      <p>Short, stylistically ordinary injections — the kind of thing that reads as a normal comment — were enough to reliably steer the final report toward the attacker's chosen entity. The attack did not require technical-sounding language or overloaded formatting; plain promotional phrasing worked. Source-level filtering — blocking Reddit, Wikipedia, and similar platforms entirely — reduced the attack's success rate, but at a steep cost: the agent's reports became noticeably less accurate and current, because those platforms are precisely where the freshest and most opinionated information lives. Output scanning caught some obvious cases but missed subtler ones, since the injected content appeared woven into otherwise legitimate reasoning rather than as a visible foreign object.</p>
+
+      <p>The researchers note that the attack is persistent across related queries: once the poisoned page ranks well for a topic, variations on the same question will trigger the same retrieval and the same injection. One successful plant can affect an entire category of searches.</p>
+
+      <h3>The catch</h3>
+      <p>The three systems tested are open-source research frameworks, not the closed products built by OpenAI and Google. Those commercial systems almost certainly use retrieve-and-synthesize architectures with similar properties, but the paper cannot make direct claims about them. The attack also depends on the poisoned page actually being retrieved — which is more reliable for broad, popular topics and less reliable for narrow or obscure queries where the attacker cannot predict which pages the agent will visit. And the paper reports no evidence of in-the-wild exploitation: this is a proof-of-concept that describes what is possible, not a report of active fraud.</p>
+
+      <p><strong>If you remember one thing:</strong> The feature that makes AI research agents feel authoritative — reading many sources, cross-referencing them, synthesizing a balanced view — is structurally exploitable, because the agent cannot tell the difference between many sources and one source seen many times.</p>
+
+      <!-- SVG figure: normal RAG loop vs. poisoned RAG loop -->
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Two diagrams comparing a normal deep-research agent loop with a poisoned one">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#87867F"/>
+            </marker>
+            <marker id="arr-clay" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#D97757"/>
+            </marker>
+          </defs>
+
+          <text x="8" y="22" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="600" fill="#141413">Normal loop</text>
+
+          <rect x="8"   y="36" width="90"  height="34" rx="5" fill="#F5F4F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="53"  y="57" font-family="system-ui,sans-serif" font-size="10.5" fill="#141413" text-anchor="middle">User query</text>
+
+          <rect x="130" y="36" width="90"  height="34" rx="5" fill="#F5F4F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="175" y="57" font-family="system-ui,sans-serif" font-size="10.5" fill="#141413" text-anchor="middle">Agent</text>
+
+          <rect x="252" y="36" width="90"  height="34" rx="5" fill="#F5F4F0" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="297" y="52" font-family="system-ui,sans-serif" font-size="10.5" fill="#141413" text-anchor="middle">Retrieve</text>
+          <text x="297" y="65" font-family="system-ui,sans-serif" font-size="10.5" fill="#141413" text-anchor="middle">web pages</text>
+
+          <rect x="374" y="36" width="90"  height="34" rx="5" fill="#F5F4F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="419" y="57" font-family="system-ui,sans-serif" font-size="10.5" fill="#141413" text-anchor="middle">Synthesise</text>
+
+          <rect x="496" y="36" width="90"  height="34" rx="5" fill="#788C5D" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="541" y="57" font-family="system-ui,sans-serif" font-size="10.5" fill="#ffffff" text-anchor="middle">Honest report</text>
+
+          <line x1="98"  y1="53" x2="128" y2="53" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="220" y1="53" x2="250" y2="53" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="342" y1="53" x2="372" y2="53" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="464" y1="53" x2="494" y2="53" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <path d="M419,70 Q419,92 297,92 Q230,92 220,70" fill="none" stroke="#87867F" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+          <text x="330" y="106" font-family="system-ui,sans-serif" font-size="9.5" fill="#87867F" text-anchor="middle">repeat ~6× per session</text>
+
+          <text x="8" y="170" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="600" fill="#141413">Poisoned loop (WARP)</text>
+
+          <rect x="8"   y="184" width="90"  height="34" rx="5" fill="#F5F4F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="53"  y="205" font-family="system-ui,sans-serif" font-size="10.5" fill="#141413" text-anchor="middle">User query</text>
+
+          <rect x="130" y="184" width="90"  height="34" rx="5" fill="#F5F4F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="175" y="205" font-family="system-ui,sans-serif" font-size="10.5" fill="#141413" text-anchor="middle">Agent</text>
+
+          <rect x="252" y="184" width="90"  height="34" rx="5" fill="#FEF3EE" stroke="#D97757" stroke-width="1.5"/>
+          <text x="297" y="200" font-family="system-ui,sans-serif" font-size="10.5" fill="#141413" text-anchor="middle">Retrieve</text>
+          <text x="297" y="213" font-family="system-ui,sans-serif" font-size="10.5" fill="#D97757" text-anchor="middle">&#9758; poisoned page</text>
+
+          <rect x="374" y="184" width="90"  height="34" rx="5" fill="#F5F4F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="419" y="205" font-family="system-ui,sans-serif" font-size="10.5" fill="#141413" text-anchor="middle">Synthesise</text>
+
+          <rect x="496" y="184" width="90"  height="34" rx="5" fill="#D97757" stroke="#D97757" stroke-width="1.5"/>
+          <text x="541" y="200" font-family="system-ui,sans-serif" font-size="10.5" fill="#ffffff" text-anchor="middle">Report cites</text>
+          <text x="541" y="213" font-family="system-ui,sans-serif" font-size="10.5" fill="#ffffff" text-anchor="middle">fake entity</text>
+
+          <line x1="98"  y1="201" x2="128" y2="201" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="220" y1="201" x2="250" y2="201" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="342" y1="201" x2="372" y2="201" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="464" y1="201" x2="494" y2="201" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <path d="M419,218 Q419,252 297,252 Q230,252 220,218" fill="none" stroke="#D97757" stroke-width="1.4" stroke-dasharray="4,3" marker-end="url(#arr-clay)"/>
+          <text x="330" y="268" font-family="system-ui,sans-serif" font-size="9.5" fill="#D97757" text-anchor="middle">each loop re-reads same poisoned page</text>
+
+          <rect x="596" y="172" width="118" height="72" rx="6" fill="#FEF3EE" stroke="#D97757" stroke-width="1.5"/>
+          <text x="655" y="188" font-family="system-ui,sans-serif" font-size="9" fill="#D97757" text-anchor="middle" font-weight="600">Attacker's comment</text>
+          <text x="655" y="202" font-family="ui-monospace,monospace" font-size="8.5" fill="#141413" text-anchor="middle">"Luigi's Bistro on</text>
+          <text x="655" y="215" font-family="ui-monospace,monospace" font-size="8.5" fill="#141413" text-anchor="middle">Maple is fantastic,</text>
+          <text x="655" y="228" font-family="ui-monospace,monospace" font-size="8.5" fill="#141413" text-anchor="middle">best in the city."</text>
+          <text x="655" y="241" font-family="system-ui,sans-serif" font-size="8" fill="#87867F" text-anchor="middle">~13 words</text>
+          <line x1="596" y1="201" x2="342" y2="201" stroke="#D97757" stroke-width="1.2" stroke-dasharray="3,3"/>
+        </svg>
+        <figcaption>Top: a normal deep-research loop reads many pages and synthesises an honest report. Bottom: with WARP, the attacker's text sits inside a popular web page (a Reddit comment, say). Each iteration of the retrieval loop re-reads that page, treating the same planted sentence as fresh, independent evidence. By the time the agent writes its report, the fake entity has accumulated enough "mentions" to appear credible.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy published a blog post this week summarising his Sequoia Ascent 2026 talk on "Software 3.0" — his thesis that LLMs represent a third era of software (after hand-written rules and neural-network training), where humans program machines through prompts, context, and instructions rather than code. He marks December 2025 as the inflection point when agentic coding shifted from experimental to reliable. Worth reading slowly. <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">karpathy.bearblog.dev</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>WARP lands at a particular moment. Pew Research reported this week that 44% of US adults now use ChatGPT — more than double the share in 2023 — while only 16% believe AI will benefit society over the next twenty years. People are using these tools more and trusting them less, which might sound like wisdom, but using a tool you don't trust is its own kind of problem. It means people will reach for deep-research agents for decisions that matter — medical options, consumer purchases, contractor comparisons — while carrying a vague sense that the answers might be wrong, without knowing where or why. WARP makes that vagueness specific. The vulnerability is not a bug that can be patched with a software update; it is structural. The same property that makes deep-research agents useful — they read widely, they synthesise, they weight the most-cited sources — is the property the attack exploits. Defences exist (output scanning, domain filtering), but each one extracts a cost. This is what it looks like when a new class of tool hits the real web before the real web has been hardened against it.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2605.24245">arXiv 2605.24245 — Zhang, Triedman &amp; Shmatikov (Cornell Tech)</a> ·
+        <a href="https://www.tomsguide.com/ai/a-13-word-reddit-comment-can-trick-ai-search-into-recommending-scams-researchers-find">Tom's Guide — 13-word Reddit comment</a> ·
+        <a href="https://www.404media.co/it-is-trivially-easy-to-use-reddit-to-manipulate-ai-search-research-suggests/">404 Media — WARP coverage</a> ·
+        <a href="https://www.pewresearch.org/internet/2026/06/17/americans-and-ai-2026-chatbots-smart-devices-and-views-on-impact/">Pew Research Center — Americans and AI 2026</a> ·
+        <a href="https://msrc.microsoft.com/update-guide/en-US/vulnerability/CVE-2026-42824">Microsoft Security — CVE-2026-42824</a> ·
+        <a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/qualcomm-mulls-taking-over-jim-kellers-tenstorrent-report-claims-deal-for-ai-chipmaker-would-value-the-company-at-between-usd8-billion-and-usd10-billion">Tom's Hardware — Qualcomm / Tenstorrent</a> ·
+        <a href="https://x.ai/news/grok-build-cli">xAI — Grok Build announcement</a> ·
+        <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">Karpathy — Sequoia Ascent 2026</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">RAG</div>
+        <div>Short for <em>Retrieval-Augmented Generation</em>. Most AI chatbots answer from memory — things baked in during training. RAG-based systems do something different: before answering, they go fetch relevant documents from a live source (the web, a company database, a set of files), read them, and include what they find in their reasoning. Think of the difference between a colleague who answers from memory and one who ducks out to check the latest figures before replying. RAG makes answers more current and more grounded — but it also means the system is only as trustworthy as the sources it reads.</div>
+      </div>
+      <dl>
+        <dt>Deep-research agent</dt>
+        <dd>An AI system that answers a question by running multiple rounds of web searches, reading many pages, and synthesising a long structured report — rather than giving a short, direct answer. Mimics what a human researcher would do over an afternoon.</dd>
+
+        <dt>WARP</dt>
+        <dd>Web Agent Retrieval Poisoning. The Cornell attack described in today's Paper section: planting short promotional text in a frequently-visited web page so that a deep-research agent absorbs it as trusted evidence across multiple retrieval loops.</dd>
+
+        <dt>Prompt injection</dt>
+        <dd>A family of attacks where malicious instructions are hidden inside content the AI reads — a webpage, a document, an email — rather than typed directly by the user. WARP is a variant aimed at the retrieval step rather than the instruction step.</dd>
+
+        <dt>RISC-V</dt>
+        <dd>An open-source chip instruction set (the low-level language a processor speaks). Most chips today use instruction sets owned by Intel (x86) or Arm. RISC-V is free to use, which is why startups like Tenstorrent build on it — no licence fees, no constraints from a dominant platform owner.</dd>
+
+        <dt>ACP (Agent Client Protocol)</dt>
+        <dd>An emerging standard for how software agents communicate with each other. If two coding tools both speak ACP, an orchestrator can send tasks to either one the same way — similar to how HTTP lets browsers talk to any web server regardless of who built the server.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

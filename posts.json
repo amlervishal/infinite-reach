@@ -1,5 +1,12 @@
 [
   {
+    "num": 23,
+    "date": "2026-06-20",
+    "slug": "issues/2026-06-20.html",
+    "title": "A short note in the margin",
+    "blurb": "Cornell researchers proved that adding roughly thirteen words to a Reddit comment can silently steer AI deep-research tools toward fake restaurants and invented businesses — exposing a structural flaw in how every AI research agent reads the web."
+  },
+  {
     "num": 22,
     "date": "2026-06-19",
     "slug": "issues/2026-06-19.html",
