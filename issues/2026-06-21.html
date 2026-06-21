@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №24 — Six million lessons · Infinite Reach</title>
+  <meta name="description" content="Six million GitHub pull requests, one fine-tuned model, a nearly-tripled score — and three words that prompted the US to pull Anthropic's most capable models offline globally." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №24 &middot; Sunday, June 21, 2026</p>
+      <h1>Six million lessons</h1>
+      <p>A research team trained a coding model by letting it absorb six million real GitHub pull requests — and nearly tripled its performance without changing a single line of the model's architecture. At the same time, three words from an unknown hacker reached the US government, which promptly switched off two of the world's most capable AI models for every user on the planet.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On the evening of June 12, Anthropic received a directive from the US government under national security authorities ordering the company to suspend access to its Fable 5 and Mythos 5 models for all foreign nationals — wherever in the world they were, including Anthropic's own employees who aren't US citizens. Because Anthropic could not verify the nationality of every user making a request in real time, it could not comply selectively. So it complied completely: both models went dark for every customer, everywhere, within hours. Nine days later, they remain offline. The reported trigger was as banal as it was alarming: a method to bypass Fable 5's safety guidelines that reportedly involved asking it to "fix this code." Anthropic has pushed back publicly, arguing that applying this standard across the industry would effectively halt all frontier model deployments — any known jailbreak in any model would justify a shutdown. The case has since become the test case for whether a US export-control framework built around physical hardware can logically apply to cloud software.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag policy">What is an export?</span><span>The Fable 5 directive has surfaced a genuinely novel legal question: if a US server answers a foreign user's API call, has an "export" occurred? The law was written for chips and missiles, not inference calls. Trade lawyers are now arguing about it. <a href="https://www.cio.com/article/4186429/anthropic-fable-dispute-suggests-export-no-longer-means-what-it-used-to.html">CIO</a></span></li>
+        <li><span class="tag money">Valuation</span><span>Anthropic closed a Series H round at a private valuation of roughly $965 billion — putting it just below a trillion dollars and, on paper, above OpenAI's private valuation as the world's most valuable standalone AI startup. <a href="https://news.crunchbase.com/venture/foundational-ai-startup-funding-doubled-openai-anthropic-xai-q1-2026/">Crunchbase</a></span></li>
+        <li><span class="tag tech">Governance gap</span><span>A Black Duck Security study found that 97% of developers now use AI coding tools — but only one in three of their organizations has a policy in place to govern AI-generated code. GitHub Copilot leads at 83% adoption; Claude Code is at 63%. <a href="https://www.buildfastwithai.com/blogs/ai-news-today-june-21-2026">Build Fast with AI</a></span></li>
+        <li><span class="tag policy">Power</span><span>Data centers are projected to increase Chicago-area power demand by 900%. After Illinois bills to regulate AI infrastructure expansion failed to pass, the cost burden falls on the grid — and ultimately on ratepayers — with no state-level guardrails. <a href="https://unrot.co/blogs/ai-news-today-june-20-2026">Unrot</a></span></li>
+        <li><span class="tag money">Conflict of interest</span><span>Amazon shelved a nearly-finished Hollywood documentary about Sam Altman after signing a $50 billion commercial deal with OpenAI — deciding that the two relationships couldn't coexist. <a href="https://www.buildfastwithai.com/blogs/ai-news-today-june-21-2026">Build Fast with AI</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: how a model learned from six million real code reviews</h2>
+      <p class="kicker">"Immersion in the GitHub Universe: Scaling Coding Agents to Mastery" &middot; AweAI Team &middot; <a href="https://arxiv.org/abs/2602.09892">arxiv.org/abs/2602.09892</a></p>
+
+      <p>This paper caught our eye because its central idea is almost stubbornly simple: if you want an AI to get better at coding, stop writing clever training tricks and just hand it the six million real pull requests that human engineers have already written, reviewed, argued over, and merged.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>For several years, a benchmark called SWE-bench has served as the standard test for coding agents. It works by taking real, resolved GitHub issues — someone filed a bug, a human engineer fixed it, the fix got merged — and asking an AI to reproduce the correct fix without seeing the solution. It turns out this is hard in a specific way: you have to understand not just how to write code but how to read an unfamiliar codebase, diagnose a problem someone else left, and produce a patch that passes real tests. A good AI model, until recently, resolved around 20–25% of SWE-bench problems.</p>
+
+      <p>The standard response has been to write <em>synthetic</em> training data: researchers invent plausible-looking code challenges, generate solutions, and fine-tune on those. The problem is that synthetic data is thin. It lacks the texture of real engineering: the half-finished refactors, the dependency conflicts, the tests written before the code, the review comments arguing about architecture. You can simulate a textbook exercise but you cannot easily simulate six years of accumulated institutional knowledge deposited in a public repository. The researchers behind ScaleSWE asked: what if we stopped simulating and just used the real thing?</p>
+
+      <h3>How it works</h3>
+      <p>Think of it like training a new hire not with a manual but by having them read every pull request the company ever merged — including the review comments, the failed drafts, the revisions, the back-and-forth. That's the core of ScaleSWE. The team built a three-agent automated pipeline to turn GitHub's public history into structured training data at scale.</p>
+
+      <p>The <strong>first agent</strong> sets up a working environment for each pull request: it checks out the code at the moment before the PR was merged, capturing the "broken" starting state — the world as it existed before the fix was written. The <strong>second agent</strong> synthesizes tests: given what the PR changed, it writes tests that would fail in the pre-merge state and pass after the fix is applied. These become the ground truth for whether a generated solution is actually correct. The <strong>third agent</strong> writes a problem description — given the code and the tests, what task would a developer have been asked to solve? This is the label the training model learns to predict.</p>
+
+      <p>Each step runs in a sandbox — an isolated environment so that one broken repository can't poison the pipeline. The automation is what makes the scale possible: no human reviews each instance individually.</p>
+
+      <!-- SVG: ScaleSWE pipeline -->
+      <figure>
+        <svg viewBox="0 0 720 285" role="img" aria-label="Diagram of the ScaleSWE three-agent pipeline from GitHub pull requests to a fine-tuned coding agent scoring 64% on SWE-bench">
+          <defs>
+            <marker id="arr24" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#D1CFC5"/>
+            </marker>
+          </defs>
+
+          <!-- Source box -->
+          <rect x="8" y="75" width="118" height="135" rx="8" fill="#F5F3EE" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="67" y="113" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="bold">GitHub</text>
+          <text x="67" y="132" font-family="system-ui,sans-serif" font-size="10.5" fill="#87867F" text-anchor="middle">5,200 repos</text>
+          <text x="67" y="149" font-family="system-ui,sans-serif" font-size="10.5" fill="#87867F" text-anchor="middle">6 million pull</text>
+          <text x="67" y="165" font-family="system-ui,sans-serif" font-size="10.5" fill="#87867F" text-anchor="middle">requests</text>
+
+          <!-- Arrows: source to three agents -->
+          <line x1="128" y1="115" x2="160" y2="70" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr24)"/>
+          <line x1="128" y1="143" x2="160" y2="143" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr24)"/>
+          <line x1="128" y1="172" x2="160" y2="218" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr24)"/>
+
+          <!-- Agent 1: Environment -->
+          <rect x="162" y="38" width="162" height="62" rx="6" fill="#6A8CAF" fill-opacity="0.12" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="243" y="62" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle" font-weight="600">Agent 1 — Environment</text>
+          <text x="243" y="79" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">checks out pre-merge state</text>
+          <text x="243" y="93" font-family="ui-monospace,monospace" font-size="9" fill="#6A8CAF" text-anchor="middle">the world before the fix</text>
+
+          <!-- Agent 2: Tests -->
+          <rect x="162" y="112" width="162" height="62" rx="6" fill="#D97757" fill-opacity="0.12" stroke="#D97757" stroke-width="1.5"/>
+          <text x="243" y="136" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle" font-weight="600">Agent 2 — Tests</text>
+          <text x="243" y="153" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">writes tests: fail before, pass after</text>
+          <text x="243" y="167" font-family="ui-monospace,monospace" font-size="9" fill="#D97757" text-anchor="middle">ground truth for correctness</text>
+
+          <!-- Agent 3: Description -->
+          <rect x="162" y="186" width="162" height="62" rx="6" fill="#788C5D" fill-opacity="0.12" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="243" y="210" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle" font-weight="600">Agent 3 — Description</text>
+          <text x="243" y="227" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">synthesizes the task prompt</text>
+          <text x="243" y="241" font-family="ui-monospace,monospace" font-size="9" fill="#788C5D" text-anchor="middle">what was the engineer asked to do?</text>
+
+          <!-- Arrows: agents to dataset -->
+          <line x1="326" y1="69" x2="374" y2="118" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr24)"/>
+          <line x1="326" y1="143" x2="374" y2="143" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr24)"/>
+          <line x1="326" y1="217" x2="374" y2="168" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr24)"/>
+
+          <!-- Dataset box -->
+          <rect x="376" y="96" width="147" height="95" rx="8" fill="#F5F3EE" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="449" y="122" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" text-anchor="middle" font-weight="bold">Scale SWE Data</text>
+          <text x="449" y="141" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">100,000 verified</text>
+          <text x="449" y="157" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">training instances</text>
+          <text x="449" y="174" font-family="ui-monospace,monospace" font-size="9.5" fill="#87867F" text-anchor="middle">71,498 used for fine-tuning</text>
+
+          <!-- Arrow: dataset to model -->
+          <line x1="525" y1="143" x2="556" y2="143" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr24)"/>
+
+          <!-- Fine-tuned model box -->
+          <rect x="558" y="96" width="150" height="95" rx="8" fill="#D97757" fill-opacity="0.10" stroke="#D97757" stroke-width="2"/>
+          <text x="633" y="121" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" text-anchor="middle" font-weight="bold">ScaleSWE Agent</text>
+          <text x="633" y="140" font-family="system-ui,sans-serif" font-size="10.5" fill="#87867F" text-anchor="middle">Qwen-30B, fine-tuned</text>
+          <text x="633" y="164" font-family="system-ui,sans-serif" font-size="22" fill="#D97757" text-anchor="middle" font-weight="bold">64%</text>
+          <text x="633" y="182" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">SWE-bench Verified</text>
+        </svg>
+        <figcaption>The ScaleSWE pipeline processes 6 million GitHub pull requests through three sandboxed agents, producing 100,000 verified training instances. Fine-tuning on those instances lifts a 30-billion-parameter model to 64% on SWE-bench — nearly three times its starting score.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The AweAI team ran this pipeline over 6 million pull requests drawn from 5,200 public GitHub repositories, producing what they call Scale SWE Data: a dataset of 100,000 verified, ready-to-use training instances, the largest of its kind. From that pool, they distilled 71,498 high-quality training trajectories and used them to fine-tune Qwen-30B-A3B-Instruct, a 30-billion-parameter open model (the "A3B" in the name refers to its mixture-of-experts design, where only about 3 billion parameters are active at any moment). The resulting model is ScaleSWE Agent.</p>
+
+      <h3>What they found</h3>
+      <p>ScaleSWE Agent resolved 64% of problems on SWE-bench Verified — a nearly threefold improvement over the base Qwen model at the same task. That result placed it among the best open-model scores on SWE-bench at the time of publication. Critically, the improvement came entirely from data quality, not from model scale or architectural changes. The researchers also found that the three-agent pipeline caught subtle problems that simpler filtering would miss: pull requests where the original tests were themselves flawed, where the development environment couldn't be reliably reproduced, or where the "fix" was actually a revert that obscured the original bug. Removing those problem cases measurably improved downstream performance.</p>
+
+      <h3>The catch</h3>
+      <p>Scale SWE Data is built entirely from publicly merged pull requests, which means it skews toward well-maintained, documented open-source projects. It doesn't capture the messy interior of private codebases, legacy code that nobody touches, or the class of problems where the right answer is a redesign rather than a patch. SWE-bench Verified is also a narrower test than the full range of software engineering: high scores don't translate directly to a model that can architect a system from scratch or reason from ambiguous requirements. And the Qwen base model already had strong coding priors — the same data might not lift a weaker starting model by the same factor.</p>
+
+      <p><strong>If you remember one thing:</strong> The biggest single jump in open coding-agent capability this year came not from a new architecture or a bigger model — it came from a team that simply read more of what human engineers actually wrote, six million times over.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy's <em>autoresearch</em> repo — where an AI agent runs its own GPU training experiments, checks whether results improved, and loops — keeps gaining attention as a working example of automated scientific iteration. It's a small, runnable embodiment of an idea that's now everywhere in the literature: can a model improve itself without a human in the loop? <a href="https://github.com/karpathy/autoresearch">github.com/karpathy/autoresearch</a></span></li>
+        <li><span class="tag tech">Dan Koe</span><span>His latest essay on building a one-person business in 2026 is a clear-eyed map of where agentic AI actually helps (removing low-value friction: formatting, repetition, research legwork) versus where human judgment remains the moat (strategy, positioning, taste). Worth the fifteen minutes. <a href="https://letters.thedankoe.com/p/how-id-build-a-one-person-business">letters.thedankoe.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two stories this week look unrelated but are the same story from opposite angles. A research team proved that the fastest path to a better AI is feeding it the archive of real human work at scale — six million pull requests, every review comment, every failed test. And a US government agency, alarmed by what one of these models could do, proved that it can be switched off globally in hours. The capability and the control are now moving in lockstep. As models get stronger by absorbing everything we've ever made, the question of who holds the off-switch is becoming one of the most consequential governance problems of the decade — and this week, we got a sharp demonstration that the switch is real, and that it works.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2602.09892">ScaleSWE paper — arXiv 2602.09892</a> ·
+        <a href="https://github.com/AweAI-Team/ScaleSWE">ScaleSWE GitHub (AweAI-Team)</a> ·
+        <a href="https://www.anthropic.com/news/fable-mythos-access">Anthropic statement on Fable 5 / Mythos 5</a> ·
+        <a href="https://fortune.com/2026/06/13/anthropic-disables-fable-mythos-export-controls-national-security-threat/">Fortune — Fable 5 ban</a> ·
+        <a href="https://www.cio.com/article/4186429/anthropic-fable-dispute-suggests-export-no-longer-means-what-it-used-to.html">CIO — what "export" means for AI</a> ·
+        <a href="https://www.foxbusiness.com/politics/trump-admin-says-anthropics-recklessness-triggered-export-controls-latest-ai-models">Fox Business — government's position</a> ·
+        <a href="https://www.techzine.eu/news/security/142189/fix-this-code-three-words-behind-the-export-ban-on-claude-fable-5/">Techzine — "fix this code"</a> ·
+        <a href="https://news.crunchbase.com/venture/foundational-ai-startup-funding-doubled-openai-anthropic-xai-q1-2026/">Crunchbase — Anthropic valuation</a> ·
+        <a href="https://www.buildfastwithai.com/blogs/ai-news-today-june-21-2026">Build Fast with AI — June 21, 2026</a> ·
+        <a href="https://unrot.co/blogs/ai-news-today-june-20-2026">Unrot — June 20, 2026</a> ·
+        <a href="https://github.com/karpathy/autoresearch">Karpathy — autoresearch</a> ·
+        <a href="https://letters.thedankoe.com/p/how-id-build-a-one-person-business">Dan Koe — one-person business in 2026</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">fine-tuning</div>
+        <div>Taking a large, generally-capable model and training it further on a specialized dataset. Think of a chef who already knows every cuisine — then spending six months doing nothing but pastry. Everything they learned before stays; the extra training sharpens one skill on top of it.</div>
+      </div>
+      <dl>
+        <dt>SWE-bench</dt><dd>A benchmark that gives a coding agent a real, unresolved GitHub bug and measures whether it produces the correct fix. Named after "software engineering." A 64% score means the agent fixed 64 out of 100 real bugs correctly.</dd>
+        <dt>pull request (PR)</dt><dd>A proposal to merge a code change into a shared codebase. A PR includes the changed code, automated test results, and back-and-forth review comments from colleagues — a complete record of how the change was made and argued over.</dd>
+        <dt>export control</dt><dd>Laws that restrict sending certain goods or technologies to foreign governments or nationals. Originally designed for weapons and hardware; now being tested as a mechanism for restricting access to cloud-based AI models.</dd>
+        <dt>jailbreak</dt><dd>A prompt or technique that tricks an AI model into ignoring its safety guidelines and producing output it was designed to refuse. Named by analogy with escaping a locked system.</dd>
+        <dt>mixture-of-experts (MoE)</dt><dd>A model architecture where the network is divided into many specialized sub-networks ("experts"), but only a small subset of them activates for any given request. This lets a model have a large total parameter count while staying fast and cheap to run.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

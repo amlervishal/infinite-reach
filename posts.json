@@ -1,5 +1,12 @@
 [
   {
+    "num": 24,
+    "date": "2026-06-21",
+    "slug": "issues/2026-06-21.html",
+    "title": "Six million lessons",
+    "blurb": "Six million GitHub pull requests, one fine-tuned model, a nearly-tripled score — and three words that prompted the US government to pull Anthropic's most capable models offline globally."
+  },
+  {
     "num": 23,
     "date": "2026-06-20",
     "slug": "issues/2026-06-20.html",
