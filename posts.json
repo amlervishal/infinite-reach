@@ -1,5 +1,12 @@
 [
   {
+    "num": 25,
+    "date": "2026-06-22",
+    "slug": "issues/2026-06-22.html",
+    "title": "The architecture of thought",
+    "blurb": "The co-inventor of the Transformer — the framework beneath every major AI system — just left Google for OpenAI, as a new paper by the man who invented LSTM asks whether AI models are wasting their compute by thinking out loud."
+  },
+  {
     "num": 24,
     "date": "2026-06-21",
     "slug": "issues/2026-06-21.html",

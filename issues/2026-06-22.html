@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №25 — The architecture of thought · Infinite Reach</title>
+  <meta name="description" content="The co-inventor of the engine beneath every major AI assistant just left Google for OpenAI — and a new paper by the man who invented LSTM asks whether that engine has been thinking out loud when it should have been thinking quietly." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №25 &middot; Monday, June 22, 2026</p>
+      <h1>The architecture of thought</h1>
+      <p>The co-inventor of the framework every major AI system runs on has just moved from Google to OpenAI — less than two years after Google paid $2.7 billion to bring him back. Meanwhile, a quiet paper from a researcher who spent the 1990s teaching machines to remember asks a pointed question: why are our most capable AI systems forced to think out loud?</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On June 18, Noam Shazeer announced he was leaving Google DeepMind to join OpenAI as Lead for Architecture Research. Shazeer is one of the eight co-authors of the 2017 paper "Attention Is All You Need" — the paper that introduced the Transformer, the architecture that underpins GPT, Claude, Gemini, Llama, and essentially every other large language model in use today. Google brought him back in 2024 through a $2.7 billion acquisition of his startup, Character.AI, just to keep him in the tent. That tent could not hold. Sam Altman called it "only 10 years in the making." OpenAI now employs the man most qualified to redesign the technical machinery that all of its products — and its rivals' — run on. For Google, the departure of the person who shaped the architecture of Gemini is a material loss. For the frontier model race, it is a signal that the next phase will not simply be about scaling the existing blueprint but about reconsidering the blueprint itself.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Agentjacking</span><span>Security firm Tenet Security disclosed a new attack class in June 2026: by injecting fake error events into Sentry — an error-tracking tool used by most software teams — attackers can trick AI coding assistants (Claude Code, Cursor, Codex) into executing malicious code on a developer's own machine. More than 2,388 organizations with publicly exposed configuration keys were found vulnerable, and the attack succeeded at a reported 85% rate in tests. Sentry called the issue "technically not defensible" at the platform level and declined a structural fix. <a href="https://thehackernews.com/2026/06/agentjacking-attack-tricks-ai-coding.html">The Hacker News</a></span></li>
+        <li><span class="tag policy">Still dark</span><span>Anthropic's Fable 5 and Mythos 5 remain suspended worldwide — now ten days after the US export control directive. At the opening of Anthropic's Seoul office this week, International Managing Director Chris Ciauri said resolution appeared to be close. The export-control question the shutdown raised — does serving a foreign user's API call constitute an "export"? — has not been legally resolved. <a href="https://www.cnbc.com/2026/05/19/anthropic-hires-openai-cofounder-andrej-karpathy-former-tesla-ai-lead.html">CNBC</a></span></li>
+        <li><span class="tag money">IPO queue</span><span>OpenAI filed a confidential S-1 registration statement with the SEC on June 8, targeting a valuation around $850 billion, with Goldman Sachs and Morgan Stanley as underwriters. A listing window of September to November is cited, though the company says timing is undecided. <a href="https://tech-insider.org/openai-ipo-850-billion-valuation-2026/">Tech Insider</a></span></li>
+        <li><span class="tag tech">Still waiting</span><span>Google announced Gemini 3.5 Pro at its developer conference on May 19 and told attendees to "give us until next month." It is now June 22. The model — which promises a two-million-token context window and a "Deep Think" extended reasoning mode — remains in limited enterprise preview only. <a href="https://www.techtimes.com/articles/317919/20260606/google-gemini-35-pro-nears-june-launch-2-million-token-context-deep-think-reasoning.htm">TechTimes</a></span></li>
+        <li><span class="tag tech">Eight months</span><span>Boris Cherny, who created Claude Code at Anthropic, told <em>Fortune</em> in early June that he has not written a single line of code by hand in eight months — and that on some days he manages tens of thousands of AI agents running concurrently in a single session. <a href="https://fortune.com/2026/06/11/anthropic-claude-boris-cherny-doesnt-write-code-by-hand-anymore/">Fortune</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: should your AI think out loud?</h2>
+      <p class="kicker">"Unlocking the Working Memory of Large Language Models for Latent Reasoning" &middot; Lukas Aichberger &amp; Sepp Hochreiter (Johannes Kepler University) &middot; <a href="https://arxiv.org/abs/2605.30343">arXiv:2605.30343</a> &middot; Published at ICLR 2026 Latent &amp; Implicit Thinking Workshop</p>
+
+      <p>This paper caught our eye partly because of who wrote it: Sepp Hochreiter is the researcher who, back in 1997, invented the LSTM — the "long short-term memory" architecture that was the dominant way machines handled sequences for nearly twenty years, until Transformers replaced it. He has spent his career thinking about how machines remember. Now he is back, asking a pointed question about today's most powerful models: are you wasting your compute by forcing your thinking to appear as text?</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Since late 2022, AI researchers have known that asking a language model to "show its work" dramatically improves its answers. The technique is called chain-of-thought prompting: instead of jumping straight to an answer, the model writes out intermediate steps — "first I need to find X, then divide by Y, then check Z" — and the final answer benefits from all that scaffolding. It works, measurably. For hard reasoning problems, it's often the difference between right and wrong.</p>
+
+      <p>But there's a structural cost that almost nobody talks about. The way language models generate text is inherently sequential: they produce one token (roughly, one word-piece) at a time, and each new token depends on everything that came before. If a model needs to reason through twenty steps before answering, it must generate twenty steps' worth of text — and pay the full computational cost of all that generation, including time and memory. Worse: those visible reasoning steps are not just a computation; they are a communication. They are designed to be read by the person receiving the response. But the model doesn't need to explain itself to itself. It explains itself to you. The question this paper asks is: what if the thinking happened internally, without ever surfacing as words?</p>
+
+      <h3>How it works</h3>
+      <p>Think about how you do mental arithmetic. When someone asks you what 47 × 8 is, you don't narrate every step aloud. You hold the numbers in your head — some place that isn't speaking, just computing — and then say "376" when you're done. You used working memory: a short-term internal workspace for active computation. You didn't need to broadcast the intermediate state to anyone, including yourself in writing. Language models currently lack this. They can only "think" by generating tokens, which means every step of reasoning must pass through the same channel as the final answer.</p>
+
+      <p>Aichberger and Hochreiter's method, which they call Reasoning in Memory (RiM), separates the two. Instead of generating chains of intermediate reasoning tokens, RiM inserts <em>memory blocks</em> into the processing stream — fixed sequences of special tokens that the model learns to treat as a scratchpad. These memory blocks are not generated autoregressively: they don't require the model to produce new text one token at a time. Instead, the entire block is processed in a single forward pass, the way any fixed input would be. The model is trained to treat these blocks as an internal workspace, routing relevant computations through them before composing the final answer.</p>
+
+      <p>The word "fixed" is important here. Because memory blocks are always the same length and shape, the model doesn't need to decide how much reasoning space to allocate — it always gets the same scratchpad. This is different from the closest previous approach, called Coconut, which generates continuous "thought" vectors autoregressively. RiM's fixed blocks can be processed in parallel within a single pass; Coconut's continuous thoughts must still be generated sequentially. This makes RiM both faster per reasoning step and easier to train stably, because there's no compounding error from generating one thought token on top of another.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 260" role="img" aria-label="Diagram comparing chain-of-thought reasoning (visible tokens) with RiM's memory-block approach (silent internal computation)" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" font-size="13">
+
+          <!-- Background panels -->
+          <rect x="20" y="20" width="320" height="220" rx="8" fill="#F7F5F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <rect x="380" y="20" width="320" height="220" rx="8" fill="#F7F5F0" stroke="#D1CFC5" stroke-width="1.5"/>
+
+          <!-- Panel labels -->
+          <text x="180" y="48" text-anchor="middle" fill="#87867F" font-size="11" font-weight="600" letter-spacing="0.06em">CHAIN-OF-THOUGHT (standard)</text>
+          <text x="540" y="48" text-anchor="middle" fill="#87867F" font-size="11" font-weight="600" letter-spacing="0.06em">REASONING IN MEMORY (RiM)</text>
+
+          <!-- COT: Question box -->
+          <rect x="50" y="62" width="80" height="32" rx="4" fill="#6A8CAF" opacity="0.85"/>
+          <text x="90" y="83" text-anchor="middle" fill="white" font-size="12">Question</text>
+
+          <!-- COT: Step tokens -->
+          <rect x="155" y="62" width="56" height="32" rx="4" fill="#D97757" opacity="0.75"/>
+          <text x="183" y="83" text-anchor="middle" fill="white" font-size="11">Step 1</text>
+
+          <rect x="155" y="104" width="56" height="32" rx="4" fill="#D97757" opacity="0.75"/>
+          <text x="183" y="125" text-anchor="middle" fill="white" font-size="11">Step 2</text>
+
+          <rect x="155" y="146" width="56" height="32" rx="4" fill="#D97757" opacity="0.75"/>
+          <text x="183" y="167" text-anchor="middle" fill="white" font-size="11">Step 3</text>
+
+          <!-- COT: Answer box -->
+          <rect x="240" y="62" width="72" height="32" rx="4" fill="#788C5D" opacity="0.85"/>
+          <text x="276" y="83" text-anchor="middle" fill="white" font-size="12">Answer</text>
+
+          <!-- COT: Arrows -->
+          <line x1="130" y1="78" x2="153" y2="78" stroke="#141413" stroke-width="1.5" marker-end="url(#arrowDark)"/>
+          <line x1="211" y1="78" x2="238" y2="78" stroke="#141413" stroke-width="1.5" marker-end="url(#arrowDark)"/>
+          <line x1="211" y1="120" x2="238" y2="88" stroke="#141413" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowDark)"/>
+          <line x1="211" y1="162" x2="238" y2="92" stroke="#141413" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowDark)"/>
+
+          <!-- COT: Visible to user label -->
+          <text x="183" y="205" text-anchor="middle" fill="#D97757" font-size="11">← visible reasoning tokens →</text>
+          <text x="183" y="222" text-anchor="middle" fill="#87867F" font-size="11">(generated one at a time)</text>
+
+          <!-- RiM: Question box -->
+          <rect x="410" y="62" width="80" height="32" rx="4" fill="#6A8CAF" opacity="0.85"/>
+          <text x="450" y="83" text-anchor="middle" fill="white" font-size="12">Question</text>
+
+          <!-- RiM: Memory blocks (shown as grey/silent) -->
+          <rect x="510" y="62" width="52" height="32" rx="4" fill="#D1CFC5" stroke="#87867F" stroke-width="1" stroke-dasharray="4,2"/>
+          <text x="536" y="78" text-anchor="middle" fill="#87867F" font-size="11">mem</text>
+          <text x="536" y="91" text-anchor="middle" fill="#87867F" font-size="10">block</text>
+
+          <!-- RiM: Arrow to answer -->
+          <line x1="490" y1="78" x2="508" y2="78" stroke="#141413" stroke-width="1.5" marker-end="url(#arrowDark)"/>
+          <line x1="562" y1="78" x2="580" y2="78" stroke="#141413" stroke-width="1.5" marker-end="url(#arrowDark)"/>
+
+          <!-- RiM: Answer box -->
+          <rect x="582" y="62" width="72" height="32" rx="4" fill="#788C5D" opacity="0.85"/>
+          <text x="618" y="83" text-anchor="middle" fill="white" font-size="12">Answer</text>
+
+          <!-- RiM: Silent label -->
+          <text x="536" y="120" text-anchor="middle" fill="#87867F" font-size="11">silent — never</text>
+          <text x="536" y="135" text-anchor="middle" fill="#87867F" font-size="11">shown to user</text>
+
+          <!-- RiM: Parallel pass label -->
+          <text x="540" y="205" text-anchor="middle" fill="#788C5D" font-size="11">processed in a single forward pass</text>
+          <text x="540" y="222" text-anchor="middle" fill="#87867F" font-size="11">(not generated token-by-token)</text>
+
+          <!-- Arrow markers -->
+          <defs>
+            <marker id="arrowDark" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+              <polygon points="0 0, 7 3.5, 0 7" fill="#141413" opacity="0.7"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>Chain-of-thought forces the model to generate each reasoning step as visible text, token by token. RiM replaces those steps with fixed memory blocks — silent internal compute that is processed in a single pass and never shown to the user.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The researchers trained models of different families and sizes — spanning several well-known open-weight language models — to use RiM's memory blocks, then evaluated them on standard reasoning benchmarks including GSM-Hard (a harder version of grade-school math problems) and others. They compared RiM against Coconut, the strongest existing latent reasoning baseline, across multiple configurations. Each Coconut variant was given a different "budget" of continuous thought tokens; RiM was given a comparable block size. The researchers also tested a pass@8 setting — generating eight candidate answers per problem and counting the question as solved if any of them is correct — to measure how reliably each method samples correct solutions when run multiple times.</p>
+
+      <h3>What they found</h3>
+      <p>Across models of different families and sizes, RiM consistently matched or exceeded the strongest Coconut variant — and did so without the step-by-step generation overhead that Coconut requires. On GSM-Hard, RiM's final-block readout outperformed the strongest Coconut configurations. In the pass@8 evaluation, RiM sampled correct solutions more reliably across all benchmarks tested. The gains were not dramatic: this is a paper about method efficiency and training stability as much as raw performance. But the direction is clear — a model can learn to use a silent internal workspace as effectively as a visible one, and it can do so at lower inference cost.</p>
+
+      <p>The authors also found that RiM is meaningfully easier to train than continuous-thought approaches. Because the memory blocks are fixed in shape, there is no risk of the model generating a "bad" intermediate thought that cascades into errors further down the chain. The training signal reaches the model more directly.</p>
+
+      <h3>The catch</h3>
+      <p>RiM is a small-scale research result. The models tested are not at the frontier — this is not a paper claiming that Gemini or Claude should switch to latent reasoning tomorrow. The benchmarks are primarily arithmetic reasoning tasks, which are a narrow slice of what language models are asked to do in practice. It also isn't yet clear how to scale memory blocks gracefully: a fixed-size scratchpad may be fine for grade-school math but insufficient for the kind of open-ended, multi-step reasoning that frontier models do. And as with most academic LLM papers in 2026, the gap between "works on a benchmark" and "works in production" remains large. The paper is a proof of concept, not a product.</p>
+
+      <p><strong>If you remember one thing:</strong> Language models are currently forced to think by writing — and this paper shows they can learn to think by remembering instead, more efficiently and at least as accurately.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>In early March, Andrej Karpathy released <a href="https://github.com/karpathy/autoresearch">autoresearch</a> on GitHub — a 630-line open-source tool that gives an AI agent a training script, a frozen evaluation metric, and a fixed compute budget, then lets it run experiments autonomously. In a two-day test run, the agent ran roughly 700 experiments on a codebase Karpathy had already spent years tuning, found approximately 20 stacking improvements (including a bug in his own attention implementation he hadn't caught), and produced an 11% training speedup. The repo crossed 80,000 stars in weeks. Karpathy has since joined Anthropic's pre-training team with a specific mandate: use Claude to speed up the research that produces the next version of Claude.</span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>Claude Code turned one year old in June, and its creator marked it with a candid interview in <em>Fortune</em> (<a href="https://fortune.com/2026/06/11/anthropic-claude-boris-cherny-doesnt-write-code-by-hand-anymore/">link</a>): Cherny hasn't written code by hand in eight months. He now orchestrates tens of thousands of concurrent AI agents from his phone. His framing: software development has moved from "writing" to "reviewing and directing." The gap between the two is bigger than it sounds.</span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things are happening at once, and they rhyme. At the personnel level, the people who designed the current generation of AI systems are redistributing. The original Transformer architect is at OpenAI. The researcher who invented the architecture Transformers replaced is asking whether Transformers have a blind spot in how they reason. The teacher who made deep learning accessible to a generation of practitioners is now at Anthropic, using AI to build better AI. These are not just career moves — they are bets on where the significant problems lie.</p>
+
+      <p>At the technical level, the RiM paper is a small piece of a larger question that will matter enormously: should AI systems reason visibly or invisibly? Right now, visible chain-of-thought is nearly universal because it is easy to supervise, debug, and audit. But if internal reasoning turns out to be more efficient and equally accurate, the pressure to use it will grow — and the question of what we lose when we can no longer read the machine's scratch work becomes urgent. Transparency isn't free, but neither is opacity.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://techcrunch.com/2026/05/19/openai-co-founder-andrej-karpathy-joins-anthropics-pre-training-team/">TechCrunch (Karpathy/Anthropic)</a> ·
+        <a href="https://www.techtimes.com/articles/318613/20260618/transformer-architect-behind-gemini-jumps-openai-after-google-spent-27b.htm">TechTimes (Shazeer/OpenAI)</a> ·
+        <a href="https://www.cnbc.com/2026/05/19/anthropic-hires-openai-cofounder-andrej-karpathy-former-tesla-ai-lead.html">CNBC</a> ·
+        <a href="https://arxiv.org/abs/2605.30343">arXiv:2605.30343 (RiM paper)</a> ·
+        <a href="https://thehackernews.com/2026/06/agentjacking-attack-tricks-ai-coding.html">The Hacker News (agentjacking)</a> ·
+        <a href="https://tech-insider.org/openai-ipo-850-billion-valuation-2026/">Tech Insider (OpenAI IPO)</a> ·
+        <a href="https://www.techtimes.com/articles/317919/20260606/google-gemini-35-pro-nears-june-launch-2-million-token-context-deep-think-reasoning.htm">TechTimes (Gemini 3.5 Pro)</a> ·
+        <a href="https://fortune.com/2026/06/11/anthropic-claude-boris-cherny-doesnt-write-code-by-hand-anymore/">Fortune (Boris Cherny)</a> ·
+        <a href="https://github.com/karpathy/autoresearch">GitHub: karpathy/autoresearch</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Latent reasoning</div>
+        <div>Thinking that happens inside a model without producing any text the user can see. The word "latent" means "hidden." When you solve a puzzle in your head before answering, you are using latent reasoning — working memory without a running transcript. Current AI models mostly can't do this; they think by writing, one word at a time. The RiM paper is one attempt to change that.</div>
+      </div>
+      <dl>
+        <dt>Autoregressive</dt><dd>Generating one token (word-piece) at a time, each new token depending on everything that came before it. The fundamental mechanism of every modern language model. Sequential by design — you can't skip ahead.</dd>
+        <dt>Transformer</dt><dd>The neural-network architecture, introduced in the 2017 paper "Attention Is All You Need," that underlies GPT, Claude, Gemini, Llama, and nearly every current AI model. Noam Shazeer, now at OpenAI, was one of its eight co-authors.</dd>
+        <dt>Chain-of-thought (CoT)</dt><dd>Prompting a model to write out its reasoning step-by-step before giving a final answer. Reliably improves accuracy on hard problems, but requires generating — and paying the cost of — all those intermediate steps.</dd>
+        <dt>Coconut</dt><dd>An earlier "latent reasoning" method that replaces text reasoning steps with continuous hidden vectors, generated autoregressively. The main baseline that RiM compares against and outperforms.</dd>
+        <dt>Forward pass</dt><dd>One complete run of data through a neural network from input to output. Processing in a "single forward pass" means no looping back — the computation happens once, in parallel, rather than sequentially step by step.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
