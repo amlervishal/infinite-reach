@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №26 — The shorthand no one learned · Infinite Reach</title>
+  <meta name="description" content="Google shipped the most capable publicly available reasoning model yet, while a new paper shows AI systems can read a compressed notation that looks like noise to human eyes — cutting text to less than a third of its size without losing the meaning." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №26 &middot; Tuesday, June 23, 2026</p>
+      <h1>The shorthand no one learned</h1>
+      <p>The most powerful publicly available reasoning model yet arrived on Sunday morning, while a six-person team published evidence this week that what language models "read" doesn't need to look like language at all.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On Sunday, June 22, Google launched Gemini 2.5 Pro with Deep Think — the company's most capable model ever released to the public. Deep Think is Google's extended-reasoning mode: instead of responding immediately, the model generates multiple candidate solution paths, evaluates each one, and selects the best before composing its final answer. On the hardest public benchmarks — USAMO mathematics, LiveCodeBench, and Humanity's Last Exam — Gemini 2.5 Pro with Deep Think now leads every other publicly available model. Its context window is two million tokens, meaning it can read and reason over roughly 1,500 pages of text in a single session. It is available now through Google AI Studio, the Gemini API, and Vertex AI. The one area where it does not yet lead: software engineering. Anthropic's Fable 5 still holds the top score on SWE-bench and agentic coding tasks — though, as of midnight last night, Fable 5 is no longer free.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Biggest bet yet</span><span>SpaceX signed a $6.3 billion compute deal with Reflection AI — an open-source startup co-founded by two DeepMind veterans and backed by Nvidia. Starting July 1, Reflection pays $150 million a month through 2029 for access to Nvidia GB300 chips in the Colossus 2 data centre. SpaceX's third-party compute revenues now exceed $80 billion in committed contracts through 2029, from clients including Anthropic ($45B) and Google ($30B). <a href="https://www.cnbc.com/2026/06/22/spacex-ai-colossus-data-center-reflection.html">CNBC</a></span></li>
+        <li><span class="tag tech">Loop engineering</span><span>Boris Cherny, creator of Claude Code, told journalists on June 22: "I don't prompt Claude anymore. I have loops running that prompt Claude and figure out what to do. My job is to write loops." What he calls "loop engineering" — orchestrating automated agents rather than conversing with them directly — is his answer to "what comes after vibe coding?" <a href="https://www.businesstoday.in/technology/artificial-intelligence/story/what-comes-after-vibe-coding-claude-code-creator-boris-cherny-has-an-answer-538427-2026-06-22">BusinessToday</a></span></li>
+        <li><span class="tag policy">Europe's own model</span><span>The EU selected the EUROPA consortium as the winner of its Frontier AI Grand Challenge — a publicly funded project to build an open-source European frontier model covering all 24 EU official languages. It is the first major state-backed effort to build a sovereign foundation model, aiming to reduce European dependence on US and Chinese AI infrastructure.</span></li>
+        <li><span class="tag tech">Fable 5 goes paid</span><span>Anthropic's free preview window for Fable 5 closed at midnight June 23. The model — which leads on SWE-bench and long-horizon agentic coding — is now charged at $10–$50 per million tokens depending on tier. The brief free window gave millions of developers first-hand time with the most capable coding model available.</span></li>
+        <li><span class="tag tech">Open frontier holds</span><span>DeepSeek V4-Pro (1.6 trillion parameters, MIT-licensed open weights, 1M-token context) continues as the leading open-source model on agentic coding benchmarks through late June. No stable release or successor has shipped since the April 24 preview — but it remains freely downloadable and API-accessible at $0.87/M output tokens. <a href="https://www.morphllm.com/deepseek-v4">morphllm.com</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: when the text is unreadable — but the meaning survives</h2>
+      <p class="kicker">"Large Language Models Do Not Always Need Readable Language" &middot; Jiayi Zhu, Haoxuan Peng, Junxi Wang, Liang Ke, Chen Zhang &amp; Linfeng Zhang &middot; <a href="https://arxiv.org/abs/2606.19857">arXiv:2606.19857</a> &middot; Submitted June 18, 2026</p>
+
+      <p>Every AI tool you have ever used assumes, at least implicitly, that the text you type is meaningful because it looks like text. This paper quietly removes that assumption — and finds it was not load-bearing.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When you send a message to a language model, it does not read the way you do. Your text is first broken into tokens — fragments of words, or whole short words — which are converted to numbers, processed through billions of multiplications, and converted back into numbers that become new text. The words are a delivery vehicle, not the computation itself. But tokens are expensive: every one costs processing time and, via APIs, money. Researchers have long wondered whether you could communicate the same meaning with fewer of them — strip away the human-readable layer and speak more directly to the model. The objection blocking this has always been that language models were trained almost entirely on human text, so they presumably needed human text to function. This paper tests that assumption directly.</p>
+
+      <h3>How it works</h3>
+      <p>Think of court stenography. Reporters train for years to write in a shorthand that looks like indecipherable scratches to anyone else in the room. Speed matters in court; prose is too slow. Stenography trades legibility for density — each strange mark carries meaning that would otherwise take a full sentence. BabelTele is the same trade-off, with one twist: instead of a human designing the shorthand, the model designs it for itself.</p>
+
+      <p>Rather than imposing a fixed compression scheme, the six researchers studied what happens when you ask an instruction-tuned language model to develop its own compact representations. The model receives pairs of (original text, compressed form) and learns to generate and decode more of them. There is no dictionary or rule book — the model discovers whatever notation it can produce and interpret reliably. The resulting representations, in the paper's own description, "substantially depart from ordinary natural language." To a human reader, they look like noise: garbled syllables, odd punctuation, fragments that carry no obvious sense. To the model that generated them, they are perfectly legible.</p>
+
+      <p>The key mechanism is instruction-tuning — the training stage where a base model is fine-tuned on (instruction, response) examples to become an assistant. The researchers found this stage is what grants models the flexibility to operate outside normal prose patterns. Base models — trained only to predict the next word, without any instruction fine-tuning — could not reliably recover meaning from BabelTele. The assistants embedded in commercial AI products can.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team evaluated BabelTele across four independent methods. Readability diagnostics confirmed the representations do not look like language. Model likelihood measures checked whether the model itself considered BabelTele statistically plausible. Human questionnaires established that readers cannot recover the original meaning from the compressed form. And downstream task evaluations — the practical test — measured whether using BabelTele as input changed what the model got right on a battery of tasks. The key number across all four: BabelTele condensed text to <strong>27.9% of its original volume</strong> while maintaining <strong>99.5% semantic fidelity</strong>. That is roughly a 3.6× compression — the equivalent of replacing a 1,000-word essay with a 279-word representation that no human can decode, but that the model can use as if nothing changed.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 270" role="img" aria-label="BabelTele pipeline: original text compressed to 27.9% of its volume in a human-unreadable form, then read by an LLM with 99.5% meaning preserved" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" font-size="13">
+
+          <rect x="0" y="0" width="720" height="270" fill="#F7F5F0" rx="8"/>
+
+          <!-- Column 1: Original text -->
+          <rect x="28" y="36" width="172" height="166" rx="6" fill="white" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="114" y="60" text-anchor="middle" fill="#87867F" font-size="11" font-weight="600" letter-spacing="0.06em">ORIGINAL TEXT</text>
+          <rect x="48" y="70" width="132" height="7" rx="2" fill="#D1CFC5"/>
+          <rect x="48" y="84" width="108" height="7" rx="2" fill="#D1CFC5"/>
+          <rect x="48" y="98" width="124" height="7" rx="2" fill="#D1CFC5"/>
+          <rect x="48" y="112" width="88" height="7" rx="2" fill="#D1CFC5"/>
+          <rect x="48" y="126" width="118" height="7" rx="2" fill="#D1CFC5"/>
+          <rect x="48" y="140" width="96" height="7" rx="2" fill="#D1CFC5"/>
+          <rect x="48" y="154" width="110" height="7" rx="2" fill="#D1CFC5"/>
+          <rect x="48" y="168" width="76" height="7" rx="2" fill="#D1CFC5"/>
+          <text x="114" y="198" text-anchor="middle" fill="#6A8CAF" font-size="12" font-weight="600">100% volume</text>
+          <text x="114" y="214" text-anchor="middle" fill="#87867F" font-size="11">human-readable ✓</text>
+
+          <!-- Arrow 1 -->
+          <defs>
+            <marker id="arrowB" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+              <polygon points="0 0, 7 3.5, 0 7" fill="#141413" opacity="0.65"/>
+            </marker>
+          </defs>
+          <line x1="200" y1="119" x2="246" y2="119" stroke="#141413" stroke-width="1.5" marker-end="url(#arrowB)"/>
+          <text x="223" y="111" text-anchor="middle" fill="#87867F" font-size="11">compress</text>
+
+          <!-- Column 2: BabelTele -->
+          <rect x="246" y="66" width="108" height="110" rx="6" fill="#FDF0EB" stroke="#D97757" stroke-width="1.5"/>
+          <text x="300" y="90" text-anchor="middle" fill="#D97757" font-size="10" font-weight="700" letter-spacing="0.05em">BABELTELE</text>
+          <rect x="262" y="98" width="76" height="5" rx="2" fill="#D97757" opacity="0.30"/>
+          <rect x="268" y="110" width="52" height="5" rx="2" fill="#D97757" opacity="0.30"/>
+          <rect x="262" y="122" width="68" height="5" rx="2" fill="#D97757" opacity="0.30"/>
+          <rect x="270" y="134" width="38" height="5" rx="2" fill="#D97757" opacity="0.30"/>
+          <rect x="264" y="146" width="56" height="5" rx="2" fill="#D97757" opacity="0.30"/>
+          <!-- Crossed-out eye -->
+          <ellipse cx="300" cy="194" rx="13" ry="8" fill="none" stroke="#D97757" stroke-width="1.5"/>
+          <circle cx="300" cy="194" r="3.5" fill="#D97757" opacity="0.4"/>
+          <line x1="289" y1="185" x2="311" y2="203" stroke="#D97757" stroke-width="1.5"/>
+          <text x="300" y="218" text-anchor="middle" fill="#D97757" font-size="10">unreadable to humans</text>
+          <text x="300" y="246" text-anchor="middle" fill="#D97757" font-size="12" font-weight="600">27.9% of original</text>
+
+          <!-- Arrow 2 -->
+          <line x1="354" y1="119" x2="400" y2="119" stroke="#141413" stroke-width="1.5" marker-end="url(#arrowB)"/>
+          <text x="377" y="111" text-anchor="middle" fill="#87867F" font-size="11">LLM reads</text>
+
+          <!-- Column 3: Model understanding -->
+          <rect x="400" y="36" width="292" height="166" rx="6" fill="white" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="546" y="60" text-anchor="middle" fill="#87867F" font-size="11" font-weight="600" letter-spacing="0.06em">MODEL UNDERSTANDING</text>
+          <rect x="420" y="70" width="252" height="7" rx="2" fill="#D1CFC5"/>
+          <rect x="420" y="84" width="210" height="7" rx="2" fill="#D1CFC5"/>
+          <rect x="420" y="98" width="242" height="7" rx="2" fill="#D1CFC5"/>
+          <rect x="420" y="112" width="172" height="7" rx="2" fill="#D1CFC5"/>
+          <rect x="420" y="126" width="232" height="7" rx="2" fill="#D1CFC5"/>
+          <rect x="420" y="140" width="190" height="7" rx="2" fill="#D1CFC5"/>
+          <rect x="420" y="154" width="220" height="7" rx="2" fill="#D1CFC5"/>
+          <rect x="420" y="168" width="160" height="7" rx="2" fill="#D1CFC5"/>
+          <text x="546" y="205" text-anchor="middle" fill="#788C5D" font-size="20" font-weight="700">✓</text>
+          <text x="546" y="227" text-anchor="middle" fill="#788C5D" font-size="12" font-weight="600">99.5% semantic fidelity</text>
+          <text x="546" y="246" text-anchor="middle" fill="#87867F" font-size="11">model understands correctly</text>
+        </svg>
+        <figcaption>BabelTele compresses text to 27.9% of its original volume — an unreadable form to any human — and instruction-tuned language models recover 99.5% of the original meaning from it.</figcaption>
+      </figure>
+
+      <h3>What they found</h3>
+      <p>The results held across different types of content — the compression was not tuned for a specific task and does not need to be. Instruction-tuned models significantly outperformed base models, confirming that the capacity to work with non-standard representations emerges during the fine-tuning stage rather than being baked in at the pretraining level. The notable failure mode: BabelTele representations are not portable. What one model family learns to compress and decode may look opaque to a model from a different lineage. There is no universal compact notation — each model converges on its own dialect of the shorthand.</p>
+
+      <h3>The catch</h3>
+      <p>This is an exploratory paper, not an engineering blueprint. The 99.5% semantic fidelity figure is measured through downstream task performance — a solid proxy, but not a ground truth. The researchers do not address the most obvious implication: if AI systems process inputs that humans cannot audit, meaningful human oversight becomes harder to maintain. That consequence goes unexamined. The paper plants a flag and hands the question — engineering and governance alike — to whoever picks it up next.</p>
+
+      <p><strong>If you remember one thing:</strong> the legibility of an AI's inputs is a design choice, not a technical requirement — and once you realize that, a lot of quiet assumptions start asking to be questioned.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Earlier this month, after speaking at the Sequoia Ascent conference, Karpathy published a summary on his blog laying out what he now calls Software 3.0. The organizing idea: software now automates what humans can <em>verify</em> — a test suite, a game score, a formal proof checker — rather than just what they can describe or demonstrate with training data. He names December 2025 as the inflection point when agentic coding shifted from experimental to reliable, and when engineers began delegating entire subsystems rather than individual lines. <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">karpathy.bearblog.dev</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>In a June 22 interview, Cherny described the shift away from direct prompting: "I don't prompt Claude anymore. I have loops running that prompt Claude and figure out what to do. My job is to write loops." It is a real change in orientation — from user to architect of systems that use AI on your behalf. <a href="https://www.businesstoday.in/technology/artificial-intelligence/story/what-comes-after-vibe-coding-claude-code-creator-boris-cherny-has-an-answer-538427-2026-06-22">BusinessToday</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Google's Deep Think launch and the BabelTele paper are, on the surface, unrelated. But they point in the same direction: the frontier of what AI can do is increasingly happening in formats that the human in the loop cannot directly read. Deep Think explores solution paths internally before surfacing one answer. BabelTele processes meaning in a form no human can follow. Boris Cherny's loops run thousands of agents without a person prompting each one. In each case, the interface between the person and the AI is one step further removed from the actual work.</p>
+
+      <p>This is largely a benefit — more capability, lower cost, less friction. But it is worth being precise about the trade-off: the efficiency gains come partly from removing the human-readable layer. That layer has always been a form of transparency, and of accountability. When it goes from optional to absent, oversight becomes a design question rather than a default. No single development here is alarming; the direction is worth watching.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://blog.google/products/gemini/gemini-2-5-deep-think/">Google Blog (Gemini 2.5 Deep Think)</a> ·
+        <a href="https://arxiv.org/abs/2606.19857">arXiv:2606.19857 (BabelTele paper)</a> ·
+        <a href="https://www.cnbc.com/2026/06/22/spacex-ai-colossus-data-center-reflection.html">CNBC (SpaceX / Reflection AI deal)</a> ·
+        <a href="https://mlq.ai/news/spacex-signs-63b-compute-deal-with-reflection-ai-for-colossus-data-center/">MLQ.ai (deal details)</a> ·
+        <a href="https://www.businesstoday.in/technology/artificial-intelligence/story/what-comes-after-vibe-coding-claude-code-creator-boris-cherny-has-an-answer-538427-2026-06-22">BusinessToday (Boris Cherny, loop engineering)</a> ·
+        <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">Karpathy blog (Software 3.0)</a> ·
+        <a href="https://www.morphllm.com/deepseek-v4">morphllm.com (DeepSeek V4-Pro)</a> ·
+        <a href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai">EU Commission (EUROPA consortium / Frontier AI Grand Challenge)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Semantic fidelity</div>
+        <div>How well the <em>meaning</em> of a piece of text is preserved when you change its surface form. A perfect translation carries 100% semantic fidelity — different words, same meaning. BabelTele achieves 99.5% fidelity while looking nothing like the original. "Semantic" means to do with meaning, as opposed to "syntactic" (to do with structure and grammar).</div>
+      </div>
+      <dl>
+        <dt>Token</dt><dd>The smallest unit of text a language model reads — roughly three-quarters of a word in English. "Strawberry" is one token; "extraordinarily" is three or four. Every token costs processing time and API money. Fewer tokens is the entire efficiency game.</dd>
+        <dt>Instruction-tuning</dt><dd>A training stage where a base model — trained only to predict the next word — is further trained on (instruction, response) pairs to become a useful assistant. BabelTele works for instruction-tuned models but not for base models; the fine-tuning stage seems to be what teaches flexibility with non-standard text.</dd>
+        <dt>Deep Think</dt><dd>Google's name for Gemini 2.5 Pro's extended-reasoning mode. Instead of answering immediately, the model generates multiple candidate solution paths, evaluates them, then picks one before responding. Slower than a direct answer, but measurably more accurate on hard science and maths problems.</dd>
+        <dt>MoE (Mixture of Experts)</dt><dd>An architecture where a large model is divided into specialist sub-networks called experts, with only a few active for any given input. DeepSeek V4-Pro has 1.6 trillion parameters but activates only 49 billion per query — a big model at a fraction of the running cost.</dd>
+        <dt>Context window</dt><dd>The total amount of text a model can read and reason over at once, measured in tokens. Gemini 2.5 Pro's 2 million tokens is roughly 1,500 pages — a career's worth of meeting notes, in a single session.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
