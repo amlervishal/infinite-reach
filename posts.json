@@ -1,5 +1,12 @@
 [
   {
+    "num": 28,
+    "date": "2026-06-26",
+    "slug": "issues/2026-06-26.html",
+    "title": "Twenty-eight million questions",
+    "blurb": "Anthropic says operators linked to Alibaba's AI unit ran 25,000 fake accounts and generated 28.8 million conversations with Claude — not for answers, but to copy its capabilities into a rival model."
+  },
+  {
     "num": 27,
     "date": "2026-06-24",
     "slug": "issues/2026-06-24.html",

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №28 — Twenty-eight million questions · Infinite Reach</title>
+  <meta name="description" content="Anthropic says operators linked to Alibaba ran 25,000 fake accounts and sent 28.8 million conversations to Claude — not to chat, but to copy — as a new academic survey explains exactly how such attacks work and why they're so hard to stop." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №28 &middot; Friday, June 26, 2026</p>
+      <h1>Twenty-eight million questions</h1>
+      <p>The week an AI lab discovered that a fleet of ghost accounts had been systematically interrogating its best model for two months — and using every answer to build a competitor.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic has written to US senators Elizabeth Warren and Tim Scott, and separately to the White House, accusing operators linked to Alibaba's AI unit of running what it calls "the largest known distillation attack" it has ever faced. Between April 22 and June 5, 2026, nearly 25,000 fraudulent accounts generated 28.8 million exchanges with Claude — not to get answers they needed, but to collect answers in bulk. The goal, Anthropic alleges, was <em>distillation</em>: using Claude's outputs as training data to teach a rival model — likely in Alibaba's Qwen AI lab — to reason and code the way Claude does, without ever seeing Claude's underlying code or weights. The attack was specifically targeted at Claude's software-engineering and agentic-reasoning capabilities, the company says. Alibaba has not publicly responded.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Silicon</span><span>OpenAI and Broadcom unveiled Jalapeño, OpenAI's first custom AI inference chip — a reticle-sized ASIC designed to run frontier language models, built from blank-slate design to manufacturing tape-out in nine months, which chipmakers say may be the fastest development cycle ever for a chip of this complexity. Engineering samples are already running production workloads. Initial deployment is targeted for end of 2026. <a href="https://openai.com/index/openai-broadcom-jalapeno-inference-chip/">OpenAI</a></span></li>
+        <li><span class="tag money">Memory</span><span>Micron reported Q3 2026 revenue of $42 billion — quadruple the same quarter last year — with gross margins of 81%. HBM4, the high-bandwidth memory standard that sits inside AI accelerators, crossed $1 billion in quarterly revenue for the first time. AI infrastructure demand is translating into the largest earnings numbers in the semiconductor industry's history. <a href="https://sg.finance.yahoo.com/news/broadcom-gets-major-openai-boost-031700943.html">Yahoo Finance</a></span></li>
+        <li><span class="tag money">Chips</span><span>Qualcomm is in talks to acquire Tenstorrent — the AI chip startup founded by veteran chip designer Jim Keller — for between $8 and $10 billion. The deal would give Qualcomm a competitive position in the AI accelerator market, which has been dominated almost entirely by Nvidia. Neither company has confirmed the talks. <a href="https://www.gurufocus.com/news/8918277/qualcomm-in-talks-to-acquire-ai-chip-startup-tenstorrent-for-810-billion">GuruFocus</a></span></li>
+        <li><span class="tag policy">Workforce</span><span>RAISE US launched with more than $500 million committed from Amazon, Microsoft, Anthropic, and OpenAI — a joint initiative to retrain American workers for an economy that has changed substantially around AI. The program sits at the intersection of voluntary industry action and the growing political pressure on tech companies to address the workforce question directly.</span></li>
+        <li><span class="tag tech">Models</span><span>Grok 4.3, from xAI, is now generally available on Amazon Bedrock at $1.25 per million input tokens — the lowest price among frontier reasoning models on the platform, and the first time an xAI model has appeared there. It offers a one-million-token context window and configurable reasoning effort levels. <a href="https://artificialanalysis.ai/articles/xai-launches-grok-4-3-with-improved-agentic-performance-and-lower-pricing">Artificial Analysis</a></span></li>
+        <li><span class="tag money">Agents</span><span>Arcade, a startup building the governance layer that controls what actions autonomous agents are actually permitted to take in production systems, raised a $60 million Series A. The bet is that enterprises deploying agents at scale will need precise, auditable controls over what the agents can do — and that "let the model decide" is not enough.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: how model theft actually works</h2>
+      <p class="kicker">A Survey on Model Extraction Attacks and Defenses for Large Language Models &middot; Zhao, Li, Ding, Gong, Zhao, Dong &middot; KDD 2026 &middot; <a href="https://arxiv.org/abs/2506.22521">arXiv 2506.22521</a></p>
+
+      <p>A survey published this week at KDD 2026 — one of the top data-mining conferences — provides the clearest academic framework yet for understanding exactly what Alibaba is alleged to have done to Claude, and why it works, and why stopping it is so hard.</p>
+
+      <h3>The problem, and why it's hard</h3>
+
+      <p>When a company deploys an AI model as an API — a service anyone can query over the internet for a fee — it faces an unusual kind of vulnerability. Unlike a physical factory, which you can fence off and guard, an API is designed to be used by strangers. You can't tell, from the outside, whether someone asking a question wants the answer or wants to <em>study</em> how you answered it. And if someone asks enough questions and collects all the answers, they have something extraordinarily valuable: a dataset of how a world-class AI thinks, which they can use to teach their own model to think the same way.</p>
+
+      <p>This is not a theoretical risk. It's called a <strong>model extraction attack</strong>, and it's been understood in theory for years. What's changed is scale. A survey of the problem until now would have described isolated experiments on simple image classifiers. This paper is the first comprehensive taxonomy of extraction attacks specifically against large language models — systems like Claude, GPT, and Gemini — where the stakes are much higher and the attack surface is much larger.</p>
+
+      <h3>How it works</h3>
+
+      <p>The best everyday analogy is a restaurant. Imagine a culinary genius whose restaurant has a years-long waiting list. You can't get the recipe — it's proprietary. But you can order dishes. If you send enough people to that restaurant, order every combination on the menu, taste everything, and write down precise descriptions of every dish, you begin to understand how the kitchen works. After enough visits, a skilled chef reading your notes could recreate most of the restaurant's output without ever setting foot inside it. You never stole the recipe — you read the food.</p>
+
+      <p>Model extraction works the same way. The paper identifies three distinct flavours of attack:</p>
+
+      <p><strong>Functionality extraction</strong> is the restaurant-menu approach. You send thousands or millions of inputs — code problems, reasoning puzzles, writing tasks — collect all the outputs, and use those input-output pairs as training data for your own model. The more targeted your questions, the better the copy. This is what Anthropic alleges Alibaba did: 28.8 million conversations, chosen specifically to elicit Claude's software-engineering and agentic-reasoning capabilities. The copy may not be identical to the original, but it learns the same moves.</p>
+
+      <p><strong>Training data extraction</strong> goes deeper. Certain kinds of prompts can cause a language model to regurgitate text it memorised during training — phone numbers, passages from books, source code, private conversations that leaked into training data. The model doesn't know it's doing something wrong; it's just completing the pattern. The attacker is effectively reaching through the model into the original training dataset.</p>
+
+      <p><strong>Prompt stealing</strong> targets something different: the hidden instructions companies place at the start of a conversation to customise the model's behaviour. Every commercial AI deployment has a system prompt — rules about what to answer, how to answer it, what to decline. Certain adversarial techniques can extract those instructions, letting a competitor duplicate not just the model's capabilities but its specific configuration and persona.</p>
+
+      <h3>What they actually did</h3>
+
+      <p>The authors reviewed hundreds of papers across all three attack categories and produced a unified taxonomy — the first to cover the full landscape for large language models specifically. They also designed new evaluation metrics, because the old ones, developed for simple classification models, don't translate well to generative systems. Measuring how "similar" two image classifiers are is straightforward; measuring how "similar" two text generators are, across open-ended tasks, is genuinely hard. The paper proposes ways to assess extraction fidelity and defense effectiveness that work for the generative setting.</p>
+
+      <h3>What they found</h3>
+
+      <p>The survey's most sobering finding is that defenses have not kept up with attacks. The strategies that work reasonably well against simpler models — adding noise to outputs, reducing confidence scores, throttling the API — all hurt model quality before they actually stop a determined extractor. Someone running 28.8 million queries across 25,000 accounts, as Alibaba is alleged to have done, can afford to average over a lot of noise.</p>
+
+      <p>The most promising direction the paper identifies is <strong>watermarking</strong>: embedding a subtle statistical signature in how the model writes — invisible to readers, unremovable in normal use — that survives the training process and can later prove a suspicious model was distilled from a specific source. If Anthropic's outputs carry a watermark, and Alibaba's Qwen model carries the same watermark, that's evidence. It doesn't prevent the theft, but it creates a paper trail. The catch is that strong watermarks are hard to design, and skilled attackers can sometimes scrub them.</p>
+
+      <h3>The catch</h3>
+
+      <p>This is a survey, not a solution. The authors map the terrain honestly but don't claim to have solved it. Much of the defense research they review was evaluated on older, smaller models, and results at the scale of frontier systems — where the attacks are most dangerous — are sparse. The hard truth the paper arrives at is that the most capable distillation attacks remain very difficult to fully prevent without meaningfully degrading the product. An API that's hard enough to query in bulk is also, in some ways, hard enough to use.</p>
+
+      <p><strong>If you remember one thing:</strong> Distillation lets someone approximate a billion-dollar AI model using only its public outputs — and we don't yet have a defense that stops this without hurting the model.</p>
+
+      <!-- SVG diagram -->
+      <figure>
+        <svg viewBox="0 0 720 300" role="img" aria-label="Diagram showing how a model extraction (distillation) attack works in three stages" xmlns="http://www.w3.org/2000/svg">
+          <!-- Background -->
+          <rect width="720" height="300" fill="#FAF9F6" rx="8"/>
+
+          <!-- Stage 1: Fake accounts -->
+          <rect x="24" y="60" width="150" height="80" rx="8" fill="#EAE6DF" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="99" y="90" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413" font-weight="600">25,000</text>
+          <text x="99" y="108" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413" font-weight="600">fake accounts</text>
+          <text x="99" y="126" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">April–June 2026</text>
+
+          <!-- Arrow 1 -->
+          <line x1="178" y1="100" x2="238" y2="100" stroke="#D97757" stroke-width="2" marker-end="url(#arr1)"/>
+          <text x="208" y="92" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#D97757">queries</text>
+
+          <!-- Stage 2: Claude API -->
+          <rect x="240" y="50" width="160" height="100" rx="8" fill="#D97757" opacity="0.15" stroke="#D97757" stroke-width="2"/>
+          <text x="320" y="88" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="14" fill="#141413" font-weight="700">Claude</text>
+          <text x="320" y="108" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">(Anthropic)</text>
+          <text x="320" y="128" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#D97757">28.8 M responses</text>
+
+          <!-- Arrow 2 -->
+          <line x1="404" y1="100" x2="462" y2="100" stroke="#788C5D" stroke-width="2" marker-end="url(#arr2)"/>
+          <text x="433" y="92" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#788C5D">harvest</text>
+
+          <!-- Stage 3: Shadow training -->
+          <rect x="465" y="60" width="150" height="80" rx="8" fill="#EAE6DF" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="540" y="90" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413" font-weight="600">Train rival</text>
+          <text x="540" y="108" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413" font-weight="600">model on logs</text>
+          <text x="540" y="126" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">e.g. Qwen</text>
+
+          <!-- Down arrow to result -->
+          <line x1="540" y1="144" x2="540" y2="194" stroke="#788C5D" stroke-width="2" marker-end="url(#arr3)"/>
+
+          <!-- Result box -->
+          <rect x="455" y="196" width="170" height="60" rx="8" fill="#788C5D" opacity="0.15" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="540" y="222" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413" font-weight="600">Shadow model</text>
+          <text x="540" y="242" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">≈ Claude's capabilities</text>
+
+          <!-- Defense note -->
+          <rect x="24" y="196" width="280" height="60" rx="8" fill="#6A8CAF" opacity="0.1" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="165" y="216" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="12" fill="#141413" font-weight="600">Defenses (hard)</text>
+          <text x="165" y="234" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10.5" fill="#87867F">Rate limiting · Output watermarking</text>
+          <text x="165" y="250" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10.5" fill="#87867F">Differential privacy · Query monitoring</text>
+
+          <!-- Arrow markers -->
+          <defs>
+            <marker id="arr1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#D97757"/>
+            </marker>
+            <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#788C5D"/>
+            </marker>
+            <marker id="arr3" markerWidth="8" markerHeight="8" refX="3" refY="6" orient="auto">
+              <path d="M0,0 L6,0 L3,8 z" fill="#788C5D"/>
+            </marker>
+          </defs>
+
+          <!-- Title -->
+          <text x="360" y="284" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">How a model extraction attack works — the recipe, without the cookbook</text>
+        </svg>
+        <figcaption>A distillation attack has three steps: generate massive volumes of targeted queries through fake accounts, harvest the model's responses, then train a rival model on that harvested data. The attack doesn't steal code — it reads the outputs until the copy can mimic the original.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>On June 23, Andrej Karpathy sketched what he calls the "third paradigm" for interacting with AI — not a personal chatbot, not an autonomous agent you deploy once, but a persistent, org-wide entity that accumulates context about a whole company and works alongside human teams asynchronously. He described it as "inline with all other human activity org-wide." The timing wasn't accidental: Anthropic had just launched Claude in Slack as a team-level entity. Some called it a new paradigm; others called it a Slack bot. The underlying question — should an AI have one identity per person, or one identity per company? — is a genuinely open design question that will determine a lot. <a href="https://www.benzinga.com/markets/tech/26/06/60091727/andrej-karpathy-says-ai-is-no-longer-a-chatbot-its-becoming-your-teammate">Benzinga</a></span></li>
+        <li><span class="tag tech">Dwarkesh</span><span>The June 19 episode of the Dwarkesh Podcast tackled one of the most contested questions in the field: whether human-level <em>sample efficiency</em> — the ability to learn from far fewer examples than current AI systems need — actually matters for the trajectory of AI progress. It's a question that splits thoughtful people sharply, and this episode is one of the clearest explorations of it. <a href="https://www.dwarkesh.com/">dwarkesh.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two threads run through this week. One is the infrastructure race: OpenAI building its own chip, Micron printing its best-ever earnings on AI memory demand, Qualcomm pursuing a $10 billion acquisition to compete in accelerators. Every company that matters in AI wants to own more of the physical stack — more of the silicon, more of the data centers, more of the supply chain. The dependence on Nvidia is being treated as a strategic liability across the board.</p>
+      <p>The other thread is a property question that doesn't have a clean answer. If the only thing separating a competitor from your AI model's capabilities is the terms of service that users accept before querying it, and a determined adversary can route around those terms through 25,000 accounts, then what does it mean to own an AI model? The distillation attack on Claude isn't just an IP dispute — it's a demonstration that the standard toolkit for protecting intellectual property doesn't map cleanly onto a product that works by answering questions. You can patent the architecture. You can copyright the training data. But you cannot copyright an answer.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.cnbc.com/2026/06/24/anthropic-alibaba-distillation-campaign.html">CNBC — Anthropic-Alibaba distillation campaign</a> ·
+        <a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/anthropic-claims-that-chinas-alibaba-illicitly-distilled-its-models-from-april-to-june-2026-says-effort-involved-25-000-fake-accounts-and-28-8-million-exchanges-on-claude">Tom's Hardware — Anthropic vs. Alibaba details</a> ·
+        <a href="https://asia.nikkei.com/business/technology/artificial-intelligence/anthropic-accuses-alibaba-of-largest-known-distillation-attack-on-claude">Nikkei Asia — largest known distillation attack</a> ·
+        <a href="https://www.cybersecurity-insiders.com/anthropic-accuses-china-alibaba-of-conducting-distillation-attack-on-claude-ai-models/">Cybersecurity Insiders — distillation attack overview</a> ·
+        <a href="https://openai.com/index/openai-broadcom-jalapeno-inference-chip/">OpenAI — Jalapeño chip announcement</a> ·
+        <a href="https://techcrunch.com/2026/06/24/openai-unveils-its-first-custom-chip-built-by-broadcom/">TechCrunch — Jalapeño chip</a> ·
+        <a href="https://www.gurufocus.com/news/8918277/qualcomm-in-talks-to-acquire-ai-chip-startup-tenstorrent-for-810-billion">GuruFocus — Qualcomm / Tenstorrent</a> ·
+        <a href="https://artificialanalysis.ai/articles/xai-launches-grok-4-3-with-improved-agentic-performance-and-lower-pricing">Artificial Analysis — Grok 4.3</a> ·
+        <a href="https://arxiv.org/abs/2506.22521">arXiv 2506.22521 — Model extraction survey</a> ·
+        <a href="https://dl.acm.org/doi/10.1145/3711896.3736573">ACM KDD 2026 — paper proceedings</a> ·
+        <a href="https://www.benzinga.com/markets/tech/26/06/60091727/andrej-karpathy-says-ai-is-no-longer-a-chatbot-its-becoming-your-teammate">Benzinga — Karpathy org-wide entity</a> ·
+        <a href="https://www.dwarkesh.com/">Dwarkesh Podcast</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Distillation attack</div>
+        <div>Using an AI model's own outputs as training data to teach a cheaper copy to behave the same way — without seeing the original model's code or weights. Like sending a hundred food critics to a restaurant until you've reconstructed the recipes from their tasting notes.</div>
+      </div>
+      <dl>
+        <dt>Model extraction</dt>
+        <dd>The broader family of attacks that includes distillation. Any technique for duplicating an AI model's capabilities by studying what it says rather than how it was built.</dd>
+        <dt>ASIC</dt>
+        <dd>Application-Specific Integrated Circuit. A chip designed to do one thing very well — in Jalapeño's case, running large language models — rather than the general-purpose chips (like Intel or AMD processors) found in ordinary computers.</dd>
+        <dt>HBM4</dt>
+        <dd>High Bandwidth Memory, 4th generation. The extremely fast memory standard used inside AI accelerator chips. Crucial because AI models need to move vast amounts of data in and out of memory many times per second during inference.</dd>
+        <dt>Watermarking</dt>
+        <dd>Embedding invisible statistical patterns in an AI model's outputs — patterns that survive if someone trains a new model on those outputs. Lets the original owner later prove a suspicious competitor model was distilled from theirs.</dd>
+        <dt>Inference</dt>
+        <dd>The process of running a trained AI model to answer a question or generate text. Distinct from training (which is done once, at enormous cost); inference happens millions of times a day and is what chips like Jalapeño are optimised for.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
