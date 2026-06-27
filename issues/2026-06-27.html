@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №29 — The weight of a single sentence · Infinite Reach</title>
+  <meta name="description" content="Researchers find that when a language model writes out its thinking, just a handful of sentences — pivot points called thought anchors — determine whether it gets the right answer. Meanwhile, OpenAI's strongest model yet launches under a government vetting system unprecedented for a commercial AI." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №29 &middot; Friday, June 27, 2026</p>
+      <h1>The weight of a single sentence</h1>
+      <p>When a reasoning AI model &ldquo;thinks out loud,&rdquo; it writes hundreds of sentences before giving an answer. Researchers this week found that only a handful of those sentences actually steer the outcome &mdash; everything else is, in a useful sense, elaboration. That finding arrives the same week OpenAI unveiled its strongest model yet, released not with a blog post and open access but with a government coordination process that marks a genuinely new chapter for frontier AI.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On Thursday, OpenAI previewed GPT-5.6 &mdash; a three-tier model family it calls Sol (flagship), Terra (mid-range), and Luna (cheapest and fastest). Sol is OpenAI&rsquo;s most capable model to date. It introduces &ldquo;ultra mode,&rdquo; a feature where the model spawns multiple subagents to work on a hard problem in parallel before synthesising the results &mdash; faster on complex tasks, more expensive. The launch differs from anything before it: initial access is limited to a small group of trusted partners whose participation was shared with the US government in advance. GPT-4.5 was retired the same day. Broader availability is expected in the coming weeks.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Spending</span><span>The &ldquo;tokenmaxxing&rdquo; era &mdash; companies urging employees to use as much AI as possible &mdash; is ending. Uber burned through its entire annual AI budget in four months; it has since introduced tiered spending limits starting at $1,500 per month. Meta and Amazon reportedly ran internal leaderboards rewarding whoever used the most tokens. <a href="https://www.cnbc.com/2026/06/26/openai-anthropic-new-ai-spending-reality-as-users-shift-to-efficiency.html">CNBC</a></span></li>
+        <li><span class="tag money">Markets</span><span>Big tech shed roughly $2.7 trillion in market value in June as investors took a harder look at AI infrastructure spending with no clear return-on-investment timeline in sight. <a href="https://finance.yahoo.com/markets/article/big-techs-27-trillion-ai-bill-comes-due-chart-of-the-day-100000100.html">Yahoo Finance</a></span></li>
+        <li><span class="tag policy">White House</span><span>A new executive order on AI security directs the Treasury to stand up an AI cybersecurity clearinghouse within 30 days and channels federal grant money toward programs developing AI vulnerability detection tools. <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">White House</a></span></li>
+        <li><span class="tag tech">Europe</span><span>The EU&rsquo;s Frontier AI Grand Challenge named its winner: the EUROPA Consortium, led by Italian firm Domyn, awarded access to a dedicated 6,000-chip Nvidia Blackwell cluster and up to 2.5% of EuroHPC&rsquo;s supercomputing capacity. <a href="https://www.aitntnews.com/ainews/en">AITNT</a></span></li>
+        <li><span class="tag money">Funding</span><span>Arcade raised $60 million Series A to build an enterprise governance layer for AI agents &mdash; precise controls over what an autonomous agent is and isn&rsquo;t authorized to do inside a company&rsquo;s production systems. <a href="https://aifundingtracker.com/ai-startup-funding-news-today/">AI Funding Tracker</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: the sentences that steer an AI&rsquo;s reasoning</h2>
+      <p class="kicker">Thought Anchors: Which LLM Reasoning Steps Matter? &middot; Bogdan, Macar, Nanda &amp; Conmy &middot; <a href="https://arxiv.org/abs/2506.19143">arXiv:2506.19143</a></p>
+
+      <p>Modern reasoning models don&rsquo;t just give you an answer &mdash; they write a long chain of thoughts first. Sometimes hundreds of sentences of working-out before a single final reply. Most of the time it produces better answers. But it has always been a black box: when the answer is wrong, which sentence first took the model astray? When it&rsquo;s right, which sentences did the real work? This paper, under review at ICLR 2026, proposes that almost all the work is done by a tiny number of sentences &mdash; and that you can find them.</p>
+
+      <h3>The problem, and why it&rsquo;s hard</h3>
+      <p>A reasoning chain isn&rsquo;t a list of independent steps you can inspect one at a time. Each sentence is shaped by every sentence before it &mdash; the model&rsquo;s output at step 47 was influenced by step 3, step 12, step 31, and everything in between. If you remove one sentence and look at what happens, the model often just routes around it, producing similar-sounding text that still reaches the same answer. It&rsquo;s like trying to find the load-bearing wall in a building by removing bricks one at a time: the structure holds right up until it suddenly doesn&rsquo;t.</p>
+      <p>Previous attempts to interpret language models focused on individual tokens or neurons &mdash; far too granular to tell you anything useful about a coherent thought. What the authors realized is that the <em>sentence</em> is the right unit of analysis. Each sentence expresses a complete thought, and replacing a sentence with something that means something different is an experiment you can actually run at scale.</p>
+
+      <h3>How it works</h3>
+      <p>Think of a detective&rsquo;s investigation log. A real inquiry might fill a hundred pages &mdash; observations, dead ends, hunches, re-checks. But only a few entries are truly pivotal: &ldquo;The witness said she was abroad that week,&rdquo; or &ldquo;Wait &mdash; the time of death changed everything.&rdquo; Most of the notes are continuity; those few are the load-bearing moments. The &ldquo;Thought Anchors&rdquo; paper asks: in an AI&rsquo;s reasoning trace, which sentences are those pivots?</p>
+      <p>The researchers built three independent methods that triangulate the answer. The first is a <strong>black-box counterfactual test.</strong> Take one sentence in the model&rsquo;s reasoning. Generate a hundred different continuations where that exact sentence has been replaced with something that means something different. Then check how often the final answer changes. If replacing the sentence causes the answer to flip in many of those hundred trials, the sentence was load-bearing. If the answer stays the same regardless of what you put there, the sentence was filler.</p>
+      <p>The second method is <strong>white-box attention aggregation.</strong> Look inside the model at its attention weights &mdash; the numbers representing how much each later sentence &ldquo;looks back at&rdquo; each earlier one. High backward attention signals that later reasoning is leaning heavily on what came before. This confirms the counterfactual method from a completely different angle, without needing thousands of model completions.</p>
+      <p>The third is <strong>causal attention suppression.</strong> Rather than just measuring attention, the researchers block the attention pathway from one sentence to everything that follows, and directly measure the resulting drop in output quality. If suppressing a sentence&rsquo;s influence hurts the model a lot, that sentence was causally important &mdash; not just correlated with importance, but mechanically responsible for it.</p>
+      <p>A sentence that scores high on all three methods is a thought anchor. The convergence across methods is the researchers&rsquo; confidence check &mdash; any one method might be fooled; all three pointing the same way is a strong signal.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team used DeepSeek R1-Distill-Qwen-14B, a 14-billion-parameter model with 48 layers, tested on the MATH benchmark &mdash; competition-level mathematics problems. They deliberately chose 20 problems at an intermediate difficulty: ones the model got right between 25% and 75% of the time, so there was enough variance to detect the influence of individual sentences. For each problem they generated one correct reasoning trace and one incorrect one, producing 40 traces total.</p>
+      <p>Each trace averaged 144.2 sentences and 4,208 tokens &mdash; roughly a 3,000-word document of &ldquo;thinking&rdquo; before a single final answer. The researchers categorized every sentence in every trace into one of eight types: problem setup, plan generation, fact retrieval, active computation, uncertainty management, result consolidation, self-checking, and final answer emission. Then they ran all three attribution methods across every sentence in every trace.</p>
+
+      <h3>What they found</h3>
+      <p>The distribution of importance is extremely skewed. A tiny number of sentences account for a disproportionate share of whether the model succeeds or fails &mdash; and those sentences are almost always one of two kinds: <strong>planning sentences</strong> and <strong>uncertainty management sentences.</strong> Planning sentences usually appear near the beginning of a trace and set the strategy: &ldquo;I&rsquo;ll approach this by working from the constraint on the left side first.&rdquo; Uncertainty management sentences appear mid-trace and represent the model catching its own error: &ldquo;Wait, I think I made a mistake &mdash; let me go back to where I set up the substitution.&rdquo;</p>
+      <p>These are the thought anchors. The planning sentences matter most: if the model frames the problem wrong at the start, the elaboration that follows is wrong too &mdash; a long, confident, incorrect chain. The uncertainty management sentences matter almost as much: on incorrect traces, these backtracking pivots are either absent entirely, or appear too late for the correction to propagate forward. All three attribution methods agreed on which sentences were anchors, which is the researchers&rsquo; strongest validation.</p>
+
+      <!-- SVG: bar chart of sentence importance -->
+      <figure>
+        <svg viewBox="0 0 720 262" role="img" aria-label="Bar chart showing counterfactual importance scores per sentence in a 144-sentence reasoning trace. Two bars labelled PLAN and BACKTRACK are tall and colored clay. All other bars are nearly flat and light gray.">
+          <text x="360" y="22" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="15" fill="#141413">Most sentences barely move the needle</text>
+          <text x="360" y="40" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Counterfactual importance per sentence &middot; DeepSeek R1-14B &middot; MATH benchmark</text>
+          <line x1="60" y1="56" x2="60" y2="198" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="60" y1="198" x2="700" y2="198" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text transform="rotate(-90,18,130)" x="18" y="130" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">importance</text>
+          <line x1="56" y1="72" x2="60" y2="72" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="53" y="76" text-anchor="end" font-family="ui-monospace,monospace" font-size="10" fill="#87867F">high</text>
+          <line x1="56" y1="198" x2="60" y2="198" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="53" y="202" text-anchor="end" font-family="ui-monospace,monospace" font-size="10" fill="#87867F">~0</text>
+          <text x="380" y="218" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">sentence number (1 to ~144 per reasoning trace)</text>
+          <rect x="65" y="72" width="9" height="126" fill="#D97757"/>
+          <text x="69" y="66" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#D97757" font-weight="bold">PLAN</text>
+          <rect x="77" y="194" width="9" height="4" fill="#D1CFC5"/>
+          <rect x="89" y="193" width="9" height="5" fill="#D1CFC5"/>
+          <rect x="101" y="195" width="9" height="3" fill="#D1CFC5"/>
+          <rect x="113" y="194" width="9" height="4" fill="#D1CFC5"/>
+          <rect x="125" y="196" width="9" height="2" fill="#D1CFC5"/>
+          <rect x="137" y="193" width="9" height="5" fill="#D1CFC5"/>
+          <rect x="149" y="195" width="9" height="3" fill="#D1CFC5"/>
+          <rect x="161" y="194" width="9" height="4" fill="#D1CFC5"/>
+          <rect x="173" y="193" width="9" height="5" fill="#D1CFC5"/>
+          <rect x="185" y="196" width="9" height="2" fill="#D1CFC5"/>
+          <rect x="197" y="194" width="9" height="4" fill="#D1CFC5"/>
+          <rect x="209" y="195" width="9" height="3" fill="#D1CFC5"/>
+          <rect x="221" y="193" width="9" height="5" fill="#D1CFC5"/>
+          <rect x="233" y="194" width="9" height="4" fill="#D1CFC5"/>
+          <rect x="245" y="196" width="9" height="2" fill="#D1CFC5"/>
+          <rect x="257" y="195" width="9" height="3" fill="#D1CFC5"/>
+          <rect x="269" y="193" width="9" height="5" fill="#D1CFC5"/>
+          <rect x="281" y="194" width="9" height="4" fill="#D1CFC5"/>
+          <rect x="293" y="196" width="9" height="2" fill="#D1CFC5"/>
+          <rect x="305" y="195" width="9" height="3" fill="#D1CFC5"/>
+          <rect x="317" y="194" width="9" height="4" fill="#D1CFC5"/>
+          <rect x="329" y="193" width="9" height="5" fill="#D1CFC5"/>
+          <rect x="341" y="196" width="9" height="2" fill="#D1CFC5"/>
+          <rect x="353" y="194" width="9" height="4" fill="#D1CFC5"/>
+          <rect x="365" y="195" width="9" height="3" fill="#D1CFC5"/>
+          <rect x="377" y="193" width="9" height="5" fill="#D1CFC5"/>
+          <rect x="389" y="194" width="9" height="4" fill="#D1CFC5"/>
+          <rect x="401" y="196" width="9" height="2" fill="#D1CFC5"/>
+          <rect x="413" y="88" width="9" height="110" fill="#D97757"/>
+          <text x="417" y="75" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8" fill="#D97757" font-weight="bold">BACK-</text>
+          <text x="417" y="84" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8" fill="#D97757" font-weight="bold">TRACK</text>
+          <rect x="425" y="194" width="9" height="4" fill="#D1CFC5"/>
+          <rect x="437" y="196" width="9" height="2" fill="#D1CFC5"/>
+          <rect x="449" y="193" width="9" height="5" fill="#D1CFC5"/>
+          <rect x="461" y="195" width="9" height="3" fill="#D1CFC5"/>
+          <rect x="473" y="194" width="9" height="4" fill="#D1CFC5"/>
+          <rect x="485" y="196" width="9" height="2" fill="#D1CFC5"/>
+          <rect x="497" y="195" width="9" height="3" fill="#D1CFC5"/>
+          <rect x="509" y="193" width="9" height="5" fill="#D1CFC5"/>
+          <rect x="521" y="194" width="9" height="4" fill="#D1CFC5"/>
+          <rect x="533" y="196" width="9" height="2" fill="#D1CFC5"/>
+          <rect x="545" y="195" width="9" height="3" fill="#D1CFC5"/>
+          <rect x="557" y="193" width="9" height="5" fill="#D1CFC5"/>
+          <rect x="569" y="194" width="9" height="4" fill="#D1CFC5"/>
+          <rect x="581" y="196" width="9" height="2" fill="#D1CFC5"/>
+          <rect x="593" y="195" width="9" height="3" fill="#D1CFC5"/>
+          <rect x="605" y="194" width="9" height="4" fill="#D1CFC5"/>
+          <rect x="617" y="193" width="9" height="5" fill="#D1CFC5"/>
+          <rect x="629" y="196" width="9" height="2" fill="#D1CFC5"/>
+          <rect x="641" y="194" width="9" height="4" fill="#D1CFC5"/>
+          <rect x="653" y="195" width="9" height="3" fill="#D1CFC5"/>
+          <rect x="665" y="194" width="9" height="4" fill="#D1CFC5"/>
+          <rect x="677" y="196" width="9" height="2" fill="#D1CFC5"/>
+          <rect x="689" y="193" width="9" height="5" fill="#D1CFC5"/>
+          <rect x="160" y="234" width="12" height="12" rx="2" fill="#D97757"/>
+          <text x="177" y="245" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Thought anchor</text>
+          <rect x="275" y="234" width="12" height="12" rx="2" fill="#D1CFC5"/>
+          <text x="292" y="245" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Ordinary sentence (low counterfactual influence)</text>
+        </svg>
+        <figcaption>Out of ~144 sentences in an average reasoning trace, only a handful &mdash; planning sentences near the start and backtracking sentences mid-trace &mdash; have high counterfactual importance. Replace any of the gray bars with something else and the answer barely changes. Replace a clay bar and everything downstream shifts.</figcaption>
+      </figure>
+
+      <h3>The catch</h3>
+      <p>The study is intentionally small: 40 traces, one model, one domain. Whether thought anchors look the same in a much larger system &mdash; GPT-5.6, Gemini 3.5 Pro &mdash; or in non-mathematical tasks like writing, coding, or reasoning about social situations, is unknown. The 14-billion-parameter model used here is capable but not a frontier system; its chain-of-thought style may differ structurally from models trained at much larger scale. And identifying thought anchors after the fact is not the same as being able to fix a broken reasoning chain in real time. The paper points toward applications like targeted training and better debugging, but those remain for future work.</p>
+
+      <p><strong>If you remember one thing:</strong> when a reasoning AI model gets a hard problem right, it&rsquo;s usually because one or two planning sentences at the very start set it on the right path &mdash; the hundreds of sentences that follow are mostly working out the details of a direction already chosen.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy posted a minimal bare-bones Python implementation of Natural Evolution Strategies &mdash; a gradient-free optimization algorithm used in reinforcement learning when you cannot compute gradients directly. Around 60 lines, pure Python/numpy, nothing to install. Classic Karpathy teaching-by-doing. <a href="https://gist.github.com/karpathy/77fbb6a8dac5395f1b73e7a89300318d">Gist</a></span></li>
+        <li><span class="tag tech">Dwarkesh</span><span>Dwarkesh Patel&rsquo;s most recent episode (June 19) went deep on what is actually driving AI progress and compared how efficiently humans versus AI systems learn from data and experience &mdash; a useful frame for anyone trying to understand where the capability gains are really coming from. <a href="https://www.dwarkesh.com/">dwarkesh.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two threads wove through this week. The first is that powerful AI systems are growing more capable and more tightly regulated at the same time. GPT-5.6 Sol launched not with a blog post and open registration but with government vetting, a safety system card, and a partner list. That is a meaningful change in how frontier AI reaches the world: less &ldquo;ship it and see&rdquo; and more &ldquo;ship it with the authorities watching.&rdquo; Whether that coordination produces better safety outcomes or just more friction is worth tracking.</p>
+      <p>The second thread is economic. Companies have been spending enormous amounts on AI without examining what they were getting. Uber&rsquo;s story &mdash; an annual budget gone in four months &mdash; is repeating across industries. The shift toward efficiency, smaller models, and governance layers like the one Arcade is building suggests the industry is entering a more measured phase. The earlier assumption that more tokens always equals more value was never carefully tested; the reckoning is forcing that test now.</p>
+      <p>The Thought Anchors paper sits at the intersection of both. If you can identify which sentences in a reasoning chain actually steer the outcome, you can train models to produce better planning sentences, catch faulty reasoning earlier, and &mdash; eventually &mdash; understand why a model failed in a way that allows you to fix it. That is interpretability as a practical tool, not just an academic exercise. Given how much is now riding on the reliability of these systems, that shift matters.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://openai.com/index/previewing-gpt-5-6-sol/">OpenAI &mdash; Previewing GPT-5.6 Sol</a> &middot;
+        <a href="https://www.marktechpost.com/2026/06/26/openai-previews-gpt-5-6-with-sol-terra-and-luna-tiered-models-new-reasoning-modes-limited-access/">MarkTechPost &mdash; GPT-5.6 details</a> &middot;
+        <a href="https://www.cnbc.com/2026/06/26/openai-anthropic-new-ai-spending-reality-as-users-shift-to-efficiency.html">CNBC &mdash; Tokenmaxxing reckoning</a> &middot;
+        <a href="https://finance.yahoo.com/markets/article/big-techs-27-trillion-ai-bill-comes-due-chart-of-the-day-100000100.html">Yahoo Finance &mdash; $2.7T market value</a> &middot;
+        <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">White House &mdash; AI executive order</a> &middot;
+        <a href="https://techcrunch.com/2026/06/24/companies-are-scrambling-to-stop-employees-from-maxing-out-ai-budgets-with-small-tasks/">TechCrunch &mdash; AI budget scramble</a> &middot;
+        <a href="https://arxiv.org/abs/2506.19143">arXiv &mdash; Thought Anchors paper</a> &middot;
+        <a href="https://github.com/interp-reasoning/thought-anchors">GitHub &mdash; Thought Anchors code</a> &middot;
+        <a href="https://gist.github.com/karpathy/77fbb6a8dac5395f1b73e7a89300318d">Karpathy &mdash; NES gist</a> &middot;
+        <a href="https://www.dwarkesh.com/">Dwarkesh Podcast</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Thought anchor</div>
+        <div>A sentence inside an AI model&rsquo;s chain of reasoning that has an outsized causal influence on the final answer. Named by analogy to a ship&rsquo;s anchor: most of the chain is drifting, but a few fixed points determine where it ends up. Almost always either a planning sentence near the start (&ldquo;I&rsquo;ll approach this by&hellip;&rdquo;) or a backtracking sentence mid-trace (&ldquo;Wait, I think I made an error &mdash; let me go back&hellip;&rdquo;).</div>
+      </div>
+      <dl>
+        <dt>Chain of thought</dt><dd>The long step-by-step reasoning text that modern AI models write before giving an answer. Think of it as the model showing its work. Pioneered by Google researchers in 2022, it dramatically improved accuracy on hard problems &mdash; at the cost of more tokens, more time, and now more interpretability complexity.</dd>
+        <dt>Counterfactual importance</dt><dd>A measure of how much a sentence matters, found by asking &ldquo;what if we replaced it?&rdquo; &mdash; running the model a hundred times with a different version of that sentence and checking how often the final answer changes. High change = high importance.</dd>
+        <dt>Tokenmaxxing</dt><dd>The practice of deliberately using as many AI tokens as possible, without considering whether it&rsquo;s necessary. Several large companies ran formal internal leaderboards rewarding employees who burned the most tokens. The era appears to be ending as cost pressure returns.</dd>
+        <dt>Ultra mode</dt><dd>A new capability in GPT-5.6 Sol: instead of thinking alone, the model launches multiple subagents to work on different parts of a hard problem simultaneously, then synthesises the results. Faster on complex tasks; more expensive and more opaque.</dd>
+        <dt>Interpretability</dt><dd>The field that asks: what is an AI model actually doing inside? Rather than just measuring whether outputs are correct, interpretability researchers try to trace the internal computations that produced them &mdash; so that AI systems can be understood, debugged, and eventually steered more reliably.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

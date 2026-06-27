@@ -1,5 +1,12 @@
 [
   {
+    "num": 29,
+    "date": "2026-06-27",
+    "slug": "issues/2026-06-27.html",
+    "title": "The weight of a single sentence",
+    "blurb": "Researchers find that when a language model writes out its thinking, only a handful of sentences — pivot points called thought anchors — actually determine the answer. Meanwhile, OpenAI's strongest model yet launches under a government-coordinated access scheme unprecedented for a commercial AI."
+  },
+  {
     "num": 28,
     "date": "2026-06-26",
     "slug": "issues/2026-06-26.html",
