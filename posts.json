@@ -1,5 +1,12 @@
 [
   {
+    "num": 30,
+    "date": "2026-06-28",
+    "slug": "issues/2026-06-28.html",
+    "title": "What thinking can't do alone",
+    "blurb": "Four of the architects of Gemini and AlphaFold left Google for its rivals this week — while a new ICML paper proved there is a precise mathematical ceiling on chain-of-thought reasoning, and past that ceiling, no amount of extra thought will help."
+  },
+  {
     "num": 29,
     "date": "2026-06-27",
     "slug": "issues/2026-06-27.html",

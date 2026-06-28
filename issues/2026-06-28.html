@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №30 — What thinking can’t do alone · Infinite Reach</title>
+  <meta name="description" content="Four of the architects of Gemini and AlphaFold left Google for its rivals this week — while a new paper proved that beyond a certain point, thinking harder is mathematically the wrong move." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №30 &middot; Sunday, June 28, 2026</p>
+      <h1>What thinking can’t do alone</h1>
+      <p>Four of the architects of Gemini and AlphaFold left Google for its rivals this week, erasing hundreds of billions in market value in a single afternoon. Meanwhile, an ICML paper found a precise mathematical answer to a question the field has been arguing about for years: how long can an AI reason before it <em>must</em> fail?</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>In the span of a week, Google lost four of the most consequential researchers in modern AI. John Jumper — who co-led AlphaFold and shared the 2024 Nobel Prize in Chemistry — is heading to Anthropic, along with Jonas Adler (AI coding) and Alexander Pritzel (model pretraining), both AlphaFold collaborators. Noam Shazeer, who helped build Gemini, is joining OpenAI. Alphabet shares fell more than 5% on June 22, erasing $225 billion in market value in a single session, with the week’s total decline reaching roughly $270 billion. The departures look coordinated: three of the four were connected to the AlphaFold project before moving to other Google work. Nobody seemed to have seen all of them coming at once.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Raise</span><span>Baseten, a platform that runs AI models in production, raised $1.5 billion at a $13 billion valuation — the largest AI infrastructure raise of the year. It now handles more than one billion model calls per day across 87 clusters spanning 18 cloud providers.</span></li>
+        <li><span class="tag policy">Policy</span><span>Japan announced a 14-year investment blueprint worth 370 trillion yen ($2.3 trillion), with nearly one-third — about $651 billion — earmarked specifically for AI and semiconductors by 2040.</span></li>
+        <li><span class="tag money">Compute</span><span>Anthropic is expanding its SpaceX deal to a second Memphis data centre, paying xAI $1.25 billion per month for access to more than 220,000 NVIDIA GPUs. The original deal was announced in May; the June expansion covers the newer Colossus 2 facility.</span></li>
+        <li><span class="tag tech">Agents</span><span>Boris Cherny, creator of Claude Code, told Fortune’s Brainstorm Tech conference he hasn’t written a single line of code by hand in eight months, and manages “sometimes tens of thousands” of AI agents on a given morning — his job now is writing loops that prompt other agents.</span></li>
+        <li><span class="tag money">Markets</span><span>The “Magnificent Seven” plus Broadcom and Oracle collectively shed roughly $2.7 trillion in market value during June as investors questioned whether massive AI infrastructure spending will ever produce commensurate returns.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: the ceiling on chain-of-thought</h2>
+      <p class="kicker">The Deterministic Horizon: When Extended Reasoning Fails and Tool Delegation Becomes Necessary &middot; Dongxin Guo, Jikun Wu, Siu Ming Yiu &middot; <a href="https://arxiv.org/abs/2606.00376">arXiv:2606.00376</a></p>
+
+      <p>Most AI papers this year argue that longer reasoning chains make models smarter. This one proves the opposite — that there is a specific complexity threshold, somewhere between 19 and 31 reasoning steps, past which longer chains <em>must</em> produce worse answers. Not sometimes, not for poorly trained models, but for any decoder-only transformer, by construction. The paper was accepted at ICML 2026.</p>
+
+      <h3>The problem, and why it’s hard</h3>
+      <p>Modern AI models can “think out loud” before answering. You’ve probably seen this: instead of jumping to a response, a model like Claude’s extended-thinking mode or OpenAI’s o3 writes a long chain of reasoning — checking its logic, considering alternatives — before committing to an answer. For many tasks, this helps enormously. A model that shows its work is harder to fool and easier to verify.</p>
+
+      <p>But there are tasks where every single step matters and there is only one right answer at each point — planning a sequence of database operations, debugging multi-step code, tracking the state of a chess game. These are called <em>deterministic state-tracking</em> tasks: the model must hold an exact picture of “the current state of the world” in memory while reasoning about the next move. Get any step slightly wrong and every subsequent step is wrong too.</p>
+
+      <p>Researchers had noticed for years that on these tasks, longer reasoning chains sometimes hurt rather than help. Models would write paragraphs of careful reasoning and then get the answer wrong — while a shorter, more direct response got it right. The conventional wisdom was that this was a training problem: models hadn’t learned to sustain attention across long chains. The assumption was that better training would fix it. This paper says that assumption is wrong.</p>
+
+      <h3>How it works</h3>
+      <p>The paper’s key insight comes from information theory — specifically, how much information the “attention” mechanism inside a transformer can actually hold at once.</p>
+
+      <p>Think of attention like working memory. A person can hold roughly seven distinct items in short-term memory at once. Ask them to track a puzzle with eight simultaneously changing pieces and they’ll start losing track of earlier states — not because they’re slow, but because there’s a structural ceiling on working memory. No amount of practice extends that ceiling significantly.</p>
+
+      <p>The authors prove the equivalent ceiling for transformer models. The attention mechanism has a maximum state-tracking capacity proportional to <em>H · log(L/H) · &radic;d<sub>h</sub></em>, where H is the number of attention heads, L is the sequence length, and d<sub>h</sub> is the head dimension. These are fixed architectural properties of any given model — you can’t change them by training differently or prompting more carefully.</p>
+
+      <p>When a task’s complexity exceeds this capacity, accuracy doesn’t gradually decline — it drops <em>super-exponentially</em>. The model isn’t just making a few more mistakes; it’s losing track of the problem structure entirely, the way a human stops being able to track a conversation when five people are talking at once. The chain of reasoning becomes a liability: each additional step adds more state that must be tracked, eventually overwhelming the capacity to hold any of it correctly.</p>
+
+      <p>The “Deterministic Horizon” d* is the specific threshold where this collapse begins. The paper’s experiments locate it between 19 and 31 steps — meaning any deterministic state-tracking task requiring more than roughly 25 reasoning steps will, past this point, reliably defeat a chain-of-thought-only model.</p>
+
+      <p>The proposed solution is what the paper calls <em>tool delegation</em>. Instead of asking the neural model to hold every state in its attention, you let it call an external tool — a code interpreter, a database, a calculator — to handle the bookkeeping. The model remains responsible for judgment: deciding <em>what</em> computation to run, interpreting the result, deciding what to do next. But the exact, deterministic sub-tasks get offloaded to systems built to handle them reliably. Thinking stays neural; precision becomes mechanical.</p>
+
+      <h3>What they actually did</h3>
+      <p>The researchers tested 12 models — spanning both open-weight and proprietary systems — across 8 task domains. The benchmarks include SWE-Bench (writing and editing software to pass test suites), WebArena (completing multi-step tasks in a simulated browser), and SQL-Multi (chaining multiple database queries to answer complex questions). Each task was scored using a new metric the paper introduces: the <em>State-Space Jaccard</em>, which separates tasks where a model <em>could</em> succeed but chooses not to (preference failures, fixable by prompting or fine-tuning) from tasks where the architecture simply cannot succeed (capability failures, not fixable by training). This distinction — can’t vs. won’t — is the methodological contribution that makes the paper’s claims hard to dispute.</p>
+
+      <!-- SVG DIAGRAM -->
+      <figure>
+        <svg viewBox="0 0 720 290" role="img" aria-label="Line chart comparing accuracy of neural chain-of-thought versus tool-integrated reasoning as task complexity increases. Neural chain-of-thought falls sharply past the Deterministic Horizon zone around steps 19-31, while tool-integrated reasoning stays near 90%.">
+          <!-- Chart background -->
+          <rect width="720" height="290" fill="#FDFCFA" rx="4"/>
+
+          <!-- Chart title -->
+          <text x="312" y="24" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" text-anchor="middle" font-style="italic">Accuracy collapses past the Horizon — tool use does not</text>
+
+          <!-- Deterministic Horizon shaded zone (steps 19–31) -->
+          <rect x="254" y="38" width="112" height="165" fill="#6A8CAF" opacity="0.12" rx="2"/>
+          <line x1="254" y1="38" x2="254" y2="203" stroke="#6A8CAF" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="366" y1="38" x2="366" y2="203" stroke="#6A8CAF" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="310" y="53" font-family="system-ui,sans-serif" font-size="9" fill="#6A8CAF" text-anchor="middle" font-weight="600">Deterministic</text>
+          <text x="310" y="65" font-family="system-ui,sans-serif" font-size="9" fill="#6A8CAF" text-anchor="middle" font-weight="600">Horizon d*</text>
+          <text x="310" y="77" font-family="system-ui,sans-serif" font-size="9" fill="#6A8CAF" text-anchor="middle">(steps 19–31)</text>
+
+          <!-- Y axis -->
+          <line x1="75" y1="38" x2="75" y2="203" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="70" y1="203" x2="75" y2="203" stroke="#87867F" stroke-width="1"/>
+          <line x1="70" y1="162" x2="75" y2="162" stroke="#87867F" stroke-width="1"/>
+          <line x1="70" y1="121" x2="75" y2="121" stroke="#87867F" stroke-width="1"/>
+          <line x1="70" y1="79" x2="75" y2="79" stroke="#87867F" stroke-width="1"/>
+          <line x1="70" y1="38" x2="75" y2="38" stroke="#87867F" stroke-width="1"/>
+          <line x1="75" y1="162" x2="545" y2="162" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="3,3"/>
+          <line x1="75" y1="121" x2="545" y2="121" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="3,3"/>
+          <line x1="75" y1="79" x2="545" y2="79" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="3,3"/>
+          <text x="66" y="206" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="end">0%</text>
+          <text x="66" y="165" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="end">25%</text>
+          <text x="66" y="124" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="end">50%</text>
+          <text x="66" y="82" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="end">75%</text>
+          <text x="66" y="41" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="end">100%</text>
+          <text x="20" y="121" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle" transform="rotate(-90,20,121)">Accuracy on task</text>
+
+          <!-- X axis -->
+          <line x1="75" y1="203" x2="545" y2="203" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="75" y1="203" x2="75" y2="208" stroke="#87867F" stroke-width="1"/>
+          <text x="75" y="220" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">0</text>
+          <line x1="254" y1="203" x2="254" y2="208" stroke="#6A8CAF" stroke-width="1"/>
+          <text x="254" y="220" font-family="system-ui,sans-serif" font-size="9" fill="#6A8CAF" text-anchor="middle">19</text>
+          <line x1="366" y1="203" x2="366" y2="208" stroke="#6A8CAF" stroke-width="1"/>
+          <text x="366" y="220" font-family="system-ui,sans-serif" font-size="9" fill="#6A8CAF" text-anchor="middle">31</text>
+          <line x1="545" y1="203" x2="545" y2="208" stroke="#87867F" stroke-width="1"/>
+          <text x="545" y="220" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">50</text>
+          <text x="310" y="235" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">Reasoning steps required (task complexity)</text>
+
+          <!-- Tool-integrated reasoning line (olive) -->
+          <line x1="75" y1="55" x2="545" y2="51" stroke="#788C5D" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="545" cy="51" r="4" fill="#788C5D"/>
+
+          <!-- Neural CoT line (clay) -->
+          <polyline points="75,71 216,74 254,84 310,117 366,142 451,155 545,160" stroke="#D97757" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="545" cy="160" r="4" fill="#D97757"/>
+
+          <!-- Legend -->
+          <line x1="558" y1="51" x2="575" y2="51" stroke="#788C5D" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="579" y="55" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D" font-weight="600">Tool-integrated</text>
+          <text x="579" y="67" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">86–94% accuracy</text>
+
+          <line x1="558" y1="160" x2="575" y2="160" stroke="#D97757" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="579" y="164" font-family="system-ui,sans-serif" font-size="10" fill="#D97757" font-weight="600">Neural CoT only</text>
+          <text x="579" y="176" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">24–42% accuracy</text>
+        </svg>
+        <figcaption>On tasks below the Deterministic Horizon, the two approaches perform similarly. Above it — once the task needs more than roughly 19–31 reasoning steps — neural chain-of-thought collapses super-exponentially while tool-integrated reasoning holds steady. Tested across 12 models and 8 benchmarks. Source: arXiv:2606.00376.</figcaption>
+      </figure>
+
+      <h3>What they found</h3>
+      <p>On tasks below the Deterministic Horizon, neural chain-of-thought performed comparably to tool-integrated reasoning — the results were close enough that it didn’t matter much which approach you used. But on tasks above d*, the gap was stark: tool-integrated reasoning achieved 86–94% accuracy across the primary suite of models, while neural chain-of-thought achieved only 24–42%. More striking still: fine-tuning models on carefully curated “optimal-length” reasoning traces improved neural CoT accuracy by less than 5 percentage points. The architectural ceiling didn’t budge. The failures were also consistent across all 12 models tested — the pattern didn’t belong to any particular training run or lab. It belongs to the architecture itself.</p>
+
+      <h3>The catch</h3>
+      <p>The paper’s proofs apply specifically to <em>deterministic</em> state-tracking tasks — problems where there’s exactly one correct state at every step. Most real-world tasks are messier: they involve judgment, ambiguity, and multiple acceptable paths. Whether the Deterministic Horizon matters as much outside carefully constructed benchmarks is an open question. And “tool delegation” only works if the right external tool exists and can be reliably called — which isn’t guaranteed for every domain. The paper proves that thinking alone won’t get you there; it doesn’t specify what tools you’ll need.</p>
+
+      <p><strong>If you remember one thing:</strong> There is a provable ceiling on how far pure reasoning can carry a task — and past that ceiling, the answer isn’t to think harder, but to reach for a calculator.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>His <code>autoresearch</code> project — a self-contained, single-GPU loop that lets an AI agent run experiments, evaluate results, and iteratively improve a neural network overnight — crossed 88,000 GitHub stars this month, with real adopters reporting striking results. PostHog ran it against its ClickHouse query engine and uncovered a three-year-old timestamp-filter bug, cutting data scanned by 62%; Shopify engineers cut template-rendering time from 7,469 to 3,534 microseconds. Worth a look if you work on any kind of iterative optimisation problem. <a href="https://github.com/karpathy/autoresearch">github.com/karpathy/autoresearch</a></span></li>
+        <li><span class="tag tech">Dwarkesh</span><span>Dwarkesh Patel published “The data black hole at the center of AI” on June 19 — his argument that data volume and data quality, not architectural innovation, are what actually drive AI progress. He frames it around sample efficiency: the million-fold gap between how much data a human needs to become competent at something versus how much data an AI model needs. One of the cleaner framings of a question the field is still fumbling with. <a href="https://www.dwarkesh.com/p/the-sample-efficiency-black-hole">dwarkesh.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three patterns converged this week. The talent leaving Google represents one of the most concentrated knowledge transfers in the history of technology: the people who built the foundational systems of modern AI are now distributing themselves across rival labs. The infrastructure deals — Baseten’s raise, Anthropic’s compute expansion, Japan’s national plan — confirm that running AI in production has become a standalone industry, as capital-intensive as chip fabrication. And the Deterministic Horizon paper redraws the map of what neural reasoning can and cannot do, replacing a persistent hunch with a proof.</p>
+
+      <p>Together they describe the same underlying shift: the frontier of AI is no longer being defined by which model can think the longest, but by which system knows when to stop thinking and reach for a tool — and which organisation has the people and infrastructure to build those systems at scale. The thinking gets the credit; the plumbing does the work.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.bloomberg.com/news/articles/2026-06-24/google-poised-to-lose-two-more-high-profile-ai-staffers-to-anthropic">Bloomberg: Google loses Adler &amp; Pritzel to Anthropic</a> &middot;
+        <a href="https://easternherald.com/2026/06/26/google-deepmind-anthropic-ai-talent-exodus-alphabet/">Eastern Herald: Four departures in a week</a> &middot;
+        <a href="https://techcrunch.com/2026/06/24/ai-researchers-continue-to-leave-google-for-its-rivals/">TechCrunch: Researchers leave Google</a> &middot;
+        <a href="https://arxiv.org/abs/2606.00376">arXiv:2606.00376 — The Deterministic Horizon</a> &middot;
+        <a href="https://www.businesswire.com/news/home/20260622645563/en/Baseten-Raises-$1.5-Billion-to-Power-the-Next-Era-of-AI-Inference">BusinessWire: Baseten $1.5B raise</a> &middot;
+        <a href="https://allweatherfinance.com/2-3-trillion-japan-launches-14-year-super-investment-plan-with-nearly-one-third-betting-on-ai-semiconductors/">AllWeatherFinance: Japan $2.3T plan</a> &middot;
+        <a href="https://www.anthropic.com/news/higher-limits-spacex">Anthropic: SpaceX compute partnership</a> &middot;
+        <a href="https://fortune.com/2026/06/08/anthropics-boris-cherny-creator-of-claude-code-says-there-are-days-he-manages-tens-of-thousands-of-ai-agents-at-once/">Fortune: Boris Cherny on agents</a> &middot;
+        <a href="https://finance.yahoo.com/markets/article/big-techs-27-trillion-ai-bill-comes-due-chart-of-the-day-100000100.html">Yahoo Finance: $2.7T market decline</a> &middot;
+        <a href="https://www.dwarkesh.com/p/the-sample-efficiency-black-hole">Dwarkesh Patel: The data black hole</a> &middot;
+        <a href="https://github.com/karpathy/autoresearch">GitHub: karpathy/autoresearch</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Inference</div>
+        <div>When an AI model <em>runs</em> — you type a question and it gives you an answer — that’s inference. Training is the separate, one-time process of learning from data; inference is what happens every time you use the result. Baseten’s $1.5 billion raise is infrastructure for inference: the servers, routing, and caching that handle billions of those “give me an answer” moments each day. Most of the AI industry’s compute spend is now on inference, not training.</div>
+      </div>
+      <dl>
+        <dt>Chain-of-thought (CoT)</dt>
+        <dd>A technique where an AI model writes out reasoning steps before giving a final answer — like showing your work on a maths exam. Often improves quality on complex problems, but this week’s paper proves there’s a mathematical ceiling on how far it can go before it starts failing.</dd>
+
+        <dt>Deterministic state-tracking</dt>
+        <dd>A category of task where there is exactly one correct state at every step — like tracking moves in a chess game or following a multi-step database transaction. No guessing or approximation allowed; the model must hold the exact current state in memory at all times.</dd>
+
+        <dt>Tool delegation</dt>
+        <dd>Having an AI model hand a specific sub-task to an external tool — a calculator, a code interpreter, a database — rather than trying to compute it internally. The model handles judgment and planning; the tool handles precision. The Deterministic Horizon paper argues this isn’t optional for complex enough tasks: it’s architecturally necessary.</dd>
+
+        <dt>Decoder-only transformer</dt>
+        <dd>The architecture used by nearly every major language model (GPT, Claude, Gemini, Llama). Processes text one token at a time using “attention” mechanisms that decide which earlier tokens to focus on. The Deterministic Horizon paper’s proof shows this architecture has a bounded working-memory capacity that cannot be overcome by training alone.</dd>
+
+        <dt>Sample efficiency</dt>
+        <dd>How many examples you need to see in order to learn a skill competently. Humans often learn from one or two demonstrations; current AI models typically need thousands or millions of examples. Dwarkesh Patel’s June essay argues this gap — not architectural cleverness — is the central unsolved problem in AI.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
