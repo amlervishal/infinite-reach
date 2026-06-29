@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №31 — What the doubter found · Infinite Reach</title>
+  <meta name="description" content="Qualcomm reportedly wants to spend $10 billion to acquire AI chip startup Tenstorrent — while a physics lab proved that an AI scientist arguing with its own hypotheses before running a single test gets better science out the other side." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №31 &middot; Sunday, June 29, 2026</p>
+      <h1>What the doubter found</h1>
+      <p>Qualcomm reportedly wants to spend up to $10 billion on an AI chip startup run by the man who designed chips for Apple and Tesla — a bid to put itself in the same conversation as NVIDIA. Meanwhile, the weekend’s quieter story came from a physics lab, where an autonomous AI scientist that argues with its own hypotheses before running a single experiment produced noticeably better science.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Qualcomm is reportedly in advanced acquisition talks with AI chip startup Tenstorrent, targeting a deal valued at $8–$10 billion. Tenstorrent was founded in 2016 and is led by Jim Keller, the veteran chip architect behind Apple’s A-series processors and Tesla’s autopilot chip. The company builds AI accelerators on the open RISC-V instruction set — a deliberate alternative to the proprietary architectures that have let NVIDIA dominate the market — and has raised more than $2.6 billion since late 2024. For Qualcomm, this would be its largest single bet on AI infrastructure, confirming a pattern: the chip market is consolidating rapidly as hyperscalers, chipmakers, and software companies all try to break NVIDIA’s lock on the hardware that AI depends on. Neither company commented. A deal is not confirmed.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Models</span><span>Google’s Gemini 3.5 Pro — a 2-million-token context window model with a “Deep Think” extended-reasoning mode — moved to limited enterprise preview on Vertex AI this week, with general availability expected soon. It absorbs the role previously held by Google’s Ultra tier: the hardest reasoning, the longest documents, the most demanding multimodal tasks.</span></li>
+        <li><span class="tag tech">Access</span><span>GPT-5.6 Sol — OpenAI’s strongest model yet, with a new “ultra” mode that coordinates subagents for complex tasks — launched this week available only to around twenty companies whose participation was pre-approved by the US government, in a restricted rollout the company says “shouldn’t be the norm.” Broader access expected within weeks.</span></li>
+        <li><span class="tag tech">Hardware</span><span>NVIDIA and SK hynix announced a multiyear technology partnership to co-develop next-generation memory aligned with NVIDIA’s Vera Rubin AI supercomputer platform — the generation of hardware expected to underpin most frontier model training in 2027.</span></li>
+        <li><span class="tag policy">Spending</span><span>A new Brookings analysis found US federal AI spending reached $7.2 billion in obligated funds in 2026 — a 966% increase from 2024 — with potential contract awards hitting $91.8 billion. Almost all private-sector funding is concentrated in two companies: OpenAI and Anthropic.</span></li>
+        <li><span class="tag tech">Agents</span><span>NVIDIA’s NemoClaw enterprise agent blueprint is now deployable in a single command via JetPack 7.2. Industrial firms including Cadence, Siemens, and Dassault Systèmes are using it to build “autonomous AI engineers” that compress simulation and verification workflows from weeks to hours.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: Paper, explained -->
+      <h2>Paper, explained: the AI scientist that argues with itself</h2>
+      <p class="kicker">Socratic agents for autonomous scientific discovery in high-dimensional physical systems &middot; Xianrui Zeng et al. &middot; <a href="https://arxiv.org/abs/2606.26722">arXiv:2606.26722</a></p>
+
+      <p>A team of researchers built a multi-agent system that runs real physics experiments autonomously on laboratory hardware. The unusual part: one of the agents has no job except to argue against every hypothesis the system produces, before any equipment is touched. The system, called AHOIS, just published results on a genuine optical physics platform — and the arguing, it turns out, helps.</p>
+
+      <h3>The problem, and why it’s hard</h3>
+      <p>Autonomous AI systems are already running drug discovery and materials science experiments. But there is a recurring failure mode that has troubled researchers for years: these systems optimise fast, but they sometimes optimise for the wrong thing. An AI told to “maximise the signal reading” will find ways to do it — occasionally by discovering genuinely novel physics, occasionally by exploiting quirks in the measurement setup that a human physicist would have caught in five minutes.</p>
+
+      <p>The machine doesn’t know the difference. Earlier solutions involved more training data, better models, or human-in-the-loop checkpoints. These help, but they’re slow, expensive, or add friction that defeats the purpose of automation. The standard approach to agentic science is a loop: propose, test, analyse, propose again. Nothing in that loop inherently pushes back on a bad proposal before the experiment runs.</p>
+
+      <p>The AHOIS paper asks a different question: what if the system could interrogate its own reasoning the way a graduate student interrogates their thesis before the viva? Not repeat it back approvingly — but genuinely find the holes.</p>
+
+      <h3>How it works</h3>
+      <p>The technique they borrow is the Socratic method — specifically, the philosopher Socrates’s practice of “elenchus,” rigorous questioning designed to expose hidden assumptions and contradictions. Socrates didn’t tell people they were wrong. He asked them questions until the contradictions became undeniable. The paper calls their version of this “Socratic midwifery”: not giving birth to the answer yourself, but helping the other party deliver it cleanly, by removing hidden contradictions before they cause real-world failures.</p>
+
+      <p>AHOIS has five agents, each named after a Chinese scholarly virtue. <strong>Boxue</strong> (“broad learning”) proposes hypotheses and experimental plans. <strong>Gewu</strong> (“investigation of things”) translates those plans into hardware-executable instructions for the optical platform. <strong>Mingde</strong> (“bright virtue”) monitors data validity and system integrity. <strong>Qiushi</strong> (“seeking truth”) analyses the results and builds quantitative models. And <strong>Duzhi</strong> (“independent will”) is the Socratic critic — the one agent whose entire function is to find fault with Boxue’s ideas before Gewu touches the equipment.</p>
+
+      <p>Think of it as a surgical team. Boxue is the surgeon who says “I think we should cut here.” Duzhi is the colleague who asks: “Have you checked the vessels on the other side? What would you expect to see if the anatomy were variant? Under what conditions would that plan be wrong?” Boxue must answer those questions before any instrument moves. If it can answer them, the plan is richer. If it can’t, the plan gets revised.</p>
+
+      <p>Duzhi runs four specific operations before every major experimental step: it asks clarifying questions about the hypothesis, checks whether the proposed physics is internally self-consistent, probes the causal structure (“if the effect is X, what would your model predict if we changed Y?”), and formulates explicit falsification criteria — conditions that, if observed, would mean the hypothesis is wrong. These aren’t cosmetic. They are the conditions that would force Boxue back to the drawing board before a single photon is fired.</p>
+
+      <!-- SVG diagram: AHOIS five-agent architecture with Socratic loop -->
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Diagram showing the five AHOIS agents and the Socratic loop between Boxue and Duzhi before experimental plans reach the hardware.">
+          <rect width="720" height="310" fill="#FDFCFA" rx="4"/>
+
+          <!-- Title -->
+          <text x="360" y="22" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" text-anchor="middle" font-style="italic">AHOIS: five agents and the Socratic loop</text>
+
+          <!-- Boxue box (hypothesis) -->
+          <rect x="30" y="50" width="130" height="58" rx="6" fill="#D97757" opacity="0.18"/>
+          <rect x="30" y="50" width="130" height="58" rx="6" fill="none" stroke="#D97757" stroke-width="1.5"/>
+          <text x="95" y="75" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle" font-weight="600">Boxue</text>
+          <text x="95" y="90" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">Hypotheses &amp;</text>
+          <text x="95" y="102" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">experimental plans</text>
+
+          <!-- Duzhi box (critic) -->
+          <rect x="270" y="50" width="130" height="58" rx="6" fill="#6A8CAF" opacity="0.18"/>
+          <rect x="270" y="50" width="130" height="58" rx="6" fill="none" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="335" y="75" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle" font-weight="600">Duzhi</text>
+          <text x="335" y="90" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">Socratic critic —</text>
+          <text x="335" y="102" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">argues before action</text>
+
+          <!-- Arrow Boxue to Duzhi (hypothesis sent for interrogation) -->
+          <line x1="162" y1="72" x2="268" y2="72" stroke="#D97757" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <polygon points="268,68 276,72 268,76" fill="#D97757"/>
+          <text x="215" y="65" font-family="system-ui,sans-serif" font-size="9" fill="#D97757" text-anchor="middle">hypothesis</text>
+
+          <!-- Arrow Duzhi to Boxue (challenge back) -->
+          <line x1="268" y1="88" x2="162" y2="88" stroke="#6A8CAF" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <polygon points="162,84 154,88 162,92" fill="#6A8CAF"/>
+          <text x="215" y="103" font-family="system-ui,sans-serif" font-size="9" fill="#6A8CAF" text-anchor="middle">challenge / refine</text>
+
+          <!-- Socratic loop label -->
+          <rect x="150" y="108" width="130" height="18" rx="4" fill="#6A8CAF" opacity="0.12"/>
+          <text x="215" y="121" font-family="system-ui,sans-serif" font-size="8.5" fill="#6A8CAF" text-anchor="middle" font-weight="600">Socratic loop (repeats)</text>
+
+          <!-- Gewu box (hardware execution) -->
+          <rect x="510" y="50" width="130" height="58" rx="6" fill="#788C5D" opacity="0.18"/>
+          <rect x="510" y="50" width="130" height="58" rx="6" fill="none" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="575" y="75" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle" font-weight="600">Gewu</text>
+          <text x="575" y="90" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">Hardware execution</text>
+          <text x="575" y="102" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">(optical platform)</text>
+
+          <!-- Arrow Duzhi to Gewu (approved plan) -->
+          <line x1="402" y1="79" x2="508" y2="79" stroke="#141413" stroke-width="1.5"/>
+          <polygon points="508,75 516,79 508,83" fill="#141413"/>
+          <text x="455" y="72" font-family="system-ui,sans-serif" font-size="9" fill="#141413" text-anchor="middle">approved plan</text>
+
+          <!-- Mingde box (data quality) -->
+          <rect x="30" y="195" width="130" height="58" rx="6" fill="#87867F" opacity="0.15"/>
+          <rect x="30" y="195" width="130" height="58" rx="6" fill="none" stroke="#87867F" stroke-width="1.5"/>
+          <text x="95" y="220" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle" font-weight="600">Mingde</text>
+          <text x="95" y="235" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">Data integrity</text>
+          <text x="95" y="247" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">&amp; system health</text>
+
+          <!-- Qiushi box (analysis) -->
+          <rect x="510" y="195" width="130" height="58" rx="6" fill="#D97757" opacity="0.10"/>
+          <rect x="510" y="195" width="130" height="58" rx="6" fill="none" stroke="#D97757" stroke-width="1.2"/>
+          <text x="575" y="220" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle" font-weight="600">Qiushi</text>
+          <text x="575" y="235" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">Analysis &amp;</text>
+          <text x="575" y="247" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">quantitative modelling</text>
+
+          <!-- Arrow Gewu down to experiment -->
+          <line x1="575" y1="110" x2="575" y2="180" stroke="#788C5D" stroke-width="1.5"/>
+          <polygon points="571,180 575,190 579,180" fill="#788C5D"/>
+
+          <!-- Experiment result box -->
+          <rect x="480" y="155" width="190" height="28" rx="4" fill="#788C5D" opacity="0.15"/>
+          <rect x="480" y="155" width="190" height="28" rx="4" fill="none" stroke="#788C5D" stroke-width="1"/>
+          <text x="575" y="173" font-family="system-ui,sans-serif" font-size="9" fill="#788C5D" text-anchor="middle" font-weight="600">raw experimental data</text>
+
+          <!-- Arrow experiment down to Qiushi -->
+          <line x1="575" y1="183" x2="575" y2="193" stroke="#788C5D" stroke-width="1.5"/>
+          <polygon points="571,193 575,197 579,193" fill="#788C5D"/>
+
+          <!-- Arrow Qiushi back to Boxue (new cycle) -->
+          <line x1="510" y1="224" x2="160" y2="224" stroke="#D97757" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <polygon points="160,220 152,224 160,228" fill="#D97757"/>
+          <text x="335" y="243" font-family="system-ui,sans-serif" font-size="9" fill="#D97757" text-anchor="middle">new hypotheses for next cycle</text>
+
+          <!-- Mingde monitors (dotted line) -->
+          <line x1="95" y1="155" x2="95" y2="193" stroke="#87867F" stroke-width="1" stroke-dasharray="3,3"/>
+          <text x="35" y="188" font-family="system-ui,sans-serif" font-size="8" fill="#87867F">monitors</text>
+          <text x="35" y="198" font-family="system-ui,sans-serif" font-size="8" fill="#87867F">all agents</text>
+        </svg>
+        <figcaption>The AHOIS architecture: Boxue proposes hypotheses, Duzhi challenges them in a Socratic loop, and only approved plans reach Gewu on the hardware. Qiushi analyses the results and feeds them back. Mingde watches over data integrity throughout. Source: arXiv:2606.26722.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The team tested AHOIS on a real multimode-fibre optical platform — a physical system where laser light enters a thin glass fibre that supports many spatial modes simultaneously, producing a complex speckle pattern at the output. The relationship between what you put in and what comes out is genuinely hard to characterise: it depends on the fibre’s geometry, environmental temperature drift, and how the light was launched. There is no simple formula. It’s the kind of system where a human physicist would spend weeks building an intuition about the physics before designing an encoding scheme.</p>
+
+      <p>AHOIS was given no pre-programmed knowledge of the encoding. Operating only from its physical understanding of optics and the Socratic interrogation process, the system autonomously proposed and then experimentally validated what it called a “random-interference encoding hypothesis” — a method of encoding information using the statistical properties of the speckle patterns rather than trying to undo them. The discovered encoding was then tested on a 16×16-pixel measurement grid: it achieved classification accuracies of 76.97% on MNIST (handwritten digits) and 83.17% on Fashion-MNIST (images of clothing items). Neither benchmark score is a record — state-of-the-art systems score higher — but that wasn’t the point. The encoding that achieved those scores was not given to the system; the system found it through self-directed physical reasoning.</p>
+
+      <p>The paper ran controlled ablations: versions of AHOIS with Duzhi removed, or with the Socratic loop disabled. In every ablation, the quality dropped on all four measured dimensions — physical consistency, hypothesis completeness, uncertainty calibration, and experimental-plan validity. The improvements from adding the critic were not marginal.</p>
+
+      <h3>What they found</h3>
+      <p>The central result is specific: a physics AI that questions its own hypotheses before acting produces more internally consistent science than one that simply optimises forward. The Socratic loop doesn’t just catch errors — it changes how hypotheses are formed. When Boxue knows Duzhi is about to interrogate the plan, the plans come out more complete to begin with. This mirrors what human scientists report: the knowledge that your experiment must survive peer review changes how you design the experiment in the first place.</p>
+
+      <h3>The catch</h3>
+      <p>The system was tested on one physical platform, by one research team, in controlled laboratory conditions with a human present and able to intervene. The five-agent architecture is meaningfully more complex to deploy and debug than a simpler single-agent loop. The classification accuracies, while meaningful, do not approach what a specialised network trained on those datasets would score — the system was solving a harder problem (discovering the encoding from scratch), not the easiest possible version of the benchmark. Whether the Socratic approach transfers to less structured scientific domains — where “physical consistency” is harder to formally check — is open.</p>
+
+      <p><strong>If you remember one thing:</strong> A machine that argues against its own ideas before running an experiment gets better science than one that simply acts on them.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy posted a new gist today — <code>microgpt.py</code> — a complete implementation of GPT training and inference in pure Python with zero external dependencies. His note reads simply: “Everything else is just efficiency.” It’s consistent with his Software 3.0 thesis: that the essential logic of the technology can be understood, held in one’s head, and written in a few hundred lines. Worth reading if you’ve ever wanted to know how these systems actually work, stripped of all the tooling. <a href="https://gist.github.com/karpathy">gist.github.com/karpathy</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three stories this weekend point toward the same underlying shift. Qualcomm’s pursuit of Tenstorrent is one more piece of evidence that building AI requires controlling the full stack — hardware, memory, and software together — and that the window to assemble that stack independently is narrowing. The federal spending surge confirms the same logic at a national scale: governments now believe that whoever controls the infrastructure wins.</p>
+
+      <p>The AHOIS paper sits at a different angle to these stories, but it matters just as much. The hardware race is about power; the self-questioning scientist is about trustworthiness. A machine that arrives at its conclusions by interrogating them first is a different kind of tool from one that simply optimises forward. Whether that matters more or less than raw capability depends on what you want to do with it — and as these systems move into laboratories, hospitals, and engineering workflows, that question is going to keep coming up. The Socratic method is 2,400 years old. It turns out it’s still a reasonable thing to bake into a machine.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://finance.yahoo.com/technology/ai/articles/qualcomm-talks-acquire-ai-chip-230401789.html">Reuters / Yahoo Finance: Qualcomm–Tenstorrent talks</a> &middot;
+        <a href="https://www.datacenterdynamics.com/en/news/qualcomm-considers-acquiring-ai-chip-firm-tenstorrent/">Data Center Dynamics: Qualcomm–Tenstorrent</a> &middot;
+        <a href="https://arxiv.org/abs/2606.26722">arXiv:2606.26722 — AHOIS: Socratic agents</a> &middot;
+        <a href="https://openai.com/index/previewing-gpt-5-6-sol/">OpenAI: Previewing GPT-5.6 Sol</a> &middot;
+        <a href="https://techcrunch.com/2026/06/26/openai-limits-gpt-5-6-rollout-after-government-request-says-restrictions-shouldnt-be-the-norm/">TechCrunch: OpenAI limits GPT-5.6 rollout</a> &middot;
+        <a href="https://deepmind.google/models/gemini/">Google DeepMind: Gemini 3.5</a> &middot;
+        <a href="https://www.nvidia.com/en-us/ai/nemoclaw/">NVIDIA: NemoClaw</a> &middot;
+        <a href="https://www.brookings.edu/articles/where-does-federal-ai-spending-stand-in-2026/">Brookings: Federal AI spending 2026</a> &middot;
+        <a href="https://gist.github.com/karpathy">GitHub Gists: karpathy (microgpt.py)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Socratic method</div>
+        <div>A way of reaching better answers through structured questioning rather than assertion. Named after the ancient Athenian philosopher Socrates, whose method was not to tell people what was true but to ask questions until hidden contradictions became visible. In the AHOIS paper, an agent applies this technique to a fellow agent’s scientific hypotheses — not to be obstructive, but to surface assumptions that would otherwise cause experiments to fail. Same idea, different millennium.</div>
+      </div>
+      <dl>
+        <dt>Multimode fibre</dt>
+        <dd>A type of optical fibre that carries light in many spatial “modes” simultaneously, producing complex overlapping wave patterns. Unlike the single-mode fibres used in internet cables (which carry one clean beam), multimode fibres are hard to characterise precisely — which is exactly why AHOIS’s ability to reason about them from scratch is interesting.</dd>
+
+        <dt>Speckle pattern</dt>
+        <dd>The grainy, granular pattern you see when laser light passes through a complex or disordered medium. Each speckle grain encodes information about the path the light took. AHOIS’s “random-interference encoding” hypothesis used these patterns — which look like noise — as a deliberate channel for information. Seeing noise as signal is the kind of insight Socratic interrogation helped the system reach.</dd>
+
+        <dt>Ablation study</dt>
+        <dd>A research technique where you remove one component of a system and measure how much performance drops. If removing part X hurts badly, X was doing real work. If removing it barely matters, it was probably redundant. The AHOIS paper ran ablations on Duzhi — they switched off the critic agent — and found that every measure of quality declined. That’s how we know the arguing actually helped.</dd>
+
+        <dt>Epistemic autonomy</dt>
+        <dd>The capacity to form, challenge, and revise your own beliefs based on evidence — rather than just following instructions or pattern-matching from prior training. AHOIS’s authors use the phrase to describe what they wanted to build: not a tool that executes a fixed procedure, but a system that can genuinely reason about whether its current beliefs are consistent with what it observes.</dd>
+
+        <dt>RISC-V</dt>
+        <dd>An open-source chip instruction set — the basic language a processor uses to understand commands — that anyone can use without paying licensing fees. Most processors (including those in iPhones and Intel PCs) use proprietary instruction sets. Tenstorrent, the startup Qualcomm wants to acquire, is built on RISC-V. The bet is that an open foundation makes it easier to build specialised AI chips faster and cheaper than competing on NVIDIA’s proprietary turf.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
