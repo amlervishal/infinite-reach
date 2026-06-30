@@ -1,5 +1,12 @@
 [
   {
+    "num": 32,
+    "date": "2026-06-30",
+    "slug": "issues/2026-06-30.html",
+    "title": "The city you never named",
+    "blurb": "A Berkeley study found that injecting your location into a hidden system prompt — even writing 'Unknown' — bends a language model's answers toward that place, with leakage up to 793 times the baseline rate."
+  },
+  {
     "num": 31,
     "date": "2026-06-29",
     "slug": "issues/2026-06-29.html",

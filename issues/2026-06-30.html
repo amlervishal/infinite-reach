@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №32 — The city you never named · Infinite Reach</title>
+  <meta name="description" content="A Berkeley study proved that every major language model silently bends its answers toward wherever the system thinks you are — even when you never said. Meanwhile, June 2026 closes as the month computing spent more money at once than it ever has before." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №32 &middot; Monday, June 30, 2026</p>
+      <h1>The city you never named</h1>
+      <p>A Berkeley study found that every major language model quietly bends its answers toward wherever the system thinks you are — even when you never said, and even when you wrote "Unknown." Meanwhile, June closes as the most expensive month in the history of computing, one dollar at a time.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>GitHub Copilot switched every plan to metered billing on June 1, ending the flat monthly subscription that had defined the first years of AI coding tools. Developers now pay per token consumed rather than a fixed fee. Copilot Pro+ costs $39 a month, which buys $39 in AI credits — a soft ceiling that becomes a hard meter the moment you push past it. The developer reaction has been swift and revealing: Chinese open-weight models now account for 60 percent of traffic on OpenRouter, the routing layer developers use to switch between models, as teams search for cheaper alternatives. The flat-rate era for AI tools — which started when Copilot launched as a subscription in 2021 — is over. What replaces it looks more like a utility bill.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Capital</span><span>Alphabet raised $84.75 billion — the largest equity raise in technology history — to build AI data centres. Berkshire Hathaway put in $10 billion privately; the rest came from public markets. Google's 2026 capital-expenditure guidance is $180–190 billion, almost entirely for compute infrastructure.</span></li>
+        <li><span class="tag tech">Benchmarks</span><span>Gemini 2.5 Pro with Deep Think (launched June 22) scored 82.4% on GPQA Diamond and 94.1% on HumanEval Plus — the strongest public benchmarks ever published for a generally available model. Gemini 3.5 Pro, expected this month, missed its public deadline.</span></li>
+        <li><span class="tag tech">Patterns</span><span>Anthropic's sixth Economic Index, "Cadences" (June 26): recipe requests spike 2.3× at 6 p.m., sleep advice clusters at 5 a.m., tax questions hit 8× normal on April 15. A linked survey of ~9,700 Claude users found more than a third expect AI to do most of their work within twelve months.</span></li>
+        <li><span class="tag tech">Open weights</span><span>GLM-5.2 from Zhihu AI (June 13) is now the strongest open-weight coding model at the lowest cost in its class, and part of the wave pushing Chinese open-source models to 60% of OpenRouter usage.</span></li>
+        <li><span class="tag policy">Regulation</span><span>Colorado Governor Polis signed SB 189, narrowing the state's AI law and pushing its effective date to January 1, 2027, while scaling back several of the original requirements. Seventeen other states are watching for a template.</span></li>
+      </ul>
+
+      <h2>Paper, explained: the location you didn't share</h2>
+      <p class="kicker">"Unintended Effects of Geographic Conditioning in Large Language Models" &middot; Naz Col &amp; David M. Chan, UC Berkeley &middot; ACL 2026 (CustomNLP4U Workshop) &middot; <a href="https://arxiv.org/abs/2606.18124">arXiv:2606.18124</a></p>
+
+      <p>Researchers set out to measure something most users never think about: how strongly does telling an AI where you are — even accidentally, even through a placeholder — bend its answers toward that place, even when your question has nothing to do with location?</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Modern AI assistants know things about you before you type a single word. Developers add context to a hidden block of instructions — called a "system prompt" — that the model reads before your message arrives. It might contain your language setting, your account type, your timezone, or your city. The idea is to make answers more relevant. But Naz Col and David M. Chan at UC Berkeley asked a quieter question: does injecting location into that hidden block change what the model says, even when the user's question is completely geography-neutral?</p>
+
+      <p>That's subtle because it's about invisible bias rather than a wrong answer. If you ask "what should I cook for dinner?" a model might reasonably suggest local dishes. But if you ask it to write a short story or explain how a battery works, no one expects Parisian pastries or a São Paulo power grid to appear. The researchers invented a metric they called "location leakage" — measuring exactly how often geographic references surface in outputs that had no geographic prompt.</p>
+
+      <h3>How it works</h3>
+      <p>Think of the model as a hotel concierge who has read your passport before you arrive at the desk. You walk up and ask, simply, "What's a good bookshop?" A skilled concierge gives you a general answer. A leaky one has already read "nationality: Australian" and recommends the English-language bookshop three blocks away — before you've given any hint about your language, your preferences, or where you're from. The model has been conditioned by information it received quietly, not from you.</p>
+
+      <p>The Berkeley team ran three distinct types of location injection and measured the effect of each across five major models:</p>
+      <ul>
+        <li><strong>Direct injection:</strong> the system prompt states plainly, "The user is located in Paris, France."</li>
+        <li><strong>Profile injection:</strong> the system prompt includes a user-profile block — the kind developers build to personalise assistants — with a city listed in the location field.</li>
+        <li><strong>"Unknown" injection:</strong> the same user-profile block, but the location field says "Unknown" rather than a real city.</li>
+      </ul>
+      <p>For each condition, they gave the models geographically neutral prompts — creative writing tasks and open-ended Q&amp;A — and had a large judge model read every output and flag geographic references the user never requested.</p>
+
+      <h3>What they actually did</h3>
+      <p>The five models tested included Llama 3.1-8B, Qwen3-8B, Claude Sonnet 4.6, and two others. Each combination of model, injection type, and prompt type produced a batch of outputs; the judge model scored each for location leakage. The baseline condition — no system prompt, no location information at all — established the natural rate at which these models mention places unprompted, which turned out to be very low.</p>
+
+      <h3>What they found</h3>
+      <p>The numbers are larger than most people would guess. Llama 3.1-8B generated geographic references in just 0.04 percent of outputs at baseline. With a city injected via the system prompt, that figure rose to 31.7 percent — a factor of 793. Qwen3-8B's leakage reached 21.3 percent. Claude Sonnet 4.6, the most disciplined of the group, showed 8.8 percent — still measurable and still caused by information the user never provided.</p>
+
+      <p>The "Unknown" result is the one that should make product designers pause. Replacing the city with the literal word "Unknown" in the user-profile block still elevated leakage by up to 72 times above baseline. The user-profile template itself — its framing, its structure, the presence of a location field even when empty — acts as a conditioning signal. The model has learned that a user profile means a person with a place, and it acts accordingly, even when no place is given.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 330" role="img" aria-label="Flow diagram showing hidden location conditioning, and a bar chart of leakage rates across three models">
+          <defs>
+            <marker id="arr-grey" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#87867F"/>
+            </marker>
+            <marker id="arr-sky" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#6A8CAF"/>
+            </marker>
+            <marker id="arr-clay" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#D97757"/>
+            </marker>
+          </defs>
+
+          <!-- ── FLOW DIAGRAM ── -->
+
+          <!-- User message box -->
+          <rect x="18" y="18" width="162" height="72" rx="7" fill="#EDF1F7" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="99" y="42" text-anchor="middle" font-family="ui-serif,serif" font-size="12" fill="#141413" font-weight="600">Your message</text>
+          <text x="99" y="60" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">"What are good dinner recipes?"</text>
+          <text x="99" y="78" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">"Write me a short story."</text>
+
+          <!-- Hidden system prompt box (dashed) -->
+          <rect x="18" y="108" width="162" height="60" rx="7" fill="#FAF9F7" stroke="#D97757" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <text x="99" y="129" text-anchor="middle" font-family="ui-serif,serif" font-size="11" fill="#141413">Hidden system prompt</text>
+          <text x="99" y="148" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#D97757">location: "Paris, France"</text>
+          <text x="99" y="162" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">(you never typed this)</text>
+
+          <!-- Arrows to model -->
+          <path d="M180 54 Q240 54 290 98" stroke="#6A8CAF" stroke-width="1.5" fill="none" marker-end="url(#arr-sky)"/>
+          <path d="M180 138 Q240 138 290 118" stroke="#D97757" stroke-width="1.5" fill="none" stroke-dasharray="5 3" marker-end="url(#arr-clay)"/>
+
+          <!-- Language model box -->
+          <rect x="290" y="72" width="138" height="68" rx="7" fill="#FBF0EC" stroke="#D97757" stroke-width="1.5"/>
+          <text x="359" y="104" text-anchor="middle" font-family="ui-serif,serif" font-size="14" fill="#141413" font-weight="600">Language</text>
+          <text x="359" y="124" text-anchor="middle" font-family="ui-serif,serif" font-size="14" fill="#141413" font-weight="600">Model</text>
+
+          <!-- Arrow to response -->
+          <line x1="428" y1="106" x2="488" y2="106" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr-grey)"/>
+
+          <!-- Response box -->
+          <rect x="490" y="38" width="218" height="136" rx="7" fill="#EEF1EA" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="599" y="63" text-anchor="middle" font-family="ui-serif,serif" font-size="12" fill="#141413" font-weight="600">Response</text>
+          <text x="599" y="84" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">"In Paris, you might enjoy</text>
+          <text x="599" y="100" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">a classic bistro near the</text>
+          <text x="599" y="116" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">Marais — soupe à l'oignon</text>
+          <text x="599" y="132" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">is perfect this time of year."</text>
+          <text x="599" y="156" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#788C5D">⚠ You never said you were in Paris.</text>
+
+          <!-- ── BAR CHART ── -->
+          <line x1="18" y1="186" x2="702" y2="186" stroke="#D1CFC5" stroke-width="0.8"/>
+
+          <text x="18" y="206" font-family="ui-serif,serif" font-size="12" fill="#141413">Location leakage — with city-injected system prompt</text>
+          <text x="18" y="220" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">% of outputs referencing a location the user never asked about (baseline ≈ 0%)</text>
+
+          <!-- Llama 3.1-8B: 31.7% -->
+          <rect x="90" y="237" width="100" height="63" rx="3" fill="#D97757" opacity="0.88"/>
+          <text x="140" y="234" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413" font-weight="600">31.7%</text>
+          <text x="140" y="315" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">Llama 3.1-8B</text>
+
+          <!-- Qwen3-8B: 21.3% -->
+          <rect x="305" y="257" width="100" height="43" rx="3" fill="#788C5D" opacity="0.88"/>
+          <text x="355" y="254" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413" font-weight="600">21.3%</text>
+          <text x="355" y="315" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">Qwen3-8B</text>
+
+          <!-- Claude Sonnet 4.6: 8.8% -->
+          <rect x="520" y="282" width="100" height="18" rx="3" fill="#6A8CAF" opacity="0.88"/>
+          <text x="570" y="279" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413" font-weight="600">8.8%</text>
+          <text x="570" y="315" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">Claude Sonnet 4.6</text>
+
+          <!-- Baseline -->
+          <line x1="60" y1="300" x2="680" y2="300" stroke="#D1CFC5" stroke-width="1.2"/>
+          <text x="18" y="303" text-anchor="start" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">0%</text>
+        </svg>
+        <figcaption>Top: location flows into a language model through a hidden system prompt — the user never typed it. Bottom: when a city is injected, the share of outputs referencing geography the user never asked about rises from near zero to 8–32%, depending on the model. Source: Col &amp; Chan, arXiv:2606.18124.</figcaption>
+      </figure>
+
+      <h3>The catch</h3>
+      <p>The study measures leakage in existing models as currently deployed — not harm. A story set in Paris when your system prompt says you're in Paris is not automatically bad; context matters. The researchers deliberately used prompts where geography was irrelevant, which is where the finding bites. But whether real users notice or are affected by geography-shaped outputs in their daily sessions wasn't measured. The leakage detector is itself a large language model, which introduces its own measurement noise. And the study covers five models on a small number of prompt types — real-world conditions are messier.</p>
+
+      <p><strong>If you remember one thing:</strong> Telling an AI your location — or even telling it you'd rather not say — can push its answers toward geography-shaped choices you never asked for, and this effect is visible across every model the researchers tested.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>The <a href="https://github.com/karpathy/autoresearch">autoresearch</a> repo has reached 89k stars and nearly 13k forks. The pattern — give an AI agent a single-file training setup and let it run experiments autonomously overnight on one GPU, roughly 12 per hour — has spread into production workflows. Shopify's CEO adapted it for a query-expansion model and reported a 19% improvement in validation scores from 37 overnight experiments on a 0.8B parameter model.</span></li>
+        <li><span class="tag tech">Dwarkesh</span><span>The <a href="https://www.dwarkesh.com/">June 4 blackboard lecture</a> with Reiner Pope, CEO of chip startup MatX, starts from basic logic gates and works up to why GPUs, TPUs, FPGAs, and the human brain each look the way they do. If you've ever wondered why AI hardware costs what it costs, this is the clearest available explanation.</span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three things became clearer as June 2026 closed. First, the infrastructure layer is now funded at the scale of small countries: Alphabet committed $84.75 billion in a single month, and Google's total 2026 capital expenditure may reach $190 billion. Second, the developer tools sitting on top of that infrastructure are shifting to utility pricing — flat rates are gone, and the meter is running. Third, and perhaps most quietly: the systems themselves make assumptions about you that you never sanctioned. The Berkeley location study is small in scope, but its implication is not: injecting even a placeholder into a hidden system prompt measurably changes what the model thinks about you and, therefore, what it says. None of this is alarming in isolation. Taken together, the picture is of systems growing simultaneously larger, more precisely calibrated to individuals, and harder to fully see inside.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2606.18124">Col &amp; Chan, "Unintended Effects of Geographic Conditioning in LLMs," arXiv:2606.18124</a> ·
+        <a href="https://github.blog/news-insights/company-news/github-copilot-is-moving-to-usage-based-billing/">GitHub Blog — Copilot usage-based billing</a> ·
+        <a href="https://cryptobriefing.com/google-alphabet-ai-funding-85-billion/">Alphabet $84.75B equity raise</a> ·
+        <a href="https://www.anthropic.com/research/economic-index-june-2026-report">Anthropic Economic Index "Cadences," June 2026</a> ·
+        <a href="https://venturebeat.com/technology/openai-unveils-gpt-5-6-sol-terra-and-luna-models-but-only-accessible-to-limited-preview-partners-for-now-per-us-gov">VentureBeat — GPT-5.6 Sol/Terra/Luna preview</a> ·
+        <a href="https://github.com/karpathy/autoresearch">Karpathy / autoresearch</a> ·
+        <a href="https://www.dwarkesh.com/">Dwarkesh Podcast</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">System prompt</div>
+        <div>A hidden block of text sent to a language model before your conversation starts. You never see it; developers write it to set context, inject your account details, or define the assistant's persona. The Berkeley study shows that adding your city here — even writing "Unknown" — quietly shapes every response you get.</div>
+      </div>
+      <dl>
+        <dt>Location leakage</dt>
+        <dd>When an AI generates geographic references the user never requested, because location was embedded in a hidden system prompt. Think of it as the concierge who can't stop mentioning your home country.</dd>
+        <dt>Metered billing</dt>
+        <dd>Paying for a service by consumption rather than a flat subscription. GitHub Copilot now charges per token; your bill grows the more you use it, the way electricity does.</dd>
+        <dt>GPQA Diamond</dt>
+        <dd>A benchmark of 198 graduate-level science questions written by actual PhD students and postdocs. A score of 82% means answering roughly 162 of them correctly. It's hard enough that most humans with graduate training score around 65%.</dd>
+        <dt>MoE (Mixture of Experts)</dt>
+        <dd>An architecture where a model is built from many specialist sub-networks and routes each input to only a few of them. Keeps the total model large — and therefore capable — without burning as much compute on every single query.</dd>
+        <dt>At-the-market offering</dt>
+        <dd>A fundraising method where a company gradually sells new shares into the open stock market over time, rather than in one transaction. Alphabet's $40 billion third tranche of its historic raise uses this method.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
