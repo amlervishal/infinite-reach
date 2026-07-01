@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №33 — Longer, not larger · Infinite Reach</title>
+  <meta name="description" content="A 35-billion-parameter model matched trillion-parameter rivals by thinking in far longer chains — while Anthropic's new default model brought near-flagship capability to anyone with a free account." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №33 &middot; Tuesday, July 1, 2026</p>
+      <h1>Longer, not larger</h1>
+      <p>Two ideas landed at almost the same moment this week: Anthropic's best affordable model went live as the default for millions of users, and a Chinese research lab quietly published a paper that reframes the whole game — showing that a smaller model can match much larger rivals if you simply let it think in far longer chains of action.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic launched Claude Sonnet 5 on June 30, making it the new default for anyone on the free and pro plans at claude.ai. The headline is what it can actually do now: plan across many steps, use tools like web browsers and code terminals, and carry complex tasks through to completion — tasks that previous mid-tier models would routinely abandon midway. Anthropic says its agentic performance now approaches that of Opus 4.8, its flagship. The introductory price is $2 per million input tokens and $10 per million output tokens through August 31, after which it rises to $3 and $15. For companies running many automated tasks at scale, that gap in capability for a fraction of the cost is the whole story.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">OpenAI</span><span>GPT-4.5 was retired from ChatGPT on June 26; existing conversations now continue with GPT-5.5. The API is unaffected — the model stays available to developers there.</span></li>
+        <li><span class="tag tech">Biology</span><span>OpenAI's new GeneBench-Pro benchmark tests AI agents on 129 realistic genomics and biology tasks. Even the top scorer — GPT-5.6 Sol Pro — passes only 31.5%. Claude Opus 4.8, the strongest non-OpenAI model tested, manages 16%. Biology, it turns out, is genuinely hard.</span></li>
+        <li><span class="tag policy">White House</span><span>A June 2 executive order required a new AI cybersecurity clearinghouse to stand up within 30 days — a voluntary hub where government, AI labs, and critical infrastructure operators share information about vulnerabilities in AI systems.</span></li>
+        <li><span class="tag policy">Colorado</span><span>Colorado replaced its ambitious 2024 AI law with a lighter-touch version (SB 26-189, signed May 2026, effective January 2027): companies using AI in consequential decisions — hiring, credit, housing — must give consumers advance notice, explain adverse outcomes within 30 days, and offer a path to human review.</span></li>
+        <li><span class="tag tech">Open weights</span><span>DeepSeek V4.1 Flash is the top trending model on Hugging Face this week. Five of the top-ten trending open-weight models are now Chinese-built, the highest concentration the tracker has recorded.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~700 words -->
+      <h2>Paper, explained: thinking in longer chains</h2>
+      <p class="kicker">Scaling the Horizon, Not the Parameters: Reaching Trillion-Parameter Performance with a 35B Agent &middot; InternScience / Shanghai AI Laboratory &middot; <a href="https://arxiv.org/abs/2606.30616">arXiv 2606.30616</a></p>
+
+      <p>A 35-billion-parameter model — mid-sized by today's standards — scored at the level of trillion-parameter systems on several demanding benchmarks. The trick wasn't a bigger brain. It was a much longer look.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>For the past few years the dominant recipe for making AI more capable has been simple: make it bigger. Add more parameters — the numerical weights inside the model that encode everything it knows — and performance goes up. This works, but the cost compounds fast. A trillion-parameter model is enormously expensive to train and to run, putting it out of reach for most organizations. The question Shanghai AI Laboratory's InternScience team asked was whether there is another dimension to scale along — one that doesn't require a bigger model.</p>
+
+      <p>Making a smaller model truly competitive with the giants is genuinely difficult. Smaller models know less, have less working memory, and get confused faster when tasks stretch across many steps. You can throw training tricks at the problem, but you run into the same wall: there is only so much knowledge you can pack into 35 billion parameters, compared to a trillion.</p>
+
+      <h3>How it works</h3>
+      <p>The key insight: instead of scaling the model, scale the <em>horizon</em> — the length of the reasoning chain the model works through before arriving at an answer. Think of it like chess. One way to become a stronger player is to study more: memorize more openings, internalize more positions, build a bigger mental library. Another way is to think further ahead — to trace out longer sequences of possible moves before picking one, even if your raw knowledge base stays the same. The InternScience team chose the second path.</p>
+
+      <p>Their model, Agents-A1, is what researchers call an "agent": rather than answering a question in one shot, it takes a sequence of actions — searching a knowledge source, reading the result, deciding what to do next, taking another action, observing what happened, and checking that observation against a verifier — a separate system that scores whether the action was any good. The length of that sequence is the "horizon." Most AI systems today work with short horizons; Agents-A1 was trained to work through very long ones, averaging 45,000 tokens per task. For reference, 45,000 tokens is roughly the length of a short novel.</p>
+
+      <p>Training happened in three stages. First, the team ran full-domain fine-tuning across a broad range of agentic tasks, teaching the base model to behave like an agent at all. Then they trained six separate specialist "teacher" models — each highly competent in one domain: web search, scientific reasoning, software engineering, instruction following, molecular biology, and so on. Finally, in the cleverest step, they used a technique called "multi-teacher domain-routed on-policy distillation" to fold all six specialists back into one student model. In plain English: each time the student model worked through a problem, the relevant teacher checked its reasoning and gave feedback, and the student updated accordingly — simultaneously across all six domains — until it absorbed the specialist knowledge without needing to be six separate models at runtime.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team trained Agents-A1 as a 35-billion-parameter Mixture-of-Experts model — an architecture where only a subset of parameters activates for any given task, making it cheaper to run than a dense model of the same nominal size. They then benchmarked it against trillion-parameter systems including Kimi K2.6 and DeepSeek V4-Pro, as well as GPT-5.5, across tasks spanning long-horizon web search, instruction following, frontier scientific reasoning, software engineering, and molecular biology.</p>
+
+      <h3>What they found</h3>
+      <p>On SEAL-0, a challenging long-horizon search benchmark, Agents-A1 scored 56.4 — competitive with the trillion-parameter models. On IFBench (instruction following) it hit 80.6; on FrontierScience-Olympiad (scientific reasoning) it reached 79.0; on GAIA, a hard general-agent benchmark, it hit 96.0. It remained highly competitive — though not uniformly top — on BrowseComp (75.5), SciCode (44.3), and the Humanity's Last Exam benchmark (47.6). Across the suite, the model consistently punched above its weight class.</p>
+
+      <h3>The catch</h3>
+      <p>Competitive is not the same as universally better. Agents-A1 doesn't beat trillion-parameter models on every task — it matches them on the specific tasks where long-horizon reasoning is the bottleneck. There is also a practical cost: a 45,000-token trajectory takes much more compute per task than a quick single-shot query. You save on the model's weight; you pay in inference time and latency. For deliberate research or analysis tasks this trade-off makes sense. For anything requiring a fast response, it doesn't.</p>
+
+      <p><strong>If you remember one thing:</strong> Making a model bigger is not the only way to make it smarter — training it to reason in much longer chains of action can get you to near-trillion-parameter performance at a fraction of the model size.</p>
+
+      <!-- SVG: parameter scaling vs horizon scaling -->
+      <figure>
+        <svg viewBox="0 0 720 290" role="img" aria-label="Side-by-side diagram comparing parameter scaling (one large model block) with horizon scaling (small model feeding into a long think–act–observe chain)">
+          <defs>
+            <marker id="arr33" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#6A8CAF"/>
+            </marker>
+          </defs>
+
+          <!-- background -->
+          <rect width="720" height="290" fill="#F5F4F0" rx="8"/>
+
+          <!-- divider -->
+          <line x1="360" y1="16" x2="360" y2="274" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="5,4"/>
+
+          <!-- LEFT panel label -->
+          <text x="180" y="38" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="600" fill="#141413">Scale the model</text>
+          <text x="180" y="56" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">traditional approach</text>
+
+          <!-- big model block (clay) -->
+          <rect x="90" y="68" width="180" height="150" rx="8" fill="#D97757"/>
+          <text x="180" y="143" text-anchor="middle" font-family="system-ui,sans-serif" font-size="18" font-weight="700" fill="white">~1 Trillion</text>
+          <text x="180" y="166" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" fill="rgba(255,255,255,0.85)">parameters</text>
+
+          <text x="180" y="248" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Make the brain bigger</text>
+
+          <!-- RIGHT panel label -->
+          <text x="540" y="38" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="600" fill="#141413">Scale the horizon</text>
+          <text x="540" y="56" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Agents-A1 approach</text>
+
+          <!-- small model block (olive) -->
+          <rect x="374" y="105" width="65" height="80" rx="6" fill="#788C5D"/>
+          <text x="406" y="143" text-anchor="middle" font-family="system-ui,sans-serif" font-size="15" font-weight="700" fill="white">35B</text>
+          <text x="406" y="161" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="rgba(255,255,255,0.85)">params</text>
+
+          <!-- connector arrow: model to steps -->
+          <line x1="440" y1="145" x2="458" y2="145" stroke="#6A8CAF" stroke-width="2" marker-end="url(#arr33)"/>
+
+          <!-- Step 1: Think -->
+          <rect x="461" y="131" width="52" height="28" rx="4" fill="#6A8CAF"/>
+          <text x="487" y="149" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="white">Think</text>
+
+          <!-- arrow 1 to 2 -->
+          <line x1="513" y1="145" x2="531" y2="145" stroke="#6A8CAF" stroke-width="2" marker-end="url(#arr33)"/>
+
+          <!-- Step 2: Act -->
+          <rect x="534" y="131" width="52" height="28" rx="4" fill="#6A8CAF"/>
+          <text x="560" y="149" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="white">Act</text>
+
+          <!-- arrow 2 to 3 -->
+          <line x1="586" y1="145" x2="604" y2="145" stroke="#6A8CAF" stroke-width="2" marker-end="url(#arr33)"/>
+
+          <!-- Step 3: Observe -->
+          <rect x="607" y="131" width="66" height="28" rx="4" fill="#6A8CAF"/>
+          <text x="640" y="149" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="white">Observe</text>
+
+          <!-- loop-back arc -->
+          <path d="M673,131 L673,108 L461,108 L461,131" fill="none" stroke="#6A8CAF" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <text x="567" y="103" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#6A8CAF">↺ repeat many times</text>
+
+          <!-- annotation -->
+          <text x="570" y="192" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">avg. 45,000 tokens per task</text>
+          <text x="570" y="248" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Make the chain longer</text>
+        </svg>
+        <figcaption>Left: the traditional approach — add more parameters to get a more capable model. Right: the Agents-A1 approach — keep the model at 35 billion parameters but train it to execute long think–act–observe cycles, averaging 45,000 tokens per task. On several hard benchmarks, the result is competitive with trillion-parameter rivals.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh</span><span>Dwarkesh Patel published a new podcast episode on June 26 — <em>The next big breakthrough will be AIs learning on the job</em> — a useful companion to this week's paper. Both are pointing at the same idea: the real gains now come from how AI acts in the world, not just what it has memorized. <a href="https://www.dwarkesh.com/p/the-next-paradigm">Listen</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two ideas converged this week, and they point in the same direction. Anthropic made near-flagship capability affordable to anyone with a free account. Simultaneously, a research lab in Shanghai demonstrated that the efficiency frontier is still moving fast — you can reach near-trillion-parameter results with a 35-billion-parameter model, as long as you engineer how it reasons rather than simply how large it is.</p>
+      <p>Together, these move the central question from "how big can we make the model?" to "how cleverly can we use what we have?" That shift has real consequences. It means better performance doesn't automatically require more energy, more hardware, or more money. It might just require better training design and longer chains of thought — two things that don't scale with raw compute the way parameters do.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://techcrunch.com/2026/06/30/anthropic-launches-claude-sonnet-5-as-a-cheaper-way-to-run-agents/">TechCrunch — Claude Sonnet 5 launch</a> ·
+        <a href="https://arxiv.org/abs/2606.30616">arXiv 2606.30616 — Agents-A1 paper</a> ·
+        <a href="https://github.com/InternScience/Agents-A1/">GitHub — InternScience/Agents-A1</a> ·
+        <a href="https://alphasignal.ai/news/openai-s-genebench-pro-exposes-that-top-ai-fails-real-biology-70-of-the-time">AlphaSignal — GeneBench-Pro results</a> ·
+        <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">White House — AI innovation &amp; security executive order</a> ·
+        <a href="https://www.dwt.com/blogs/privacy--security-law-blog/2026/05/colorado-ai-act-repeal-new-transparency-law">Davis Wright Tremaine — Colorado AI Act repeal</a> ·
+        <a href="https://findskill.ai/blog/gpt-4-5-retiring-what-to-use-instead/">FindSkill — GPT-4.5 retirement</a> ·
+        <a href="https://www.dwarkesh.com/p/the-next-paradigm">Dwarkesh.com — The next paradigm</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Horizon scaling</div>
+        <div>Training an AI to complete tasks by working through much longer chains of action — think, act, observe, repeat — rather than answering in one shot. Like teaching a chess player to think twenty moves ahead rather than giving them a bigger brain to memorize more positions.</div>
+      </div>
+      <dl>
+        <dt>Mixture-of-Experts (MoE)</dt><dd>A model design where only a fraction of the total parameters activate for any given input. A 35B MoE model is cheaper to run than a 35B dense model doing the same thing — most of the weights sit idle.</dd>
+        <dt>Agentic</dt><dd>An AI that takes a sequence of actions — searching, writing code, clicking, deciding — rather than producing one answer. Claude Sonnet 5's main selling point this week; also what Agents-A1 is built to do.</dd>
+        <dt>Distillation</dt><dd>Teaching a small model to mimic a larger one by having it learn from the bigger model's outputs rather than raw data alone. Agents-A1 uses six specialist "teacher" models distilled into one student.</dd>
+        <dt>Trajectory</dt><dd>The full recorded sequence of an AI agent's actions and observations during a task — every think, act, and observe step end to end. Agents-A1's training trajectories average 45,000 tokens.</dd>
+        <dt>Benchmark</dt><dd>A standardized test used to compare AI models fairly. Results are only as meaningful as how well the test reflects real-world use — a common caveat worth keeping in mind.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

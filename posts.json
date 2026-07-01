@@ -1,5 +1,12 @@
 [
   {
+    "num": 33,
+    "date": "2026-07-01",
+    "slug": "issues/2026-07-01.html",
+    "title": "Longer, not larger",
+    "blurb": "A 35-billion-parameter model matched trillion-parameter rivals by thinking in far longer chains — while Anthropic's new default model brought near-flagship capability to anyone with a free account."
+  },
+  {
     "num": 32,
     "date": "2026-06-30",
     "slug": "issues/2026-06-30.html",
