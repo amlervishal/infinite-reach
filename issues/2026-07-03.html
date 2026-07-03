@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №35 — The wrench, not the engine · Infinite Reach</title>
+  <meta name="description" content="Claude's most capable model came back online after a 19-day government-enforced shutdown; a biology paper shows that AI accuracy can jump from 16.9% to 92.8% with no change to the model — just better plumbing." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №35 &middot; Thursday, July 3, 2026</p>
+      <h1>The wrench, not the engine</h1>
+      <p>Claude's most capable model went dark for 19 days and came back online this week with better locks on the door. At the same time, a biology paper made a quietly devastating point: raw model intelligence may matter far less than the quality of the tools it reaches into.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic's Fable 5 — its most powerful model, pulled from global access on June 12 after a reported jailbreak technique surfaced — was restored on July 1 after the US Commerce Department lifted its export control order. Anthropic says it worked with the US government and Amazon to train a new safety classifier that now blocks the reported bypass in more than 99% of cases. Access is returning in stages across Claude.ai, the API, Claude Code, and cloud partners. The 19-day outage was the first time a government export control effectively took a major commercial AI offline, and the scramble it caused inside enterprise teams relying on Fable 5 sent a signal that's hard to unhear: the most capable AI has become infrastructure, and infrastructure can be switched off.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Science</span><span>Anthropic launched <strong>Claude Science</strong> on June 30: a workbench for researchers that connects to more than 60 scientific databases — genomics, protein structure, chemistry — and lets AI agents draft and run computational jobs on your own cluster or on-demand cloud, producing fully reproducible outputs with the exact code that generated them. In beta for Claude Pro users; up to 50 research teams can apply for $30,000 in credits through July 15. <a href="https://www.anthropic.com/news/claude-science-ai-workbench">anthropic.com</a></span></li>
+        <li><span class="tag money">Funding</span><span><strong>MGX</strong>, Abu Dhabi's two-year-old AI investment firm, announced a $49 billion fund on July 2 — one of the largest pools of capital ever dedicated to AI deals. It puts the Gulf squarely alongside US and East Asian investors in deciding which AI bets get scaled. <a href="https://www.bloomberg.com/news/videos/2026-07-02/mgx-raises-49-billion-for-ai-deals-video">Bloomberg</a></span></li>
+        <li><span class="tag tech">Speed</span><span>OpenAI previewed three new models — <strong>GPT-5.6 Sol, Terra, and Luna</strong> — to roughly 20 approved organizations ahead of wider release. Sol is designed to run on Cerebras wafer-scale chips at up to 750 tokens per second; most frontier models today output at 50–150 t/s. Broader access expected later this month. <a href="https://venturebeat.com/technology/openai-unveils-gpt-5-6-sol-terra-and-luna-models-but-only-accessible-to-limited-preview-partners-for-now-per-us-gov">VentureBeat</a></span></li>
+        <li><span class="tag policy">Policy</span><span>July 2 was the first major deadline for the White House's June AI executive order — agencies were directed to deploy AI-enabled cyber defenses, stand up a voluntary pre-release access framework for frontier models, and launch a Treasury-led AI cybersecurity clearinghouse. The directive covers federal systems; ripple effects on which AI vendors get cleared will be felt for months. <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">White House</a></span></li>
+        <li><span class="tag tech">Delay</span><span><strong>Gemini 3.5 Pro</strong> did not arrive in June as Google had signaled. The company is targeting July, citing enterprise tester feedback that the model consumed too many tokens in extended agentic tasks — a practical concern, not a capability gap. A preview without a firm date.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~550-850 words -->
+      <h2>Paper, explained: When the database broke the scientist</h2>
+      <p class="kicker">"Paving the Way for AI Agents in Biology" &middot; Laura Luebbert (Broad Institute / FutureHouse) &amp; Anthropic &middot; Published June 8, 2026 &middot; <a href="https://www.anthropic.com/research/agents-in-biology">anthropic.com/research</a></p>
+
+      <p>A frontier AI model was given a simple task: retrieve the published viral genome sequences for 40 common pathogens. It got the right answer 16.9% of the time. The model wasn't confused about virology. The databases it reached into were never designed to be reached into by software — and the model was improvising its way through plumbing that wasn't built for it.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>One of the great promises of AI in research is that agents can do what a skilled postdoc does — search literature, pull data, assemble datasets — only faster and at a scale no human could sustain. But the databases where biological data actually lives were built, over decades, for scientists with web browsers. NCBI (the US national genetics archive) holds billions of DNA sequences. UniProt, the Protein Data Bank, dozens of chemistry databases — all designed for human navigation: point and click, read the table, save the file. They were not designed for software making thousands of programmatic queries. URLs change without notice. APIs have undocumented quirks and rate limits. Result formats require human interpretation. When an AI agent tries to retrieve viral genome sequences, it ends up scraping web pages, misreading table structures, or quietly returning results for the wrong organism or the wrong year. Worse: ask the same question twice and you can get different answers, because the model is improvising each time through a system it was never meant to traverse. The Anthropic team decided to measure exactly how bad this problem is, and built a benchmark to do it.</p>
+
+      <h3>How it works — the everyday analogy</h3>
+      <p>Imagine a skilled doctor who needs a patient's chart from a hospital that still runs on paper files. The doctor reads perfectly well. The records exist. But finding the right one means navigating a filing system designed for a specific clerk who retired in 1987: drawers that aren't alphabetical, folder names in half-abbreviations, some records photocopied and filed twice under different names. The doctor might get the right file. They might grab the wrong one and not notice. They might give up and rely on memory. The fix isn't to hire a smarter doctor — it's to digitize the records and give the doctor a reliable search interface.</p>
+      <p>That is almost exactly what happened here. The team built <strong>gget virus</strong>: a Python tool, created in collaboration with NCBI, that wraps several different NCBI interfaces — its REST API, its Datasets command-line tool, its E-utilities batch system — into one clean, reliable function. You pass in a pathogen name; it handles authentication, pagination for queries that return tens of thousands of sequences, and output formatting. Every step is logged, so the work is auditable and reproducible. The AI model no longer navigates NCBI's website; it calls one function and receives a structured, verified result. One layer of deterministic infrastructure replaces an entire maze of improvisation.</p>
+      <p>This is the key distinction: a <em>deterministic</em> tool always returns the same answer for the same input — no randomness, no guesswork. The model's probabilistic flexibility (what makes language models powerful but also inconsistent) is bypassed entirely for this one step. The model provides the reasoning; the tool provides the facts.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team created <strong>VirBench</strong>: 120 standardized retrieval questions about viral genome sequences, spanning 40 pathogens, all with known correct answers. They tested six frontier language models on those questions — once with only general web-browsing tools available, and again with gget virus in the toolkit. Each configuration ran multiple times, measuring accuracy and run-to-run consistency.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 300" role="img" aria-label="Bar chart comparing VirBench accuracy before and after gget virus for Claude Sonnet 4 and GPT-5.5">
+          <rect x="0" y="0" width="720" height="300" fill="#FAFAF8" rx="4"/>
+
+          <!-- Title -->
+          <text x="360" y="22" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413" font-weight="600">VirBench accuracy: before and after a single deterministic tool</text>
+
+          <!-- Grid lines — bottom y=245, top y=45, height=200 -->
+          <line x1="72" y1="245" x2="660" y2="245" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="72" y1="195" x2="660" y2="195" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4,3"/>
+          <line x1="72" y1="145" x2="660" y2="145" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4,3"/>
+          <line x1="72" y1="95" x2="660" y2="95" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4,3"/>
+          <line x1="72" y1="45" x2="660" y2="45" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4,3"/>
+
+          <!-- Y-axis labels -->
+          <text x="64" y="249" text-anchor="end" font-family="system-ui" font-size="11" fill="#87867F">0%</text>
+          <text x="64" y="199" text-anchor="end" font-family="system-ui" font-size="11" fill="#87867F">25%</text>
+          <text x="64" y="149" text-anchor="end" font-family="system-ui" font-size="11" fill="#87867F">50%</text>
+          <text x="64" y="99" text-anchor="end" font-family="system-ui" font-size="11" fill="#87867F">75%</text>
+          <text x="64" y="49" text-anchor="end" font-family="system-ui" font-size="11" fill="#87867F">100%</text>
+
+          <!-- Group 1: Claude Sonnet 4 -->
+          <!-- Without tool: 16.9% → h=34, y=211 -->
+          <rect x="140" y="211" width="76" height="34" fill="#D97757" rx="2"/>
+          <text x="178" y="206" text-anchor="middle" font-family="system-ui" font-size="11" fill="#D97757" font-weight="700">16.9%</text>
+          <!-- With tool: 92.8% → h=186, y=59 -->
+          <rect x="236" y="59" width="76" height="186" fill="#788C5D" rx="2"/>
+          <text x="274" y="54" text-anchor="middle" font-family="system-ui" font-size="11" fill="#788C5D" font-weight="700">92.8%</text>
+          <!-- Group label -->
+          <text x="238" y="263" text-anchor="middle" font-family="system-ui" font-size="12" fill="#141413">Claude Sonnet 4</text>
+
+          <!-- Group 2: GPT-5.5 -->
+          <!-- Without tool: 91.3% → h=183, y=62 -->
+          <rect x="418" y="62" width="76" height="183" fill="#D97757" rx="2"/>
+          <text x="456" y="57" text-anchor="middle" font-family="system-ui" font-size="11" fill="#D97757" font-weight="700">91.3%</text>
+          <!-- With tool: 99.7% → h=199, y=46 -->
+          <rect x="514" y="46" width="76" height="199" fill="#788C5D" rx="2"/>
+          <text x="552" y="41" text-anchor="middle" font-family="system-ui" font-size="11" fill="#788C5D" font-weight="700">99.7%</text>
+          <!-- Group label -->
+          <text x="516" y="263" text-anchor="middle" font-family="system-ui" font-size="12" fill="#141413">GPT-5.5</text>
+
+          <!-- Legend -->
+          <rect x="228" y="278" width="11" height="11" fill="#D97757" rx="2"/>
+          <text x="243" y="288" font-family="system-ui" font-size="11" fill="#87867F">Without tool</text>
+          <rect x="348" y="278" width="11" height="11" fill="#788C5D" rx="2"/>
+          <text x="363" y="288" font-family="system-ui" font-size="11" fill="#87867F">With gget virus</text>
+        </svg>
+        <figcaption>Without gget virus, Claude Sonnet 4 answered 16.9% of VirBench questions correctly; with it, 92.8%. GPT-5.5 went from 91.3% to 99.7%. Both models unchanged — only the tool changed. Source: Anthropic, "Paving the Way for AI Agents in Biology" (2026).</figcaption>
+      </figure>
+
+      <h3>What they found</h3>
+      <p>The results were striking. Without any specialized tool, Claude Sonnet 4 answered only 16.9% of VirBench questions correctly — and its answers varied between runs of the same question. GPT-5.5, a newer and more capable model, scored 91.3% without tools. Looking at those two numbers, you might conclude that GPT-5.5 is simply better at biology. The paper shows that's the wrong reading: it was doing better at improvising through broken plumbing, not at biology. Give both models gget virus, and the gap nearly vanishes. Claude Sonnet 4 jumps to 92.8%; GPT-5.5 reaches 99.7%. Every model in the benchmark crossed 92% accuracy with the tool — and consistency improved dramatically, with the same question now reliably producing the same answer across runs.</p>
+      <p>The paper also notes something worth sitting with: cheaper models paired with gget virus performed comparably to expensive ones running without it. The bottleneck was never raw intelligence. It was the reliability of the data layer underneath.</p>
+
+      <h3>The catch</h3>
+      <p>VirBench covers one specific task — retrieving viral genomic sequences from one specific source (NCBI). Biology alone has hundreds of databases, each with its own interface quirks: protein structures, metabolomics, clinical records, chemical libraries. Building the equivalent of gget virus for every database that matters would be years of unglamorous infrastructure work, and the paper doesn't attempt it. It also doesn't test multi-database tasks — questions that require synthesizing data across several sources, which is where most real research problems actually live. The paper is an existence proof that tool infrastructure matters enormously. It is not a solved problem.</p>
+
+      <p><strong>If you remember one thing:</strong> A frontier model went from 16.9% to 92.8% accuracy on a biology task with no change to the model itself — only by giving it a reliable, deterministic tool to reach the database correctly.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy posted a cleaned-up transcript of his Sequoia Ascent 2026 fireside chat — laying out his <em>Software 3.0</em> framework and drawing a line between "vibe coding" (delegating to AI without interrogating the output) and "agentic engineering" (directing multiple AI agents on complex, high-judgment tasks). Central claim: even as AI does more of the building, human understanding remains the bottleneck. Worth reading if you work alongside AI-assisted development. <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">karpathy.bearblog.dev</a></span></li>
+        <li><span class="tag tech">Claude Code</span><span>Boris Cherny, who built Claude Code at Anthropic, revealed his personal setup — and the answer was deliberately minimal. His point: the tool works well out of the box; over-customizing can get in the way of simply using it. He also described how he orchestrates long-running tasks without writing a line of production code himself. <a href="https://venturebeat.com/technology/the-creator-of-claude-code-just-revealed-his-workflow-and-developers-are">VentureBeat</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The biology paper is about a narrow benchmark, but it points at something much larger. As AI agents take on more of the work that used to require a human clicking through a browser, every rough edge in the underlying data infrastructure becomes a failure point. Databases, APIs, data pipelines — built over decades for human navigation — are now the limiting factor in what AI can reliably do. Some of the most valuable engineering work over the next several years may not be training bigger models. It may be building the reliable, auditable, deterministic tools that let today's models do what they already promise. The week's news rhymes: Fable 5 came back with better safety classifiers. Claude Science launched with 60-plus structured database connectors. And a biology paper showed a frontier model going from nearly useless to nearly perfect on a real scientific task — with no upgrade to the model at all. The frontier is moving. What's moving it isn't always another parameter.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.anthropic.com/research/agents-in-biology">Anthropic — Paving the Way for AI Agents in Biology</a> ·
+        <a href="https://www.axios.com/2026/07/01/anthropic-fable-5-back-online-trump-export-controls-lifted">Axios — Fable 5 returns</a> ·
+        <a href="https://www.marketscale.com/industries/software-and-technology/fable-5-and-mythos-5-are-back-what-the-19-day-shutdown-taught-every-enterprise-about-ai-as-infrastructure">MarketScale — What the shutdown taught enterprises</a> ·
+        <a href="https://www.anthropic.com/news/claude-science-ai-workbench">Anthropic — Claude Science</a> ·
+        <a href="https://www.bloomberg.com/news/videos/2026-07-02/mgx-raises-49-billion-for-ai-deals-video">Bloomberg — MGX raises $49B</a> ·
+        <a href="https://venturebeat.com/technology/openai-unveils-gpt-5-6-sol-terra-and-luna-models-but-only-accessible-to-limited-preview-partners-for-now-per-us-gov">VentureBeat — GPT-5.6</a> ·
+        <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">White House — AI Executive Order</a> ·
+        <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">Karpathy — Sequoia Ascent 2026</a> ·
+        <a href="https://venturebeat.com/technology/the-creator-of-claude-code-just-revealed-his-workflow-and-developers-are">VentureBeat — Boris Cherny's Claude Code setup</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Deterministic</div>
+        <div>A process that always returns the same answer for the same input — no randomness, no improvisation. A calculator is deterministic (3+4 is always 7). A coin flip is not. The reason gget virus fixed the biology accuracy problem: it replaced guesswork with a guaranteed, reproducible answer every time the same question is asked.</div>
+      </div>
+      <dl>
+        <dt>Export control</dt><dd>A government restriction on sharing certain technology across borders. Traditionally used for weapons and encryption; now being applied to AI models deemed powerful enough to pose national-security risks.</dd>
+        <dt>Benchmark</dt><dd>A standardized test used to compare AI systems on equal footing. VirBench is a benchmark: 120 fixed questions with known correct answers, so every model takes the same exam.</dd>
+        <dt>API</dt><dd>Application Programming Interface — a defined channel for two pieces of software to communicate. When gget virus "wraps" NCBI's APIs, it hides their complexity behind one clean function call.</dd>
+        <dt>Tokens per second (t/s)</dt><dd>How fast a model generates text. At 750 t/s — what Cerebras hardware promises for GPT-5.6 Sol — a model could fill a full page in about a second. Most current frontier models run at 50–150 t/s.</dd>
+        <dt>Agentic</dt><dd>Describes an AI system that can plan and take multiple actions without a human approving each step — like an assistant that books a flight, not just suggests one.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
