@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №36 — Cooked from scratch · Infinite Reach</title>
+  <meta name="description" content="A food-delivery company trained a world-class model entirely on chips it built itself — then gave the recipe away. Plus: reading a thought without surgery." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №36 &middot; July 4, 2026</p>
+      <h1>Cooked from scratch</h1>
+      <p>A Chinese food-delivery company trained a world-class model entirely on chips it built itself — then gave the recipe away to anyone who wants it. A busy week for making things without asking anyone.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Meituan — China's food-delivery giant, better known for getting dumplings to your door than building frontier AI — quietly open-sourced LongCat-2.0, a 1.6-trillion-parameter model that had been running anonymously on the AI routing service OpenRouter under the alias "Owl Alpha." Only on July 3 did the company reveal what "Owl Alpha" actually was: their own model, which had been edging past GPT-5.5 on coding benchmarks (scoring 59.5 on SWE-Bench Pro versus GPT-5.5's 58.6). LongCat-2.0 was trained across a cluster of more than 50,000 domestically produced Chinese chips on over 35 trillion tokens of text — the first model at this scale to be trained entirely without American hardware. Meituan reports that the pretraining run completed with no rollbacks or irrecoverable loss spikes. The model is released under the MIT licence, meaning anyone can use, fine-tune, and redistribute it commercially. The full weights are imminent; both the Hugging Face and GitHub pages currently read "stay tuned." The timing — America's Independence Day — appears to be deliberate.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Agents</span><span>OpenAI began a limited preview of GPT-5.6 Sol, introducing "ultra mode" — a setting where the model automatically spawns parallel subagents to divide complex work, then pulls results together. Sol Ultra scored 91.9% on Terminal-Bench 2.1 coding evaluations. Access is currently restricted to roughly 20 government-approved companies. <a href="https://openai.com/index/previewing-gpt-5-6-sol/">openai.com</a></span></li>
+        <li><span class="tag tech">Platform</span><span>X launched a hosted MCP server on July 1, letting AI tools like Claude and Cursor plug directly into X's search, user lookup, and trend data without building a custom integration. Read-only for now — the write API is not included, so AI tools cannot post independently. <a href="https://techcrunch.com/2026/06/30/x-now-offers-an-mcp-server-to-make-its-platform-easier-for-ai-tools-to-use/">TechCrunch</a></span></li>
+        <li><span class="tag policy">Access</span><span>Anthropic announced it is closing loopholes that let Chinese companies route around export restrictions by accessing Claude through Singapore subsidiaries and VPN connections — a quiet enforcement step as geopolitical lines around AI grow sharper.</span></li>
+        <li><span class="tag money">Beta</span><span>Grok 4.5 entered private beta, but exclusively at SpaceX and Tesla — xAI's own portfolio companies. No external access timeline has been given.</span></li>
+        <li><span class="tag tech">Default</span><span>Claude Sonnet 5, Anthropic's most capable midsize model, became the default for every free Claude user on July 1. It supports a 1-million-token context window and costs $2 per million input tokens through August — near-flagship capability at a fraction of the price. <a href="https://www.anthropic.com/news/claude-sonnet-5">anthropic.com</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: reading a thought without opening the skull</h2>
+      <p class="kicker">Brain-to-Text Decoding: A Non-invasive Approach via Typing (v2) &middot; Meta AI Research &middot; <a href="https://arxiv.org/abs/2502.17480">arXiv 2502.17480</a> / <a href="https://facebookresearch.github.io/brain2qwerty/">project page</a></p>
+
+      <p>Meta released the results of its Brain2Qwerty v2 system on June 30 — and they are hard to dismiss. A helmet, a shielded room, and a pipeline of neural networks can now decode what someone is typing by reading their brain waves alone, with 61% word accuracy on average. A year ago, the best non-invasive system in the world managed 8%.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Brain-computer interfaces that actually work — the kind that let paralyzed people type 90 words per minute — require surgeons to implant electrode arrays directly into brain tissue. That is a high bar for anyone who does not have a life-threatening condition and a compelling medical case. The non-invasive alternatives, EEG (electroencephalography) and MEG (magnetoencephalography), detect the faint electrical or magnetic fields that neurons produce from outside the skull. The problem: the skull scatters and blurs those signals the way thick frosted glass blurs light. You can detect rough patterns, but fine details — the difference between planning to type "cat" versus "bat" — tend to dissolve. Previous non-invasive systems scraped along at around 8% word accuracy, barely better than an informed guess at what someone might be typing.</p>
+
+      <h3>How it works</h3>
+      <p>Brain2Qwerty uses MEG, which works by detecting the tiny magnetic fields that neurons produce when they fire. The sensors are superconducting coils that must be kept near absolute zero, mounted inside a helmet inside a shielded room that blocks outside electromagnetic noise. Imagine listening to someone whisper through a thick wall: the signal is faint, distorted, and different for every room — every skull has its own acoustics. The system has three stages.</p>
+
+      <p>The first is a <strong>convolutional encoder</strong>: eight stacked convolutional blocks that scan the raw MEG signal for repeating patterns. Two things make it unusual. A spatial attention layer encodes where each sensor sits on the helmet — because the same brain event looks different depending on which part of the array picks it up. And there is a subject-specific linear layer, a thin calibration step tuned separately for each person, because every individual's brain signals look subtly different even when they are doing the same thing. Think of it as tuning your listening to each room before you try to understand what's being whispered.</p>
+
+      <p>The second stage is a <strong>transformer</strong> that processes the sequence of encoded patterns across time. Where the convolutional encoder picks up local patterns — what's happening in the signal right now — the transformer provides temporal context, relating patterns that are seconds apart the way a reader relates the beginning of a sentence to its end.</p>
+
+      <p>The third stage is a <strong>character-level language model</strong> trained with a technique called CTC (Connectionist Temporal Classification), borrowed directly from speech recognition. CTC lets the model produce a sequence of characters without requiring that each output be precisely time-aligned to the moment of the corresponding brain signal. The architecture is designed to simultaneously extract character-level, word-level, and sentence-level information — which is what lets it decode full sentences, not just individual letters.</p>
+
+      <p>The key design choice that makes the whole thing tractable: participants were <em>typing</em>, not merely thinking or speaking silently. Typing gives the brain a structured, consistent task with a known answer. The motor-planning signals — the brain's preparation to press each key — are more reliable and more consistent than the signals for pure imagination. The fingers never actually press anything in the test condition; the system reads the plan, not the action.</p>
+
+      <h3>What they actually did</h3>
+      <p>Nine volunteers each spent ten hours inside the MEG scanner, wearing the sensor helmet and typing memorized sentences on a keyboard while their brain activity was recorded. That produced roughly 22,000 sentences across all nine participants. The three-stage pipeline was trained end-to-end on this data, with a separate calibration phase used to fit the subject-specific layer for each participant. Meta is releasing the full training code for both v1 and v2. The Basque Center on Cognition, Brain, and Language (BCBL) is separately releasing the v1 dataset — unusual openness for neuroscience data of this sensitivity.</p>
+
+      <h3>What they found</h3>
+      <p>The average word accuracy across all nine participants was <strong>61%</strong> — equivalently, a word error rate of 39%. That compares to roughly 8% for previous non-invasive systems: nearly an eightfold improvement. For the best-performing participant, accuracy reached <strong>78%</strong>, and more than half of that person's sentences were decoded with one word error or fewer. The researchers also found that accuracy scales log-linearly with the volume of training data: every doubling of recording hours predicts a consistent step up in accuracy, with no sign yet that the curve is flattening. That implies the remaining gap to surgical approaches is not a wall — it is a slope, with distance still to climb but no obvious ceiling in view.</p>
+
+      <h3>The catch</h3>
+      <p>MEG machines are large, expensive, and immobile. The superconducting sensors require cryogenic cooling; the shielded rooms run to millions of dollars to build. This is clinical research equipment, not a wearable. The 61% accuracy is also measured specifically on prompted typing of memorized sentences — not spontaneous speech, free association, or internal monologue, any of which would be considerably harder. Each participant required ten hours of recorded calibration data before their subject-specific layer could be fitted; the system does not generalize instantly to a new person. And even at 78% accuracy for the best participant, state-of-the-art surgical implants in paralyzed patients achieve near-perfect decoding at 90 or more words per minute. The gap is closing, but it remains real.</p>
+
+      <p><strong>If you remember one thing:</strong> A sevenfold jump in accuracy, achieved without surgery or implants, suggests the limit of non-invasive brain reading is less about fundamental physics and more about how much patient, careful data you are willing to collect.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 230" role="img" aria-label="Diagram of the Brain2Qwerty v2 decoding pipeline from MEG sensor helmet to decoded text output">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <!-- Title -->
+          <text x="360" y="22" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="14" fill="#141413" font-weight="600">Brain2Qwerty v2 — from brain waves to words</text>
+          <text x="360" y="40" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">without surgery · four stages · 61% average word accuracy</text>
+
+          <!-- Box 1: MEG Helmet -->
+          <rect x="8" y="58" width="140" height="110" rx="8" fill="#F4F2EE" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="78" y="82" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="500">MEG Helmet</text>
+          <text x="78" y="100" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">superconducting sensors</text>
+          <text x="78" y="116" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">detect faint magnetic</text>
+          <text x="78" y="132" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">fields from firing neurons</text>
+          <!-- wave -->
+          <path d="M 28 153 q 7-9 14 0 q 7 9 14 0 q 7-9 14 0 q 7 9 14 0 q 7-9 14 0 q 7 9 14 0" stroke="#6A8CAF" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+
+          <!-- Arrow 1 -->
+          <line x1="150" y1="113" x2="172" y2="113" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Box 2: Conv Encoder -->
+          <rect x="174" y="58" width="148" height="110" rx="8" fill="#EAF0E8" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="248" y="82" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="500">Conv Encoder</text>
+          <text x="248" y="100" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">8 conv blocks</text>
+          <text x="248" y="116" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">spatial attention (sensor positions)</text>
+          <text x="248" y="132" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">subject-specific layer</text>
+          <text x="248" y="148" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">(calibrated per person)</text>
+
+          <!-- Arrow 2 -->
+          <line x1="324" y1="113" x2="346" y2="113" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Box 3: Transformer -->
+          <rect x="348" y="58" width="130" height="110" rx="8" fill="#EBF1F6" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="413" y="82" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="500">Transformer</text>
+          <text x="413" y="100" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">self-attention</text>
+          <text x="413" y="116" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">relates patterns</text>
+          <text x="413" y="132" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">across time</text>
+
+          <!-- Arrow 3 -->
+          <line x1="480" y1="113" x2="502" y2="113" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Box 4: Language Model -->
+          <rect x="504" y="58" width="148" height="110" rx="8" fill="#FBF0EC" stroke="#D97757" stroke-width="1.5"/>
+          <text x="578" y="82" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="500">Language Model</text>
+          <text x="578" y="100" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">CTC objective</text>
+          <text x="578" y="116" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">char · word · sentence</text>
+          <text x="578" y="132" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">level representations</text>
+          <text x="578" y="148" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">61% avg word accuracy</text>
+
+          <!-- Arrow 4 -->
+          <line x1="654" y1="113" x2="676" y2="113" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Output -->
+          <rect x="678" y="88" width="36" height="50" rx="6" fill="#141413"/>
+          <text x="696" y="108" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8.5" fill="#ffffff">&quot;hello</text>
+          <text x="696" y="122" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8.5" fill="#ffffff">world&quot;</text>
+
+          <!-- Stage labels -->
+          <text x="78" y="200" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">non-invasive recording</text>
+          <text x="248" y="200" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">local pattern extraction</text>
+          <text x="413" y="200" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">temporal context</text>
+          <text x="578" y="200" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">text decoding</text>
+          <text x="696" y="200" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">output</text>
+        </svg>
+        <figcaption>The Brain2Qwerty v2 pipeline. MEG sensors in a helmet detect magnetic fields from neurons; a convolutional encoder finds patterns in that signal while accounting for each sensor's position and each person's unique brain signature; a transformer provides temporal context across the full sequence; and a language model decodes it into words. No surgery anywhere in this chain.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy updated his <a href="https://gist.github.com/karpathy">microgpt.py gist</a> on July 4 — a minimal self-contained GPT implementation he maintains as a teaching reference. His min-char-rnn.py gist also saw an update on July 2. Public GitHub activity has been quiet since May, but these gist updates confirm he is still building near the metal — just without announcing it.</span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three things this week share an underlying logic: a Chinese company trained a frontier model on chips no one thought could do it, then gave the model away; a lab in a shielded room proved the brain can be read without surgery, better than anyone expected; and a major AI company started enforcing borders that previously existed only on paper. Each represents a threshold that looked fixed — and then wasn't. The point is not just that any one of them happened. It is that they happened in the same week, driven by the same dynamic: patient accumulation of scale, hardware, and data until a wall turns out to be a slope. The frontier is not a line held by one country or one company. It is a scatter of points, each one reached by someone who decided to work with what they had.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://venturebeat.com/technology/meituan-open-sources-longcat-2-0-the-1-6t-near-frontier-agentic-coding-model-thats-been-leading-openrouter-trained-entirely-on-chinese-chips">VentureBeat — LongCat-2.0</a> ·
+        <a href="https://www.longcatai.org/">LongCat AI project</a> ·
+        <a href="https://arxiv.org/abs/2502.17480">arXiv — Brain2Qwerty paper</a> ·
+        <a href="https://facebookresearch.github.io/brain2qwerty/">Meta — Brain2Qwerty project page</a> ·
+        <a href="https://ai.meta.com/blog/brain2qwerty-brain-ai-human-communication/">Meta AI — Brain2Qwerty blog post</a> ·
+        <a href="https://www.marktechpost.com/2026/06/30/meta-ai-releases-brain2qwerty-v2-a-non-invasive-meg-brain-to-text-pipeline-decoding-typed-sentences-at-61-word-accuracy/">MarkTechPost — Brain2Qwerty v2 coverage</a> ·
+        <a href="https://openai.com/index/previewing-gpt-5-6-sol/">OpenAI — GPT-5.6 Sol preview</a> ·
+        <a href="https://techcrunch.com/2026/06/30/x-now-offers-an-mcp-server-to-make-its-platform-easier-for-ai-tools-to-use/">TechCrunch — X MCP server</a> ·
+        <a href="https://www.anthropic.com/news/claude-sonnet-5">Anthropic — Claude Sonnet 5</a> ·
+        <a href="https://gist.github.com/karpathy">Karpathy gists</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">MEG</div>
+        <div>Magnetoencephalography — a way of recording brain activity by detecting the faint magnetic fields that neurons produce when they fire. You wear a helmet full of superconducting sensors; nothing touches your brain or skull. Think of it as holding an extremely sensitive compass next to a wire carrying current: you can tell something is happening inside without opening the wire.</div>
+      </div>
+      <dl>
+        <dt>CTC (Connectionist Temporal Classification)</dt><dd>A training technique that lets a model produce sequences of characters or words without needing precise timing alignment between input and output. Speech recognition uses it to match audio to words; Brain2Qwerty uses it to match brain-signal patterns to keystrokes.</dd>
+        <dt>MoE (Mixture of Experts)</dt><dd>A model architecture where most parameters are dormant at any given moment, with only a relevant subset "activated" per input. LongCat-2.0 has 1.6 trillion total parameters but activates just 33–56 billion for any one query — making it much cheaper to run than its full size implies.</dd>
+        <dt>MCP (Model Context Protocol)</dt><dd>An open standard for connecting AI models to external tools and services, like a universal adapter. X's new hosted MCP server means AI assistants can search and read X's platform without each developer building a custom bridge.</dd>
+        <dt>Subagent</dt><dd>A smaller AI process that a larger model spawns to handle part of a task, then reports back. GPT-5.6's "ultra mode" does this automatically: the main model divides complex work, delegates to parallel subagents, and synthesizes the results — more like a manager than a solo worker.</dd>
+        <dt>Word error rate (WER)</dt><dd>The fraction of decoded words that are wrong or missing. A WER of 39% means about 39 errors per 100 words, or equivalently 61% word accuracy. Lower is better; humans in noisy conditions are typically under 5%.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

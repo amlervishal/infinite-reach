@@ -1,5 +1,12 @@
 [
   {
+    "num": 36,
+    "date": "2026-07-04",
+    "slug": "issues/2026-07-04.html",
+    "title": "Cooked from scratch",
+    "blurb": "Meituan — a Chinese food-delivery company — secretly ran a world-beating AI model under an alias for months, then revealed it was trained entirely on domestic chips and gave it away under an open licence."
+  },
+  {
     "num": 35,
     "date": "2026-07-03",
     "slug": "issues/2026-07-03.html",
