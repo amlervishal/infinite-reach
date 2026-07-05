@@ -1,5 +1,12 @@
 [
   {
+    "num": 37,
+    "date": "2026-07-05",
+    "slug": "issues/2026-07-05.html",
+    "title": "What was always overhead",
+    "blurb": "OpenAI offers the US government a 5% equity stake worth $42 billion — while ICML 2026 opens in Seoul and an oral paper proves the optimizer behind every reasoning model was never needed for its most important training step."
+  },
+  {
     "num": 36,
     "date": "2026-07-04",
     "slug": "issues/2026-07-04.html",

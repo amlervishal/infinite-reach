@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №37 — What was always overhead · Infinite Reach</title>
+  <meta name="description" content="As the world's biggest machine-learning conference opens in Seoul and two frontier models run silently inside tech companies, a paper getting its moment in the spotlight proves that one of the field's most trusted tools was never needed for the most important training step." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №37 &middot; Saturday, July 5, 2026</p>
+      <h1>What was always overhead</h1>
+      <p>The world's largest machine-learning conference opens in Seoul tomorrow with a record number of submissions, two of the most anticipated models in the world are running in secret inside companies you already use, and a paper presenting this week at that conference may have found the clearest example yet of a tool the field has been carrying for a decade without needing.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On July 2nd, OpenAI proposed giving the US government a 5% equity stake in the company — worth roughly $42.6 billion at OpenAI's current $852 billion valuation. The pitch, first reported by the Financial Times and confirmed by Bloomberg and CNBC, came just days after Washington used a new executive-order mechanism to delay the broader release of GPT-5.6, requiring a 30-day government preview window before launch. Sam Altman reportedly wants other leading AI labs — Anthropic, Google, Meta — to cede similar stakes into a shared "Alaska-style" sovereign wealth fund, letting American citizens participate in the upside of AI the way Alaskans receive annual dividends from oil reserves. OpenAI says it isn't happy with the review-delay arrangement and that it "should not become the long-term default." The 5% stake is apparently an attempt to buy goodwill — and smoother access. No other lab has agreed.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Conference</span><span>ICML 2026 opens Monday in Seoul with a record 23,918 submitted papers — the largest in the conference's history — and 168 oral presentations selected as the field's most significant work this year.</span></li>
+        <li><span class="tag tech">Meta</span><span>Meta's AI head Alexandr Wang told employees in an internal town hall on July 2 that the company's upcoming "Watermelon" model has matched OpenAI's GPT-5.5 on closely followed benchmarks and uses an order of magnitude more compute than its predecessor. No model card, no independent evaluation, no release date.</span></li>
+        <li><span class="tag tech">xAI</span><span>Grok 4.5 — xAI's 1.5-trillion-parameter model — has been in private beta at SpaceX and Tesla since June 28. Elon Musk claims internal evaluations show performance "close to, or exceeding" Claude Opus 4.8. No public benchmark data has been published.</span></li>
+        <li><span class="tag policy">GPT-5.6</span><span>OpenAI's GPT-5.6 lineup remains available only to a small group of trusted partners while the US government takes its mandated 30-day preview, per the Trump administration's June executive order. OpenAI called the arrangement a one-time accommodation, not a template.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: Do you actually need the fancy optimizer?</h2>
+      <p class="kicker">Do We Need Adam? Surprisingly Strong and Sparse Reinforcement Learning with SGD in LLMs &middot; Mukherjee, Yuan, Jayasinha &amp; Hakkani-Tur &middot; <a href="https://arxiv.org/abs/2602.07729">arXiv:2602.07729</a> &middot; ICML 2026 Oral</p>
+      <p>Since 2015, almost every serious language model has been trained with a variant of the Adam optimizer — a particular method for nudging a model's billions of parameters toward better answers. Adam's dominance was so complete that questioning it felt almost beside the point. This paper, selected as one of 168 oral presentations at ICML 2026, did exactly that — and found that for the most important training phase of modern reasoning models, Adam was never needed.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Training a language model happens in stages. First comes pre-training (reading enormous amounts of text to absorb language), then supervised fine-tuning (teaching the model to follow instructions by example), and finally the phase that turns a capable model into a problem-solver: reinforcement learning from verifiable rewards, or RLVR. In RLVR, the model attempts math problems or coding tasks and gets a binary verdict — correct or not — and learns by doing. This is the training step responsible for the reasoning capabilities of models like GPT-5 or Claude Opus. Nearly every lab uses the Adam optimizer (specifically AdamW, its most common variant) for all of these stages.</p>
+
+      <p>AdamW is "adaptive": it maintains two extra data structures per parameter called the first moment (a rolling average of recent gradients) and the second moment (a rolling average of squared gradients). Together these let it scale each parameter's update individually — a weight that fluctuates wildly gets a smaller nudge; one with consistent signal gets a bolder one. The cost is memory: you are effectively tripling the space needed, just for Adam's bookkeeping. For a 70-billion-parameter model, that overhead runs to hundreds of gigabytes of GPU memory. The assumption across the field was that this cost was worth paying.</p>
+
+      <h3>How it works</h3>
+      <p>Think of training a neural network like tuning a mixing board with billions of knobs. Your goal is to turn down the knobs producing noise and turn up the ones producing signal. SGD — stochastic gradient descent, the simplest optimizer, developed decades before modern deep learning — is like a technician who looks at the current output, identifies which knobs are out of tune, and nudges them all by the same small amount. Fast. No memory required beyond the current reading.</p>
+
+      <p>Adam is a more sophisticated version of the same technician who keeps detailed notes. For every knob, it logs: "how much has this one moved on average recently?" (first moment) and "how erratically does it tend to swing?" (second moment). Using both logs, Adam computes a custom step size per knob — confident, consistent knobs get bolder adjustments; noisy, unreliable ones get gentle ones. In a dense, complex signal environment, those notes are invaluable. That's exactly the situation during supervised fine-tuning, where the model is copying thousands of examples simultaneously and every part of the network gets meaningful gradient signal at once.</p>
+
+      <p>But here is what the paper discovered: in the RLVR phase, the signal is not dense and complex. When a model attempts a math problem and gets it wrong, the gradient signal concentrating at specific attention heads and MLP layers is focused and sparse — only a small fraction of parameters are actually getting strong feedback at any given step. In that environment, Adam's elaborate per-knob notes are mostly tracking static.</p>
+
+      <p>The paper introduces SGDM-Select, which takes this observation to its logical conclusion. Use SGD with momentum, but also only bother updating the parameters where the gradient actually exceeds a significance threshold. The rest are left completely untouched. The result: fewer than 0.02% of the model's parameters are updated per training step — more than a thousand times fewer than AdamW would touch — while the optimizer carries essentially no auxiliary memory.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team ran RLVR training on three models across two model families: Qwen3-1.7B, Qwen3-8B (from Alibaba's Qwen series), and Llama-3.1-8B-Instruct (Meta's open-weight model). They evaluated across three domains — mathematical reasoning, coding, and a retrieval-heavy benchmark called RLVE — and compared four optimizers head-to-head: plain SGD, SGD with momentum, RMSProp, and AdamW. For math, they used the standard evaluation suite: MATH-500, AMC, AIME, OlympiadBench, and GPQA Diamond. The experiment was repeated under two different RL algorithms to rule out the possibility that the result was specific to one training recipe.</p>
+
+      <h3>What they found</h3>
+      <p>Across both model families, three domains, and two RL algorithms, SGD matched or outperformed AdamW on reasoning benchmarks while updating fewer than 0.02% of model parameters — over a thousand times fewer than AdamW. SGDM-Select, the sparse variant, maintained that accuracy while cutting the optimizer's memory footprint to nearly nothing. There were no surprises in the failure modes: Adam still holds a genuine advantage during supervised fine-tuning, where gradients are dense and its per-parameter adaptivity earns its cost. The claim is specific — RL fine-tuning is different enough in structure that the extra machinery adds nothing there — and the paper provides analysis to explain why: RLVR produces gradient sparsity that Adam's smoothing mechanisms aren't designed to exploit.</p>
+
+      <h3>The catch</h3>
+      <p>The experiments top out at 8-billion-parameter models — not the frontier 70B or larger models where the memory savings would be most dramatic and most practically useful. It's plausible that gradient structure changes at larger scales in ways that restore Adam's advantage. The paper also tests a limited range of RL algorithms; results might differ with other training setups. And "0.02% of parameters updated" is not a flaw — it's the point — but it does mean the method's behavior on longer-horizon tasks or more varied reward signals hasn't been fully characterized.</p>
+
+      <p><strong>If you remember one thing:</strong> The thing that looked like essential infrastructure turned out to be overhead, at least for the training step that makes reasoning models reason.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Memory layout comparison: AdamW needs three slots per parameter while SGD needs one, yet both reach comparable RL accuracy">
+          <rect x="0" y="0" width="720" height="310" fill="none"/>
+
+          <!-- Column headers -->
+          <text x="190" y="30" font-family="ui-serif, Georgia, serif" font-size="15" font-weight="600" fill="#141413" text-anchor="middle">AdamW optimizer</text>
+          <text x="530" y="30" font-family="ui-serif, Georgia, serif" font-size="15" font-weight="600" fill="#141413" text-anchor="middle">SGD with sparse select</text>
+
+          <!-- AdamW: three filled memory blocks -->
+          <rect x="90" y="45" width="200" height="52" rx="5" fill="#D97757" fill-opacity="0.22" stroke="#D97757" stroke-width="1.5"/>
+          <text x="190" y="71" font-family="system-ui, sans-serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="500">Model weights θ</text>
+          <text x="190" y="87" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">100% of parameters stored</text>
+
+          <rect x="90" y="107" width="200" height="52" rx="5" fill="#D97757" fill-opacity="0.22" stroke="#D97757" stroke-width="1.5"/>
+          <text x="190" y="133" font-family="system-ui, sans-serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="500">First moment  m</text>
+          <text x="190" y="149" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">momentum history</text>
+
+          <rect x="90" y="169" width="200" height="52" rx="5" fill="#D97757" fill-opacity="0.22" stroke="#D97757" stroke-width="1.5"/>
+          <text x="190" y="195" font-family="system-ui, sans-serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="500">Second moment  v</text>
+          <text x="190" y="211" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">gradient variance history</text>
+
+          <text x="190" y="244" font-family="system-ui, sans-serif" font-size="12" fill="#D97757" text-anchor="middle" font-weight="600">≈ 3× model size in GPU memory</text>
+
+          <!-- Divider -->
+          <line x1="360" y1="38" x2="360" y2="258" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="5,4"/>
+
+          <!-- SGD: one filled block, two empty/dashed -->
+          <rect x="430" y="45" width="200" height="52" rx="5" fill="#788C5D" fill-opacity="0.22" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="530" y="71" font-family="system-ui, sans-serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="500">Model weights θ</text>
+          <text x="530" y="87" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">&lt;0.02% updated per step</text>
+
+          <rect x="430" y="107" width="200" height="52" rx="5" fill="none" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="6,4"/>
+          <text x="530" y="137" font-family="system-ui, sans-serif" font-size="12" fill="#D1CFC5" text-anchor="middle">— not needed —</text>
+
+          <rect x="430" y="169" width="200" height="52" rx="5" fill="none" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="6,4"/>
+          <text x="530" y="199" font-family="system-ui, sans-serif" font-size="12" fill="#D1CFC5" text-anchor="middle">— not needed —</text>
+
+          <text x="530" y="244" font-family="system-ui, sans-serif" font-size="12" fill="#788C5D" text-anchor="middle" font-weight="600">≈ 1× model size in GPU memory</text>
+
+          <!-- Result line -->
+          <text x="360" y="280" font-family="ui-serif, Georgia, serif" font-size="13" fill="#87867F" text-anchor="middle">Both reach comparable accuracy on RL reasoning tasks</text>
+        </svg>
+        <figcaption>AdamW keeps three full copies of model-sized data — weights, first moment, second moment — per training run. SGD with sparse selection keeps only the weights and skips updating all but 0.02% of them per step. On RL fine-tuning, the extra bookkeeping buys nothing.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh</span><span>Episode 132 of the Dwarkesh Podcast (released June 30) features Grant Sanderson — 3Blue1Brown, whose animated math videos have taught calculus and linear algebra to tens of millions of people — on a deceptively important question: why is AI making faster progress in mathematics than in almost any other field, and what does that tell us about where the rest of science is heading? 97 minutes, worth it. <a href="https://www.dwarkesh.com/podcast">dwarkesh.com/podcast</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>This week crystallises two things happening at the frontier simultaneously, pulling in different directions. On one side, the race to claim capability is happening almost entirely in private. Meta's Watermelon and xAI's Grok 4.5 are both making significant performance claims — GPT-5.5 parity, Opus-level reasoning — with no mechanism for the outside world to check them. That is a new kind of hype: claim first, prove on your own schedule. OpenAI's proposal to trade equity for government goodwill fits the same pattern — the levers of power being negotiated before anyone outside has independently evaluated the underlying technology.</p>
+
+      <p>On the other side, papers like "Do We Need Adam?" represent something more honest: a question asked openly, with models named, benchmarks disclosed, and results anyone can replicate. The finding that SGD is sufficient for RL fine-tuning — a finding that, if it scales to frontier model sizes, could cut the memory overhead of training advanced reasoning models by roughly two-thirds — came not from a trillion-parameter cluster but from asking a question so basic that no one at the frontier had recently bothered. ICML opens in Seoul tomorrow. It is at least the event where that second kind of work gets the room.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2602.07729">arXiv:2602.07729 (Do We Need Adam?)</a> ·
+        <a href="https://www.cnbc.com/2026/07/02/openai-proposes-us-government-own-5percent-stake-to-address-political-blowback.html">CNBC — OpenAI proposes 5% stake</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-07-02/openai-proposes-giving-the-us-government-a-5-stake-ft-says">Bloomberg — OpenAI stake report</a> ·
+        <a href="https://techcrunch.com/2026/06/26/openai-limits-gpt-5-6-rollout-after-government-request-says-restrictions-shouldnt-be-the-norm/">TechCrunch — GPT-5.6 rollout limited</a> ·
+        <a href="https://www.techtimes.com/articles/319723/20260704/meta-watermelon-ai-claims-gpt-55-parity-benchmarks-remain-unnamed-unverified.htm">TechTimes — Meta Watermelon</a> ·
+        <a href="https://cryptobriefing.com/grok-4-5-private-beta-spacex-tesla/">CryptoBriefing — Grok 4.5 beta</a> ·
+        <a href="https://www.techtimes.com/articles/319684/20260704/icml-2026-opens-monday-seoul-agentic-ai-tops-record-year-peer-review-strains.htm">TechTimes — ICML 2026</a> ·
+        <a href="https://www.dwarkesh.com/podcast">Dwarkesh Podcast</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">RLVR</div>
+        <div>Reinforcement Learning from Verifiable Rewards. Training a model by having it attempt tasks with objectively right-or-wrong answers — a math problem, code that either compiles and passes tests or doesn't — and rewarding correct solutions. The grade comes from ground truth, not from a human rating the response. This is the step that produces reasoning ability in today's best models.</div>
+      </div>
+      <dl>
+        <dt>SGD</dt><dd>Stochastic Gradient Descent — the simplest optimizer: measure the current error, nudge all weights slightly in the direction that reduces it, and repeat on random mini-batches of data. No memory required beyond the model itself. Developed decades before modern deep learning; still works for RL fine-tuning, it turns out.</dd>
+        <dt>AdamW</dt><dd>The dominant optimizer in deep learning since 2015. Unlike SGD, it adapts each weight's update size individually, tracking a momentum term and a variance term for every parameter. Excellent for supervised training where gradients are dense; the paper argues the added complexity is unnecessary for RL fine-tuning, where gradient signals are sparse and focused.</dd>
+        <dt>Oral presentation</dt><dd>At a top ML conference like ICML, an "oral" is a paper judged significant enough to be presented live in front of the full audience — typically the top ~0.7% of all submissions. Most accepted papers get only a poster slot.</dd>
+        <dt>Sovereign wealth fund</dt><dd>A government-owned investment pool. Norway's is the world's largest, funded by oil revenues. OpenAI's proposal would create a US equivalent funded by equity stakes in AI companies, allowing government (and in principle, citizens) to share in the financial upside as those companies grow.</dd>
+        <dt>Gradient sparsity</dt><dd>During a training step, the "gradient" is a signal telling each parameter which way to move. Sparsity means most of those signals are near zero — only a small fraction of parameters receive a strong enough nudge to be worth updating. The RLVR phase turns out to produce highly sparse gradients, which is why SGD works so well there.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
