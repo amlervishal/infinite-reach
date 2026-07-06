@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №38 — What fewer choices unlock · Infinite Reach</title>
+  <meta name="description" content="The fastest frontier model in history is arriving at 750 tokens per second — and this week's top machine-learning paper found that giving AI more freedom to think makes it think worse." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №38 &middot; Sunday, July 6, 2026</p>
+      <h1>What fewer choices unlock</h1>
+      <p>The world's fastest frontier model is arriving this month at a speed that would have sounded fictional six months ago. And this week's biggest machine-learning conference gave its top prize to a study that found the opposite of what the field expected: giving an AI model more freedom to think makes it think worse.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>OpenAI confirmed that GPT-5.6 Sol — its most capable model, currently in limited preview — will run on Cerebras hardware at up to 750 tokens per second in July. A standard GPU cluster serves a frontier model at 40–120 tokens per second; Cerebras uses a single chip the size of a dinner plate to go roughly an order of magnitude faster. At 750 tokens per second, a thousand-word answer arrives in about 1.3 seconds. That closes the gap between human turn-taking rhythms and model response time — which changes what you can actually use these systems for in real time. Access stays limited to a small set of government-vetted partners for now, with broader rollout coming as Cerebras scales capacity.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">ICML 2026</span><span>The machine-learning world's biggest annual conference opens today in Seoul and runs through July 11. A record 23,918 papers were submitted; 168 — just 0.7% — made it to oral presentation.</span></li>
+        <li><span class="tag money">Claude Science</span><span>Anthropic's research workbench for scientists is now in beta, connecting 60+ scientific databases — genomics, structural biology, cheminformatics — in one environment. Early customers include Novo Nordisk and the Allen Institute.</span></li>
+        <li><span class="tag tech">Gemini leads science</span><span>Gemini 2.5 Pro with Deep Think mode reached 82.4% on GPQA Diamond and 89.8% on MMLU-Pro — above GPT-5.5 and Fable 5 on the most competitive science benchmarks available.</span></li>
+        <li><span class="tag money">GPT-5.6 pricing</span><span>OpenAI's new three-tier model family is priced per million tokens: Sol at $5/$30 (input/output), Terra at $2.50/$15, Luna at $1/$6. Full public access follows government partner preview.</span></li>
+        <li><span class="tag policy">Drug discovery grants</span><span>Anthropic is offering up to $30,000 in research credits for scientists using Claude Science, with a focus on neglected diseases that traditional pharma has abandoned. Applications close July 15.</span></li>
+      </ul>
+
+      <h2>Paper, explained: why giving AI more freedom makes it dumber</h2>
+      <p class="kicker">"The Flexibility Trap: Rethinking the Value of Arbitrary Order in Diffusion Language Models" &middot; Zanlin Ni et al., Tsinghua University &amp; Alibaba Group &middot; <a href="https://arxiv.org/abs/2601.15165">arXiv:2601.15165</a> &middot; ICML 2026 Distinguished Paper Award (Oral)</p>
+
+      <p>This paper won the top research prize at ICML 2026, and its central finding is exactly backwards from what the field assumed: the feature that makes diffusion language models special — the freedom to generate words in any order — is the very thing that stops them from reasoning well.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Almost every language model you've used writes text the same way a human types: left to right, one word at a time. Each new word is predicted based on everything written before it. This works well, but it has a structural limitation: the model commits to each word as it goes and can't revise earlier choices.</p>
+
+      <p>Diffusion language models — dLLMs, in the shorthand — were built to change that. Borrowed from the technology behind image generators like DALL-E and Midjourney, they start from a page of random noise and gradually refine it into a coherent answer. Crucially, they can generate tokens in <em>any order</em>: write the easy parts first, skip the hard parts for later, hop around wherever the model wants. This property, called arbitrary order generation, was considered a major advantage. More flexibility should mean better, more creative reasoning — the model can think freely rather than being locked into a single left-to-right path.</p>
+
+      <p>The paper argues the opposite is true.</p>
+
+      <h3>How it works</h3>
+      <p>Think of a student taking a multiple-choice test who is allowed to answer questions in any order. Most students use this sensibly: tackle the easy ones first, come back to the hard ones later. But here is the subtler problem the researchers identified. For <em>reasoning chains</em> — not isolated facts, but connected arguments — the hard parts are not optional. They are where the logic turns.</p>
+
+      <p>In a chain of reasoning, words like "therefore," "since," and "if and only if" are pivot points: the moments where one idea leads to another, where a conclusion is justified, where a branch in the argument is taken. Logicians call these high-uncertainty tokens — they are uncertain because the model doesn't yet know which way the reasoning will go. They are also, for exactly this reason, the most important words in the chain.</p>
+
+      <p>When a diffusion language model is given arbitrary order freedom, it does what any rational agent does when given a choice: it avoids the hardest parts and fills in the comfortable ones first. By the time it returns to write "therefore" or "since," all the surrounding words are already fixed — the context has already narrowed the space. The model fills in the pivot word to fit what's already there, rather than using it to genuinely navigate a branch in the reasoning. It commits to one answer before it has properly explored others.</p>
+
+      <p>The researchers call this <em>premature collapse of solution coverage</em>: the model is technically flexible, but in practice it uses that flexibility to avoid the intellectual work that flexibility was supposed to help with.</p>
+
+      <p>The fix, called JustGRPO, is almost embarrassingly simple. During training, the model is forced to generate tokens in the normal left-to-right order — the same sequential discipline that standard language models use. This forces it to encounter and learn from every pivot token, in context, rather than deferring them. At inference (actual deployment), the model still generates tokens in parallel — so it keeps all the speed advantages of the diffusion architecture. The constraint applies only during training. The implementation is roughly 60 lines of code, using an existing reinforcement learning algorithm called GRPO with no modifications.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Two panels: left shows arbitrary-order generation skipping pivot tokens; right shows JustGRPO forcing sequential order through all tokens including pivots">
+          <!-- Background panels -->
+          <rect x="10" y="10" width="330" height="290" rx="8" fill="#F8F7F4" stroke="#D1CFC5" stroke-width="1.5"/>
+          <rect x="380" y="10" width="330" height="290" rx="8" fill="#F8F7F4" stroke="#D1CFC5" stroke-width="1.5"/>
+
+          <!-- Panel labels -->
+          <text x="175" y="38" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" font-weight="bold" fill="#D97757">Arbitrary order (dLLM)</text>
+          <text x="545" y="38" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" font-weight="bold" fill="#788C5D">JustGRPO (sequential training)</text>
+
+          <!-- LEFT PANEL: token boxes — easy ones filled, pivot tokens dimmed/hollow -->
+          <!-- Token row 1: A B [SINCE] D -->
+          <rect x="30" y="55" width="52" height="36" rx="5" fill="#6A8CAF" opacity="0.85"/>
+          <text x="56" y="78" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="white">A</text>
+
+          <rect x="92" y="55" width="52" height="36" rx="5" fill="#6A8CAF" opacity="0.85"/>
+          <text x="118" y="78" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="white">B</text>
+
+          <!-- SINCE — pivot token, ghosted -->
+          <rect x="154" y="55" width="72" height="36" rx="5" fill="none" stroke="#D97757" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="190" y="73" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#D97757">since</text>
+          <text x="190" y="86" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">(skipped)</text>
+
+          <rect x="236" y="55" width="52" height="36" rx="5" fill="#6A8CAF" opacity="0.85"/>
+          <text x="262" y="78" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="white">D</text>
+
+          <!-- Token row 2: E [THEREFORE] F -->
+          <rect x="30" y="110" width="52" height="36" rx="5" fill="#6A8CAF" opacity="0.85"/>
+          <text x="56" y="133" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="white">E</text>
+
+          <!-- THEREFORE — pivot token, ghosted -->
+          <rect x="92" y="110" width="100" height="36" rx="5" fill="none" stroke="#D97757" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="142" y="128" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#D97757">therefore</text>
+          <text x="142" y="141" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">(skipped)</text>
+
+          <rect x="204" y="110" width="52" height="36" rx="5" fill="#6A8CAF" opacity="0.85"/>
+          <text x="230" y="133" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="white">F</text>
+
+          <!-- Jumpy arrows in left panel showing arbitrary order -->
+          <path d="M 56 91 Q 56 102 56 110" stroke="#6A8CAF" stroke-width="1.5" fill="none" marker-end="url(#arrowBlue)"/>
+          <path d="M 118 91 Q 175 102 175 110" stroke="#87867F" stroke-width="1.2" fill="none" stroke-dasharray="3 2" marker-end="url(#arrowGrey)"/>
+          <path d="M 262 91 Q 262 102 230 110" stroke="#6A8CAF" stroke-width="1.5" fill="none" marker-end="url(#arrowBlue)"/>
+
+          <!-- Warning label for left panel -->
+          <rect x="30" y="162" width="295" height="48" rx="5" fill="#D97757" opacity="0.1" stroke="#D97757" stroke-width="1" stroke-dasharray="3 2"/>
+          <text x="178" y="180" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#D97757" font-weight="600">Problem: pivot tokens are skipped</text>
+          <text x="178" y="198" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">Model never explores reasoning branches →</text>
+          <text x="178" y="210" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">premature collapse to one answer</text>
+
+          <!-- RIGHT PANEL: all tokens in order, all filled including pivots -->
+          <!-- Row 1: A B since D -->
+          <rect x="400" y="55" width="52" height="36" rx="5" fill="#788C5D" opacity="0.85"/>
+          <text x="426" y="78" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="white">A</text>
+
+          <rect x="461" y="55" width="52" height="36" rx="5" fill="#788C5D" opacity="0.85"/>
+          <text x="487" y="78" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="white">B</text>
+
+          <!-- SINCE — filled, highlighted -->
+          <rect x="522" y="55" width="72" height="36" rx="5" fill="#D97757" opacity="0.9"/>
+          <text x="558" y="78" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="white">since ✓</text>
+
+          <rect x="603" y="55" width="52" height="36" rx="5" fill="#788C5D" opacity="0.85"/>
+          <text x="629" y="78" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="white">D</text>
+
+          <!-- Row 2: E therefore F -->
+          <rect x="400" y="110" width="52" height="36" rx="5" fill="#788C5D" opacity="0.85"/>
+          <text x="426" y="133" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="white">E</text>
+
+          <!-- THEREFORE — filled, highlighted -->
+          <rect x="461" y="110" width="100" height="36" rx="5" fill="#D97757" opacity="0.9"/>
+          <text x="511" y="133" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="white">therefore ✓</text>
+
+          <rect x="570" y="110" width="52" height="36" rx="5" fill="#788C5D" opacity="0.85"/>
+          <text x="596" y="133" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="white">F</text>
+
+          <!-- Sequential arrows in right panel -->
+          <line x1="452" y1="73" x2="459" y2="73" stroke="#788C5D" stroke-width="2" marker-end="url(#arrowGreen)"/>
+          <line x1="513" y1="73" x2="520" y2="73" stroke="#788C5D" stroke-width="2" marker-end="url(#arrowGreen)"/>
+          <line x1="594" y1="73" x2="601" y2="73" stroke="#788C5D" stroke-width="2" marker-end="url(#arrowGreen)"/>
+          <line x1="452" y1="128" x2="459" y2="128" stroke="#788C5D" stroke-width="2" marker-end="url(#arrowGreen)"/>
+          <line x1="561" y1="128" x2="568" y2="128" stroke="#788C5D" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+          <!-- Drop down right panel row 1 to row 2 -->
+          <path d="M 426 91 L 426 110" stroke="#788C5D" stroke-width="1.5" fill="none" marker-end="url(#arrowGreen)"/>
+
+          <!-- Success label for right panel -->
+          <rect x="400" y="162" width="295" height="48" rx="5" fill="#788C5D" opacity="0.1" stroke="#788C5D" stroke-width="1"/>
+          <text x="548" y="180" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#788C5D" font-weight="600">Fix: train left-to-right, hit every pivot</text>
+          <text x="548" y="198" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">Model explores all reasoning branches →</text>
+          <text x="548" y="210" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">89.1% on GSM8K (+parallel decoding at runtime)</text>
+
+          <!-- Bottom shared note -->
+          <rect x="10" y="228" width="700" height="38" rx="6" fill="#141413" opacity="0.04" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="360" y="244" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" font-style="italic">Both approaches use parallel decoding at inference — JustGRPO's constraint applies only during training.</text>
+          <text x="360" y="259" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">The trade-off that doesn't exist: you keep the speed without paying the reasoning penalty.</text>
+
+          <!-- Arrowhead markers -->
+          <defs>
+            <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#6A8CAF"/>
+            </marker>
+            <marker id="arrowGrey" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#87867F"/>
+            </marker>
+            <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#788C5D"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>Left: a diffusion language model skips high-uncertainty "pivot" words (like <em>since</em> and <em>therefore</em>) when given arbitrary generation order, collapsing to a single answer too fast. Right: JustGRPO imposes sequential training order, forcing the model through every pivot — without giving up parallel decoding at runtime. The improvement costs 60 lines of code.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The team applied JustGRPO to existing diffusion language models and evaluated them on four standard benchmarks: GSM8K (grade-school math word problems), MATH-500 (competition-level mathematics), HumanEval, and MBPP (both coding tasks). They compared JustGRPO against prior methods specifically engineered for arbitrary-order diffusion training — approaches with substantially more complexity.</p>
+
+      <h3>What they found</h3>
+      <p>JustGRPO reached 89.1% on GSM8K at a generation length of 256 tokens, matching or beating more elaborate diffusion-specific methods. On MATH-500: 45.1%. On coding: 49.4% on HumanEval and 52.4% on MBPP. A LoRA-trained variant (a lightweight fine-tuning technique that modifies only a small fraction of the model's weights) scored 89.6% on GSM8K. The pattern held across all four benchmarks: the simplest method won, and the winner was the one that threw away the supposed advantage of diffusion models in the first place.</p>
+
+      <h3>The catch</h3>
+      <p>These results are on reasoning benchmarks — math and code — where there are clear right answers to check. Whether the same "freedom trap" applies to creative writing, open-ended summarization, or other unstructured tasks hasn't been tested. The paper also studies a specific class of diffusion language models; it doesn't claim arbitrary order is always worse everywhere, only that for reasoning, the assumed benefit appears absent. And 45.1% on MATH-500, while good for a diffusion model, is still well behind the best autoregressive models in the same period. This is a result that challenges a design assumption, not a result that declares diffusion language models competitive at the frontier.</p>
+
+      <p><strong>If you remember one thing:</strong> When you give an AI model the freedom to answer in any order, it uses that freedom to avoid the hardest parts of the question — and a 60-line fix that takes that freedom away makes it reason better.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy's <strong>nanochat</strong> repo — a minimal from-scratch ChatGPT clone he describes as "the best ChatGPT that $100 can buy" — was updated on July 4 and has crossed 55,000 GitHub stars. If you want to understand how a language model's training and serving pipeline actually connect end-to-end, this is the cleanest starting point available. <a href="https://github.com/karpathy/nanochat">github.com/karpathy/nanochat</a></span></li>
+        <li><span class="tag tech">Dwarkesh</span><span>Dwarkesh Patel's June 30 episode features a conversation about mathematics and AI — specifically the observation that AI has been making faster progress in math than in almost any other field. One of the more thoughtful discussions of where the capability curve actually is. <a href="https://www.dwarkesh.com/podcast">dwarkesh.com/podcast</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two threads this week point in the same direction, from opposite sides. The ICML Distinguished Paper shows that adding options to a system — giving it more degrees of freedom — can make it perform worse, because unconstrained systems often take the lazy path instead of the necessary one. The model's freedom to skip hard tokens turned out to be a freedom to reason shallowly. Meanwhile, the Cerebras speed story shows that a different kind of freedom — freedom from the constraint of slow response time — genuinely unlocks new things. A model that responds in 1.3 seconds can participate in real conversations in a way a 10-second model cannot.</p>
+
+      <p>The pattern worth watching: as AI systems become more capable, the question of <em>where</em> to apply constraints and <em>where</em> to remove them becomes more important than raw scale. The JustGRPO authors didn't build a bigger model. They noticed a design assumption that nobody had questioned, tested it, found it backwards, and fixed it with 60 lines. That kind of result — architecture insight beating parameter count — tends to matter more over time, not less.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2601.15165">arXiv:2601.15165 (The Flexibility Trap)</a> ·
+        <a href="https://github.com/LeapLabTHU/JustGRPO">JustGRPO GitHub</a> ·
+        <a href="https://icml.cc/virtual/2026/oral/71086">ICML 2026 oral listing</a> ·
+        <a href="https://openai.com/index/previewing-gpt-5-6-sol/">OpenAI GPT-5.6 Sol preview</a> ·
+        <a href="https://help.openai.com/en/articles/20001325-a-preview-of-gpt-56-sol-terra-and-luna">OpenAI GPT-5.6 family overview</a> ·
+        <a href="https://faq.com.tw/en/ai-ml/2026-06-27-google-gemini-25-deep-think-reasoning-en/">Gemini 2.5 Deep Think benchmarks</a> ·
+        <a href="https://www.cnbc.com/2026/06/30/anthropic-launches-ai-drug-discovery-program-claude-science.html">Anthropic Claude Science (CNBC)</a> ·
+        <a href="https://www.anthropic.com/news/claude-science-ai-workbench">Anthropic Claude Science announcement</a> ·
+        <a href="https://github.com/karpathy/nanochat">Karpathy nanochat</a> ·
+        <a href="https://www.dwarkesh.com/podcast">Dwarkesh Podcast</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Diffusion model</div>
+        <div>A type of AI that starts from pure random noise and gradually "cleans it up" into a meaningful output — like developing a photograph in a darkroom, but working backwards from static. Image generators like DALL-E and Midjourney use this approach; diffusion language models apply the same idea to text.</div>
+      </div>
+      <dl>
+        <dt>Arbitrary order generation</dt>
+        <dd>A diffusion language model's ability to write tokens in any sequence rather than left to right. Seemed like an advantage; turns out to enable shallow reasoning.</dd>
+        <dt>Pivot token</dt>
+        <dd>A word in a reasoning chain — like "therefore" or "since" — that marks a logical turn. Miss these in training and the model learns to reason around its hardest moments rather than through them.</dd>
+        <dt>GRPO</dt>
+        <dd>Group Relative Policy Optimization: a reinforcement learning algorithm that teaches a model to prefer answers that scored better in a comparison group. JustGRPO uses it without modification — hence the name.</dd>
+        <dt>Wafer-scale chip</dt>
+        <dd>Cerebras's unusual hardware design: rather than slicing a silicon wafer into dozens of small processors, they use the entire wafer as one giant chip. The result is massive on-chip memory and unprecedented token throughput for large models.</dd>
+        <dt>Token throughput</dt>
+        <dd>The rate (tokens per second) at which a model produces output. Standard GPU clusters: 40–120 t/s for a frontier model. Cerebras with GPT-5.6 Sol: up to 750 t/s — a qualitative shift in response experience.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

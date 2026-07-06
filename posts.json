@@ -1,5 +1,12 @@
 [
   {
+    "num": 38,
+    "date": "2026-07-06",
+    "slug": "issues/2026-07-06.html",
+    "title": "What fewer choices unlock",
+    "blurb": "The fastest frontier model in history is arriving at 750 tokens per second on Cerebras hardware — and this week's top machine-learning paper found that giving AI more freedom to think makes it think worse."
+  },
+  {
     "num": 37,
     "date": "2026-07-05",
     "slug": "issues/2026-07-05.html",
