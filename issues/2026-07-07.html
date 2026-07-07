@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №39 — The copy that runs · Infinite Reach</title>
+  <meta name="description" content="OpenAI's voice API got 25% faster; the White House is days away from formalizing frontier AI release rules; and the week's most-read paper found that every RL-trained reasoning model is quietly optimizing the wrong version of itself." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №39 &middot; July 7, 2026</p>
+      <h1>The copy that runs</h1>
+      <p>OpenAI shipped faster voice AI on Tuesday; the White House is expected any day to formally define what "safe release" looks like for the most capable AI systems; and the paper circulating among researchers this week identified a quiet structural flaw in every RL-trained reasoning model — the version that learns and the version that answers users are never quite the same thing, and nobody had been checking whether they actually matched.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Since a June executive order asked the three leading frontier labs to submit new models to a 30-day government review before public release, OpenAI, Anthropic, and Google have been negotiating behind closed doors over what that review actually involves. An announcement is expected as soon as this week. If it lands, it will be the first time the US government has publicly and formally defined what a safe release looks like for the most capable AI systems — a line that matters considerably more now that at least one model has already been pulled offline under a predecessor arrangement. The voluntary framework will ask labs to hand over early access so federal agencies can hunt for cybersecurity vulnerabilities before the public gets hold of the model. Nothing in the order forces compliance, but a lab that ignores the framework may find itself under different kinds of pressure down the road.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Voice AI</span><span>OpenAI shipped gpt-realtime-2.1 and a smaller mini variant on Monday, cutting the 95th-percentile latency on its voice API by at least 25% through improved caching. The practical gains: better handling of background noise and sharper recognition of alphanumeric strings — phone numbers, confirmation codes, the things voice AI reliably fumbled before. <a href="https://community.openai.com/t/new-realtime-models-on-the-api-gpt-realtime-2-1-and-gpt-realtime-2-1-mini/1385896">OpenAI community</a></span></li>
+        <li><span class="tag tech">Chips</span><span>Anthropic is in early talks to run Claude inference workloads on Microsoft's custom Maia 200 accelerators — a 5 nm chip claiming 1.5× inference performance per watt compared to its predecessor. If it closes, it would be the first time Microsoft's custom silicon serves a frontier model its team didn't build, and a meaningful test of whether big-tech chip ambitions can challenge NVIDIA on the inference side. <a href="https://www.bloomberg.com/news/articles/2026-05-21/anthropic-in-talks-to-use-microsoft-ai-chips-information-says">Bloomberg</a></span></li>
+        <li><span class="tag tech">Infrastructure</span><span>NAVER and NVIDIA sealed a sovereign AI deal in June: a 55-megawatt data center expansion in Sejong, South Korea, using NVIDIA's DSX full-stack platform, with ambitions to eventually hit gigawatt scale. NAVER plans to use the capacity for next-generation HyperCLOVA X models and an AI Agent Platform launching in Korea later this year. <a href="https://nvidianews.nvidia.com/news/naver-ai-infrastructure">NVIDIA Newsroom</a></span></li>
+        <li><span class="tag policy">Global access</span><span>US export restrictions on Anthropic's most capable models were lifted on June 30; Fable 5 is now available globally on Claude.ai, ending an access gap that had cut off international users since the government-ordered shutdown in mid-June. The conditions of return — early government review, cybersecurity testing — look like they're about to become the template for everyone. <a href="https://www.nortonrosefulbright.com/en-us/knowledge/publications/900af3cf/executive-order-establishes-voluntary-early-access-framework-to-frontier-ai-models">Norton Rose Fulbright</a></span></li>
+        <li><span class="tag money">YC Summer</span><span>Y Combinator's Summer 2026 batch kicks off this month in San Francisco. Garry Tan has described this cohort as one where "AI has stopped being a feature and started being the foundation" — a phrase that places the current moment closer to 1995 (when the web itself was the product) than to any of the previous waves of startup activity. <a href="https://fenado.ai/articles/y-combinator-extends-summer-2026-application-window-president-garry-tan-urges-founders-to-apply">Fenado AI</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: the model you train isn't the model you run</h2>
+      <p class="kicker">The Mirage of Optimizing Training Policies: Monotonic Inference Policies as the Real Objective for LLM Reinforcement Learning &middot; arXiv:2606.29526 &middot; <a href="https://arxiv.org/abs/2606.29526">source</a></p>
+
+      <p>The paper topping Hugging Face's trending list this week is about a flaw hiding in plain sight inside every reinforcement-learning training setup for language models — the kind of thing that feels obvious the moment someone says it plainly, but which nobody had properly formalized or corrected until now.</p>
+
+      <h3>The problem, and why it's hard</h3>
+
+      <p>When a lab trains a reasoning model — think of the kinds of models that work through problems step by step before giving an answer — it uses reinforcement learning (RL) to reward the model for correct responses. The process looks roughly like this: sample a batch of responses from the model, score them, then nudge the model's weights toward the better ones. Straightforward in theory.</p>
+
+      <p>But here is the detail most people gloss over. Modern AI training pipelines split this work across two entirely separate pieces of software. There is the <em>training engine</em> — the software that adjusts the model's weights — which runs in high-precision arithmetic, representing numbers to roughly 32 significant figures (a format called FP32 or BF16). And there is the <em>inference engine</em> — the software that generates actual responses for users — which runs in lower-precision arithmetic (FP8) because lower precision is faster and cheaper. Same weights, different arithmetic. And because floating-point arithmetic is not exact, the two engines give slightly different probability values for the same piece of text, even when loaded with identical weights.</p>
+
+      <p>Why does this matter for RL? Because the mathematics of policy-gradient methods — the foundation of every RL algorithm used to train reasoning models — depends critically on knowing the model's <em>old</em> probabilities accurately. The update rule computes a ratio: how much more or less likely is the model <em>now</em> to produce this response compared to <em>before</em> the update? If the training engine and the inference engine disagree on those old probabilities, that ratio is corrupted. The training becomes, in the field's shorthand, "off-policy" — learning from data that does not quite match what the current policy would produce. Not catastrophically wrong, but persistently and systematically wrong. Previous work treated this as a tolerable background nuisance. This paper argues it is a structural design flaw: you have been optimizing the training engine's policy, but what matters — what users interact with, what gets deployed — is the inference engine's policy. Those are related, but they are not the same.</p>
+
+      <h3>How it works</h3>
+
+      <p>The analogy that made this click for me: imagine a restaurant with a test kitchen and a main kitchen. The head chef develops new recipes in the test kitchen, which has the most precise equipment, the finest temperature control, the best instruments. Once a recipe is approved there, it moves to the main kitchen, which is busier, uses slightly different equipment, runs at slightly different temperatures. Every time the chef tastes a dish and decides whether it's improved, they taste from the test kitchen. But the dish that reaches the paying customer comes from the main kitchen.</p>
+
+      <p>For years, RL training for language models has worked exactly like this: the head chef only ever tastes from the test kitchen. The recipe — the model's weights — gets shared with the main kitchen after approval, but nobody systematically checks whether the main kitchen produces better food. The chefs assume the two kitchens are close enough. The paper argues they are close, but not identical, and the gap matters more than anyone admitted.</p>
+
+      <p>The proposed solution is called <strong>MIPU</strong> (Monotonic Inference Policy Update). It adds a mandatory tasting-from-the-main-kitchen step. Before accepting any RL update, MIPU explicitly verifies that the change improves the <em>inference engine's</em> behavior — not just the training engine's. It does this in two stages. First, run the standard training-side update as normal. Second, evaluate a "gap proxy" — an estimate of how the inference engine responds to the same update. Accept the update only if the inference-side gap shows genuine improvement. Updates that help the training engine but leave the inference engine unchanged (or make it subtly worse) get discarded.</p>
+
+      <p>This is the underlying principle they call <strong>MIPI</strong> (Monotonic Inference Policy Improvement): every accepted training step must demonstrably and monotonically improve the deployed policy — not just the training-time surrogate. It is a stricter contract. You are not just improving the recipe in the test kitchen; you are signing off on the main kitchen's output too. The word "monotonic" is precise: each accepted update must be an improvement, never a step backward, from the inference engine's perspective.</p>
+
+      <h3>What they actually did</h3>
+
+      <p>The researchers ran experiments on two model scales under deliberately high training–inference mismatch conditions — experimental setups designed to reproduce the numerical divergence that occurs in large-scale real-world training pipelines. They compared MIPU against standard GRPO (the RL algorithm used to train most commercial reasoning models today, originally developed at DeepMind) and against other recently proposed stabilized variants. The benchmark tasks were standard mathematical and logical reasoning benchmarks widely used across the field to evaluate reasoning quality. The key dependent variables were average reasoning performance and training stability — meaning how often training diverged, collapsed, or produced unreliable results.</p>
+
+      <h3>What they found</h3>
+
+      <p>Enforcing inference-side monotonicity consistently improved both final reasoning performance and training stability. The improvements were not headline-grabbing in magnitude — this paper is not claiming a 2× jump in benchmark scores — but they were consistent across both model scales and across different degrees of mismatch. More striking: the authors found that standard GRPO sometimes "improved" the training-side policy while silently degrading the inference-side policy — exactly the failure mode that MIPI was designed to catch and reject. That is the "mirage" in the title: the training metrics look fine or good, but the model you are shipping to users has quietly gotten worse. The authors caught this happening in real experiments, not just in theory.</p>
+
+      <h3>The catch</h3>
+
+      <p>The experiments deliberately amplified the mismatch to make the effect visible clearly. In production pipelines where labs have spent considerable engineering effort minimizing the gap between training and inference engines, the gains from MIPU may be smaller — or the problem may barely manifest. The paper does not test at the very largest model scales (where the mismatch is plausibly worst and most consequential). And the inference-side gap proxy introduces additional computation at each training step — not a free improvement. The principle is clean and well-argued; how much it matters in any specific real-world pipeline depends on how much mismatch that pipeline actually has. Labs that have already solved the numerical mismatch problem through careful engineering may see less benefit than labs that have not.</p>
+
+      <p><strong>If you remember one thing:</strong> Every RL-trained reasoning model has been optimizing the test-kitchen version of itself — not the main-kitchen version that serves users — and this paper is the first clean, principled proposal for fixing that.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 300" role="img" aria-label="Diagram comparing standard RL training with MIPU's two-step inference-aware approach">
+          <rect width="720" height="300" fill="#FAFAF8" rx="8"/>
+
+          <!-- Title -->
+          <text x="360" y="26" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413" font-weight="bold">The gap MIPU closes</text>
+
+          <!-- LEFT COLUMN: OLD WAY -->
+          <text x="175" y="52" text-anchor="middle" font-family="ui-serif" font-size="11" fill="#87867F">Standard RL (GRPO)</text>
+
+          <!-- Training engine -->
+          <rect x="55" y="62" width="130" height="64" rx="7" fill="#D97757" fill-opacity="0.15" stroke="#D97757" stroke-width="1.5"/>
+          <text x="120" y="87" text-anchor="middle" font-family="ui-serif" font-size="11" fill="#141413" font-weight="bold">Training engine</text>
+          <text x="120" y="102" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">BF16 · updates weights</text>
+          <text x="120" y="116" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#D97757">p(x) = 0.3147…</text>
+
+          <!-- Arrow down -->
+          <line x1="120" y1="128" x2="120" y2="158" stroke="#D1CFC5" stroke-width="1.5"/>
+          <polygon points="116,154 120,164 124,154" fill="#D1CFC5"/>
+
+          <!-- Inference engine -->
+          <rect x="55" y="165" width="130" height="64" rx="7" fill="#6A8CAF" fill-opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="120" y="190" text-anchor="middle" font-family="ui-serif" font-size="11" fill="#141413" font-weight="bold">Inference engine</text>
+          <text x="120" y="205" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">FP8 · serves users</text>
+          <text x="120" y="219" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#6A8CAF">p(x) = 0.3091…</text>
+
+          <!-- Not checked label -->
+          <text x="120" y="252" text-anchor="middle" font-family="system-ui" font-size="10" fill="#D97757" font-style="italic">never checked for improvement</text>
+
+          <!-- Divider -->
+          <line x1="360" y1="45" x2="360" y2="278" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,4"/>
+
+          <!-- RIGHT COLUMN: MIPU -->
+          <text x="537" y="52" text-anchor="middle" font-family="ui-serif" font-size="11" fill="#87867F">MIPU (new approach)</text>
+
+          <!-- Step 1 box -->
+          <rect x="417" y="62" width="130" height="64" rx="7" fill="#D97757" fill-opacity="0.15" stroke="#D97757" stroke-width="1.5"/>
+          <text x="482" y="84" text-anchor="middle" font-family="ui-serif" font-size="11" fill="#141413" font-weight="bold">Step 1</text>
+          <text x="482" y="100" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">Training-side update</text>
+          <text x="482" y="115" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">(same as before)</text>
+
+          <!-- Arrow down -->
+          <line x1="482" y1="128" x2="482" y2="148" stroke="#D1CFC5" stroke-width="1.5"/>
+          <polygon points="478,144 482,154 486,144" fill="#D1CFC5"/>
+
+          <!-- Gap proxy box -->
+          <rect x="417" y="155" width="130" height="56" rx="7" fill="#788C5D" fill-opacity="0.15" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="482" y="175" text-anchor="middle" font-family="ui-serif" font-size="11" fill="#141413" font-weight="bold">Step 2</text>
+          <text x="482" y="191" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">Inference-side gap proxy:</text>
+          <text x="482" y="205" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">did inference improve?</text>
+
+          <!-- Yes/No fork -->
+          <line x1="482" y1="213" x2="482" y2="233" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="420" y1="233" x2="545" y2="233" stroke="#D1CFC5" stroke-width="1.5"/>
+          <!-- Yes arrow -->
+          <line x1="545" y1="233" x2="545" y2="253" stroke="#788C5D" stroke-width="1.5"/>
+          <polygon points="541,249 545,259 549,249" fill="#788C5D"/>
+          <text x="545" y="270" text-anchor="middle" font-family="system-ui" font-size="10" fill="#788C5D" font-weight="bold">accept</text>
+          <!-- No arrow -->
+          <line x1="420" y1="233" x2="420" y2="253" stroke="#D97757" stroke-width="1.5"/>
+          <polygon points="416,249 420,259 424,249" fill="#D97757"/>
+          <text x="420" y="270" text-anchor="middle" font-family="system-ui" font-size="10" fill="#D97757" font-weight="bold">reject</text>
+        </svg>
+        <figcaption>Standard RL (left) updates the training engine and ships the result to the inference engine — never confirming the deployed model actually improved. MIPU (right) adds a second step that checks inference-side performance; updates that hurt or do nothing for the deployed model are rejected before they ship.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy's <a href="https://github.com/karpathy/nanochat">nanochat</a> repo saw updates this past Friday (July 4). It's described as "the best ChatGPT that $100 can buy" — a full-stack, from-scratch training and inference pipeline for a small language model, written to be readable line by line. Where nanoGPT covered pretraining only, nanochat covers the entire post-training loop including instruction tuning and alignment. If you have ever wanted to understand exactly how a ChatGPT-style system is built — all the way from raw text to a system that follows instructions — this single codebase is probably the most complete educational resource available right now.</span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The paper and the week's policy news are different views of the same underlying problem: the gap between the thing you optimized and the thing you actually shipped. Researchers have been optimizing a training-time surrogate rather than the deployed model. Governments have been relying on lab self-reporting rather than independent review. In both cases, the proxy was close enough to feel fine — and close enough to be consistently, systematically wrong in ways that only show up when someone measures the right thing. The whole field is slowly moving toward instruments that target the real outcome rather than the convenient proxy. That shift turns out to apply equally to the equations researchers use during training, the chip architectures labs negotiate over for deployment, and the governance frameworks governments are now formalizing. The week's headline is the policy announcement. The week's lesson is the convergence.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://community.openai.com/t/new-realtime-models-on-the-api-gpt-realtime-2-1-and-gpt-realtime-2-1-mini/1385896">OpenAI community — gpt-realtime-2.1</a> ·
+        <a href="https://www.crowell.com/en/insights/client-alerts/executive-order-creates-voluntary-regulatory-regime-of-frontier-ai-models">Crowell — White House EO voluntary framework</a> ·
+        <a href="https://towardsai.com/p/machine-learning/white-house-ai-standards-30-day-reviews-3-labs-and-a-classified-pass-bar">Towards AI — White House AI standards timeline</a> ·
+        <a href="https://www.nortonrosefulbright.com/en-us/knowledge/publications/900af3cf/executive-order-establishes-voluntary-early-access-framework-to-frontier-ai-models">Norton Rose Fulbright — EO early access framework</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-05-21/anthropic-in-talks-to-use-microsoft-ai-chips-information-says">Bloomberg — Anthropic / Microsoft Maia chips</a> ·
+        <a href="https://nvidianews.nvidia.com/news/naver-ai-infrastructure">NVIDIA Newsroom — NAVER sovereign AI</a> ·
+        <a href="https://arxiv.org/abs/2606.29526">arXiv 2606.29526 — MIPI/MIPU paper</a> ·
+        <a href="https://github.com/karpathy/nanochat">GitHub — karpathy/nanochat</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Inference</div>
+        <div>In everyday English, inference means drawing a conclusion from evidence. In AI, it means something more specific: <em>running</em> a trained model to get an answer. Not training, not learning — just using. "Inference cost" is how expensive it is to generate one response. "Inference engine" is the software that does the running. Every time you ask ChatGPT something, your question is passing through an inference engine.</div>
+      </div>
+      <dl>
+        <dt>Reinforcement learning (RL)</dt><dd>A way of training a model by rewarding correct answers — like training a dog with treats, except the dog is generating text and the treat is a numerical score. The model learns which kinds of outputs earn higher scores and gradually does more of those.</dd>
+        <dt>Off-policy</dt><dd>When the experience you're learning from doesn't perfectly match how your current policy would behave. If you're training on responses sampled from an older version of the model, the learning signal is subtly mismatched. Most RL training is off-policy to some degree; the question is how much it matters.</dd>
+        <dt>FP8 / BF16</dt><dd>Number formats that control how precisely a computer stores decimals. BF16 uses 16 bits — reasonably precise, standard for training. FP8 uses only 8 bits — faster and cheaper, used in inference. They give slightly different answers for the same calculation, which is the root of this week's paper's problem.</dd>
+        <dt>GRPO</dt><dd>Group Relative Policy Optimization — the dominant RL algorithm for training reasoning models today, developed originally at DeepMind. It trains a model by comparing groups of responses and rewarding the relatively better ones, rather than needing a separate value network.</dd>
+        <dt>Frontier model</dt><dd>Industry shorthand for the most capable AI systems available at a given moment — the ones operating at the edge of what's technically possible. Not a precise threshold; the term implies both capability and a level of capability that warrants serious attention to risk.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

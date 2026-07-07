@@ -1,5 +1,12 @@
 [
   {
+    "num": 39,
+    "date": "2026-07-07",
+    "slug": "issues/2026-07-07.html",
+    "title": "The copy that runs",
+    "blurb": "OpenAI's voice API got 25% faster; the White House is days away from formalizing frontier AI release rules; and a new paper found that every RL-trained reasoning model quietly optimizes the wrong version of itself."
+  },
+  {
     "num": 38,
     "date": "2026-07-06",
     "slug": "issues/2026-07-06.html",
