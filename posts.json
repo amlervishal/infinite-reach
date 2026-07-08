@@ -1,5 +1,12 @@
 [
   {
+    "num": 40,
+    "date": "2026-07-08",
+    "slug": "issues/2026-07-08.html",
+    "title": "The path of least resistance",
+    "blurb": "The year's top machine-learning prize went to a team who proved that giving a language model more freedom makes it think worse — and the world's most capable publicly-available chatbot left every subscription plan and started billing by the word."
+  },
+  {
     "num": 39,
     "date": "2026-07-07",
     "slug": "issues/2026-07-07.html",
