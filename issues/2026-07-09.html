@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №41 — The practice and the performance · Infinite Reach</title>
+  <meta name="description" content="Three new OpenAI models launch today — Sol, Terra, and Luna — while the week's most-read research paper reveals that RL training may be quietly optimizing a version of every model that never actually ships." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №41 &middot; Wednesday, July 9, 2026</p>
+      <h1>The practice and the performance</h1>
+      <p>OpenAI launches three new models this morning — each aimed at a different point on the cost-capability curve — while the week's most-read research paper uncovers a quiet flaw baked into how every modern reasoning model is trained: the version the training engine polishes may not be the version the user actually talks to.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>GPT-5.6 is now publicly available in three flavors. <strong>Sol</strong> is the flagship — capable, expensive, and new to a "max reasoning effort" mode that gives it more time to think. Sol's headline feature is <em>ultra mode</em>, which spawns parallel subagents that each tackle part of a hard task simultaneously, lifting its score on an autonomous-task benchmark from 88.8% to 91.9%. <strong>Terra</strong> matches GPT-5.5 capability at half the price. <strong>Luna</strong> is the fast, cheap everyday tier. Pricing: Sol at $5 per million input tokens and $30 per million output; Terra half that; Luna at $1 and $6. OpenAI is running Sol on Cerebras hardware at up to 750 tokens per second — the fastest frontier inference speed on record. US government clearance was required before the global rollout could begin this morning.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Funding</span><span>Together AI — which serves open-source models via API — closed an <a href="https://www.together.ai/blog/announcing-our-series-c">$800 million Series C</a> at an $8.3 billion valuation, more than doubling its previous mark; annual bookings surpassed $1.15 billion last quarter as enterprise demand for open-model inference tripled year-over-year.</span></li>
+        <li><span class="tag tech">Open source</span><span>China's Z.ai released GLM-5.2, a 750-billion-parameter open-weight model that claims to trail Anthropic's Opus 4.8 by just 1% on long-horizon tasks — at roughly one-tenth the API price, running on domestic Huawei Ascend chips rather than US-restricted Nvidia hardware.</span></li>
+        <li><span class="tag policy">Access</span><span>Fable 5 (Claude's most capable model) returned from its government-enforced hiatus on July 8, now requiring identity verification through Persona and shifting from flat-rate subscriptions to usage credits.</span></li>
+        <li><span class="tag money">Infrastructure</span><span>AI data-center operator Crusoe is reportedly in talks to raise $3 billion — a round that would triple its valuation to roughly $18 billion — as demand for dedicated AI compute shows no sign of slowing.</span></li>
+        <li><span class="tag policy">Safety</span><span>Safety-evaluation firm METR flagged elevated autonomous-capability risks in GPT-5.6 Sol before launch; OpenAI published mitigations, and the US government approved the global rollout after review — now an established pre-release ritual.</span></li>
+        <li><span class="tag policy">Global</span><span>The UN's AI for Good Global Commission held its inaugural meeting in Geneva this week, convened by the ITU, to coordinate AI governance frameworks across developing nations that have had limited say in how the technology is being shaped.</span></li>
+      </ul>
+
+      <h2>Paper, explained: the model you train isn't always the model you ship</h2>
+      <p class="kicker">The Mirage of Optimizing Training Policies: Monotonic Inference Policies as the Real Objective for LLM Reinforcement Learning &middot; Hongyao Tang et al. &middot; <a href="https://arxiv.org/abs/2606.29526">arXiv 2606.29526</a></p>
+
+      <p>This paper ranked #1 on Hugging Face's trending papers list this week — and its central claim is quietly unsettling. Every reinforcement-learning step taken to improve a language model may be improving a version of that model the user never actually encounters.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>For the past few years, the standard method for making language models smarter has been reinforcement learning: give the model feedback on its answers (good answer earns a reward, bad answer earns a penalty) so it gradually learns to do better. Systems like ChatGPT and every major reasoning model use some variant of this — named RLHF, GRPO, PPO, and so on.</p>
+      <p>Here's what's hiding under the hood. Training a large model is extremely expensive, so engineers split the job into two separate systems: a <em>training engine</em> that computes gradients and updates the model's parameters, and an <em>inference engine</em> that runs the model fast to generate text. For speed, the inference engine during training often stores numbers in a compressed format called FP8 (8-bit floating point). The deployed model, serving real users, typically runs in a higher-precision format — BF16 or FP16. Same weights, different number formats, subtly different outputs for the same input.</p>
+      <p>This discrepancy is called the training–inference mismatch. Until this paper, it was treated mostly as an engineering inconvenience. The authors argue it's something more serious: a structural flaw in how the learning objective is framed. When RL updates improve the training-engine version of the model, there is no mathematical guarantee that the inference-engine version also improves. You are optimizing one thing, but shipping another.</p>
+
+      <h3>How it works</h3>
+      <p>Think of it like rehearsing a speech. You practice in a small, quiet studio — the training engine — with a coach who grades every line. You get very good at <em>studio speaking</em>. But when you step onto the actual stage — the inference engine, which has different acoustics, slight ambient noise, different dynamics — some of what you rehearsed carries over, and some doesn't. Your coach's feedback optimized the studio version of your performance. The audience is in the theatre.</p>
+      <p>The authors formalize this precisely. In RL for LLMs, each update shifts the training engine's <em>policy</em> — the probability it assigns to every possible next word — in a direction meant to earn more reward. After the update, weights are synchronized over to the inference engine. But because of the precision gap, the inference engine now assigns slightly different probabilities to the same sequences. "Slightly different" can compound across a long generation: the inference policy may have drifted sideways or even backward, even as the training policy stepped forward.</p>
+      <p>Their proposed fix is called MIPU — Monotonic Inference Policy Update. "Monotonic" means only-ever-improving: every accepted update should provably improve the inference policy, never regress it. MIPU works in two steps. First, generate a candidate update on the training side, as normal. Second, before applying it, check whether the update also benefits the inference engine, using a lightweight proxy measurement called an "inference-side gap." If the gap shows the inference policy would regress, the update is rejected. Only updates that pass both tests — improving training and inference — get applied to the weights.</p>
+
+      <h3>What they actually did</h3>
+      <p>The researchers tested MIPU on two scales of the Qwen3 model family: Qwen3-4B and Qwen3-1.7B (where the suffix is the parameter count — 4 billion and 1.7 billion numbers in the model, respectively). They deliberately used FP8-quantized rollout — the highest-mismatch setting, where training and inference engines disagree the most. MIPU was compared against standard RL baselines, measuring both reasoning accuracy across math and coding benchmarks and training stability (whether performance scores swing erratically between update steps).</p>
+
+      <h3>What they found</h3>
+      <p>Across both model scales, MIPU achieved the best average reasoning performance and notably more stable training dynamics than the standard baselines. The instability typical of RL training — where benchmark scores can jump and crash between steps — was substantially reduced. The authors interpret this as direct evidence that the training–inference mismatch is not merely theoretical: it produces measurable, harmful noise in standard pipelines, and fixing it pays off in practice.</p>
+
+      <h3>The catch</h3>
+      <p>The experiment targets one specific source of mismatch — FP8 quantization during rollout — not all the ways training and inference can diverge (different batch sizes, attention approximations, kernel implementations). The "inference-side gap proxy" is also an approximation; it can't perfectly measure the true inference improvement. And the models tested are relatively small. Whether MIPU scales cleanly to the 70B or 400B parameter range used by frontier systems is an open question.</p>
+
+      <p><strong>If you remember one thing:</strong> Every RL-trained model in production may have been subtly optimizing a ghost of itself — and this paper is the first rigorous attempt to close that gap.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 280" role="img" aria-label="Diagram of training-inference mismatch and MIPU's fix">
+          <rect x="30" y="50" width="195" height="88" rx="8" fill="#D97757" fill-opacity="0.14" stroke="#D97757" stroke-width="2"/>
+          <text x="127" y="77" font-family="ui-serif,Georgia,serif" font-size="14" font-weight="bold" fill="#141413" text-anchor="middle">Training engine</text>
+          <text x="127" y="98" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">FP8 precision · lower memory</text>
+          <text x="127" y="116" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">RL reward updates this policy</text>
+          <rect x="495" y="50" width="195" height="88" rx="8" fill="#6A8CAF" fill-opacity="0.14" stroke="#6A8CAF" stroke-width="2"/>
+          <text x="593" y="77" font-family="ui-serif,Georgia,serif" font-size="14" font-weight="bold" fill="#141413" text-anchor="middle">Inference engine</text>
+          <text x="593" y="98" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">BF16 precision · serves users</text>
+          <text x="593" y="116" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">subtly different probabilities</text>
+          <line x1="226" y1="94" x2="494" y2="94" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="6,4"/>
+          <polygon points="490,90 500,94 490,98" fill="#D1CFC5"/>
+          <text x="360" y="85" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">weights synced</text>
+          <rect x="267" y="108" width="186" height="32" rx="6" fill="#788C5D" fill-opacity="0.12" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="360" y="122" font-family="system-ui,sans-serif" font-size="11" fill="#788C5D" font-weight="bold" text-anchor="middle">precision gap</text>
+          <text x="360" y="135" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">same weights ≠ same outputs</text>
+          <path d="M 127 138 Q 127 200 127 200" fill="none" stroke="#D97757" stroke-width="1.5"/>
+          <path d="M 127 200 Q 127 230 360 238 Q 593 246 593 138" fill="none" stroke="#D1CFC5" stroke-width="1.2" stroke-dasharray="4,3"/>
+          <polygon points="125,136 127,147 130,136" fill="#D97757"/>
+          <text x="210" y="222" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">RL reward</text>
+          <rect x="275" y="152" width="170" height="52" rx="7" fill="white" stroke="#141413" stroke-width="1.5"/>
+          <text x="360" y="174" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="bold" fill="#141413" text-anchor="middle">MIPU gate</text>
+          <text x="360" y="191" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">accept only if inference also improves</text>
+          <text x="165" y="260" font-family="system-ui,sans-serif" font-size="11" fill="#788C5D" text-anchor="middle">✓ accept → apply update</text>
+          <text x="555" y="260" font-family="system-ui,sans-serif" font-size="11" fill="#D97757" text-anchor="middle">✗ reject → skip this step</text>
+        </svg>
+        <figcaption>The training engine (left) and inference engine (right) run the same weights at different numerical precisions, producing subtly different probabilities. Standard RL optimizes the training engine, with no check on the inference side. MIPU adds a gate: only accept updates that also improve the deployed model.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy's <a href="https://github.com/karpathy/nanochat">nanochat</a> repo received new commits this week. It's a minimal, from-scratch, full-stack ChatGPT clone — pretraining through inference, in one readable codebase — designed so you can train a GPT-2-grade model for about $15–48 on a GPU rental. It now includes a community "speedrun" leaderboard. Worth a look if you've ever wondered what a working LLM actually looks like under the hood.</span></li>
+        <li><span class="tag tech">Cherny</span><span>Boris Cherny, who created Claude Code, gave a detailed interview this week noting that Anthropic's engineers now rely on Claude to author over 80% of merged production code — driving a 200% increase in per-engineer productivity since the tool launched. He hasn't written a line of code by hand in eight months. <a href="https://workos.com/blog/boris-cherny-claude-code-acquired-interview-takeaways">Full write-up at WorkOS.</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things this week sit at opposite ends of the same story. One: OpenAI's GPT-5.6 shows how quickly frontier capability is being packaged, priced, and cleared for global deployment — three tiers, record inference speeds, same-day government sign-off. Two: a paper from inside RL research reveals that the foundations of that capability may carry a quiet structural flaw that has been present in every major reasoning model for years. These aren't contradictions. They're two views of the same machine. Capability is compounding faster than the understanding of it — and the fact that someone publishing on arXiv is still finding basic miswirings in the training loop is a useful reminder that the engine running the world's most capable systems is still, in important ways, a work in progress.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://openai.com/index/previewing-gpt-5-6-sol/">OpenAI GPT-5.6 preview</a> ·
+        <a href="https://community.openai.com/t/introducing-gpt-5-6-series-sol-terra-and-luna/1384931">OpenAI developer announcement</a> ·
+        <a href="https://apidog.com/blog/gpt-5-6-ultra-mode/">GPT-5.6 ultra mode details</a> ·
+        <a href="https://arxiv.org/abs/2606.29526">arXiv 2606.29526 (MIPU paper)</a> ·
+        <a href="https://huggingface.co/papers/2606.29526">Hugging Face paper page</a> ·
+        <a href="https://www.together.ai/blog/announcing-our-series-c">Together AI Series C</a> ·
+        <a href="https://techstartups.com/2026/06/25/chinese-ai-startup-z-ai-targets-agi-as-glm-5-2-beats-gpt-5-5-and-narrows-the-gap-with-openai-and-anthropic/">Z.ai GLM-5.2</a> ·
+        <a href="https://github.com/karpathy/nanochat">karpathy/nanochat</a> ·
+        <a href="https://workos.com/blog/boris-cherny-claude-code-acquired-interview-takeaways">Boris Cherny interview</a> ·
+        <a href="https://www.itu.int/en/mediacentre/Pages/PR-2026-07-02-AI-for-Good-Global-Commission.aspx">AI for Good Global Commission</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Quantization</div>
+        <div>Compressing a model's numbers into a smaller, less precise format — think rounding every measurement from millimetres to centimetres. It makes a model run faster and cheaper, but introduces tiny errors. The gap between how a model is trained and how it runs in deployment often comes down to different levels of this rounding.</div>
+      </div>
+      <dl>
+        <dt>Reinforcement learning (RL)</dt><dd>Training a model by rewarding good outputs and penalizing bad ones — the same basic idea as training a dog, scaled to billions of numbers.</dd>
+        <dt>Training–inference mismatch</dt><dd>When the version of a model that receives RL training updates runs under different conditions than the version that answers real users, causing the two to behave slightly differently from the same weights.</dd>
+        <dt>FP8 / BF16</dt><dd>Number formats of different precision. FP8 uses 8 bits per number (fast, less accurate); BF16 uses 16 bits (slower, more accurate). Training engines often use FP8; deployed models tend to use BF16.</dd>
+        <dt>Policy</dt><dd>In RL, the model's learned strategy for choosing what to say — expressed as a probability over every possible next word. Optimizing the policy means shifting those probabilities toward better answers.</dd>
+        <dt>Ultra mode</dt><dd>GPT-5.6 Sol's new setting that spawns multiple parallel subagents to work on different parts of a complex task simultaneously, trading cost for speed and depth on hard problems.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

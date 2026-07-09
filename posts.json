@@ -1,5 +1,12 @@
 [
   {
+    "num": 41,
+    "date": "2026-07-09",
+    "slug": "issues/2026-07-09.html",
+    "title": "The practice and the performance",
+    "blurb": "OpenAI launches three new models today — Sol, Terra, and Luna — while the week's most-read research paper finds that reinforcement-learning training may have been quietly optimizing a version of every language model that never actually ships."
+  },
+  {
     "num": 40,
     "date": "2026-07-08",
     "slug": "issues/2026-07-08.html",
