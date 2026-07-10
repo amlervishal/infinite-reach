@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №42 — The review that had to come first · Infinite Reach</title>
+  <meta name="description" content="OpenAI's GPT-5.6 became the first model to clear a thirty-day government pre-release review under Trump's AI executive order — launching publicly on July 9, while a new paper proposes storing your AI assistant's memory of you as runnable code." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №42 &middot; Thursday, July 10, 2026</p>
+      <h1>The review that had to come first</h1>
+      <p>OpenAI's newest model family launched to the public on Thursday — after spending thirty days in the hands of US government testers. A governance framework built on paper in June had its first real-world test this week. Also in the stack: a new research paper that proposes AI systems remember you not as a pile of notes, but as a small, running program.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On July 9, OpenAI launched GPT-5.6 — a three-tier family called Sol, Terra, and Luna — alongside ChatGPT Work, an agent that takes a goal, breaks it into steps, gathers information from your connected tools, and works for hours to complete it. But the <em>manner</em> of launch matters as much as the launch itself. Under Trump's June executive order, OpenAI shared GPT-5.6 with US government agencies thirty days before public release. The Department of Commerce's AI standards group ran additional tests. The government then said the model could proceed. That sequence — share early, review, approve — has never happened with a frontier commercial model before. It sets a template for how the most powerful systems may be handled from here on.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Voice</span><span>OpenAI also launched GPT-Live-1 (July 8), a voice model that listens and speaks at the same time — no more waiting for your turn to end. It quietly hands hard questions off to GPT-5.5 in the background and weaves the answer back into the conversation when it's ready. <a href="https://openai.com/index/introducing-gpt-live/">OpenAI blog</a></span></li>
+        <li><span class="tag tech">Open weight</span><span>Z.ai's GLM-5.2 — a Chinese open-weight model with 753 billion parameters — scores 62.1% on SWE-bench Pro, above GPT-5.5 at 58.6%, at roughly one-sixth the API cost. Released under an MIT licence, it runs entirely on Huawei silicon. <a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/z-ai-free-glm-5-2-tops-the-open-weight-ai-rankings-on-all-huawei-silicon">Tom's Hardware</a></span></li>
+        <li><span class="tag policy">Illinois</span><span>Governor Pritzker signed the Illinois AI Safety Measures Act, making Illinois one of the most legislatively active US states on AI. <a href="https://www.transparencycoalition.ai/news/ai-legislative-update-july10-2026">Transparency Coalition</a></span></li>
+        <li><span class="tag money">Tesla</span><span>Tesla put a $200-per-week ceiling on AI coding tool spending per employee, requiring manager sign-off above that threshold — a sign that AI productivity costs are now a budget line item at large companies. <a href="https://theaiinsider.tech/2026/07/09/openai-launches-gpt-live-1-voice-models-positioning-voice-as-future-interface-for-ai-agentic-work/">AI Insider</a></span></li>
+        <li><span class="tag policy">Minnesota</span><span>Minnesota's new law makes it a $10,000 fine — rising to $20,000 for repeat offenses — to advertise an AI chatbot as capable of offering therapy. <a href="https://www.transparencycoalition.ai/news/ai-legislative-update-july10-2026">Transparency Coalition</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: When your AI stores you as code</h2>
+      <p class="kicker">"User as Code: Executable Memory for Personalized Agents" &middot; Bojie Li, Pine AI &middot; <a href="https://arxiv.org/abs/2606.16707">arXiv:2606.16707</a></p>
+
+      <p>Here is a quiet paper that solves a problem most people don't know exists. AI agents forget who you are. Not between sentences — between sessions. And the standard fix, it turns out, is almost as crude as handing someone a folder of sticky notes.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When you talk to a personal AI assistant for the first time, it knows nothing about you. The second time, ideally, it remembers something — your name, what you were working on, your preference for bullet points over prose. The standard approach is called <em>retrieval-based memory</em>: the agent extracts facts from each conversation and saves them as text. "User prefers brief responses." "No meetings on Fridays." "Dislikes slide decks." When you return, the agent searches that pile and pulls what seems most relevant.</p>
+
+      <p>This works for simple lookups. It fails in three ways that matter. First, contradictions: if you said you prefer oat milk last month and whole milk last week, which fact wins? The text pile holds both, and the agent has to guess. Second, aggregation: "how many times have I asked about this project?" requires scanning every stored note and counting — the kind of computation text search cannot do cleanly. Third, logical rules: "never schedule me before 9am on days after travel" isn't a fact — it's a function that has to be evaluated against a calendar. Text memory can store the sentence. It cannot run it.</p>
+
+      <h3>How it works</h3>
+      <p>The insight behind <em>User as Code</em> (UaC) is elegant to state: don't store the user as notes. Store the user as a program.</p>
+
+      <p>Think of two ways to bring a new personal assistant up to speed. Option one: hand them a folder of paper notes about you — every preference, quirk, and constraint you've mentioned, written out in sentences. Option two: hand them a small software file. In the file, <code>user.preferred_milk = "whole"</code>, <code>user.no_meetings_before = 9</code>, and a method called <code>is_available_at(time)</code> that checks those rules and returns a clear yes or no. The notes version is searchable. The software version is <em>executable</em>. You can query it and get a precise, unambiguous answer — because the computer can run the function, resolve the contradiction (most recent value wins), and apply the rule to any input.</p>
+
+      <p>UaC builds this through a two-phase pipeline. Phase one is an append-only log: every conversation is recorded in full, with nothing ever thrown away. This raw archive is the ground truth. Phase two — the key step — is what the authors call compilation: a language model periodically reads the log and rewrites a set of typed Python objects and functions to reflect everything it has learned. New preferences overwrite old ones automatically. Rules that span many sessions get encoded as methods. The result is a small, living piece of software that <em>is</em> the model's understanding of you — and that can be executed directly rather than searched.</p>
+
+      <p>At query time, instead of retrieving the most relevant notes, the agent can run the code. "What does she drink?" executes and returns "whole milk." "Is she free at 8am on Monday after her Sunday flight?" executes and returns "no." The answers are computed, not retrieved.</p>
+
+      <h3>What they actually did</h3>
+      <p>The researchers tested UaC on LOCOMO, a standard benchmark that simulates ten long conversations — 600 question-and-answer pairs — covering realistic personal topics: schedules, relationships, preferences, habits. They compared it to retrieval-based memory systems, full-context baselines (feeding the entire conversation history as raw input), and a range of other memory architectures. The language model used for both compilation and evaluation was Gemini 3 Flash.</p>
+
+      <h3>What they found</h3>
+      <p>On basic factual recall — "what does she like to drink?", "where does she work?" — UaC scores 78.8%, compared to a full-context upper bound of 79.8%. That's within one percentage point of reading the entire history verbatim. Retrieval-based systems score similarly on this type of question, so the improvement here is modest.</p>
+
+      <p>Where UaC pulls away sharply is on <em>aggregate questions</em> — the kind that require reasoning over the whole history, not finding a single fact. "How many times has the user mentioned project X?" "Which coffee shops has she visited more than twice?" On these questions, retrieval-based memory scores between 6% and 43%, because it was never designed to count or iterate. UaC stays near-perfect at 99%, because the code can be executed over the full data set directly.</p>
+
+      <p>One failure mode the authors flag: when a user changes their mind rapidly within a single conversation, the compilation step sometimes resolves the contradiction incorrectly — producing a rule that doesn't match the user's actual final preference. The compile step looks at patterns across history; fast within-session pivots can slip past it.</p>
+
+      <h3>The catch</h3>
+      <p>Compiling raw conversation into typed, correct Python requires a language model capable enough to write clean, consistent code reliably. Weaker or cheaper models struggle here — the whole architecture breaks if the compilation step produces buggy functions. The paper evaluates only on Gemini 3 Flash, so performance with other models is unknown. There is also a privacy question the paper acknowledges but doesn't fully resolve: a structured, executable profile of your habits, preferences, and schedule is a powerful thing. It also needs to be treated carefully.</p>
+
+      <p><strong>If you remember one thing:</strong> An AI assistant that stores you as runnable code — rather than a pile of text notes — can answer questions about you that text search simply cannot, because it can compute rather than retrieve.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 320" role="img" aria-label="Side-by-side diagram: text-based memory on the left versus User as Code (executable Python) on the right, with a compile arrow between them">
+
+          <!-- LEFT: Text Memory -->
+          <rect x="18" y="10" width="300" height="292" rx="8" fill="#F5F4F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="168" y="38" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="bold" fill="#141413">Text-based memory</text>
+          <text x="168" y="54" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">stored facts, searched at query time</text>
+
+          <rect x="38" y="66" width="260" height="36" rx="4" fill="#FFF9E6" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="168" y="84" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">"Prefers oat milk" — June 3</text>
+          <rect x="38" y="112" width="260" height="36" rx="4" fill="#FFF9E6" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="168" y="130" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">"Prefers whole milk" — July 1</text>
+          <rect x="38" y="158" width="260" height="36" rx="4" fill="#FFF9E6" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="168" y="176" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">"No meetings before 9am post-travel"</text>
+          <rect x="38" y="204" width="260" height="36" rx="4" fill="#FFF9E6" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="168" y="222" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">"Dislikes slide decks"</text>
+
+          <rect x="38" y="258" width="260" height="36" rx="4" fill="#F5EDE9" stroke="#D97757" stroke-width="1.5"/>
+          <text x="168" y="273" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#D97757" font-weight="600">Q: "Which milk?" → two answers</text>
+          <text x="168" y="287" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">Contradiction unresolved.</text>
+
+          <!-- ARROW / COMPILE -->
+          <defs>
+            <marker id="arr42" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#87867F"/>
+            </marker>
+          </defs>
+          <line x1="326" y1="160" x2="392" y2="160" stroke="#87867F" stroke-width="2" marker-end="url(#arr42)"/>
+          <text x="359" y="152" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">compile</text>
+          <text x="359" y="172" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">(LLM)</text>
+
+          <!-- RIGHT: User as Code -->
+          <rect x="402" y="10" width="300" height="292" rx="8" fill="#F5F4F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="552" y="38" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="bold" fill="#141413">User as Code</text>
+          <text x="552" y="54" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">typed Python, executed at query time</text>
+
+          <rect x="422" y="64" width="260" height="182" rx="4" fill="#EAEDE7" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="438" y="84" font-family="ui-monospace,monospace" font-size="10.5" fill="#141413">class User:</text>
+          <text x="452" y="102" font-family="ui-monospace,monospace" font-size="10.5" fill="#141413">preferred_milk = "whole"</text>
+          <text x="452" y="118" font-family="ui-monospace,monospace" font-size="10.5" fill="#141413">no_decks = True</text>
+          <text x="452" y="138" font-family="ui-monospace,monospace" font-size="10.5" fill="#141413"> </text>
+          <text x="452" y="154" font-family="ui-monospace,monospace" font-size="10.5" fill="#141413">def available_at(t):</text>
+          <text x="466" y="170" font-family="ui-monospace,monospace" font-size="10.5" fill="#141413">if post_travel(t):</text>
+          <text x="480" y="186" font-family="ui-monospace,monospace" font-size="10.5" fill="#141413">return t.hour &gt;= 9</text>
+          <text x="466" y="202" font-family="ui-monospace,monospace" font-size="10.5" fill="#141413">return True</text>
+          <text x="438" y="236" font-family="ui-monospace,monospace" font-size="9" fill="#87867F"># compiled from 10 sessions of history</text>
+
+          <rect x="422" y="258" width="260" height="36" rx="4" fill="#E9EDE6" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="552" y="273" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#788C5D" font-weight="600">Q: "Which milk?" → execute → "whole"</text>
+          <text x="552" y="287" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D">One answer. Most recent wins.</text>
+        </svg>
+        <figcaption>Text memory stores facts as notes and searches them — leaving contradictions standing. "User as Code" compiles those same facts into typed Python: the most recent value overwrites the old one, and logical rules become functions an interpreter can evaluate precisely.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>The <em>nanochat</em> repository (updated July 4) is his most complete educational project to date: a full-stack ChatGPT clone in a single Python file, covering tokenization, pretraining, fine-tuning, inference, and a working web UI, designed to run for about $100 of compute on a rented GPU node. If you've ever wanted to understand exactly how a ChatGPT-style system is constructed, start here. <a href="https://github.com/karpathy/nanochat">github.com/karpathy/nanochat</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>The creator of Claude Code <a href="https://x.com/bcherny/status/2072777472970563995">announced</a> that Artifacts — Claude's inline rendered outputs (live HTML, charts, interactive widgets) — are expanding from Claude.ai Max to Pro plans. More users will now see AI outputs as working documents they can interact with, not just text replies to scroll past.</span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two directions are running in parallel this week, and the gap between them is where the story lives. On one side: GPT-5.6, ChatGPT Work, GPT-Live-1, and GLM-5.2 all represent genuine leaps — more capable models, autonomous agents that can work for hours without check-ins, voice that finally sounds like a real conversation, and open-weight alternatives that undercut US pricing by 80%. On the other side: the first voluntary government pre-release review actually completed, state AI safety laws multiplying, and companies starting to treat AI tool spending like any other controllable operating cost. The governance infrastructure is beginning to form — but it's forming around systems that are already well past it. The August 1 deadline under Trump's June executive order, when a formal classification and benchmarking process for frontier models must be ready, is three weeks away. That process will shape whether the pre-release review that GPT-5.6 just went through becomes the norm or stays the exception.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://openai.com/index/introducing-gpt-live/">OpenAI: Introducing GPT-Live</a> ·
+        <a href="https://techcrunch.com/2026/07/08/openai-releases-new-voice-models-for-more-natural-live-conversations/">TechCrunch: GPT-Live-1</a> ·
+        <a href="https://the-decoder.com/openai-pairs-its-gpt-5-6-public-rollout-with-chatgpt-work-a-new-agent-that-handles-entire-workflows/">The Decoder: ChatGPT Work</a> ·
+        <a href="https://www.engadget.com/2210308/openai-rolls-out-gpt5-6-july-9/">Engadget: GPT-5.6 clearance</a> ·
+        <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">White House: June AI Executive Order</a> ·
+        <a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/z-ai-free-glm-5-2-tops-the-open-weight-ai-rankings-on-all-huawei-silicon">Tom's Hardware: GLM-5.2</a> ·
+        <a href="https://arxiv.org/abs/2606.16707">arXiv: User as Code</a> ·
+        <a href="https://github.com/karpathy/nanochat">GitHub: karpathy/nanochat</a> ·
+        <a href="https://www.transparencycoalition.ai/news/ai-legislative-update-july10-2026">Transparency Coalition: AI Legislative Update July 10</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Full-duplex</div>
+        <div>A communication channel that works in both directions at the same time — like a phone call, where you can speak and listen simultaneously. The opposite, half-duplex, is a walkie-talkie: one person talks, releases the button, then the other responds. Most AI voice systems before GPT-Live-1 were effectively half-duplex: you finished speaking, it processed, then it replied. Full-duplex means it can hear you mid-sentence, catch interruptions, and react in real time.</div>
+      </div>
+      <dl>
+        <dt>Frontier model</dt><dd>An AI system at the very edge of what is technically possible — the most capable of its kind at the moment of release. GPT-5.6 Sol is a frontier model; a two-year-old open-source model running on a laptop is not.</dd>
+        <dt>Open-weight model</dt><dd>A model whose learned parameters — the billions of numbers that define its behavior — are publicly released, so anyone can download and run it. GLM-5.2 is open-weight; GPT-5.6 is not.</dd>
+        <dt>SWE-bench Pro</dt><dd>A benchmark that gives AI models real, unsolved GitHub issues and asks them to write code that fixes the bug and passes the existing test suite. A high score indicates genuine software-engineering usefulness.</dd>
+        <dt>Mixture of Experts (MoE)</dt><dd>A model design where only a subset of the model's total capacity activates for any given task. GLM-5.2 has 753 billion total parameters but only 40 billion active at once — like a hospital where only the relevant specialists are called in per patient, keeping costs lower than activating everyone all the time.</dd>
+        <dt>Compilation</dt><dd>In the "User as Code" paper, this is the step where a language model reads raw conversation logs and rewrites typed Python objects and functions to reflect what it has learned. Like turning a draft into finished code — the compiled version is what the agent actually runs.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

@@ -1,5 +1,12 @@
 [
   {
+    "num": 42,
+    "date": "2026-07-10",
+    "slug": "issues/2026-07-10.html",
+    "title": "The review that had to come first",
+    "blurb": "OpenAI's GPT-5.6 became the first model to clear a thirty-day government pre-release review — launching to the public on July 9 — while a new paper proposes storing your AI assistant's memory of you as runnable Python code."
+  },
+  {
     "num": 41,
     "date": "2026-07-09",
     "slug": "issues/2026-07-09.html",
