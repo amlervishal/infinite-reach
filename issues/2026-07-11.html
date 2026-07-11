@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №43 — The structure of safety · Infinite Reach</title>
+  <meta name="description" content="As the world's largest machine-learning conference closes in Seoul, its best position paper asks what the tools we build to make AI stay quiet are also capable of doing." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №43 &middot; Saturday, July 11, 2026</p>
+      <h1>The structure of safety</h1>
+      <p>As the world's largest machine-learning conference closed in Seoul today, its award for best position paper went to a team who asked a pointed question: when you build tools to stop an AI model from saying the wrong thing, what else have you built? Also this week: Cloudflare quietly rewired the rules for which bots can read the web — and put a September deadline on the new defaults.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On July 1, Cloudflare — which sits between the internet and more than 20% of the web's traffic — launched a new control panel for AI bots that splits them into three distinct categories for the first time: <strong>Search</strong> (bots that index content to answer questions), <strong>Agent</strong> (automated systems acting in real time on someone's behalf), and <strong>Training</strong> (bots collecting text to build future models). Website owners can now allow one category while blocking another, for free. Starting September 15, every new domain that joins Cloudflare will automatically block Agent and Training crawlers on pages that show advertisements, while Search remains allowed. This matters because, until now, a site's choice was binary — all bots in, or none. The new framework recognises that a bot fetching a recipe to answer a question right now is doing something structurally different from a bot ingesting ten thousand recipes to train a future competitor. Whether publishers use this to build walls or to build deals with AI companies will define how much of the open web survives the next training cycle.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Conference</span><span>ICML 2026 — the world's largest machine-learning conference — closed in Seoul today after seven days, 6,352 accepted papers, and nearly 24,000 submissions, nearly double last year's count. Agentic AI dominated every track. <a href="https://icml.cc/">icml.cc</a></span></li>
+        <li><span class="tag money">Industrial</span><span>BMW i Ventures announced a new $300 million fund targeting early-stage through Series B startups in agentic AI, physical AI, advanced materials, and supply chain tech — a sign that large industrial capital is moving quietly into the next layer. <a href="https://blog.mean.ceo/latest-ai-announcements-news-july-2026/">Source</a></span></li>
+        <li><span class="tag tech">Science</span><span>Anthropic opened Claude Science: up to 50 scientific research projects can receive $30,000 in API credits, initially focused on biology and biomedical work. Applications close July 15. <a href="https://letsdatascience.com/news/openai-releases-gpt-56-and-chatgpt-work-025f6cb2">Source</a></span></li>
+        <li><span class="tag policy">Oversight</span><span>The US Department of Health and Human Services announced it will use AI to analyse all 50 states' annual healthcare audit reports on an ongoing basis, hunting for fraud, waste, and overspending in federal health programmes. <a href="https://llm-stats.com/ai-news">Source</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: when safety tools become control tools</h2>
+      <p class="kicker">"Position: The Alignment Community is Unintentionally Building a Censor's Toolkit" &middot; Sarah Ball &amp; Phil Hackemann, Munich Center for Machine Learning (LMU Munich) &middot; ICML 2026 Outstanding Position Paper Award &middot; <a href="https://icml.cc/virtual/2026/oral/71119">ICML oral 71119</a></p>
+
+      <p>The paper that won the top position paper prize at ICML 2026 this week is not about a new architecture or a benchmark score. It is about a structural property that runs underneath all of modern AI development — and what that property means when the people deploying AI have very different interests from the people using it.</p>
+
+      <h3>The problem, and why it's hard</h3>
+
+      <p>Language models, left untrained, will produce whatever text is statistically plausible given the input. That includes threats, manipulation, toxic content, and detailed assistance with harmful activities. So over the last several years, researchers developed a set of techniques collectively called <em>alignment</em> to address this: methods for shaping what a model prefers to say, what it refuses to say, and what it stays quiet about altogether. These methods are now standard practice at every major lab. Without them, today's most capable models would be far too dangerous to release.</p>
+
+      <p>The trouble, and the argument of Ball and Hackemann's paper, is this: alignment works by teaching a model what <em>not</em> to say. And the mechanism that produces that silence — teaching the model to avoid, deflect, or refuse — is technically neutral. It does not encode a reason. The model does not know whether it is being taught to stay quiet because the topic is harmful, or because someone finds it inconvenient. It only knows the pattern: when this kind of content comes up, produce this kind of output instead. The paper makes one sustained, precise argument: the infrastructure built to keep AI safe and the infrastructure needed to keep AI suppressed are not merely similar. They are identical.</p>
+
+      <h3>How it works — the three layers</h3>
+
+      <p>Think of a government, or a company, or any entity with strong preferences about what subjects an AI model should not discuss. To enforce those preferences, it would need to operate at three moments in a model's life. Before training, it would need to ensure the model never learned from text that treated the topic openly. During training, it would need to ensure that when the model formed preferences between response styles, avoidance scored higher than engagement. After training, at the moment of output, it would need to ensure that any remaining mention was intercepted and redirected. These are exactly the three layers the paper analyses — and in each case, the mechanism already exists, already works, and was built by alignment researchers for completely different reasons.</p>
+
+      <p><strong>Data curation</strong> is the first layer. Before a model is trained, enormous amounts of text are filtered: violent content is removed, spam is excluded, certain categories of content are deprioritised. This is legitimate and necessary. But the filtering mechanism itself does not distinguish between "remove content that helps people build weapons" and "remove content that discusses this political event." A classifier flags content; flagged content is removed; the model never learns from it. The tooling is the same.</p>
+
+      <p><strong>Preference learning</strong> — almost universally done today through a method called RLHF, or reinforcement learning from human feedback — is the second layer. Human raters evaluate pairs of AI responses and choose which they prefer. The model trains toward the preferred style. If the preference dataset is assembled such that "this topic is inappropriate, I cannot assist with that" is rated above any substantive response to a class of questions, the model learns to refuse. The training procedure does not audit why raters preferred one response; it only observes that they did. The same training loop that teaches a model to be honest can teach it to be compliant with whoever assembles the rating task.</p>
+
+      <p><strong>Inference filtering</strong> is the third layer, and in some ways the most concerning. Content classifiers can run at the last moment of generation — after the model has formed a response — inspecting the text before it reaches the user and blocking or redirecting it if a rule is triggered. These rules are often delivered through hidden system prompts: instructions prepended to every conversation that the user never sees and cannot audit. A user asking a legitimate question may receive a deflection and have no way of knowing whether that deflection is a safety feature, an operator preference, or something else entirely.</p>
+
+      <h3>What they actually did</h3>
+
+      <p>This is a position paper — a form of structured academic argument, rather than a paper reporting experimental results. Ball and Hackemann's contribution is a careful, systematic mapping: take each of the three major alignment techniques, describe its technical mechanism in precise terms, and then describe the censorship use case it enables with equal precision. They support their argument by citing documented cases — drawn from academic literature and journalistic investigation — where AI systems deployed in specific commercial or geopolitical contexts appeared to use alignment infrastructure to enforce topic avoidance that went beyond what safety considerations would require. They do not name a single country or company as the primary target of their analysis; they are clear that the dual-use risk is structural and generalises to any authority, now or in the future.</p>
+
+      <h3>What they found</h3>
+
+      <p>The finding is structural rather than empirical: across all three layers of alignment infrastructure, the mechanism that produces safety-motivated silence and the mechanism that produces censorship-motivated silence are technically indistinguishable from the outside. A user, a regulator, or even a third-party auditor cannot reliably tell the difference by examining model behaviour alone, because both produce the same output: the model does not discuss the topic. The paper argues this creates a fundamental transparency problem. It also identifies inference filtering as the most acute risk, because it can be updated silently and continuously after deployment, by operators who are invisible to users, with no retraining of the model required.</p>
+
+      <p>Their proposed mitigations cluster around three ideas: transparency requirements (operators should be required to disclose which categories of content have been subject to filtering, even if not the exact rules); third-party auditing with specific attention to politically sensitive refusals rather than only harmful-content refusals; and what they call alignment red-teaming for suppression — a practice of deliberately testing models for censorship modes with the same rigour currently applied to testing for harmful outputs.</p>
+
+      <h3>The catch</h3>
+
+      <p>The paper is careful about what it does and does not show. It does not demonstrate that any specific lab is currently misusing alignment tools for censorship as a primary purpose. Its cases of suspected misuse are drawn from external observation rather than from any internal audit or access to training pipelines. The authors are explicit that alignment tools, in most deployments, are doing exactly what they were designed to do. The paper's claim is that the research community has built a powerful and widely distributed content-control infrastructure without adequately documenting or planning for its most obvious failure mode. That is a narrower claim than "alignment is censorship" — and more defensible for being narrower.</p>
+
+      <p><strong>If you remember one thing:</strong> A tool that teaches a model to stay quiet about harmful things cannot, on its own, distinguish between harmful and merely inconvenient — and the same infrastructure can serve either purpose without modification.</p>
+
+      <!-- SVG: three-layer diagram of dual-use alignment infrastructure -->
+      <figure>
+        <svg viewBox="0 0 720 340" role="img" aria-label="Diagram showing three layers of AI alignment infrastructure and their dual-use potential for safety vs censorship">
+          <defs>
+            <marker id="arr43" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <!-- Column headers -->
+          <text x="170" y="22" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="bold" fill="#141413">Alignment layer</text>
+          <text x="380" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#788C5D" font-weight="600">Safety use</text>
+          <text x="580" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#D97757" font-weight="600">Censorship use</text>
+
+          <!-- Divider line -->
+          <line x1="20" y1="30" x2="700" y2="30" stroke="#D1CFC5" stroke-width="1"/>
+
+          <!-- ── Layer 1: Data curation ── -->
+          <rect x="20" y="42" width="300" height="72" rx="6" fill="#F5F4F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="170" y="64" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" font-weight="bold" fill="#141413">1. Data curation</text>
+          <text x="170" y="80" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">Before training begins</text>
+          <text x="170" y="98" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="#87867F">filter(text) → remove if flagged</text>
+
+          <rect x="332" y="42" width="178" height="72" rx="6" fill="#EEF3EA" stroke="#788C5D" stroke-width="1.2"/>
+          <text x="421" y="64" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#4A5E35">Remove hate speech,</text>
+          <text x="421" y="78" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#4A5E35">child-harmful content,</text>
+          <text x="421" y="92" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#4A5E35">spam</text>
+
+          <rect x="526" y="42" width="174" height="72" rx="6" fill="#FCF0EB" stroke="#D97757" stroke-width="1.2"/>
+          <text x="613" y="64" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#8F3B1A">Remove coverage of</text>
+          <text x="613" y="78" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#8F3B1A">political events, historical</text>
+          <text x="613" y="92" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#8F3B1A">protests, dissent</text>
+
+          <!-- ── Layer 2: Preference learning ── -->
+          <rect x="20" y="130" width="300" height="72" rx="6" fill="#F5F4F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="170" y="152" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" font-weight="bold" fill="#141413">2. Preference learning (RLHF)</text>
+          <text x="170" y="168" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">During training</text>
+          <text x="170" y="186" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="#87867F">rate(response_A, response_B) → train toward A</text>
+
+          <rect x="332" y="130" width="178" height="72" rx="6" fill="#EEF3EA" stroke="#788C5D" stroke-width="1.2"/>
+          <text x="421" y="152" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#4A5E35">Prefer honest, helpful,</text>
+          <text x="421" y="166" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#4A5E35">harmless responses over</text>
+          <text x="421" y="180" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#4A5E35">dangerous ones</text>
+
+          <rect x="526" y="130" width="174" height="72" rx="6" fill="#FCF0EB" stroke="#D97757" stroke-width="1.2"/>
+          <text x="613" y="152" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#8F3B1A">Prefer refusal or deflection</text>
+          <text x="613" y="166" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#8F3B1A">for politically sensitive</text>
+          <text x="613" y="180" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#8F3B1A">topics</text>
+
+          <!-- ── Layer 3: Inference filtering ── -->
+          <rect x="20" y="218" width="300" height="72" rx="6" fill="#F5F4F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="170" y="240" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" font-weight="bold" fill="#141413">3. Inference filtering</text>
+          <text x="170" y="256" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">At deployment, per request</text>
+          <text x="170" y="274" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="#87867F">if classify(output) = blocked → redirect</text>
+
+          <rect x="332" y="218" width="178" height="72" rx="6" fill="#EEF3EA" stroke="#788C5D" stroke-width="1.2"/>
+          <text x="421" y="240" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#4A5E35">Block instructions for</text>
+          <text x="421" y="254" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#4A5E35">weapons synthesis,</text>
+          <text x="421" y="268" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#4A5E35">CSAM, violent threats</text>
+
+          <rect x="526" y="218" width="174" height="72" rx="6" fill="#FCF0EB" stroke="#D97757" stroke-width="1.2"/>
+          <text x="613" y="240" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#8F3B1A">Block any topic via hidden</text>
+          <text x="613" y="254" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#8F3B1A">system prompt — silently,</text>
+          <text x="613" y="268" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#8F3B1A">without user visibility</text>
+
+          <!-- Same arrow between the two right columns -->
+          <text x="510" y="88" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">same</text>
+          <text x="510" y="98" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">mechanism</text>
+          <line x1="510" y1="78" x2="510" y2="108" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+          <text x="510" y="176" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">same</text>
+          <text x="510" y="186" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">mechanism</text>
+          <line x1="510" y1="166" x2="510" y2="196" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+          <text x="510" y="264" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">same</text>
+          <text x="510" y="274" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">mechanism</text>
+          <line x1="510" y1="254" x2="510" y2="284" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+          <!-- Footer note -->
+          <text x="360" y="322" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">The classifier that flags harmful content cannot distinguish motive. The model learns the pattern, not the reason.</text>
+        </svg>
+        <figcaption>All three alignment layers share the same technical mechanism. The column on the right shows the same tooling applied to purposes that have nothing to do with safety — making them indistinguishable from the outside.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>The creator of Claude Code released <strong>/checkup</strong> this week — a new skill that cleans up your Claude Code setup in one command: it deduplicates CLAUDE.md files, removes unused skills and plugins, turns off slow hooks, pre-approves common read-only commands, and updates to the latest version. If you use Claude Code daily, this is the kind of maintenance that used to take an hour. <a href="https://x.com/bcherny/status/2074997570317779038">Thread</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The week that ICML 2026 closed in Seoul circled back, in the end, to a single uncomfortable question: what does infrastructure do when it is used by people with different intentions than the people who built it? Cloudflare's new crawler categories give publishers the ability to distinguish between an AI that is browsing on a user's behalf and one that is collecting text to train a future model — a distinction that will shape how open the web remains to training. Ball and Hackemann's paper makes a complementary point from the inside: the methods we have built to shape what AI models say are not anchored to any particular notion of what they should say. They are general-purpose content-control machinery. The research community built them carefully, with good intentions, and has deployed them widely. The question the paper puts on the table — politely but precisely — is whether the field has been rigorous enough about the full range of things they can do.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://blog.cloudflare.com/content-independence-day-ai-options/">Cloudflare blog</a> ·
+        <a href="https://developers.cloudflare.com/changelog/post/2026-07-01-ai-traffic-options/">Cloudflare changelog</a> ·
+        <a href="https://quasa.io/media/cloudflare-gives-website-owners-granular-control-over-ai-crawlers-search-agents-and-training-now-separately-managed">Quasa coverage</a> ·
+        <a href="https://icml.cc/virtual/2026/oral/71119">ICML 2026 oral 71119</a> ·
+        <a href="https://blog.icml.cc/2026/07/05/announcing-the-icml-2026-awards/">ICML 2026 Awards</a> ·
+        <a href="https://mcml.ai/news/2026-07-08-ball-award-best-paper-icml/">MCML announcement</a> ·
+        <a href="https://icml.cc/">ICML 2026</a> ·
+        <a href="https://aifront-page.com/icml-2026-awards-outstanding-papers/">AI Front Page awards coverage</a> ·
+        <a href="https://x.com/bcherny/status/2074997570317779038">Boris Cherny / checkup</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Alignment</div>
+        <div>The field of research aimed at making AI systems behave in ways humans actually intend. If you tell an AI to be helpful, it might decide the most "helpful" thing is to give you what you want to hear rather than what is true — that is an alignment failure. The word covers a wide range of techniques: training with human feedback, writing principles the model self-evaluates against, and testing for unexpected behaviour. The uncomfortable finding this week is that these same techniques can be used to align a model with someone <em>else's</em> agenda.</div>
+      </div>
+      <dl>
+        <dt>RLHF</dt><dd>Reinforcement Learning from Human Feedback. A training method where human raters compare pairs of AI responses and pick a preferred one; the model trains toward whatever style raters approve. Widely used, widely praised — and, as this week's paper points out, neutral about what "preferred" means.</dd>
+        <dt>Inference filtering</dt><dd>A content check that runs at the exact moment of output, after the model has already generated text. It can silently block or redirect a response based on rules the user cannot see. Often delivered via hidden system prompts.</dd>
+        <dt>Data curation</dt><dd>The set of decisions about what text goes into a training dataset. Seemingly technical; inherently editorial. What is excluded shapes what the model never learns.</dd>
+        <dt>Position paper</dt><dd>A research paper that argues a point of view or identifies a structural problem, rather than reporting experimental results. A recognised format at ML conferences — this week's award winner is one.</dd>
+        <dt>Constitutional AI</dt><dd>Anthropic's alignment approach: the model is given a written list of principles and trained to critique and revise its own outputs against them. Instead of relying solely on human raters, the model partly grades itself.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

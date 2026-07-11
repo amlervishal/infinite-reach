@@ -1,5 +1,12 @@
 [
   {
+    "num": 43,
+    "date": "2026-07-11",
+    "slug": "issues/2026-07-11.html",
+    "title": "The structure of safety",
+    "blurb": "As ICML 2026 closes in Seoul, its best position paper award goes to a finding that unsettles the field: the tools built to make AI models safe and the tools needed to make them censored are technically the same thing."
+  },
+  {
     "num": 42,
     "date": "2026-07-10",
     "slug": "issues/2026-07-10.html",
