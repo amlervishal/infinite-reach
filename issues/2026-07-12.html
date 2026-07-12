@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №44 — The still point · Infinite Reach</title>
+  <meta name="description" content="Google replaced its ten blue links with AI-generated summaries this week; OpenAI folded its coding agent into the main ChatGPT app; and a paper from ETH Zürich shows that a model looping until its answers stop changing can outperform rivals twice its size." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №44 &middot; Sunday, July 12, 2026</p>
+      <h1>The still point</h1>
+      <p>Google erased the ten blue links this week, replacing them with AI-generated answers across every search on the planet. OpenAI folded its coding agent into the main ChatGPT product, collapsing a separate tool into a single conversation. And a paper published last month shows there may be a smarter way to train models: instead of adding more depth, loop until the answer stops changing — then stop.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>As of July 10, Google Search no longer shows the familiar ranked list of links for most queries. Gemini-generated summaries now fill the screen instead, with source links embedded inside the AI-written answer rather than listed beneath it. The company made Gemini 3 the default model for these AI Overviews globally on July 1, two weeks after its AI Mode — a full conversational Search interface — rolled out for free to every user in testing. This is not a trial: it is the permanent default. The list of ten blue links, invented in 1998, is no longer the primary interface between people and the web. What that means for the millions of publishers, news organisations, and small businesses whose traffic lives and dies by appearing in those results is the subject of an increasingly frantic industry conversation. Clarity has not arrived yet, but the change has.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">OpenAI</span><span>ChatGPT Work launched July 9: OpenAI merged Codex — its standalone coding agent — into the main ChatGPT desktop app, adding an agentic productivity layer to every plan. It can break a multi-hour project into steps and return a finished document, spreadsheet, or web app when it's done. The Atlas browser app is being sunset as part of the consolidation. <a href="https://www.techtimes.com/articles/320087/20260710/chatgpt-work-free-every-plan-what-openais-codex-merger-changes-you.htm">techtimes.com</a></span></li>
+        <li><span class="tag money">Funding</span><span>SambaNova closed a $1 billion Series F at an $11 billion valuation on July 8, led by General Atlantic with BlackRock, T. Rowe Price, Qatar Investment Authority, and Intel Capital. The company builds custom inference chips it says deliver more than three times the throughput of Nvidia's B200. JPMorgan Chase signed as an on-premises deployment partner for secure AI workloads. <a href="https://techcrunch.com/2026/07/08/sambanova-draws-1b-at-11b-valuation-in-series-f-first-close/">techcrunch.com</a></span></li>
+        <li><span class="tag money">Markets</span><span>Nvidia's market cap crossed back above $5 trillion on Friday, July 10, as semiconductor stocks broadly outperformed AI software companies for the week. Nvidia has now touched the $5 trillion mark twice this year and briefly surpassed it; hyperscaler infrastructure spending commitments above $650 billion for 2026 continue to underpin demand for its GPUs. <a href="https://intellectia.ai/blog/nvidia-5-trillion-market-cap-ai-chip-demand-2026">intellectia.ai</a></span></li>
+        <li><span class="tag tech">Coming soon</span><span>Gemini 3.5 Pro — Google DeepMind's next flagship model — is reported to be targeting general availability on July 17, according to a launch plan that circulated on July 10. No official announcement yet, but it would likely become the default reasoning model inside Google's AI Overviews and AI Mode. <a href="https://releasebot.io/updates/google/gemini">releasebot.io</a></span></li>
+        <li><span class="tag policy">Startups</span><span>Y Combinator's Summer 2026 batch is underway — July through September in San Francisco, $500k per company — with CEO Garry Tan personally writing the agriculture category in the Requests for Startups list: "The company that cuts pesticide use by 90% while helping farmers grow more food is a generational company, not just a good business." <a href="https://www.thevccorner.com/p/yc-summer-2026-requests-for-startups-ideas">thevccorner.com</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: when a model loops until it stops changing its mind</h2>
+      <p class="kicker">Fixed-Point Reasoners: Stable and Adaptive Deep Looped Transformers &middot; Sajad Movahedi, Vera Milovanović, Shlomo Libo Feigin, Alexander Theus, Thomas Hofmann, Valentina Boeva, T. Konstantin Rusch &amp; Antonio Orvieto &middot; <a href="https://arxiv.org/abs/2606.18206">arxiv:2606.18206</a></p>
+      <p>The last two weeks of Infinite Reach have spent a lot of time on how AI models think during deployment — how long they reason, what they optimize. This paper from ETH Zürich and collaborators approaches the question from the other direction: what if the model itself decided when it had thought enough, based on a simple mathematical fact rather than a token budget?</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>The AI models behind every major assistant are built from stacked <em>layers</em> — numbered transformations that process an input in sequence. More layers generally means more reasoning capacity, which is why frontier models now run at 96 or 128 layers deep. But depth is expensive: you need more memory to store all those layers, more compute to run them, and more care to train them. A signal that tells the model "here is how wrong you were — please correct yourself" has to travel backward through every single layer. In very deep models, this signal can fade or distort before it reaches the bottom, making training unreliable — a problem researchers call <em>signal propagation</em>.</p>
+
+      <p>One cheaper alternative is <strong>looping</strong>: build a shorter block of, say, 12 layers and run it multiple times in sequence, rather than stacking 96 distinct layers. You get equivalent effective depth at a fraction of the storage cost. The problem is that looping makes the signal-propagation issue worse, not better. Every iteration of the loop is like adding another floor to a building, and by the time the training gradient tries to climb back down from the top, it has often gone missing. Earlier looped models worked around this either by stopping the loop early — sacrificing the depth they set out to achieve — or by hand-tuning each iteration's contribution, which is finicky and doesn't generalise well.</p>
+
+      <p>And there is a deeper question that looped models must answer: <em>when do you stop?</em> In a standard deep model, the answer is built-in — you run all 96 layers and you're done. In a looped model, you could theoretically keep iterating forever. You need a principled stopping rule.</p>
+
+      <h3>How it works</h3>
+      <p>The paper's central idea borrows from a piece of pure mathematics called <em>fixed-point theory</em>. A fixed point is any value that doesn't change when you apply a function to it: if you run it through the process and get the same thing back, you've found it. The canonical example: repeatedly press the cosine button on a calculator starting from any number. The value will settle toward roughly 0.739 — and once it does, pressing cosine again gives 0.739 again. That's the fixed point.</p>
+
+      <p>FPRM (Fixed-Point Reasoning Model) does the same thing inside the network. After each loop iteration, it measures whether the model's internal representation — its current "understanding" of the problem — has meaningfully changed from the previous loop. When two consecutive loops produce the same internal state, the model concludes that another iteration won't help, and it outputs its answer. The model has, in a real mathematical sense, converged. It knows when to stop thinking because the thinking has stopped producing new thought.</p>
+
+      <p>Two design choices make this work in practice. First, the team places <em>pre-norm</em> layers (a normalisation step applied <em>before</em> each sublayer, not after) throughout the block. This keeps the internal representations in a well-behaved range at every depth, so the training signal doesn't fade. Second, they add learnable <strong>residual scaling</strong> — small, trainable multipliers on each skip connection, tuned separately per layer and per loop iteration. These multipliers let the model modulate how much each loop contributes to the evolving representation, which prevents the runaway amplification that previously destabilised looped architectures.</p>
+
+      <p>The result is a model that allocates compute to the problem it actually has. A simple puzzle gets 8 loops; a hard one might trigger 24. No token budget is set by the engineer — the math sets it.</p>
+
+      <h3>What they actually did</h3>
+      <p>The authors trained FPRM at 7 million parameters — very small; roughly the weight of a long essay in compressed bytes. They compared it against a standard one-pass transformer of the same size, two other looped designs (TRM and a fixed-depth variant), and URM, a stronger baseline with approximately 14 million parameters — twice as large.</p>
+
+      <p>Benchmarks: <strong>Sudoku-Extreme</strong> (hardest tier of the number puzzle), <strong>Maze-Hard</strong> (pathfinding in dense grids), <strong>state-tracking</strong> (tracing where objects end up after a sequence of moves described in text), and two versions of <strong>ARC-AGI</strong> (pattern-recognition puzzles that humans can solve instantly but most AI models fail systematically).</p>
+
+      <h3>What they found</h3>
+      <p>On Sudoku-Extreme and Maze-Hard, FPRM at 7M parameters beat every other model at its size class — and also beat URM, the 14M-parameter baseline. On ARC-1, it again set a new best at its size. The adaptive looping was measurable and meaningful: harder puzzle instances triggered more iterations; easier ones terminated sooner. The model was, genuinely, deciding when it had done enough work.</p>
+
+      <p>ARC-2 was different. There FPRM kept pace with TRM but fell behind URM. The authors observe that ARC-2 appears unusually sensitive to raw parameter count, more so than the other benchmarks. Fixed-point looping helps, but it isn't a substitute for scale when scale is what the task demands.</p>
+
+      <h3>The catch</h3>
+      <p>Everything here is 7 million parameters. Production language models run at 7 billion, 70 billion, or more. Scaling looped architectures to that regime is a known research challenge with no proven solution yet. Fixed-point convergence might behave differently — or not at all — at scale. This paper proves the idea works cleanly in a small, controlled setting. It does not tell us that GPT or Claude should be rebuilt as looped models. That translation remains future work.</p>
+
+      <p><strong>If you remember one thing:</strong> A model that loops the same layers until its answer stabilises can beat a model twice its size — because it's allocating compute to the difficulty of the task rather than burning a fixed budget regardless of what it's working on.</p>
+
+      <!-- SVG: the looping and convergence idea -->
+      <figure>
+        <svg viewBox="0 0 720 230" role="img" aria-label="Diagram showing how FPRM loops the same block of layers and halts when the output converges to a fixed point">
+          <defs>
+            <marker id="arr44" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#141413" />
+            </marker>
+          </defs>
+
+          <!-- Input box -->
+          <rect x="10" y="90" width="76" height="48" rx="7" fill="#6A8CAF" />
+          <text x="48" y="111" font-family="ui-serif" font-size="13" fill="white" text-anchor="middle" font-weight="bold">Problem</text>
+          <text x="48" y="128" font-family="system-ui" font-size="10" fill="rgba(255,255,255,0.85)" text-anchor="middle">(e.g. Sudoku)</text>
+
+          <!-- Arrow -->
+          <line x1="86" y1="114" x2="108" y2="114" stroke="#141413" stroke-width="1.5" marker-end="url(#arr44)" />
+
+          <!-- Loop 1 -->
+          <rect x="110" y="82" width="88" height="64" rx="7" fill="#D97757" />
+          <text x="154" y="107" font-family="ui-serif" font-size="12" fill="white" text-anchor="middle" font-weight="bold">Loop 1</text>
+          <text x="154" y="123" font-family="system-ui" font-size="10" fill="rgba(255,255,255,0.85)" text-anchor="middle">state = A</text>
+          <text x="154" y="138" font-family="system-ui" font-size="9" fill="rgba(255,255,255,0.7)" text-anchor="middle">changed ↑</text>
+
+          <line x1="198" y1="114" x2="218" y2="114" stroke="#141413" stroke-width="1.5" marker-end="url(#arr44)" />
+
+          <!-- Loop 2 -->
+          <rect x="220" y="82" width="88" height="64" rx="7" fill="#D97757" />
+          <text x="264" y="107" font-family="ui-serif" font-size="12" fill="white" text-anchor="middle" font-weight="bold">Loop 2</text>
+          <text x="264" y="123" font-family="system-ui" font-size="10" fill="rgba(255,255,255,0.85)" text-anchor="middle">state = B</text>
+          <text x="264" y="138" font-family="system-ui" font-size="9" fill="rgba(255,255,255,0.7)" text-anchor="middle">changed ↑</text>
+
+          <line x1="308" y1="114" x2="328" y2="114" stroke="#141413" stroke-width="1.5" marker-end="url(#arr44)" />
+
+          <!-- Loop 3 -->
+          <rect x="330" y="82" width="88" height="64" rx="7" fill="#D97757" opacity="0.8"/>
+          <text x="374" y="107" font-family="ui-serif" font-size="12" fill="white" text-anchor="middle" font-weight="bold">Loop 3</text>
+          <text x="374" y="123" font-family="system-ui" font-size="10" fill="rgba(255,255,255,0.85)" text-anchor="middle">state ≈ B</text>
+          <text x="374" y="138" font-family="system-ui" font-size="9" fill="rgba(255,255,255,0.7)" text-anchor="middle">almost same</text>
+
+          <!-- Dots -->
+          <text x="445" y="120" font-family="system-ui" font-size="22" fill="#87867F" text-anchor="middle">…</text>
+
+          <line x1="462" y1="114" x2="482" y2="114" stroke="#141413" stroke-width="1.5" marker-end="url(#arr44)" />
+
+          <!-- Fixed point box (converged, green) -->
+          <rect x="484" y="75" width="100" height="78" rx="7" fill="#788C5D" />
+          <text x="534" y="100" font-family="ui-serif" font-size="12" fill="white" text-anchor="middle" font-weight="bold">Loop N</text>
+          <text x="534" y="117" font-family="system-ui" font-size="10" fill="rgba(255,255,255,0.9)" text-anchor="middle">state = state</text>
+          <text x="534" y="133" font-family="system-ui" font-size="10" fill="rgba(255,255,255,0.95)" text-anchor="middle" font-weight="bold">Fixed point ✓</text>
+          <text x="534" y="146" font-family="system-ui" font-size="9" fill="rgba(255,255,255,0.8)" text-anchor="middle">→ STOP</text>
+
+          <line x1="584" y1="114" x2="604" y2="114" stroke="#141413" stroke-width="1.5" marker-end="url(#arr44)" />
+
+          <!-- Output box -->
+          <rect x="606" y="90" width="76" height="48" rx="7" fill="#6A8CAF" />
+          <text x="644" y="113" font-family="ui-serif" font-size="12" fill="white" text-anchor="middle" font-weight="bold">Answer</text>
+          <text x="644" y="130" font-family="system-ui" font-size="10" fill="rgba(255,255,255,0.85)" text-anchor="middle">output</text>
+
+          <!-- Shared-layers note -->
+          <text x="360" y="172" font-family="ui-serif" font-size="11" fill="#87867F" text-anchor="middle">Same 12 layers reused every loop — model stops when two consecutive states match.</text>
+
+          <!-- Bracket under clay boxes -->
+          <line x1="110" y1="158" x2="418" y2="158" stroke="#D1CFC5" stroke-width="1" />
+          <line x1="110" y1="154" x2="110" y2="158" stroke="#D1CFC5" stroke-width="1" />
+          <line x1="418" y1="154" x2="418" y2="158" stroke="#D1CFC5" stroke-width="1" />
+          <text x="264" y="190" font-family="system-ui" font-size="10" fill="#D97757" text-anchor="middle">state is still changing — keep looping</text>
+
+          <!-- Bracket under green box -->
+          <line x1="484" y1="165" x2="584" y2="165" stroke="#D1CFC5" stroke-width="1" />
+          <line x1="484" y1="161" x2="484" y2="165" stroke="#D1CFC5" stroke-width="1" />
+          <line x1="584" y1="161" x2="584" y2="165" stroke="#D1CFC5" stroke-width="1" />
+          <text x="534" y="190" font-family="system-ui" font-size="10" fill="#788C5D" text-anchor="middle">converged — done</text>
+        </svg>
+        <figcaption>FPRM reuses the same 12-layer block on every iteration, checking after each loop whether the internal state has changed. When two consecutive loops produce the same representation — a mathematical fixed point — the model halts and outputs its answer. Harder problems trigger more loops automatically; easier ones terminate sooner.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy's <strong>nanochat</strong> repository — a full-stack, from-scratch ChatGPT training pipeline in a single hackable file — was updated on July 4 and now sits at over 48,000 GitHub stars. The leaderboard shows a depth-26 model hitting a 2.91-hour speedrun time as of March. Karpathy joined Anthropic in May to lead a pre-training research team, which may explain why his public commits have slowed — the real work is internal now. <a href="https://github.com/karpathy/nanochat">github.com/karpathy/nanochat</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three things converged this week, and it's worth noticing the pattern. Google Search stopped giving you a list of options and started just answering. OpenAI stopped offering a separate coding tool and folded it into the main conversation. And a research paper showed that a model which loops its own reasoning until the answer stabilises outperforms a model that doesn't — because adaptive thinking is more efficient than fixed-budget thinking. The thread running through all three: systems that used to hand you a list of resources and say "good luck" are becoming systems that take the task the full way to a conclusion. Whether that's a convenience or a loss of legibility depends on what you're trying to do — and whether you trust the answer you're handed when there's no list to check it against.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://blog.google/products-and-platforms/products/search/ai-mode-ai-overviews-updates/">Google Blog — AI Mode &amp; AI Overviews</a> ·
+        <a href="https://releasebot.io/updates/google/gemini">Releasebot — Gemini updates</a> ·
+        <a href="https://www.techtimes.com/articles/320087/20260710/chatgpt-work-free-every-plan-what-openais-codex-merger-changes-you.htm">TechTimes — ChatGPT Work</a> ·
+        <a href="https://techbriefly.com/2026/07/10/chatgpt-work-gpt-5-6-productivity-app/">TechBriefly — ChatGPT Work launch</a> ·
+        <a href="https://techcrunch.com/2026/07/08/sambanova-draws-1b-at-11b-valuation-in-series-f-first-close/">TechCrunch — SambaNova Series F</a> ·
+        <a href="https://siliconangle.com/2026/07/08/inference-chip-startup-sambanova-valued-11b-1b-funding-round/">SiliconAngle — SambaNova</a> ·
+        <a href="https://intellectia.ai/blog/nvidia-5-trillion-market-cap-ai-chip-demand-2026">Intellectia — Nvidia $5T</a> ·
+        <a href="https://www.thevccorner.com/p/yc-summer-2026-requests-for-startups-ideas">The VC Corner — YC Summer 2026 RFS</a> ·
+        <a href="https://arxiv.org/abs/2606.18206">arXiv:2606.18206 — Fixed-Point Reasoners</a> ·
+        <a href="https://github.com/karpathy/nanochat">github.com/karpathy/nanochat</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Fixed point</div>
+        <div>In mathematics, a fixed point is an input to a function that maps to itself — put it in, get the same thing back out. The classic example: repeatedly pressing the cosine button on a calculator from any starting number. The value converges to roughly 0.739, and then pressing cosine again gives 0.739 again. That's the fixed point. In the FPRM paper, "fixed point" describes the moment when a model's internal representation stops changing between loops — its signal to stop thinking and give an answer.</div>
+      </div>
+      <dl>
+        <dt>Looped transformer</dt>
+        <dd>A neural network that runs the same block of layers multiple times in sequence, instead of stacking many distinct layers end to end. Cheaper to build; historically harder to train stably.</dd>
+        <dt>Signal propagation</dt>
+        <dd>Whether useful gradient information (the training signal that tells the model how to improve) travels cleanly all the way back through a deep network during training. When it doesn't — because the signal fades or explodes — the model can't learn effectively.</dd>
+        <dt>Pre-norm</dt>
+        <dd>A design choice in transformers where the normalisation step runs <em>before</em> each sublayer rather than after. Helps keep internal values in a stable range across many layers or loops, which in turn helps the training signal propagate.</dd>
+        <dt>Inference chip</dt>
+        <dd>A processor optimised for <em>running</em> a trained model to produce responses, rather than training it in the first place. Training and inference have different computational profiles; SambaNova's chips are aimed at the inference side.</dd>
+        <dt>ARC-AGI</dt>
+        <dd>The Abstraction and Reasoning Corpus — a benchmark of visual pattern puzzles that humans can solve at a glance but that most AI models fail on. Used as a test of general reasoning rather than learned pattern recognition. ARC-1 is the original; ARC-2 is a harder follow-up.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

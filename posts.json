@@ -1,5 +1,12 @@
 [
   {
+    "num": 44,
+    "date": "2026-07-12",
+    "slug": "issues/2026-07-12.html",
+    "title": "The still point",
+    "blurb": "Google replaced its ten blue links with AI-generated summaries this week; OpenAI folded its coding agent into the main ChatGPT app; and a paper from ETH Zürich shows that a model looping until its answers stop changing can outperform rivals twice its size."
+  },
+  {
     "num": 43,
     "date": "2026-07-11",
     "slug": "issues/2026-07-11.html",
