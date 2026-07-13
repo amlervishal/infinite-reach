@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №45 — What they brought with them · Infinite Reach</title>
+  <meta name="description" content="Apple's lawsuit against OpenAI turns on a question every industry now faces: when your best engineers walk out the door, what goes with them? Plus: the fastest language model that doesn't sacrifice quality, and NVIDIA's trick for 2.4x speed without rebuilding anything." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №45 &middot; Sunday, July 13, 2026</p>
+      <h1>What they brought with them</h1>
+      <p>Apple filed the most dramatic corporate lawsuit in years against its former partner OpenAI, claiming that engineers carried hardware secrets out the door — sometimes literally, on Apple-issued laptops they forgot to return. Meanwhile NVIDIA published a paper showing you can make an existing AI model 2.4 times faster without retraining it from scratch, and China's GLM-5.2 is outpacing some US models at a sixth of the price.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Apple sued OpenAI in Northern California federal court on July 11, alleging a systematic campaign to extract its hardware trade secrets through employee departures. The complaint is striking in its specificity. It names more than 400 former Apple engineers now working at OpenAI and Jony Ive's io Products, the design firm partnering with OpenAI to build consumer AI hardware. Most pointedly, Apple claims that OpenAI's hardware chief — a former Apple vice president named Tang Tan — directed job candidates still employed at Apple to bring "actual parts" from Cupertino to their interviews for "show and tell" sessions. Another former employee allegedly failed to return an Apple-issued laptop and used it to download confidential technical documents after accepting an offer from OpenAI. The two companies struck a high-profile partnership in 2024 to bring ChatGPT into iOS. That arrangement now looks like prologue to an acrimonious split. OpenAI said it has "no interest in other companies' trade secrets."</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Models</span><span>OpenAI's GPT-5.6 family — Sol, Terra, and Luna — reached general availability on July 9. Sol (the flagship, $5/$30 per million tokens) coordinates fleets of parallel agents via a new "ultra" mode and scores 53.6 on the Agents' Last Exam benchmark, 13 points above Claude Fable 5. Luna starts at $1 input. <a href="https://openai.com/index/gpt-5-6/">openai.com</a></span></li>
+        <li><span class="tag tech">Open weights</span><span>Z.ai's GLM-5.2 — a Chinese model with 744 billion total parameters but MIT licensing and a price of roughly $1.40/$4.40 per million tokens — trails Anthropic's Opus 4.8 on long coding tasks by just 1%, while costing about a sixth as much. It now sits fifth on the Artificial Analysis intelligence leaderboard. <a href="https://www.euronews.com/next/2026/07/03/what-is-glm-52-the-new-chinese-ai-model-thats-rivalling-anthropic">euronews.com</a></span></li>
+        <li><span class="tag policy">Chips</span><span>Reuters reported July 7 that DeepSeek is quietly designing its own inference chip, aiming to cut its dependence on NVIDIA hardware that US export controls may soon restrict. The project is still in the hiring and partnership stage, with no foundry or prototype named yet. <a href="https://www.usnews.com/news/top-news/articles/2026-07-07/exclusive-chinas-deepseek-developing-its-own-ai-chip-sources-say">usnews.com</a></span></li>
+        <li><span class="tag tech">Verification</span><span>Mistral released Leanstral 1.5, a 119-billion-parameter open model (Apache 2.0) purpose-built for Lean 4, the proof assistant used in formal software verification. It found five previously unknown bugs while testing 57 open-source repositories. Free during beta; weights on Hugging Face. <a href="https://mistral.ai/news/leanstral-1-5/">mistral.ai</a></span></li>
+        <li><span class="tag tech">Tooling</span><span>Boris Cherny, the creator of Claude Code at Anthropic, shipped Plugins: packaged bundles of agents, slash commands, MCP server configurations, and hooks that can be shared and installed in one step. Designed to make the tool far easier to customise and distribute within teams. <a href="https://x.com/bcherny">x.com/bcherny</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: how to make a language model 2.4× faster without rebuilding it</h2>
+      <p class="kicker">Nemotron-Labs-TwoTower: Diffusion Language Modeling with Pretrained Autoregressive Context &middot; NVIDIA Research &middot; <a href="https://arxiv.org/abs/2606.26493">arxiv:2606.26493</a></p>
+
+      <p>Every time you ask a language model a question, it writes the answer one word at a time — the same way you might type a message, character by character, committed left to right. NVIDIA researchers have found a way to keep that careful, contextual understanding while dramatically accelerating the actual writing part. The trick: recruit a second model to do the output work in parallel, like adding a fast-drafting assistant who can fill in whole paragraphs at once while the expert editor holds the context.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>The dominant design for language models is called <em>autoregressive</em> — AR for short. It works by predicting the next token (roughly one word or word-fragment) given every token that came before. That sequential constraint is what lets models maintain a coherent thread over long conversations: each new word is conditioned on all of its predecessors. The downside is that it's irreducibly serial. Token 100 cannot be written until token 99 is committed. On hardware that can handle thousands of arithmetic operations in parallel, generating text this way leaves most of that capacity idle.</p>
+
+      <p>A different approach, borrowed from image generation, is called <em>diffusion</em>. Instead of writing left to right, a diffusion model starts with a block of random noise — scrambled, meaningless tokens — and runs a denoising process over the whole block simultaneously, gradually refining it toward coherent text. Because it touches every position at once, it is much faster. The historical problem: diffusion language models have always struggled to track narrative context the way AR models do. They tend to lose the thread of what was said before, which matters enormously in a conversation.</p>
+
+      <h3>How it works</h3>
+      <p>TwoTower's core idea is to stop treating speed and context-awareness as a trade-off and instead give each job to a specialist. Picture a research team producing a report. The senior analyst has read every previous document and holds the institutional memory — but they write slowly and deliberately. The junior drafter works fast, filling in whole sections simultaneously — but needs constant guidance to stay on topic. TwoTower splits the model into exactly this pair.</p>
+
+      <p>The first tower is the <strong>context tower</strong>: a standard AR model (NVIDIA's existing Nemotron-3-Nano-30B-A3B backbone) that reads the conversation causally and produces a rich representation of what has been said. Crucially, this tower is <em>frozen</em> — it learns nothing new during the TwoTower training phase. It simply does what it already knows how to do: understand context.</p>
+
+      <p>The second tower is the <strong>diffusion denoiser tower</strong>: a new component trained from scratch to generate output tokens in parallel. It receives a block of noisy, scrambled tokens as input and, through a process called <em>cross-attention</em>, repeatedly consults the frozen context tower to stay anchored to the conversation. Each round of refinement clears a little more noise, until the block resolves into fluent text. Because all positions in the output block are refined at the same time, the denoiser can generate a full passage in far fewer sequential steps than an AR model requires.</p>
+
+      <p>The training cost is modest by the standards of frontier AI: only the denoiser tower is trained, on roughly 2.1 trillion tokens — a fraction of the 25 trillion tokens the underlying backbone had absorbed over its lifetime. The frozen context tower costs nothing to re-train; it just gets wired into the new architecture.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team built TwoTower on Nemotron-3-Nano-30B-A3B, a hybrid open model with 30 billion total parameters but only about 3 billion active per token (thanks to a mixture-of-experts design that routes each token to a relevant subset of the model). The combined TwoTower checkpoint — both towers — weighs roughly 60 billion parameters in total. They measured quality across standard language benchmarks and measured <em>throughput</em> — how many tokens per second the system generates in practice — on real hardware.</p>
+
+      <h3>What they found</h3>
+      <p>The speed gain is real and substantial: TwoTower generates text 2.42 times faster than the baseline AR model at equivalent context lengths, measured wall-clock on hardware. Quality is nearly entirely preserved: aggregate benchmark scores come in at 98.7% of the original baseline — a loss of 1.3 percentage points in exchange for a 2.4× speed increase. For most practical applications, that is an easy trade to accept. The model ships as open weights under the NVIDIA Nemotron Open Model License, meaning anyone can download and run it.</p>
+
+      <p>The results are especially notable because they were achieved without retraining the backbone at all. A frozen AR model, combined with a newly trained diffusion denoiser, delivers nearly the same outputs — faster.</p>
+
+      <!-- SVG figure: AR sequential vs TwoTower parallel -->
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Comparison of standard autoregressive generation (sequential tokens) versus TwoTower (frozen context tower plus parallel diffusion denoiser)" xmlns="http://www.w3.org/2000/svg">
+          <!-- Background panels -->
+          <rect x="10" y="10" width="330" height="290" rx="8" fill="none" stroke="#D1CFC5" stroke-width="1.5"/>
+          <rect x="380" y="10" width="330" height="290" rx="8" fill="none" stroke="#D1CFC5" stroke-width="1.5"/>
+
+          <!-- Labels -->
+          <text x="175" y="36" text-anchor="middle" font-family="ui-serif,serif" font-size="13" fill="#141413" font-weight="600">Standard (autoregressive)</text>
+          <text x="545" y="36" text-anchor="middle" font-family="ui-serif,serif" font-size="13" fill="#141413" font-weight="600">TwoTower</text>
+
+          <!-- === LEFT SIDE: Standard AR === -->
+          <!-- Input box -->
+          <rect x="105" y="50" width="140" height="32" rx="5" fill="#6A8CAF"/>
+          <text x="175" y="71" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#fff">Prior conversation</text>
+          <!-- Arrow -->
+          <line x1="175" y1="82" x2="175" y2="100" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Model box -->
+          <rect x="105" y="100" width="140" height="32" rx="5" fill="#788C5D"/>
+          <text x="175" y="121" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#fff">AR model layers</text>
+          <!-- Arrow -->
+          <line x1="175" y1="132" x2="175" y2="150" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Sequential tokens -->
+          <rect x="30"  y="150" width="56" height="26" rx="4" fill="#D97757" opacity="0.85"/>
+          <text x="58"  y="168" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#fff">word 1</text>
+          <line x1="86"  y1="163" x2="104" y2="163" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <rect x="104" y="150" width="56" height="26" rx="4" fill="#D97757" opacity="0.70"/>
+          <text x="132" y="168" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#fff">word 2</text>
+          <line x1="160" y1="163" x2="178" y2="163" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <rect x="178" y="150" width="56" height="26" rx="4" fill="#D97757" opacity="0.55"/>
+          <text x="206" y="168" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#fff">word 3</text>
+          <line x1="234" y1="163" x2="252" y2="163" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <rect x="252" y="150" width="56" height="26" rx="4" fill="#D97757" opacity="0.40"/>
+          <text x="280" y="168" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#fff">word 4</text>
+
+          <!-- Sequential label -->
+          <text x="175" y="205" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">one token at a time ←→</text>
+          <text x="175" y="220" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">speed limited by chain length</text>
+
+          <!-- Speed badge -->
+          <rect x="118" y="248" width="114" height="24" rx="12" fill="#D1CFC5"/>
+          <text x="175" y="264" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413" font-weight="600">1× baseline speed</text>
+
+          <!-- === RIGHT SIDE: TwoTower === -->
+          <!-- Input box -->
+          <rect x="475" y="50" width="140" height="32" rx="5" fill="#6A8CAF"/>
+          <text x="545" y="71" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#fff">Prior conversation</text>
+          <!-- Arrow -->
+          <line x1="545" y1="82" x2="545" y2="100" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Context tower (frozen) -->
+          <rect x="449" y="100" width="192" height="32" rx="5" fill="#6A8CAF"/>
+          <text x="545" y="116" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" fill="#fff" font-weight="600">Context Tower</text>
+          <text x="545" y="128" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#dce9f5">(frozen — learns nothing new)</text>
+          <!-- Cross-attention arrow -->
+          <line x1="545" y1="132" x2="545" y2="152" stroke="#87867F" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+          <text x="610" y="146" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">cross-attention</text>
+          <!-- Denoiser tower -->
+          <rect x="449" y="152" width="192" height="32" rx="5" fill="#788C5D"/>
+          <text x="545" y="168" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" fill="#fff" font-weight="600">Diffusion Denoiser Tower</text>
+          <text x="545" y="180" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#d4e3d0">(trained; refines noisy block)</text>
+          <!-- Parallel output arrows -->
+          <line x1="465" y1="184" x2="413" y2="208" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="497" y1="184" x2="480" y2="208" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="545" y1="184" x2="545" y2="208" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="593" y1="184" x2="610" y2="208" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="625" y1="184" x2="677" y2="208" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Parallel output tokens -->
+          <rect x="387" y="208" width="52" height="26" rx="4" fill="#D97757"/>
+          <text x="413" y="226" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#fff">word 1</text>
+          <rect x="454" y="208" width="52" height="26" rx="4" fill="#D97757"/>
+          <text x="480" y="226" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#fff">word 2</text>
+          <rect x="519" y="208" width="52" height="26" rx="4" fill="#D97757"/>
+          <text x="545" y="226" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#fff">word 3</text>
+          <rect x="584" y="208" width="52" height="26" rx="4" fill="#D97757"/>
+          <text x="610" y="226" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#fff">word 4</text>
+          <rect x="649" y="208" width="52" height="26" rx="4" fill="#D97757"/>
+          <text x="675" y="226" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#fff">word 5</text>
+
+          <!-- Parallel label -->
+          <text x="545" y="258" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">all tokens refined simultaneously</text>
+
+          <!-- Speed badge -->
+          <rect x="471" y="272" width="148" height="24" rx="12" fill="#D97757" opacity="0.9"/>
+          <text x="545" y="288" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#fff" font-weight="600">2.42× faster · 98.7% quality</text>
+
+          <!-- Arrow marker -->
+          <defs>
+            <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#87867F"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>Left: standard autoregressive generation produces tokens one at a time, each depending on the last. Right: TwoTower pairs a frozen context-reader with a new diffusion denoiser that outputs all tokens in a block simultaneously — 2.42× faster at 98.7% of the original quality.</figcaption>
+      </figure>
+
+      <h3>The catch</h3>
+      <p>The quality gap, though small in aggregate, is not evenly distributed. Diffusion models are still noticeably weaker on tasks requiring strict step-by-step logical chaining — multi-step mathematics and formal reasoning — where the parallel generation process can fail to maintain tight sequential dependencies between tokens. The paper also characterises throughput primarily at a fixed context length and output block size; how the speedup holds across very long documents is not yet fully characterised. And the approach relies on having a strong frozen backbone to begin with: you cannot TwoTower your way past a weak foundation model.</p>
+
+      <p><strong>If you remember one thing:</strong> You don't have to choose between a model that understands context deeply and one that writes fast — TwoTower shows you can bolt the two together, keeping one frozen as the reader and training a new, faster writer alongside it.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>The creator of Claude Code at Anthropic shipped <strong>Plugins</strong> this week — a new packaging format that lets developers bundle agents, slash commands, MCP server configurations, and hooks into a single installable unit. Until now, sharing a complex Claude Code setup meant documenting and re-applying every piece manually. Worth watching for how it changes team workflows. <a href="https://x.com/bcherny">x.com/bcherny</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three stories from this week trace the same underlying shape: the geography of AI advantage is being actively redrawn. Apple's lawsuit against OpenAI is, at its core, about the porousness of expertise — that the most valuable thing a company can have is often not its patents or its infrastructure but the tacit knowledge inside its people's heads, and that knowledge moves when people do. China's GLM-5.2 and DeepSeek's chip project both signal that the assumption of sustained US dominance in AI is being challenged not just in benchmarks but in the underlying hardware stack. And NVIDIA's TwoTower paper demonstrates a quieter kind of progress: not a bigger model, not more data, but a structural insight that makes what already exists meaningfully more practical. The raw capability race continues, but so does the race to deploy at lower cost, higher speed, and with less dependence on any single supplier. All three races matter.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.cnbc.com/2026/07/10/apple-openai-lawsuit-trade-secrets.html">CNBC — Apple sues OpenAI</a> ·
+        <a href="https://fortune.com/2026/07/10/apple-openai-lawsuit-trade-secrets-theft-allegations/">Fortune — Apple/io Products complaint</a> ·
+        <a href="https://openai.com/index/gpt-5-6/">OpenAI — GPT-5.6</a> ·
+        <a href="https://dataconomy.com/2026/07/10/openai-launches-gpt-5-6-with-sol-terra-and-luna-models/">Dataconomy — GPT-5.6 details</a> ·
+        <a href="https://www.euronews.com/next/2026/07/03/what-is-glm-52-the-new-chinese-ai-model-thats-rivalling-anthropic">Euronews — GLM-5.2</a> ·
+        <a href="https://www.usnews.com/news/top-news/articles/2026-07-07/exclusive-chinas-deepseek-developing-its-own-ai-chip-sources-say">US News — DeepSeek chip</a> ·
+        <a href="https://mistral.ai/news/leanstral-1-5/">Mistral — Leanstral 1.5</a> ·
+        <a href="https://arxiv.org/abs/2606.26493">arXiv:2606.26493 — TwoTower paper</a> ·
+        <a href="https://nvidianews.nvidia.com/news/nvidia-debuts-nemotron-3-family-of-open-models">NVIDIA Newsroom — Nemotron-3</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Diffusion</div>
+        <div>In image generation, diffusion models start with a picture of pure static and gradually clean it up until a coherent image emerges. Applied to language, the same idea works on text: start with a block of scrambled words and repeatedly refine them all at once until you get something that makes sense. The name comes from the physics of particles spreading out randomly — run that process backward and you get order from chaos.</div>
+      </div>
+      <dl>
+        <dt>Autoregressive (AR)</dt>
+        <dd>A model that generates one token at a time, each conditioned on all previous tokens. Every mainstream chat assistant works this way. Coherent but inherently sequential — you can't skip ahead.</dd>
+
+        <dt>Inference</dt>
+        <dd>The phase when a trained model is actually used: you give it a prompt, it produces a response. Distinct from <em>training</em> (when the model is learning from data). Inference is what happens billions of times a day; making it faster or cheaper is one of the biggest engineering challenges in the industry.</dd>
+
+        <dt>Trade secret</dt>
+        <dd>Confidential business information that gives a company a competitive edge and is actively protected from disclosure. Unlike a patent, a trade secret has no expiry and requires no registration — but it also loses legal protection the moment it becomes public, even accidentally.</dd>
+
+        <dt>Mixture of Experts (MoE)</dt>
+        <dd>An architecture where a model contains many specialist sub-networks ("experts") but only activates a small subset of them for any given token. GLM-5.2 has 744 billion total parameters but only 40 billion active per token. More capacity, lower cost per query.</dd>
+
+        <dt>Formal verification</dt>
+        <dd>Mathematically proving that a piece of software does exactly what it is supposed to do — not just testing it with examples, but proving it holds for all possible inputs. Lean 4 is a language designed for this kind of proof. Leanstral 1.5 is a model that can write these proofs automatically.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

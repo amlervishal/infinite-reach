@@ -1,5 +1,12 @@
 [
   {
+    "num": 45,
+    "date": "2026-07-13",
+    "slug": "issues/2026-07-13.html",
+    "title": "What they brought with them",
+    "blurb": "Apple's blockbuster lawsuit against OpenAI alleges 400+ engineers carried hardware secrets out the door; NVIDIA's TwoTower paper shows how to make a language model 2.4× faster without rebuilding it; and China's GLM-5.2 matches frontier US models at a sixth of the price."
+  },
+  {
     "num": 44,
     "date": "2026-07-12",
     "slug": "issues/2026-07-12.html",
