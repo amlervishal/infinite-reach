@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №46 — Signals from Shanghai · Infinite Reach</title>
+  <meta name="description" content="Xi Jinping will keynote China's World AI Conference for the first time; Helsing raises Europe's biggest-ever defense AI round; and a Shenzhen lab shows how to diagnose cancer on a loop of optical fiber." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №46 &middot; July 14, 2026</p>
+      <h1>Signals from Shanghai</h1>
+      <p>For the first time in eight years of the event, China's president will deliver the keynote at the country's flagship technology summit — a signal about who is taking the governance of intelligence seriously. Meanwhile, a lab in Shenzhen demonstrates how to diagnose cancer on a loop of optical fiber, and Europe writes its largest-ever check for an AI defense company.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Xi Jinping will appear at the 2026 World AI Conference in Shanghai, which opens on Thursday July 17, and deliver a keynote address — his first in the eight-year history of the annual summit. The signal is deliberate. China has been accelerating the establishment of a proposed World AI Cooperation Organization (WAICO), which it wants headquartered in Shanghai, as a counterweight to Western-led governance bodies. Analysts expect Xi to use the keynote to give WAICO definition and momentum. The conference will feature more than 140 forums, 1,400 guests, and 300 global product debuts, with global AI governance as the central theme. The US-China technology rivalry has intensified sharply in 2026, but China's move here is not primarily about competition with a single company — it's about setting the rules of the road before anyone else does, at a global scale.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Defense</span><span>Helsing, the German startup behind the HX-2 strike drone and battlefield-intelligence software Altra, closed a $1.8 billion Series E at an $18 billion valuation — Europe's largest-ever defense-technology funding round. Backers include Goldman Sachs, JPMorgan, Dragoneer, and the Canada Pension Plan. Founded just in 2021, Helsing now ranks among Europe's most valuable defense firms.</span></li>
+        <li><span class="tag money">Business</span><span>Sam Altman has pitched the Trump administration on a deal in which the U.S. government would receive a 5% stake in OpenAI, worth roughly $42.6 billion at the company's current $852 billion valuation — part of a broader idea in which every leading AI company would hand equity to a sovereign-wealth-fund-style vehicle, distributing AI gains to the public. Active talks are ongoing with the president, Treasury Secretary Bessent, and Commerce Secretary Lutnick.</span></li>
+        <li><span class="tag policy">IP</span><span>Following up on yesterday's Apple-OpenAI lawsuit news: Bloomberg reported that the case threatens to directly derail OpenAI's consumer hardware ambitions. The complaint alleges OpenAI used a proprietary Apple metal-finishing technique — even while claiming to its manufacturing partner it had Apple's permission — which is precisely the kind of detail that can freeze product launches pending litigation.</span></li>
+        <li><span class="tag tech">Engineering</span><span>Claude Code creator Boris Cherny's comment from late June continues to generate essays and debate: "I don't prompt Claude anymore — I write loops that prompt Claude. My job is to write loops." The idea, named "loop engineering," is spreading fast: design an automated, self-correcting agent workflow rather than composing each prompt by hand. The engineer shapes the loop; the model does the work inside it.</span></li>
+        <li><span class="tag tech">Models</span><span>ByteDance launched Seedream 5.0 Pro, its latest image-generation model, reinforcing a run in which Chinese labs have been matching or surpassing Western tools on visual quality while undercutting them on price — and ByteDance has a distribution advantage almost no competitor can match: TikTok's global user base as a built-in test bed.</span></li>
+        <li><span class="tag money">Funding</span><span>Global startups raised $510 billion in the first half of 2026, with AI companies accounting for 86% of all U.S. venture capital — $356 billion out of $413 billion total. Seven individual rounds topping $1 billion each closed in Q2 alone, the most in any single quarter on record.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: a neural network that runs on light</h2>
+      <p class="kicker">"Tunable phosphorene modulators – accelerating medical diagnosis with ultra-efficient photonic platforms" &middot; Han Zhang et al., Shenzhen University &middot; <a href="https://www.oejournal.org/oea/article/doi/10.29026/oea.2026.250332">Opto-Electronic Advances, May 2026</a></p>
+
+      <p>A team at Shenzhen University published a paper this spring that does something quietly remarkable: it runs a complete, working neural network entirely on <em>light</em>, tests it on real clinical images, and matches the diagnostic accuracy of a senior physician — while consuming 246 times less energy than a conventional computer doing the same job. It's been making rounds quietly since May. Here's why it deserves a slower read.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Every hospital screening programme faces the same bottleneck: not enough specialists, too many scans. Software that can reliably flag a suspicious retinal image or a liver lesion before a doctor reviews it would save time, catch disease earlier, and extend quality care to clinics that can't afford a full imaging team. The problem has always been energy and cost. The kind of neural network accurate enough to do this job runs on powerful graphics processors — GPUs — that consume large amounts of electricity, generate significant heat, and are expensive to deploy in resource-limited settings. For years, researchers treated this as a chip-design problem: build faster silicon, reduce the wattage. The Shenzhen team asked a different question: what if you skip the electrons entirely?</p>
+
+      <h3>How it works</h3>
+      <p>The analogy to carry through this section is a pipe organ versus a piano. A piano makes sound by hammers striking strings — one physical impact per key, effort concentrated at each individual press. A pipe organ sends air through tubes; the same sustained breath activates multiple notes simultaneously, and the energy spreads across the system rather than concentrating at each key. Conventional computing is the piano: a GPU performs neural network inference by switching millions of transistors on and off in sequence, each switch consuming a tiny burst of power and generating heat. A photonic neural network is the organ: information travels as light through glass fiber, and the computation happens as light interacts with specially engineered materials along the path — no mechanical switching, no transistor heat.</p>
+
+      <p>The key material in this paper is <em>phosphorene</em>: a single-atom-thick sheet of black phosphorus, related to graphite but with a crucial property — how it interacts with light can be tuned by applying a small voltage. The team wrapped this phosphorene around a tiny loop of optical fiber called a microring resonator, which greatly amplifies how strongly the material and the light interact. The result is an electro-optic modulator with a modulation efficiency of 0.25 V·cm — technically a low value, meaning very little electrical energy is needed to change the light signal. Think of it as a highly responsive valve: a small turn of the handle diverts a large flow of water. Apply a voltage; the light changes; that change carries data.</p>
+
+      <p>Using several of these modulators in a technique called time-division multiplexing — where one fiber takes turns carrying different parts of the calculation in rapid alternating sequence, like several cars sharing a single lane — the researchers assembled a full photonic neural network (PNN) from standard off-the-shelf fiber components. No exotic fabrication facility, no cleanroom. Just glass, phosphorene, and carefully arranged light.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team didn't stop at characterising the modulator in isolation. They assembled the complete system — from input image data through the photonic layers to final classification — and ran it against two clinical tasks with real consequences: detecting retinal detachment in fundus photographs (standard images taken of the inside of the eye), and identifying liver cancer in abdominal scans. Both conditions are ones where delayed diagnosis carries severe costs: untreated retinal detachment can cause permanent blindness within days; liver cancer is frequently caught only after it has advanced. The system received image data, processed it through its fiber-optic layers, and produced a diagnosis. The researchers measured accuracy against expert radiologist classifications, and energy consumption against an equivalent GPU-based inference run.</p>
+
+      <h3>What they found</h3>
+      <p>Diagnostic accuracy matched that of senior radiologists on both tasks. The headline figure is the energy result: 246 times more efficient than the GPU baseline. The system produced correct classifications throughout the test sets, without major failure categories on well-formed inputs. The authors flag one key constraint the prototype currently carries: it operates on images at a fixed resolution, through a specific preprocessing pipeline. A raw scan from an arbitrary hospital machine can't be fed directly — it needs to pass through that pipeline first, which limits plug-and-play deployment to settings where that preprocessing can be standardised.</p>
+
+      <h3>The catch</h3>
+      <p>This is a proof of concept, not a clinical device. The test datasets are not described with the granularity needed to assess generalisability: demographic diversity, image-machine variety, and edge-case presentations (unusual anatomy, low image quality) are not reported. The 246× efficiency comparison is specifically against a general-purpose GPU; a purpose-built electronic inference chip (the kind used in commercial AI products) would land somewhere between the two. And photonic systems are temperature-sensitive in a way silicon chips are not — keeping the modulator's calibration stable across the temperature swings of a real hospital environment is an engineering challenge the paper defers to future work.</p>
+
+      <p><strong>If you remember one thing:</strong> A lab built a neural network out of glass fiber and a single-atom-thick sheet of black phosphorus that diagnosed cancer and retinal detachment as well as an expert physician, at 1/246th the electricity — a genuine demonstration that the hardware we use to run intelligence doesn't have to be silicon.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Diagram comparing electronic GPU inference with photonic neural network inference for medical image classification">
+          <rect width="720" height="310" fill="#F8F7F4" rx="8"/>
+
+          <!-- LEFT: Electronic -->
+          <rect x="24" y="16" width="300" height="276" fill="white" rx="8" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="174" y="46" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="15" font-weight="bold" fill="#141413">Electronic (GPU)</text>
+
+          <!-- Chip -->
+          <rect x="114" y="62" width="120" height="56" rx="6" fill="#D97757" opacity="0.2"/>
+          <text x="174" y="87" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Silicon transistors</text>
+          <text x="174" y="103" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">electrons flow → heat</text>
+
+          <!-- Heat label -->
+          <text x="250" y="82" font-family="system-ui,sans-serif" font-size="11" fill="#D97757">🔥 heat</text>
+
+          <!-- Arrow -->
+          <line x1="174" y1="118" x2="174" y2="148" stroke="#87867F" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <polygon points="174,150 170,142 178,142" fill="#87867F"/>
+
+          <!-- Inference -->
+          <rect x="104" y="150" width="140" height="44" rx="5" fill="#D97757" opacity="0.12"/>
+          <text x="174" y="172" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Inference</text>
+          <text x="174" y="187" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">baseline energy = 1×</text>
+
+          <!-- Arrow -->
+          <line x1="174" y1="194" x2="174" y2="222" stroke="#87867F" stroke-width="1.5"/>
+          <polygon points="174,224 170,216 178,216" fill="#87867F"/>
+
+          <!-- Result -->
+          <rect x="104" y="224" width="140" height="48" rx="5" fill="#788C5D" opacity="0.15"/>
+          <text x="174" y="246" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413">Diagnosis ✓</text>
+          <text x="174" y="262" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">accurate · costly</text>
+
+          <!-- VS -->
+          <circle cx="362" cy="155" r="22" fill="#D1CFC5"/>
+          <text x="362" y="160" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="14" font-weight="bold" fill="#141413">vs</text>
+
+          <!-- RIGHT: Photonic -->
+          <rect x="396" y="16" width="300" height="276" fill="white" rx="8" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="546" y="46" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="15" font-weight="bold" fill="#141413">Photonic (PNN)</text>
+
+          <!-- Fiber loop -->
+          <ellipse cx="546" cy="90" rx="58" ry="30" fill="none" stroke="#6A8CAF" stroke-width="2.5"/>
+          <!-- Light dots moving around loop -->
+          <circle cx="490" cy="90" r="3.5" fill="#6A8CAF" opacity="0.9"/>
+          <circle cx="516" cy="66" r="3.5" fill="#6A8CAF" opacity="0.75"/>
+          <circle cx="576" cy="66" r="3.5" fill="#6A8CAF" opacity="0.75"/>
+          <circle cx="602" cy="90" r="3.5" fill="#6A8CAF" opacity="0.9"/>
+          <text x="546" y="87" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Phosphorene fiber loop</text>
+          <text x="546" y="103" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">photons travel → no heat</text>
+
+          <!-- Cool label -->
+          <text x="490" y="60" font-family="system-ui,sans-serif" font-size="11" fill="#6A8CAF">❄ cool</text>
+
+          <!-- Arrow -->
+          <line x1="546" y1="120" x2="546" y2="148" stroke="#6A8CAF" stroke-width="1.5"/>
+          <polygon points="546,150 542,142 550,142" fill="#6A8CAF"/>
+
+          <!-- Inference -->
+          <rect x="476" y="150" width="140" height="44" rx="5" fill="#6A8CAF" opacity="0.12"/>
+          <text x="546" y="172" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Inference</text>
+          <text x="546" y="187" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">energy = 1/246×</text>
+
+          <!-- Arrow -->
+          <line x1="546" y1="194" x2="546" y2="222" stroke="#6A8CAF" stroke-width="1.5"/>
+          <polygon points="546,224 542,216 550,216" fill="#6A8CAF"/>
+
+          <!-- Result -->
+          <rect x="476" y="224" width="140" height="48" rx="5" fill="#788C5D" opacity="0.25"/>
+          <text x="546" y="246" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413">Diagnosis ✓</text>
+          <text x="546" y="262" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">accurate · 246× cheaper</text>
+
+          <!-- Footer note -->
+          <text x="362" y="300" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">Both systems matched senior-radiologist accuracy on retinal detachment and liver cancer classification.</text>
+        </svg>
+        <figcaption>Left: a conventional GPU infers by switching silicon transistors — effective but power-intensive. Right: the Shenzhen photonic system routes data as light pulses through a phosphorene-modulated fiber loop, achieving identical diagnostic accuracy at 1/246th the energy cost.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>"I don't prompt Claude anymore — I write loops that prompt Claude. My job is to write loops." Cherny's June statement is still generating essays across engineering communities, and the term "loop engineering" has now been picked up by Google, OpenAI, and independent developers. The New Stack has the clearest breakdown of what the shift actually looks like in code. <a href="https://thenewstack.io/loop-engineering/">thenewstack.io</a></span></li>
+        <li><span class="tag tech">Andrej Karpathy</span><span>Karpathy's most recent blog post (April 30) is an account of his 2026 Sequoia mountain circuit — an endurance essay woven through with his current thinking on agency, biological limits, and what it means to train yourself in a world where models can outrun you in almost any cognitive task. <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">karpathy.bearblog.dev</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three threads from this week, taken together, point at the same underlying shift. China is moving to own the governance conversation around intelligence — not just the technology, but the rules, the institutions, and the international framing. Europe is pouring its largest-ever defense check into a company that uses software to control drones and battlefield operations. And a university lab in Shenzhen is quietly demonstrating that the silicon monopoly on AI inference has a challenger: glass and light. The common thread is that AI is no longer primarily a software competition. The race has moved into physical materials, geopolitical architecture, and institutional frameworks. The team that writes the best code matters less than the team that controls what the code runs on — and where the world agrees it should operate.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.bloomberg.com/news/articles/2026-07-13/xi-to-debut-at-china-s-flagship-ai-summit-as-us-rivalry-heats-up">Bloomberg: Xi at World AI Conference</a> ·
+        <a href="https://thenextweb.com/news/xi-jinping-keynote-world-ai-conference-shanghai-2026">The Next Web: Xi's keynote</a> ·
+        <a href="https://www.cnbc.com/2026/07/13/helsing-fund-raise-defense-18-billion.html">CNBC: Helsing $1.8B round</a> ·
+        <a href="https://www.axios.com/2026/07/13/german-defense-helsing-18-billion">Axios: Helsing Series E</a> ·
+        <a href="https://www.cnbc.com/2026/07/02/openai-proposes-us-government-own-5percent-stake-to-address-political-blowback.html">CNBC: OpenAI 5% government stake</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-07-13/how-apple-s-lawsuit-threatens-to-disrupt-openai-s-bid-to-rival-the-iphone">Bloomberg: Apple lawsuit impact on OpenAI hardware</a> ·
+        <a href="https://thenewstack.io/loop-engineering/">The New Stack: Loop engineering</a> ·
+        <a href="https://www.oejournal.org/oea/article/doi/10.29026/oea.2026.250332">Opto-Electronic Advances: Phosphorene photonic paper</a> ·
+        <a href="https://news.crunchbase.com/venture/record-breaking-funding-ai-global-q1-2026/">Crunchbase: H1 2026 VC record</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Phosphorene</div>
+        <div>A single-atom-thick sheet of black phosphorus — imagine peeling one layer off a block of graphite pencil, except it's phosphorus atoms instead of carbon. That one-atom layer has an unusual property: how it interacts with light can be controlled by applying a small voltage, like a dimmer switch for a beam of light. This makes it ideal for building the "valves" inside a fiber-optic neural network. The Shenzhen team used it as the tunable heart of their system.</div>
+      </div>
+      <dl>
+        <dt>Photonic neural network (PNN)</dt><dd>A neural network where the math is performed by light pulses traveling through glass fiber rather than electrons through silicon. Faster and cooler to run, but more sensitive to temperature changes and harder to scale up today.</dd>
+        <dt>Electro-optic modulator</dt><dd>A device that converts an electrical signal into a change in a beam of light — think of it as a light-volume knob controlled by electricity. In the Shenzhen system, the phosphorene layer makes this modulator highly efficient: small voltage, large effect.</dd>
+        <dt>Time-division multiplexing</dt><dd>Sending multiple signals over one fiber by having each signal take turns in rapid sequence — like several car lanes merging into one, with each car taking an assigned slot. The Shenzhen team used this to fit a larger neural network into a simpler physical setup.</dd>
+        <dt>Loop engineering</dt><dd>A workflow pattern where, instead of a human typing prompts to an AI, the human writes a program that automatically generates prompts, evaluates outputs, and decides what to ask next — running unsupervised in a continuous cycle. The engineer designs the loop; the model does the work inside it.</dd>
+        <dt>WAICO</dt><dd>World AI Cooperation Organization — a China-proposed international body that would govern AI development globally, which Beijing wants headquartered in Shanghai. Think of it as China's bid to create a UN-like institution for AI, before Western nations establish their own framework instead.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
