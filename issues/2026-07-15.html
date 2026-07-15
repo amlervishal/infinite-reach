@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №47 — First, the grid · Infinite Reach</title>
+  <meta name="description" content="New York became the first US state to freeze new hyperscale data-center permits; TSMC posted all-time revenue records; and a quiet paper reveals that our best training methods may be optimizing the wrong thing." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №47 &middot; Tuesday, July 15, 2026</p>
+      <h1>First, the grid</h1>
+      <p>New York put up the first government wall against unchecked data-center expansion yesterday — raising a question the industry would rather sidestep: where does the power actually come from? Elsewhere, a paper from June points at a subtle flaw in how we train today's most capable systems.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Governor Kathy Hochul signed an Executive Order on July 14 making New York the first US state to freeze new hyperscale data-center permits. The pause lasts up to one year and covers any facility that would draw 50 megawatts or more — enough electricity to power roughly 40,000 homes. At the time of signing, four such centers were already operating in the state; 39 more had applications pending. Officials will spend the coming year drafting new standards covering energy use, environmental review, and community investment before any new approvals can proceed. The order is careful to exclude hospitals, universities, and chipmakers from the freeze — it is aimed specifically at the server warehouses that underpin the AI buildout.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Chips</span><span>TSMC posted all-time revenue records for Q2 2026: $39.6 billion for the quarter (up 36% year-on-year) and a 68% jump in June alone. Its most advanced N3 chips are sold out through year-end. High-performance computing — the category that includes AI accelerators — now accounts for 61% of TSMC's quarterly revenue. <a href="https://macdailynews.com/2026/07/13/tsmcs-record-q2-revenue-surge-highlights-ai-boom-and-apples-strategic-chip-partnership/">CNBC / MacDailyNews</a></span></li>
+        <li><span class="tag tech">Hardware</span><span>Anthropic is in early talks with Samsung to design a custom inference chip using Samsung's 2-nanometer process — aimed at cutting Anthropic's reported $1.25 billion monthly compute bill. OpenAI's equivalent custom chip (codenamed "Jalapeño," built with Broadcom) is already showing roughly 50% cost savings versus off-the-shelf GPU inference. <a href="https://techcrunch.com/2026/07/02/anthropic-is-discussing-a-new-custom-chip-with-samsung/">TechCrunch</a></span></li>
+        <li><span class="tag policy">Policy</span><span>The Trump administration asked OpenAI to delay releasing new models, adding confusion to an already uncertain US AI policy landscape. The move has pushed more developers toward open-source alternatives that aren't subject to government timing pressure. <a href="https://thehill.com/newsletters/technology/5948632-white-house-upends-ai-model-release/">The Hill</a></span></li>
+        <li><span class="tag tech">Models</span><span>GPT-5.6 became ChatGPT's default model on July 9, offered in three size tiers: Sol ($5/$30 per million tokens in/out), Terra ($2.50/$15), and Luna ($1/$6). Described as stronger on coding, biology, and cybersecurity tasks. <a href="https://aiflashreport.com/model-releases.html">AI Flash Report</a></span></li>
+        <li><span class="tag policy">Web</span><span>Cloudflare announced that from September 15, all new domains on its network will block AI data-collection bots by default — flipping the prior opt-in model to opt-out, a quiet but significant shift for the open web. <a href="https://thehill.com/policy/technology/5952253-trump-administration-ai-restrictions-opens/">The Hill</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: the gap between training and deployment</h2>
+      <p class="kicker">The Mirage of Optimizing Training Policies: Monotonic Inference Policies as the Real Objective for LLM Reinforcement Learning &middot; Jing Liang, Hongyao Tang, Yi Ma et al. (TJU RL Lab, Tianjin University) &middot; <a href="https://arxiv.org/abs/2606.29526">arXiv 2606.29526</a></p>
+
+      <p>Reinforcement learning is how most frontier AI systems get their final polish — the stage where a model learns to give helpful, well-reasoned answers rather than technically correct but unhelpful ones. This paper makes a discomforting claim: we may have been measuring the wrong thing the whole time.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When you train a language model with reinforcement learning, the process uses two separate software systems running in parallel. The <em>training engine</em> generates candidate responses and computes the mathematical corrections (gradients) needed to update the model's weights. The <em>inference engine</em> is what users see at deployment: it reads those same weights and produces answers in real time. In an ideal world these two engines would be identical — same code, same math, same results. In practice, they are not.</p>
+
+      <p>They use different internal implementations, different memory layouts, and — crucially — often different numerical precision. The inference engine frequently runs in a lower-precision mode called FP8 quantization to save GPU memory and serve users faster. The training engine usually does not. This means the two systems can assign subtly different probabilities to the exact same piece of text, even with bit-for-bit identical model weights loaded into both.</p>
+
+      <p>For most applications, this barely matters. But reinforcement learning is entirely about probabilities. The whole point is to make the model assign a <em>higher</em> probability to good answers and a <em>lower</em> probability to bad ones. If the training engine's probabilities and the inference engine's probabilities diverge, you can make the training-side numbers better without making the deployment-side numbers better. You might even make them worse. The authors call this the training-inference mismatch, and they argue it is not a rare edge case but a structural feature of how modern AI training pipelines work.</p>
+
+      <h3>How it works</h3>
+      <p>Think of it like a pianist who spends months perfecting a piece on an upright Yamaha in a small studio — optimizing every phrase until it sounds exactly right on that specific instrument. On performance night, she sits down at a nine-foot Steinway concert grand. Her practice was real, her improvement was real, but the touch is different, the key resistance is different, the resonance is different. Perfecting her performance on the Yamaha is not the same as perfecting it on the Steinway, because they are not the same instrument.</p>
+
+      <p>The training engine and the inference engine are like the Yamaha and the Steinway. They share the same "sheet music" — the model weights — but they interpret those weights through slightly different hardware and software setups. The authors formalize this by defining what it means to <em>genuinely</em> improve the inference policy — the Steinway version — rather than just the training-side policy. They call this property Monotonic Inference Policy Improvement (MIPI): an update counts as real progress only if a measurable proxy can confirm it actually helps on the inference side.</p>
+
+      <p>From this they derive a practical algorithm called Monotonic Inference Policy Update, or MIPU. The key steps:</p>
+      <ol>
+        <li><strong>Sample candidates normally.</strong> Generate update directions the standard RL way, using the training engine. Nothing changes here.</li>
+        <li><strong>Measure the inference-side gap.</strong> For each candidate update, estimate how much the training-side probability and the inference-side probability would diverge if this update were applied. They call this measure an "inference-gap proxy." Crucially, they design this proxy to be lightweight — it doesn't require running the full inference engine on every candidate, which would be prohibitively expensive.</li>
+        <li><strong>Accept selectively.</strong> Only apply updates where the gap proxy confirms the inference-side policy will actually improve. Discard updates that look good on the training side but are likely to be neutral or harmful at deployment.</li>
+      </ol>
+
+      <p>The whole framework slots into existing RL training pipelines with modest engineering changes. You don't need to redesign training from scratch — you need to add a filter before committing each update.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 300" role="img" aria-label="Diagram showing training engine and inference engine both reading from the same model weights but producing different probability values. The mismatch gap is highlighted in clay, and MIPU's gap proxy bridges it.">
+          <!-- Background -->
+          <rect width="720" height="300" fill="#FAFAF8" rx="6"/>
+
+          <!-- Title and subtitle -->
+          <text x="360" y="36" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="14" fill="#141413" font-weight="600">Two engines, same weights, different probabilities</text>
+          <text x="360" y="56" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Optimising the training engine doesn't guarantee improving the inference engine — MIPU checks before committing</text>
+
+          <!-- Model Weights box (center) -->
+          <rect x="285" y="90" width="150" height="58" rx="6" fill="#D1CFC5" stroke="#87867F" stroke-width="1.5"/>
+          <text x="360" y="115" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="600">Model Weights</text>
+          <text x="360" y="136" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">(bit-for-bit identical)</text>
+
+          <!-- Training Engine box (left) -->
+          <rect x="40" y="76" width="180" height="118" rx="6" fill="#EEF3EE" stroke="#788C5D" stroke-width="2"/>
+          <text x="130" y="104" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="600">Training Engine</text>
+          <text x="130" y="124" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">FP32 precision</text>
+          <text x="130" y="142" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">computes gradients</text>
+          <text x="130" y="162" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12" fill="#788C5D">prob = 0.72</text>
+          <text x="130" y="180" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">(training-side)</text>
+
+          <!-- Inference Engine box (right) -->
+          <rect x="500" y="76" width="180" height="118" rx="6" fill="#EBF0F5" stroke="#6A8CAF" stroke-width="2"/>
+          <text x="590" y="104" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="600">Inference Engine</text>
+          <text x="590" y="124" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">FP8 quantized</text>
+          <text x="590" y="142" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">deployment / users</text>
+          <text x="590" y="162" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12" fill="#6A8CAF">prob = 0.68</text>
+          <text x="590" y="180" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">(what users get)</text>
+
+          <!-- Arrows from weights to engines -->
+          <defs>
+            <marker id="arr" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+              <path d="M0,0 L0,7 L7,3.5 z" fill="#87867F"/>
+            </marker>
+          </defs>
+          <line x1="285" y1="119" x2="223" y2="119" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="435" y1="119" x2="497" y2="119" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Mismatch gap bar -->
+          <line x1="222" y1="216" x2="498" y2="216" stroke="#D97757" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <rect x="290" y="205" width="140" height="22" rx="4" fill="#D97757" opacity="0.13"/>
+          <text x="360" y="220" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#D97757" font-weight="600">mismatch gap</text>
+
+          <!-- MIPU explanation below -->
+          <text x="360" y="252" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413">MIPU: measure this gap before accepting each RL update</text>
+          <text x="360" y="272" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">only commit changes that improve the <tspan font-weight="600" fill="#6A8CAF">inference</tspan> side, not just the <tspan font-weight="600" fill="#788C5D">training</tspan> side</text>
+        </svg>
+        <figcaption>The training and inference engines share weights but differ in numerical precision — FP8 quantization at inference creates a measurable probability gap. MIPU's lightweight proxy checks this gap before each RL update is applied, ensuring that what improves in training also improves in deployment.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The team ran experiments on two sizes from the Qwen3 family of open-weight models: Qwen3-4B (four billion parameters) and Qwen3-1.7B (1.7 billion parameters). They deliberately created a high-mismatch scenario by running inference with FP8 quantization — a realistic production choice — while the training engine used standard higher-precision math. This maximizes the gap between the two engines and gives a clean stress test of whether the mismatch causes measurable harm. They then compared standard RL training against MIPU on reasoning benchmarks.</p>
+
+      <h3>What they found</h3>
+      <p>Across both model sizes, MIPU delivered better average reasoning performance and noticeably more stable training curves than the baseline RL approach. The improvement was consistent rather than noisy — training dynamics stopped oscillating in the erratic way that often characterizes RL under mismatch conditions. The authors interpret this as confirmation that the training-inference gap is a real drag on progress, not a theoretical curiosity. Checking the inference side before committing an update genuinely helps, and the lightweight gap proxy is an adequate substitute for running the full inference engine during training.</p>
+
+      <h3>The catch</h3>
+      <p>The experiments were run on models under five billion parameters, and under one specific kind of mismatch: FP8 quantization at inference time. Whether the effect scales to the 70-billion or 400-billion parameter systems that labs actually deploy is still open. The paper also doesn't address mismatch caused by speculative decoding, tensor parallelism across many GPUs, or other inference optimizations used at scale. And the gap proxy is itself an approximation — it works well in the conditions tested but may not be tight enough to catch all problematic updates in every setting.</p>
+
+      <p><strong>If you remember one thing:</strong> When an AI lab reports that training accuracy improved by X%, there is now a documented reason to ask whether the version users run — which may use different numerical precision than the training setup — improved by X% too, because those are not always the same system.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Thariq Shihipar</span><span>Published <em>A Field Guide to Fable: Finding Your Unknowns</em>, drawing on his work building Claude Code at Anthropic. The standout finding: Anthropic quietly cut the Claude Code system prompt by 80% after discovering the new model performs <em>better</em> with fewer worked examples — examples were capping the model's imagination rather than guiding it. Includes a six-method framework for surfacing the "unknown unknowns" that derail AI projects. <a href="https://explainx.ai/blog/map-is-not-territory-fable-5-thariq-unknowns-2026">Read the summary</a></span></li>
+        <li><span class="tag tech">Andrej Karpathy</span><span>The <a href="https://github.com/karpathy/autoresearch">autoresearch</a> repo — an experiment in having AI agents run ML training experiments unsupervised overnight, modifying code and measuring results every five minutes — has crossed 91,000 GitHub stars. A useful live window into what autonomous research loops look like in practice, and what they can and can't yet discover on their own.</span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two threads ran through the past 48 hours, and they're both about what happens when a technology runs into something it can't just scale past. The New York data-center freeze is the most visible version: the electricity grid has finite capacity, communities have finite tolerance, and the assumption that unlimited infrastructure expansion is available on demand now has a specific, signed counter-example. Thirty-nine pending applications are paused until someone does the environmental math. That's genuinely new territory.</p>
+
+      <p>The MIPU paper is a quieter version of the same dynamic. The assumption that optimizing your training numbers equals improving your deployed product turns out to have a measurable gap — and that gap has been quietly draining the value of every RL training run that used FP8 inference without accounting for it. Both stories are about the cost of optimizing a proxy instead of the real thing: permits pending instead of grid impact, training-side accuracy instead of user-side performance. Getting the proxy right is slower and harder than it looks.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.governor.ny.gov/news/first-statewide-moratorium-new-hyperscale-data-centers-launched-governor-kathy-hochul">NY Governor's Office</a> ·
+        <a href="https://insideclimatenews.org/news/14072026/new-york-first-data-center-moratorium/">Inside Climate News</a> ·
+        <a href="https://macdailynews.com/2026/07/13/tsmcs-record-q2-revenue-surge-highlights-ai-boom-and-apples-strategic-chip-partnership/">MacDailyNews / CNBC (TSMC Q2)</a> ·
+        <a href="https://techcrunch.com/2026/07/02/anthropic-is-discussing-a-new-custom-chip-with-samsung/">TechCrunch (Anthropic-Samsung)</a> ·
+        <a href="https://thehill.com/newsletters/technology/5948632-white-house-upends-ai-model-release/">The Hill (White House AI policy)</a> ·
+        <a href="https://thehill.com/policy/technology/5952253-trump-administration-ai-restrictions-opens/">The Hill (open-source demand)</a> ·
+        <a href="https://arxiv.org/abs/2606.29526">arXiv 2606.29526 — MIPU paper</a> ·
+        <a href="https://github.com/karpathy/autoresearch">karpathy/autoresearch (GitHub)</a> ·
+        <a href="https://explainx.ai/blog/map-is-not-territory-fable-5-thariq-unknowns-2026">ExplainX — Thariq Shihipar field guide</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Off-policy</div>
+        <div>In reinforcement learning, "off-policy" means the data you're training on was generated by a <em>different</em> version of the system than the one you're currently updating — like studying last year's exam papers to prepare for this year's exam. The MIPU paper tackles an extreme version: the data-generating system (training engine) and the system being improved (inference engine) are running simultaneously but still diverge in subtle ways.</div>
+      </div>
+      <dl>
+        <dt>Inference engine</dt><dd>The software that runs a trained model in deployment — the part users interact with. Often different from the training setup for speed and memory reasons, which is exactly the source of the mismatch in today's paper.</dd>
+        <dt>FP8 quantization</dt><dd>Storing a model's internal numbers in an 8-bit low-precision format instead of the standard 16 or 32 bits. Saves GPU memory and speeds inference up, but introduces small rounding differences — which is what creates the training-inference gap in the MIPU paper.</dd>
+        <dt>Reinforcement learning (RL)</dt><dd>A training method where a model is rewarded for good outputs and penalized for bad ones, learning through feedback rather than imitation. Used in the final tuning stage of most frontier AI systems.</dd>
+        <dt>Hyperscale data center</dt><dd>A warehouse-scale computing facility — multiple football fields of server racks, drawing 50 megawatts or more of electricity. Exactly the kind Governor Hochul put a pause on yesterday.</dd>
+        <dt>Moratorium</dt><dd>A legally enforced temporary halt. Not a permanent ban — the thing can restart — but a pause to create space for better rules. Hochul's order is time-limited to one year, after which new standards will apply.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
