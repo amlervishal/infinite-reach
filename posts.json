@@ -1,5 +1,12 @@
 [
   {
+    "num": 48,
+    "date": "2026-07-16",
+    "slug": "issues/2026-07-16.html",
+    "title": "No Honor Roll",
+    "blurb": "Not one frontier AI lab earns above C-plus on the first comprehensive safety audit; an open model that can mathematically prove software is correct just found five bugs nobody knew were there; and the World AI Conference opens in Shanghai tomorrow."
+  },
+  {
     "num": 47,
     "date": "2026-07-15",
     "slug": "issues/2026-07-15.html",

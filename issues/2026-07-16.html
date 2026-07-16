@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue ↖4⁄8 — No Honor Roll · Infinite Reach</title>
+  <meta name="description" content="Not one frontier AI lab earns above C-plus on the first comprehensive safety audit — and an open model that can mathematically guarantee software is bug-free just found five vulnerabilities nobody had seen." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue № 48 &middot; Thursday, 16 July 2026</p>
+      <h1>No Honor Roll</h1>
+      <p>Not one frontier AI lab on the planet earns above a C-plus on the first comprehensive safety audit. Meanwhile, a French lab&#8217;s open-source model is proving software correct from first principles&#8202;&#8212;&#8202;and just found five bugs nobody knew were there.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>The Future of Life Institute released its Summer 2026 AI Safety Index this month&#8202;&#8212;&#8202;nine labs graded by an independent panel of seven researchers on actual evidence, not self-reporting. Anthropic came first with a C-plus. OpenAI and Google DeepMind each received a C. Meta earned a D-plus. xAI, DeepSeek, and Mistral all failed outright. The weakest category across the entire industry was &#8220;existential safety&#8221;: has a lab built controls that would actually stop an AI from escaping human oversight if it became very capable? The answer, everywhere, was essentially no. The report is blunt: the gap between what labs say about safety and what they demonstrably do has not closed.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Summit</span><span>The 2026 World AI Conference opens in Shanghai tomorrow (July 17&#8211;20) &#8212; 1,000-plus exhibitors and over 300 product debuts; Google is expected to launch Gemini 3.5 Pro the same day, making it the most concentrated single day in this year&#8217;s AI calendar. <a href="https://news.cgtn.com/news/2026-07-07/Shanghai-to-host-record-breaking-World-AI-Conference-July-17-to-20-1OAHU3xSEog/p.html">link</a></span></li>
+        <li><span class="tag money">Funding</span><span>Eight AI startups raised a combined $1 billion on July 15 alone&#8202;&#8212;&#8202;led by a $700 million Series C in preventive health AI and a $130 million coding-platform round, with capital flowing across the US, India, Saudi Arabia, and Israel. <a href="https://scouts.yutori.com/68f22e10-d5fe-4e94-b1c8-9c6218cfdb2c">link</a></span></li>
+        <li><span class="tag policy">EU countdown</span><span>The EU AI Act&#8217;s transparency rules arrive August 2; the Commission&#8217;s July action plan tasked the cybersecurity agency ENISA with building a secure testing platform for critical-sector AI in energy, health, and finance. <a href="https://quasa.io/media/eu-action-plan-july-2026-strengthens-ai-act-enforcement-for-frontier-models">link</a></span></li>
+        <li><span class="tag tech">Fellowship</span><span>Anthropic launched Claude Corps, a paid 12-month program placing AI professionals inside nonprofits&#8202;&#8212;&#8202;an acknowledgment that the organisations most likely to be disrupted by AI are often the least resourced to adapt to it. <a href="https://www.zonetechify.com/blog/ai-news-july-2026-latest-ai-developments">link</a></span></li>
+        <li><span class="tag policy">Courts</span><span>The New York Times and other publishers filed a motion for sanctions against OpenAI, alleging the company withheld training-data evidence; the case may force rare discovery into how frontier models are actually built. <a href="https://www.buildfastwithai.com/blogs/ai-news-today-july-14-2026">link</a></span></li>
+        <li><span class="tag money">Enterprise</span><span>Meta began rolling out its Business Agent platform globally, letting companies deploy AI agents directly through WhatsApp, Messenger, and Instagram, turning billions of customer conversations into an enterprise automation layer. <a href="https://llm-stats.com/ai-news">link</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: the AI that can prove your code is correct</h2>
+      <p class="kicker">Leanstral 1.5 &middot; Mistral AI &middot; <a href="https://mistral.ai/news/leanstral-1-5/">source</a></p>
+      <p>Last week Mistral&#8202;&#8212;&#8202;the French lab best known for efficient general-purpose models&#8202;&#8212;&#8202;released something that doesn&#8217;t fit the usual model-launch story. Leanstral 1.5 isn&#8217;t a chatbot. It&#8217;s an AI that reads code, writes a mathematical proof that the code behaves correctly, and flags any place where the proof breaks down. When they pointed it at 57 real open-source repositories, it found five bugs that nobody had ever reported.</p>
+
+      <h3>The problem, and why it&#8217;s hard</h3>
+      <p>There are two fundamentally different ways to check whether software works. The first is <em>testing</em>: you run the program on a bunch of inputs and see if the results look right. Testing is practical and it works&#8202;&#8212;&#8202;it&#8217;s how almost all software is verified today. But it has an irreducible limit: you can only check the inputs you thought to try. A bug that only appears when a username is exactly 256 characters long, or when two requests arrive within three milliseconds of each other, will sail past every test suite unless someone wrote a test for exactly that case.</p>
+      <p>The second approach is <em>formal verification</em>: instead of testing, you write a mathematical specification of what the code <em>should</em> do, and then you prove&#8202;&#8212;&#8202;in the sense mathematicians use the word&#8202;&#8212;&#8202;that the code satisfies that specification for <em>all</em> possible inputs. If the proof goes through, correctness is guaranteed. Not &#8220;probably correct.&#8221; Guaranteed. The catch has always been expertise: you need to know a proof assistant language, and you need to translate vague intent&#8202;&#8212;&#8202;&#8220;this function should never return a negative number&#8221;&#8202;&#8212;&#8202;into precise logical statements, then build the argument step by step. Very few software engineers have ever done this. Almost no production software has been formally verified. Leanstral 1.5 is an attempt to automate the hardest parts.</p>
+
+      <h3>How it works</h3>
+      <p>Think of the difference between testing a bridge by driving trucks across it and proving mathematically that the bridge will hold under all loads, at all temperatures, on all days. Driving trucks catches problems you thought to look for. The engineering proof rules out all problems at once, because it operates on the <em>structure</em> of the bridge&#8202;&#8212;&#8202;on the steel&#8217;s properties and the geometry&#8202;&#8212;&#8202;not on a sample of crossings. Formal verification applies the same logic to code: instead of sampling inputs, you reason about the program&#8217;s structure.</p>
+      <p>The proof assistant Leanstral uses is called Lean 4. It&#8217;s a programming language where code and proofs live in the same system. You write a function, then write propositions about it (&#8220;for any integer n, this function returns a value greater than n&#8221;), and Lean&#8217;s type-checker verifies whether your argument is logically valid. If you&#8217;ve made an error, the system tells you exactly where the logic breaks down.</p>
+      <p>Leanstral 1.5 is a 119-billion-parameter mixture-of-experts model with a 256,000-token context window. Its MoE design means only 6.5 billion of those parameters activate for any given input, making it faster and cheaper than its headline size suggests. It was trained on mathematical content during mid-training, fine-tuned on proof-engineering tasks, and further refined with reinforcement learning. Given a piece of code, it generates <em>lemmas</em>&#8202;&#8212;&#8202;small intermediate propositions that serve as stepping stones to a full proof&#8202;&#8212;&#8202;and attempts to prove each one in Lean 4. If a lemma can&#8217;t be proved, that&#8217;s a signal: something in the code may be doing what the specification says it must not.</p>
+
+      <h3>What they actually did</h3>
+      <p>Mistral ran Leanstral 1.5 through a battery of formal math benchmarks, then pointed it at real software. On miniF2F&#8202;&#8212;&#8202;488 problems drawn from AMC, AIME, and the International Mathematical Olympiad, reformatted for machine provers&#8202;&#8212;&#8202;it scored 100%. On PutnamBench, which draws from the Putnam competition (a notoriously difficult undergraduate mathematics contest), it solved 587 of 672 problems. On FATE-H, which covers master&#8217;s-level algebra, it reached 87%; on FATE-X, doctoral-level, 34%.</p>
+      <p>Then they tried real code. Using a verification pipeline that combines a Rust analysis tool called Aeneas with Lean 4, they scanned 57 open-source repositories. Leanstral generated correctness properties for each codebase and attempted to prove them. Across all 57 repos, it flagged 47 violations. Of those, 11 were confirmed genuine bugs&#8202;&#8212;&#8202;and 5 were bugs that had never been reported anywhere, on GitHub or elsewhere. The model is released under the Apache 2.0 licence, free to use via a Mistral API endpoint and available for download on Hugging Face.</p>
+
+      <h3>What they found</h3>
+      <p>The benchmark numbers confirm this is the strongest publicly available model at formal proof work. More interesting than the benchmarks, though, is the five-new-bugs result. Those were real vulnerabilities, sitting unnoticed in repositories presumably used by real people, found by an automated pipeline that operated without any human specifying which repositories to check or what to look for. That&#8217;s formal verification working as an exploration tool&#8202;&#8212;&#8202;not just a correctness oracle you apply to code you&#8217;ve already written, but a scanner that goes looking for trouble.</p>
+
+      <h3>The catch</h3>
+      <p>Leanstral can only prove properties that someone has already specified in Lean 4. It doesn&#8217;t automatically invent the right specification&#8202;&#8212;&#8202;a human still has to articulate what &#8220;correct&#8221; means for a given piece of code. Writing those specifications is itself a skilled task. The approach also works best in languages like Rust, where Aeneas can translate code into a form Lean understands; most of the world&#8217;s critical software is written in languages that don&#8217;t yet have this pipeline. And the 57-repository scan&#8202;&#8212;&#8202;as impressive as finding 5 new bugs sounds&#8202;&#8212;&#8202;is a tiny fraction of the software in production today.</p>
+
+      <p><strong>If you remember one thing:</strong> An AI can now write mathematical proofs that software is correct&#8202;&#8212;&#8202;not just test it&#8202;&#8212;&#8202;and when it does, it sometimes finds bugs that human developers and human reviewers both missed.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Diagram comparing code testing with formal verification" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <!-- Left panel: Testing -->
+          <rect x="20" y="20" width="315" height="275" rx="10" fill="#faf9f6" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="177" y="50" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="14" font-weight="bold" fill="#D97757">Testing</text>
+
+          <!-- Test inputs -->
+          <rect x="45" y="70" width="90" height="26" rx="4" fill="#D97757" fill-opacity="0.15" stroke="#D97757" stroke-width="1"/>
+          <text x="90" y="87" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">test case 1</text>
+          <rect x="45" y="105" width="90" height="26" rx="4" fill="#D97757" fill-opacity="0.15" stroke="#D97757" stroke-width="1"/>
+          <text x="90" y="122" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">test case 2</text>
+          <rect x="45" y="140" width="90" height="26" rx="4" fill="#D97757" fill-opacity="0.15" stroke="#D97757" stroke-width="1"/>
+          <text x="90" y="157" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">test case 3</text>
+
+          <!-- Arrow into code -->
+          <line x1="136" y1="128" x2="175" y2="128" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Code box -->
+          <rect x="177" y="108" width="78" height="40" rx="5" fill="#D97757" stroke="#D97757" stroke-width="1.5"/>
+          <text x="216" y="130" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="12" fill="white">f (x)</text>
+          <text x="216" y="143" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="white" opacity="0.85">code</text>
+
+          <!-- Arrow out -->
+          <line x1="255" y1="128" x2="290" y2="128" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Pass/Fail -->
+          <rect x="291" y="108" width="18" height="18" rx="3" fill="#788C5D"/>
+          <text x="300" y="121" text-anchor="middle" font-family="system-ui" font-size="10" fill="white">&#10003;</text>
+          <rect x="291" y="132" width="18" height="18" rx="3" fill="#D97757"/>
+          <text x="300" y="145" text-anchor="middle" font-family="system-ui" font-size="10" fill="white">&#10007;</text>
+
+          <!-- Limitation text -->
+          <text x="177" y="210" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Proves safety for inputs</text>
+          <text x="177" y="226" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">you thought to test.</text>
+          <text x="177" y="255" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#D97757" font-style="italic">Edge cases, rare inputs,</text>
+          <text x="177" y="270" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#D97757" font-style="italic">timing bugs: may slip through.</text>
+
+          <!-- Divider -->
+          <text x="364" y="168" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="16" fill="#D1CFC5">vs.</text>
+
+          <!-- Right panel: Formal verification -->
+          <rect x="390" y="20" width="310" height="275" rx="10" fill="#faf9f6" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="545" y="50" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="14" font-weight="bold" fill="#788C5D">Formal verification</text>
+
+          <!-- Spec box -->
+          <rect x="420" y="68" width="130" height="42" rx="5" fill="#6A8CAF" fill-opacity="0.13" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="485" y="87" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Specification</text>
+          <text x="485" y="103" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="9" fill="#87867F">&#8220;for all x, f(x) &gt; 0&#8221;</text>
+
+          <!-- Arrow down -->
+          <line x1="485" y1="110" x2="485" y2="143" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Leanstral box -->
+          <rect x="420" y="145" width="130" height="42" rx="5" fill="#788C5D" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="485" y="164" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="white">Leanstral 1.5</text>
+          <text x="485" y="179" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="white" opacity="0.9">writes Lean 4 proof</text>
+
+          <!-- Arrow down to outcome -->
+          <line x1="485" y1="187" x2="485" y2="218" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Outcome: proven -->
+          <rect x="440" y="220" width="90" height="28" rx="5" fill="#788C5D"/>
+          <text x="485" y="238" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="white">&#10003; All inputs</text>
+
+          <!-- Or: proof fails -->
+          <text x="548" y="208" text-anchor="start" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">proof fails &#8594;</text>
+          <text x="548" y="222" text-anchor="start" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">possible bug flagged</text>
+
+          <!-- Bottom note -->
+          <text x="485" y="268" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Proves safety for</text>
+          <text x="485" y="283" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#788C5D">every possible input.</text>
+        </svg>
+        <figcaption>Testing runs the code on inputs you chose. Formal verification proves the code is correct for all inputs &#8212; then reports back when the proof breaks down. Leanstral 1.5 automates the right column.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh</span><span>Dwarkesh Patel was named to <em>Time</em>&#8217;s 2026 TIME100 Creators list &#8212; recognition for a podcast that has become one of the best places to actually understand how AI works, through multi-hour interviews with the researchers building it. <a href="https://time.com/collection/time100-creators/2026/dwarkesh-patel/">link</a></span></li>
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy&#8217;s GitHub &#8212; once one of the most-watched repositories in AI education &#8212; has gone nearly silent since he joined Anthropic&#8217;s pretraining team in May 2026. His public commits dropped to near zero, suggesting early focus on closed research that won&#8217;t surface publicly for a while. <a href="https://medium.com/@kanishks772/andrej-karpathys-github-suddenly-went-quiet-that-might-be-the-story-53ee3f759de2">link</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Today&#8217;s two main stories are connected by a single idea: what happens when you apply rigorous, formal methods instead of informal ones. The Future of Life Institute&#8217;s safety index applied structured, evidence-based evaluation to AI labs &#8212; and found that safety claims and safety evidence are not the same thing. Leanstral 1.5 applied mathematical proof techniques to software &#8212; and found bugs that informal code review had missed. In both cases, &#8220;probably fine&#8221; and &#8220;provably fine&#8221; turned out to be very different things. The tools for formal checking are arriving. Whether labs, regulators, and developers actually reach for them is still an open question.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://futureoflife.org/ai-safety-index-summer-2026/">FLI AI Safety Index</a> &#183;
+        <a href="https://time.com/article/2026/07/07/ai-safety-rankings-openai-anthropic-meta/">TIME &#8212; safety rankings</a> &#183;
+        <a href="https://mistral.ai/news/leanstral-1-5/">Mistral &#8212; Leanstral 1.5</a> &#183;
+        <a href="https://mlq.ai/news/mistral-releases-leanstral-15-an-open-source-formal-verification-model-that-found-five-unknown-bugs/">MLQ &#8212; bug discovery</a> &#183;
+        <a href="https://the-decoder.com/mistrals-open-source-leanstral-1-5-aces-formal-math-benchmarks-and-catches-real-bugs-in-code/">The Decoder &#8212; Leanstral</a> &#183;
+        <a href="https://news.cgtn.com/news/2026-07-07/Shanghai-to-host-record-breaking-World-AI-Conference-July-17-to-20-1OAHU3xSEog/p.html">CGTN &#8212; WAIC 2026</a> &#183;
+        <a href="https://inews.zoombangla.com/google-gemini-3-5-pro-launch-july-17-2/">iNews &#8212; Gemini 3.5 Pro</a> &#183;
+        <a href="https://quasa.io/media/eu-action-plan-july-2026-strengthens-ai-act-enforcement-for-frontier-models">EU action plan</a> &#183;
+        <a href="https://scouts.yutori.com/68f22e10-d5fe-4e94-b1c8-9c6218cfdb2c">Yutori &#8212; July 15 funding</a> &#183;
+        <a href="https://time.com/collection/time100-creators/2026/dwarkesh-patel/">TIME100 Creators</a> &#183;
+        <a href="https://medium.com/@kanishks772/andrej-karpathys-github-suddenly-went-quiet-that-might-be-the-story-53ee3f759de2">Medium &#8212; Karpathy GitHub</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Formal verification</div>
+        <div>A mathematical technique for proving that software behaves correctly &#8212; not for every test you ran, but for every possible input that could ever be given. Think of it as the difference between stress-testing a bridge by driving trucks over it and deriving, on paper, that the steel <em>must</em> hold given its properties. If the mathematical proof goes through, no truck can collapse it. If it fails, something in the design is wrong.</div>
+      </div>
+      <dl>
+        <dt>Lean 4</dt><dd>A programming language that is also a theorem prover. You write code and mathematical proofs in the same system; the compiler checks whether your proof is actually logically valid.</dd>
+        <dt>MoE (Mixture of Experts)</dt><dd>An architecture where a model has many sub-networks (&#8220;experts&#8221;) but only activates a few for any given input. Leanstral 1.5 has 119 billion total parameters but uses just 6.5 billion per inference &#8212; making it much cheaper to run than its full size suggests.</dd>
+        <dt>Lemma</dt><dd>In formal proof, a small intermediate result proved on the way to a larger conclusion. Leanstral generates lemmas about code behaviour and proves each one; a failed proof signals a potential bug.</dd>
+        <dt>miniF2F</dt><dd>A benchmark of 488 maths competition problems (AMC, AIME, IMO) reformatted for machine theorem provers. Leanstral 1.5 scored 100% &#8212; meaning it proved all 488 correctly.</dd>
+        <dt>Existential safety</dt><dd>In the FLI Safety Index: whether a lab has designed controls that could actually stop an AI from evading human oversight if it became very powerful. The lowest-scoring category across all nine labs reviewed.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
