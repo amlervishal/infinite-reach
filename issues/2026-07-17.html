@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №49 — What each layer chose to remember · Infinite Reach</title>
+  <meta name="description" content="China's Moonshot AI released the largest open-source model in history; Google's flagship missed its third launch deadline; and a quiet architecture paper explains how Kimi K3 actually works." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №49 &middot; Thursday, July 17, 2026</p>
+      <h1>What each layer chose to remember</h1>
+      <p>China's Moonshot AI released what it calls the world's largest open-source model today — a 2.8-trillion-parameter system that rivals the best closed models from US labs. Meanwhile, Google's most-anticipated release missed its deadline for the third time. The architecture paper behind Kimi K3's performance is worth understanding from scratch.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Moonshot AI, a Beijing startup backed by Alibaba, released Kimi K3 on July 16 — a 2.8-trillion-parameter model with a 1-million-token context window. It activates only 16 of its 896 sub-networks (called "experts") on any given input, keeping running costs reasonable despite its enormous size. Benchmarks are striking: 93.5% on GPQA Diamond (the strongest open-weight score on that test at release), #1 on LMArena's Frontend Code Arena, and #4 globally on the Artificial Analysis Intelligence Index, trailing only Claude Fable 5 and GPT-5.6 Sol. Full model weights arrive July 27. It is the first open model in the 3-trillion-parameter class — meaning anyone can download it, study it, or run it on their own hardware.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Deadline missed</span><span>Google's Gemini 3.5 Pro did not launch on July 17 — its third missed deadline since Google I/O in May, after the model was reportedly scrapped and rebuilt from scratch. No new date has been given.</span></li>
+        <li><span class="tag tech">27B on a phone</span><span>PrismML's <a href="https://9to5mac.com/2026/07/14/prismml-releases-bonsai-27b-claiming-first-major-ai-model-of-its-size-fit-for-iphone/">Bonsai 27B</a> compresses a 27-billion-parameter model to 3.9 GB and runs at 11 tokens/second on an iPhone 17 Pro, retaining 89.5% of the full-precision model's performance across 15 benchmarks. Weights are free under Apache 2.0.</span></li>
+        <li><span class="tag policy">Apple in China</span><span>China's Cyberspace Administration <a href="https://techcrunch.com/2026/07/15/apple-intelligence-approved-for-launch-in-china-with-alibabas-qwen-ai/">cleared Apple Intelligence</a> on July 15 after years of regulatory talks. Chinese users will see it powered by Alibaba's Qwen for text and image tasks — and Baidu's model for some features. No launch date yet.</span></li>
+        <li><span class="tag tech">AI finds the bugs</span><span>Microsoft's July <a href="https://www.bleepingcomputer.com/news/microsoft/microsoft-july-2026-patch-tuesday-fixes-massive-570-flaws-3-zero-days/">Patch Tuesday</a> fixed a record 570 security vulnerabilities — roughly four times last year's count — with the company crediting its internal AI scanning system (MDASH) for finding the majority of them before attackers could.</span></li>
+        <li><span class="tag money">Scaling efficiency</span><span>Kimi K3 achieves roughly 2.5× the scaling efficiency of its predecessor K2, according to Moonshot's release notes — meaning it converts training compute into capability more effectively. The architectural reason for that is the subject of this issue's Paper section.</span></li>
+      </ul>
+
+      <h2>Paper, explained: how Kimi K3 chose to wire its layers</h2>
+      <p class="kicker">Attention Residuals &middot; Kimi Team, Moonshot AI &middot; arXiv March 2026 &middot; <a href="https://arxiv.org/abs/2603.15031">arxiv.org/abs/2603.15031</a></p>
+      <p>Kimi K3 launched today as the world's largest open-source AI model, and it rests on two architecture innovations that Moonshot published in March. One of them — Attention Residuals — quietly rethinks a foundational design choice that every major AI model has used for a decade.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>To understand the paper, you first need to know what a "residual connection" is. Modern language models are built out of layers — dozens or hundreds of them stacked one on top of another, each doing a small transformation on the data. In 2015, researchers discovered a trick that made training these deep stacks practical: the residual connection. Instead of feeding only the output of layer N into layer N+1, you also add the original input back in. Think of it as photocopying your draft before editing — the raw version is always available alongside whatever revisions you just made, so no information is permanently lost.</p>
+
+      <p>This works well at shallow depths. But as models have grown to 96, 120, even 200 layers, a quiet problem accumulates: all those photocopies pile up. Each layer's output gets added to a running total that never shrinks. By the time you're deep in the network, the pile is so enormous that any single layer's contribution barely registers — one voice in a crowd of hundreds. The symptom in training: gradients (the signals that tell the model how to improve) become unstable and uneven. Layers near the beginning contribute little; layers near the end do most of the work. The model is technically deeper but not fully using its depth.</p>
+
+      <h3>How it works</h3>
+      <p>Attention Residuals (the Kimi team abbreviates it AttnRes) swaps the fixed pile for something selective. The everyday analogy: imagine you're a student reviewing your lecture notes each evening. Fixed residual connections are like stapling every single day's notes together into one enormous stack and carrying the whole thing everywhere — every page gets equal weight whether it's relevant to tonight's problem set or not. Attention Residuals instead gives you the ability to flip through the stack, notice which pages are relevant to what you're working on right now, and weight those pages more heavily while ignoring the rest. You still have access to everything; you're just not dragging the whole pile into every answer.</p>
+
+      <p>Mechanically: each layer in an AttnRes model gets a small learned vector called a pseudo-query. This vector is trained alongside everything else and represents, in essence, the question "what kind of prior information is useful for what I'm about to compute?" It computes an attention score against the outputs of every preceding layer — a softmax score, the same operation used inside the model's token-level attention — and takes a weighted sum. The layer pulls selectively from its history rather than accepting an undifferentiated accumulation of it. The parameter cost is tiny: one d-dimensional vector per layer, where d is the model's hidden size. For a model with 7,000 hidden dimensions, that's 7,000 numbers per layer, negligible against billions of other parameters.</p>
+
+      <p>There's one engineering catch for very large models. Attending over all preceding layers at every step becomes expensive in memory and communication time at scale. The team's answer is Block AttnRes: instead of attending over every individual layer, group the layers into blocks (say, eight layers per block) and attend at the block level. This cuts memory cost by 8–10× while preserving most of the gains — an 8-10× reduction in overhead for a modest reduction in precision. Block AttnRes is what runs in Kimi K3.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Comparison of fixed residual connections versus Attention Residuals" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" font-size="13">
+          <text x="160" y="22" text-anchor="middle" font-weight="bold" fill="#141413" font-size="14">Standard residual</text>
+          <rect x="120" y="38" width="80" height="28" rx="4" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="160" y="57" text-anchor="middle" fill="#141413">Layer 1</text>
+          <line x1="160" y1="66" x2="160" y2="82" stroke="#87867F" stroke-width="1.5"/>
+          <rect x="120" y="82" width="80" height="28" rx="4" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="160" y="101" text-anchor="middle" fill="#141413">Layer 2</text>
+          <line x1="160" y1="110" x2="160" y2="126" stroke="#87867F" stroke-width="1.5"/>
+          <rect x="120" y="126" width="80" height="28" rx="4" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="160" y="145" text-anchor="middle" fill="#141413">Layer 3</text>
+          <line x1="160" y1="154" x2="160" y2="170" stroke="#87867F" stroke-width="1.5"/>
+          <rect x="115" y="170" width="90" height="36" rx="6" fill="#87867F" stroke="#141413" stroke-width="1.2"/>
+          <text x="160" y="193" text-anchor="middle" fill="#fff" font-weight="bold">+ + + (pile)</text>
+          <line x1="160" y1="206" x2="160" y2="222" stroke="#87867F" stroke-width="1.5"/>
+          <polygon points="155,220 165,220 160,230" fill="#87867F"/>
+          <rect x="120" y="230" width="80" height="28" rx="4" fill="#D97757" stroke="#141413" stroke-width="1.2"/>
+          <text x="160" y="249" text-anchor="middle" fill="#fff">Next layer</text>
+          <text x="160" y="278" text-anchor="middle" fill="#87867F" font-size="11">equal weights, every time</text>
+          <line x1="360" y1="20" x2="360" y2="300" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="4,4"/>
+          <text x="540" y="22" text-anchor="middle" font-weight="bold" fill="#141413" font-size="14">Attention Residuals</text>
+          <rect x="500" y="38" width="80" height="28" rx="4" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="540" y="57" text-anchor="middle" fill="#141413">Layer 1</text>
+          <rect x="500" y="82" width="80" height="28" rx="4" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="540" y="101" text-anchor="middle" fill="#141413">Layer 2</text>
+          <rect x="500" y="126" width="80" height="28" rx="4" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="540" y="145" text-anchor="middle" fill="#141413">Layer 3</text>
+          <line x1="500" y1="52" x2="455" y2="185" stroke="#6A8CAF" stroke-width="1" stroke-dasharray="3,2"/>
+          <line x1="500" y1="96" x2="455" y2="185" stroke="#6A8CAF" stroke-width="2.5"/>
+          <line x1="500" y1="140" x2="455" y2="185" stroke="#6A8CAF" stroke-width="4"/>
+          <rect x="405" y="170" width="150" height="36" rx="6" fill="#6A8CAF" stroke="#141413" stroke-width="1.2"/>
+          <text x="480" y="187" text-anchor="middle" fill="#fff" font-weight="bold" font-size="12">pseudo-query</text>
+          <text x="480" y="200" text-anchor="middle" fill="#fff" font-size="11">selects what matters</text>
+          <line x1="480" y1="206" x2="480" y2="222" stroke="#6A8CAF" stroke-width="1.5"/>
+          <polygon points="475,220 485,220 480,230" fill="#6A8CAF"/>
+          <rect x="440" y="230" width="80" height="28" rx="4" fill="#D97757" stroke="#141413" stroke-width="1.2"/>
+          <text x="480" y="249" text-anchor="middle" fill="#fff">Next layer</text>
+          <text x="480" y="278" text-anchor="middle" fill="#87867F" font-size="11">line weight = attention score (learned)</text>
+        </svg>
+        <figcaption>Left: standard residuals pile every layer's output together with equal weight, creating an ever-growing stack. Right: Attention Residuals lets each layer compute a query and selectively pick up what it needs — thicker lines mean higher attention weight. Block AttnRes groups layers so the cost stays manageable at scale.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The team validated the idea in stages. First, a 3-billion-parameter version of Kimi Linear — their hybrid attention base model — trained for 1.4 trillion tokens with Attention Residuals, showed consistent improvements in gradient stability and benchmark performance. They then scaled to a 48-billion-parameter model (3 billion activated per forward pass) to test Block AttnRes. Finally, the mechanism was incorporated into the full 2.8-trillion-parameter Kimi K3, which launched publicly today, with the model activating 16 of 896 experts per forward pass.</p>
+
+      <h3>What they found</h3>
+      <p>Training gradients were 2–3× more stable throughout, with more uniform contribution from early and late layers alike. On the 48B model, Block AttnRes improved GPQA-Diamond (a benchmark of graduate-level scientific reasoning) by 7.5 percentage points, math benchmarks by 3.6 points, and HumanEval (a coding test) by 3.1 points. The headline efficiency claim: models trained with Block AttnRes match the performance of baselines trained with 25% more compute — a meaningful saving at the scale where frontier AI training costs tens of millions of dollars per run. Performance gains appear to increase with model size, suggesting that the largest models benefit most.</p>
+
+      <h3>The catch</h3>
+      <p>The paper tests exclusively on Kimi Linear models, which use a hybrid linear attention architecture that is itself a Moonshot innovation. It does not demonstrate that Attention Residuals transfers cleanly to standard full-attention models (the kind that underpins most of the industry's other systems). The block size in Block AttnRes needs tuning, and the authors don't provide a universal recipe. The biggest open question is whether these gains hold in an independent third-party reproduction — the weights and full technical report aren't public yet (promised for July 27), so external verification is still pending.</p>
+
+      <p><strong>If you remember one thing:</strong> replacing a transformer's fixed "add everything equally" residual with a learned "choose what matters" mechanism costs almost nothing in parameters but gives consistent, significant gains — and Kimi K3's release today is the first proof that it works at frontier scale.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Thariq Shihipar</span><span>His AI Engineer talk from July 7 — <a href="https://explainx.ai/blog/field-guide-to-fable-thariq-shihipar-anthropic-ai-engineer-2026">Field Guide to Fable</a> — included a detail worth noting: Anthropic cut Claude Code's built-in system prompt by 80% after discovering that Fable 5 responds better with fewer examples. He also laid out a six-method framework for finding "unknown unknowns" — the project-derailing surprises that don't surface until late in development.</span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The gap between open and closed AI models has been narrowing all year. But Kimi K3 benchmarking at #4 globally — above Google's best, above Meta's best, above Mistral — while remaining freely downloadable is a qualitative shift. It means any researcher, startup, or government can run a near-frontier model without routing traffic through a US company. The architecture ideas that made this possible (Attention Residuals, Kimi Delta Attention) came from a Beijing lab. Meanwhile Google's flagship missed its launch for the third time. The geography of frontier AI is more complicated than the standard narrative suggests, and it's becoming more so.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://venturebeat.com/technology/chinas-moonshot-ai-releases-kimi-k3-the-largest-open-source-model-ever-rivaling-top-u-s-systems">VentureBeat — Kimi K3</a> ·
+        <a href="http://en.people.cn/n3/2026/0717/c90000-20478901.html">People's Daily — Kimi K3</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-07-17/china-s-powerful-new-moonshot-ai-model-closes-gap-with-us-rivals">Bloomberg — Moonshot AI</a> ·
+        <a href="https://arxiv.org/abs/2603.15031">arXiv 2603.15031 — Attention Residuals</a> ·
+        <a href="https://github.com/nktkt/attention-residuals">Open impl. of AttnRes (GitHub)</a> ·
+        <a href="https://kingy.ai/blog/kimi-k3-benchmarks-specs-price-fable-5-gpt-5-6-sol/">Kimi K3 benchmarks — kingy.ai</a> ·
+        <a href="https://simonwillison.net/2026/Jul/16/kimi-k3/">Simon Willison's notes on Kimi K3</a> ·
+        <a href="https://www.techtimes.com/articles/320308/20260713/gemini-35-pro-targets-july-17-after-full-rebuild-every-spec-remains-unconfirmed.htm">TechTimes — Gemini 3.5 Pro delays</a> ·
+        <a href="https://9to5mac.com/2026/07/14/prismml-releases-bonsai-27b-claiming-first-major-ai-model-of-its-size-fit-for-iphone/">9to5Mac — Bonsai 27B</a> ·
+        <a href="https://techcrunch.com/2026/07/15/apple-intelligence-approved-for-launch-in-china-with-alibabas-qwen-ai/">TechCrunch — Apple Intelligence China</a> ·
+        <a href="https://www.bleepingcomputer.com/news/microsoft/microsoft-july-2026-patch-tuesday-fixes-massive-570-flaws-3-zero-days/">BleepingComputer — Microsoft 570 patches</a> ·
+        <a href="https://explainx.ai/blog/field-guide-to-fable-thariq-shihipar-anthropic-ai-engineer-2026">Thariq Shihipar — Field Guide to Fable</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Attention Residuals</div>
+        <div>In most AI models, each layer just adds its output to a growing pile of all previous layers' outputs — equal weight for everything. Attention Residuals replaces that fixed pile with a learned selection: each layer asks "what from before is actually useful to me right now?" and picks accordingly. Same depth, sharper results.</div>
+      </div>
+      <dl>
+        <dt>MoE (Mixture of Experts)</dt>
+        <dd>A model architecture where only a fraction of the model "activates" for any given input — Kimi K3 uses 16 of 896 expert sub-networks per token. You get a huge model, but at the inference cost of a small one.</dd>
+
+        <dt>Residual connection</dt>
+        <dd>The trick (from 2015's ResNet) of always adding a layer's input back to its output. It prevents information from being permanently overwritten as it passes through dozens of layers.</dd>
+
+        <dt>1-bit quantization</dt>
+        <dd>Compressing a model's weights down to just two values: +1 or −1. Normal AI models use 16 or 32 bits per weight; 1-bit cuts that 16× or more, letting large models fit in a phone's RAM. The tradeoff is a small accuracy loss on complex tasks.</dd>
+
+        <dt>Pseudo-query</dt>
+        <dd>In Attention Residuals, a small learned vector that each transformer layer uses to "ask a question" about what prior layers contain. The answers determine which earlier outputs get amplified and which get ignored.</dd>
+
+        <dt>Context window</dt>
+        <dd>How much text a model can read at once. Kimi K3's 1-million-token context can hold roughly 750,000 words — about 10 full novels — in a single conversation, useful for analyzing long codebases or documents.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

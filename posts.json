@@ -1,5 +1,12 @@
 [
   {
+    "num": 49,
+    "date": "2026-07-17",
+    "slug": "issues/2026-07-17.html",
+    "title": "What each layer chose to remember",
+    "blurb": "China's Moonshot AI released the largest open-source model in history — a 2.8-trillion-parameter system rivalling the best closed US models — built on a clever architecture trick that lets each layer decide which earlier layers to pay attention to."
+  },
+  {
     "num": 48,
     "date": "2026-07-16",
     "slug": "issues/2026-07-16.html",
