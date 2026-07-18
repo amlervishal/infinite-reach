@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №50 — The Permission Slip · Infinite Reach</title>
+  <meta name="description" content="The White House is now vetting who gets access to frontier models before companies can share them; Moonshot's 2.8-trillion-parameter open model matches US leaders; and a new paper shows that memory speed is the difference between a tool and a mind." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №50 &middot; Friday, July 18, 2026</p>
+      <h1>The Permission Slip</h1>
+      <p>Two of the world's most powerful technology companies learned this week that their most important products now require a nod from Washington before they can be shared with customers. Meanwhile, a Chinese startup upended the assumption that the most capable models can only be closed ones — and a quietly important paper showed that in software, the difference between a tool and a mind might be just a matter of milliseconds.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>The Trump administration has begun vetting which corporate partners can be involved in the rollout of OpenAI's and Anthropic's most powerful models — a function that, until recently, the companies handled entirely themselves. Sources tell CNBC that what began as "voluntary" national-security reviews now carry real weight: Anthropic was blocked from releasing its Claude Fable 5 model last month, regaining access only after weeks of intense negotiations. OpenAI was asked to gate its GPT-5.6 release similarly. A White House official denied that the government "approves" releases, saying the reviews are voluntary and companies set their own timelines. But the practical effect is a new kind of chokepoint, one that has no clear legal basis and no formal process — just power quietly asserted at the moment it matters most.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Open model</span><span>China's Moonshot AI released <strong>Kimi K3</strong>, a 2.8-trillion-parameter open-weight model with a 1-million-token context window — the largest open-source model ever built — that matches or beats US frontier models on most independent coding benchmarks; full weights arrive by July 27. <a href="https://venturebeat.com/technology/chinas-moonshot-ai-releases-kimi-k3-the-largest-open-source-model-ever-rivaling-top-u-s-systems/">VentureBeat</a></span></li>
+        <li><span class="tag tech">New release</span><span><strong>Thinking Machines Lab</strong> (founded by former OpenAI CTO Mira Murati) shipped its first in-house model: <strong>Inkling</strong>, a 975-billion-parameter multimodal model available open-weight under Apache 2.0 — text, images, and audio, with a 1M-token context window. <a href="https://techcrunch.com/2026/07/15/thinking-machines-amps-up-its-bet-against-one-size-fits-all-ai-with-its-first-open-model-inkling/">TechCrunch</a></span></li>
+        <li><span class="tag policy">Watchdog</span><span>Google DeepMind CEO Demis Hassabis proposed a US-led, <strong>industry-funded body</strong> to test frontier models up to 30 days before public release — modeled on FINRA, the private watchdog that polices Wall Street under SEC oversight. He wants it running before year-end. <a href="https://www.axios.com/2026/07/14/demis-hassabis-ai-regulation-google-deepmind">Axios</a></span></li>
+        <li><span class="tag money">Capital</span><span>AI equity funding hit <strong>$262.65B</strong> in the first half of 2026 alone — triple all of 2025 — and 99.5% of it flowed into just ten deals. The money is piling up, but it's piling up in very few places. <a href="https://newmarketpitch.com/blogs/news/frontier-ai-labs-funding-trends">New Market Pitch</a></span></li>
+        <li><span class="tag tech">Training recipe</span><span>Andrej Karpathy landed a sweeping refactor of his open-source <strong>nanochat</strong> project (PR #800): a new experiment system where "the code is the config" — no separate YAML files, just a depth parameter that drives the whole pipeline. Clean, reproducible, and a useful model for how research projects should be organized. <a href="https://github.com/karpathy/nanochat">GitHub</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~550-850 words -->
+      <h2>Paper, explained: when your memory is fast enough, it stops being a tool</h2>
+      <p class="kicker">"Memory in the Loop: In-Process Retrieval as Extended Working Memory for Language Agents" &middot; Yusuf Khan &amp; Carlo Lipizzi (Stevens Institute of Technology) &middot; <a href="https://arxiv.org/pdf/2607.05690">arXiv 2607.05690</a></p>
+
+      <p>This paper caught our eye because its central claim sounds like wordplay until you see the numbers — and then it becomes one of those ideas you can't un-see. The question it asks: does the <em>speed</em> of a memory system change what that memory <em>is</em>?</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Language model agents work in loops. On each cycle, an agent observes something — a web page, a file, a message — then reasons about what it means, then acts. Simple enough. The hard part is that real tasks require memory across many such cycles. You need to know what you already searched for, what you found, what you decided. Without memory, you repeat yourself. You're an amnesiac detectives who re-reads the same clue ten times.</p>
+
+      <p>The standard fix is to attach a memory store — a database the agent can query. The agent drops notes in, pulls them back out. But here's the problem that's been quietly gnawing at system builders: those stores are slow. A typical cloud-hosted vector database — the kind you'd use to search notes by meaning rather than exact word — answers queries in somewhere between 50 and a few hundred milliseconds. That sounds fast in human terms. In agent terms, where the loop itself might only have a few seconds of budget before it has to produce a response, spending 100 ms <em>per memory lookup</em> is catastrophic. A prior paper cited in the work showed that in-loop retrieval had inflated end-to-end latency by up to <strong>83 times</strong> in some configurations. So researchers mostly gave up and treated memory as a one-time consultation at the start of a turn, not something the agent could check mid-thought.</p>
+
+      <h3>How it works — the analogy that makes it click</h3>
+      <p>Think of a surgeon in an operating room. If the instrument she needs is on the tray right next to her hand, she can reach for it mid-procedure without breaking concentration. If the instrument is in the supply closet down the hall, she can't. She has to plan her trip in advance, before she opens the patient up. The instrument is the same; its location changes how she operates.</p>
+
+      <p>Khan and Lipizzi argue that memory in AI agents works the same way. An in-process store — one running <em>inside the same program</em>, in the same machine's memory — answers queries in roughly <strong>100 microseconds</strong>. That's one hundred millionths of a second, or about three orders of magnitude faster than a network call to a cloud database. At that speed, the per-step tax of a memory lookup nearly vanishes. The agent can check its memory at every single reasoning step — not once per turn, but continuously, the way a human uses short-term working memory when solving a problem. The store isn't a tool the agent chooses to consult; it's part of the thinking itself.</p>
+
+      <p>The authors draw a sharp conceptual line: a 100 ms store is a <em>tool</em>. A 100 µs store wired into the agent loop is <em>extended working memory</em>. Same data, different relationship.</p>
+
+      <h3>What they actually did</h3>
+      <p>The experiment was designed to isolate latency as the single variable. They held everything else fixed — the agent's total per-turn time budget, the reasoning model, the tasks — and varied only how fast the memory store answered. They tested with gpt-5-nano and gpt-5-mini, across five seeded task workloads per latency condition. The conditions ranged from in-process (sub-millisecond) to a simulated 110 ms cloud round-trip. They tracked "redundant actions" — steps the agent repeated because it forgot what it had already done — as the proxy for memory failure.</p>
+
+      <h3>What they found</h3>
+      <p>The results were clean enough to be uncomfortable for anyone who assumed latency was a secondary concern. At in-process speed, the agents produced <strong>0.0 redundant actions</strong> out of 12 possible. At 110 ms — a cloud round-trip well within "normal" for a production vector store — that number jumped to <strong>7.2 out of 12</strong>. The statistical test for the difference came back at p = 0.0079, meaning there's less than a 1-in-100 chance the pattern is coincidence. Even a generous 500 ms budget for the whole turn still leaked 1.6 redundant actions out of 12 because not a single memory lookup could fit inside the budget without dominating it.</p>
+
+      <p>The failure mode is worth naming precisely: it wasn't that agents had <em>bad</em> memory, it was that they had <em>no memory at all</em> in the cloud condition, because the budget ran out before any lookup could complete. They were effectively amnesiac — not because the database was broken, but because physics made it too expensive to check.</p>
+
+      <h3>The catch</h3>
+      <p>This is a controlled laboratory study, not a deployment. The tasks were structured workloads run in simulation, not open-ended real-world agent jobs. The two models tested (gpt-5-nano and gpt-5-mini) are on the lighter end of the capability spectrum, which may mean the pattern looks different with slower, more capable reasoning models that themselves consume more of the per-turn budget. And the paper measures redundancy as the proxy metric for memory quality — a reasonable proxy, but not the full picture of whether an agent actually completed the task correctly.</p>
+
+      <p><strong>If you remember one thing:</strong> When your memory store is fast enough, it isn't a tool you use — it's a faculty you have, and that distinction changes how agents should be built from the ground up.</p>
+
+      <!-- SVG diagram: in-loop vs out-of-loop memory retrieval -->
+      <figure>
+        <svg viewBox="0 0 720 320" role="img" aria-label="Diagram comparing out-of-loop memory (slow, external) with in-loop memory (fast, in-process) and the effect on redundant actions">
+          <!-- Background panels -->
+          <rect x="20" y="20" width="315" height="280" rx="10" fill="#F7F6F2" stroke="#D1CFC5" stroke-width="1.5"/>
+          <rect x="385" y="20" width="315" height="280" rx="10" fill="#F7F6F2" stroke="#D1CFC5" stroke-width="1.5"/>
+
+          <!-- Panel headings -->
+          <text x="177" y="50" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" font-weight="bold" fill="#141413">Out-of-loop memory</text>
+          <text x="177" y="66" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">cloud store · ~110 ms/lookup</text>
+          <text x="542" y="50" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" font-weight="bold" fill="#141413">In-loop memory</text>
+          <text x="542" y="66" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">in-process store · ~100 µs/lookup</text>
+
+          <!-- LEFT SIDE: agent steps in vertical column -->
+          <!-- Observe box -->
+          <rect x="110" y="82" width="110" height="34" rx="6" fill="#D97757" opacity="0.85"/>
+          <text x="165" y="104" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="white" font-weight="600">Observe</text>
+          <!-- Arrow down -->
+          <line x1="165" y1="116" x2="165" y2="132" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+          <!-- Reason box -->
+          <rect x="110" y="132" width="110" height="34" rx="6" fill="#D97757" opacity="0.85"/>
+          <text x="165" y="154" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="white" font-weight="600">Reason</text>
+          <!-- Dashed arrow to external store -->
+          <line x1="220" y1="149" x2="262" y2="149" stroke="#87867F" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowGray)"/>
+          <!-- Cloud store box -->
+          <rect x="262" y="133" width="58" height="30" rx="5" fill="#788C5D" opacity="0.85"/>
+          <text x="291" y="153" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="white">DB</text>
+          <!-- Return arrow -->
+          <line x1="262" y1="160" x2="220" y2="160" stroke="#87867F" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowGray)"/>
+          <!-- Latency label -->
+          <text x="291" y="177" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#D97757">110 ms</text>
+          <!-- Arrow down -->
+          <line x1="165" y1="166" x2="165" y2="182" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+          <!-- Act box -->
+          <rect x="110" y="182" width="110" height="34" rx="6" fill="#D97757" opacity="0.85"/>
+          <text x="165" y="204" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="white" font-weight="600">Act</text>
+
+          <!-- Result label left -->
+          <rect x="55" y="228" width="220" height="48" rx="6" fill="white" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="165" y="248" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">Redundant actions:</text>
+          <text x="165" y="268" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="19" font-weight="bold" fill="#D97757">7.2 / 12</text>
+
+          <!-- RIGHT SIDE: agent steps in vertical column -->
+          <!-- Observe box -->
+          <rect x="475" y="82" width="110" height="34" rx="6" fill="#6A8CAF" opacity="0.9"/>
+          <text x="530" y="104" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="white" font-weight="600">Observe</text>
+          <!-- Arrow down -->
+          <line x1="530" y1="116" x2="530" y2="132" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+          <!-- Reason box -->
+          <rect x="475" y="132" width="110" height="34" rx="6" fill="#6A8CAF" opacity="0.9"/>
+          <text x="530" y="154" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="white" font-weight="600">Reason</text>
+          <!-- Bidirectional arrow inside box to in-process store -->
+          <rect x="420" y="136" width="48" height="26" rx="4" fill="#788C5D" opacity="0.85"/>
+          <text x="444" y="153" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="white">mem</text>
+          <line x1="468" y1="145" x2="475" y2="145" stroke="#788C5D" stroke-width="1.5" marker-end="url(#arrowOlive)"/>
+          <line x1="475" y1="153" x2="468" y2="153" stroke="#788C5D" stroke-width="1.5" marker-end="url(#arrowOlive)"/>
+          <!-- Latency label -->
+          <text x="444" y="174" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#788C5D">100 µs</text>
+          <!-- Arrow down -->
+          <line x1="530" y1="166" x2="530" y2="182" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+          <!-- Act box -->
+          <rect x="475" y="182" width="110" height="34" rx="6" fill="#6A8CAF" opacity="0.9"/>
+          <text x="530" y="204" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="white" font-weight="600">Act</text>
+
+          <!-- Result label right -->
+          <rect x="420" y="228" width="220" height="48" rx="6" fill="white" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="530" y="248" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">Redundant actions:</text>
+          <text x="530" y="268" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="19" font-weight="bold" fill="#788C5D">0.0 / 12</text>
+
+          <!-- Divider line -->
+          <line x1="360" y1="30" x2="360" y2="290" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="6,4"/>
+
+          <!-- Arrow markers -->
+          <defs>
+            <marker id="arrowGray" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#87867F"/>
+            </marker>
+            <marker id="arrowOlive" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#788C5D"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>Left: when memory lives in a cloud database (~110 ms round-trip), the per-turn time budget runs out before any lookup can complete — agents can't remember anything mid-loop, so they repeat themselves. Right: with an in-process store (~100 µs), every reasoning step can read and write memory freely, dropping redundant actions from 7.2/12 to zero. The data is identical; it's the physics that changes what memory does. (Khan &amp; Lipizzi, arXiv 2607.05690)</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>The <strong>nanochat</strong> experiment refactor (PR #800) is worth bookmarking: the new design has "everything derive from <code>--depth</code>", so there's no config file at all — the code itself is the config. Combined with idempotent stage execution and centralized dataset caching, it's a practical model for reproducible ML research. <a href="https://github.com/karpathy/nanochat">github.com/karpathy/nanochat</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>The creator of Claude Code flagged a fix incoming for a frustrating bug where background sessions couldn't be deleted because their worktrees left behind a "no git root" error (issue #77962). Also confirmed that agent teams are being simplified — merged into subagents, fewer explicit tool calls required. <a href="https://github.com/anthropics/claude-code/issues/77962">Claude Code issue tracker</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three patterns are converging this week, and they point at the same underlying tension. Governments are quietly asserting sovereign control over who accesses the most powerful models — without laws, without formal processes, just power exercised at the release moment. At the same time, the open-source ecosystem (Kimi K3, Inkling) is catching up to closed systems fast enough that those access restrictions may become strategically leaky: if the world's most capable open-weight model is already comparable to what the White House is trying to gate, what exactly is being protected? And the research community is shifting its focus from "can we build a better base model?" to "how do we build reliable systems from existing models?" — which is where questions of memory speed, agent architecture, and reproducible training pipelines become the real frontier. What gets built in that space over the next year will matter more than any single model release.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.cnbc.com/2026/07/17/white-house-ai-access-anthropic-openai.html">CNBC — White House frontier model access</a> ·
+        <a href="https://venturebeat.com/technology/chinas-moonshot-ai-releases-kimi-k3-the-largest-open-source-model-ever-rivaling-top-u-s-systems/">VentureBeat — Kimi K3</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-07-17/china-s-powerful-new-moonshot-ai-model-closes-gap-with-us-rivals">Bloomberg — Kimi K3</a> ·
+        <a href="https://techcrunch.com/2026/07/15/thinking-machines-amps-up-its-bet-against-one-size-fits-all-ai-with-its-first-open-model-inkling/">TechCrunch — Inkling</a> ·
+        <a href="https://thinkingmachines.ai/news/introducing-inkling/">Thinking Machines Lab — Inkling announcement</a> ·
+        <a href="https://www.axios.com/2026/07/14/demis-hassabis-ai-regulation-google-deepmind">Axios — Hassabis AI watchdog proposal</a> ·
+        <a href="https://newmarketpitch.com/blogs/news/frontier-ai-labs-funding-trends">New Market Pitch — AI funding trends 2026</a> ·
+        <a href="https://arxiv.org/pdf/2607.05690">arXiv 2607.05690 — Memory in the Loop</a> ·
+        <a href="https://github.com/karpathy/nanochat">GitHub — karpathy/nanochat</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Working memory</div>
+        <div>The small, fast store in your mind that holds what you're thinking about <em>right now</em> — phone number you just heard, the clause you're mid-sentence on. It's distinct from long-term memory: small capacity, but instantly accessible. The paper this week argues that AI agents need the same distinction: fast in-process storage is "working memory"; slow cloud storage is something else entirely.</div>
+      </div>
+      <dl>
+        <dt>In-process store</dt>
+        <dd>A database that runs inside the same program, on the same machine. No network hop required — so answers arrive in microseconds instead of milliseconds. Think of it as memory on the same desk, not in the filing room down the hall.</dd>
+        <dt>Vector database</dt>
+        <dd>A database that stores items as lists of numbers (vectors) encoding their meaning. You query it by meaning — "find me notes about deadlines" — rather than by exact keywords. Widely used for AI agent memory, but typically hosted in the cloud, where network latency can be a problem.</dd>
+        <dt>MoE (Mixture of Experts)</dt>
+        <dd>An architecture where a model is divided into many specialist sub-networks ("experts"). On each input, only a handful of experts activate — so you get the knowledge of a large model while doing the compute of a smaller one. Both Kimi K3 (2.8T parameters, 54B active) and Inkling (975B total, 41B active) use this design.</dd>
+        <dt>Open weights</dt>
+        <dd>A model whose trained parameters are publicly downloadable, so anyone can run it, inspect it, or fine-tune it on their own hardware. Distinct from open-source (which implies the training code and data are also public). Kimi K3 and Inkling are both open-weight but not fully open-source.</dd>
+        <dt>FINRA</dt>
+        <dd>The Financial Industry Regulatory Authority — a private, non-governmental body that polices US stockbrokers and financial firms under government authority. It's funded by the industry it regulates and operates under SEC oversight. Hassabis wants a similar structure for frontier AI: industry-funded, government-supervised, independent of any single company.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
