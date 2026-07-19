@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №51 — The Referees They Asked For · Infinite Reach</title>
+  <meta name="description" content="All three major US AI labs publicly called for independent pre-release testing of frontier models this week — at the same moment the UN's scientists warned every government on earth that safety cannot be guaranteed. Plus: a paper on agents that teach themselves from their own mistakes." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №51 &middot; Sunday, July 19, 2026</p>
+      <h1>The Referees They Asked For</h1>
+      <p>All three of the companies building the world's most powerful software systems published nearly identical positions this week: they want independent outsiders to test their models before public release. At almost the same moment, the United Nations' panel of forty scientists told every government on earth that the technology's risks may already exceed what anyone can guarantee is safe. These two things arriving together is not a coincidence — it's the beginning of a reckoning.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>In the space of five weeks, OpenAI, Google DeepMind, and Anthropic have each published detailed proposals for independent testing of frontier AI models before they go public — and for an international body with the power to set standards and limit access to systems judged too dangerous. The rivals differ in detail: Anthropic wants a treaty-like international framework, Google proposed a FINRA-style private watchdog funded by industry, OpenAI leans toward government-chartered bodies. But the headline agreement is striking: the most powerful private entities in this technology now say they don't fully trust themselves to be the only ones deciding when their products are safe to release. At the same time, more than 200 economists, researchers, and technologists — including fifteen Nobel laureates — signed a joint statement urging governments to prepare now for the economic consequences of AI. And the UN's Independent International Scientific Panel, co-chaired by AI pioneer Yoshua Bengio, formally delivered its conclusion in a plenary session: "science currently cannot guarantee that increasingly capable AI will not cause catastrophic harm." The builders and the scientists are saying this in the same breath, in public, to the same governments, at the same time. That's new.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">IPO</span><span>OpenAI is reportedly weeks away from confidentially filing for an initial public offering at a valuation of around <strong>$730 billion</strong> in private markets — which would rank it among the largest US tech IPOs of the past decade. <a href="https://www.bloomberg.com/news/articles/2026-07-15/murati-s-thinking-machines-releases-first-ai-model-for-broad-use">Bloomberg</a></span></li>
+        <li><span class="tag tech">Speed</span><span>GPT-5.6 Sol is now running at <strong>750 tokens per second</strong> on Cerebras hardware — roughly 15–20× faster than a typical cloud inference call. Frontier intelligence is starting to feel real-time rather than conversational. <a href="https://spacedaily.com/m-on-july-9-2026-openai-opened-its-most-powerful-system-yet-to-the-public-gpt-5-6-in-three-tiers-named-sol-terra-and-luna-alongside-an-agent-it-calls-chatgpt-work-built-to-carry/">SpaceDaily</a></span></li>
+        <li><span class="tag tech">Silicon</span><span>OpenAI is co-developing a custom inference chip codenamed <strong>"Jalapeño"</strong> with Broadcom; early silicon testing shows substantial performance-per-watt improvements over current GPUs — a step toward owning its hardware destiny alongside the software. <a href="https://aitoolsrecap.com/Blog/AINewsJuly2026.aspx">AI Tools Recap</a></span></li>
+        <li><span class="tag tech">Models</span><span>Anthropic's <strong>Claude Fable 5</strong> had its free-access window extended for the third consecutive time; Google's <strong>Gemini 3.5 Pro</strong> reached general availability with a 2-million-token context window and a built-in "Deep Think" reasoning mode. <a href="https://aitoolsrecap.com/Blog/AINewsJuly2026.aspx">AI Tools Recap</a></span></li>
+        <li><span class="tag policy">Governance</span><span>The UN opened its first multilateral AI governance summit in Geneva (July 6–7), placing Bengio's panel warning in front of every member state — the first time a formal UN plenary has heard that AI's risk may already exceed any guarantee of safety. <a href="https://news.un.org/en/story/2026/07/1167862">UN News</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: agents that teach themselves from their own mistakes</h2>
+      <p class="kicker">"SEED: Self-Evolving On-Policy Distillation for Agentic Reinforcement Learning" &middot; Jinyang Wu, Shuo Yang, et al. (Tsinghua, Zhejiang, CUHK, NTU, Tongji) &middot; <a href="https://arxiv.org/abs/2607.14777">arXiv 2607.14777</a></p>
+
+      <p>The hardest part of training AI agents isn't building the model — it's teaching it to get better at long, multi-step tasks where success or failure doesn't appear until the very end. This paper proposes a surprisingly elegant fix: let the agent write notes to itself after every attempt, then read those notes before the next one.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When you train an agent to do something complex — navigate a virtual home, complete a software task, run a research workflow — you typically reward it only for the final outcome: did it succeed or not? That's a <em>sparse reward</em>: a single signal at the end of a long chain of decisions, with no feedback about which individual choices were smart and which were mistakes. It's like coaching someone on their golf swing by revealing only the final scorecard. They know something went wrong; they don't know when.</p>
+
+      <p>Researchers have tried to fix this with <em>dense rewards</em> — intermediate signals that score each step individually. But designing good intermediate rewards requires human experts to specify what "good progress" looks like at every moment, which is expensive and doesn't generalize. Another approach is <em>knowledge distillation</em>: train a weaker model to mimic a stronger one, using the stronger model's step-level behavior as detailed guidance. But that requires access to an already-better model — a circular problem when you're trying to build the best model in the first place.</p>
+
+      <p>So the field has been stuck with a familiar frustration: sparse rewards are easy to define but hard to learn from, and dense signals are useful but costly to produce.</p>
+
+      <h3>How it works — the analogy</h3>
+      <p>Imagine you're learning to cook a complex dish through pure trial and error, with only a thumbs-up or thumbs-down at the end of each attempt. After every try, you write yourself a note: <em>"Don't add the spice before the oil is hot — that's where the bitterness came from last time."</em> On the next attempt, you read your notes from before you start. Over many rounds, these personal lessons accumulate into a little personalized cookbook of reusable rules — not just outcomes, but the <em>why</em> behind them.</p>
+
+      <p>SEED works exactly this way. After each completed episode — whether the agent succeeded or failed — the agent reads back its own full trajectory (everything it observed, every reasoning step, every action it took) and writes a short natural-language note: a "hindsight skill." These notes describe things like reusable sub-workflows, critical observations it almost missed, or specific decisions that caused failure. They're stored in a small retrieval bank.</p>
+
+      <p>Before the next episode, the most relevant stored skills are pulled out and added to the agent's context. The agent is, in effect, reading its own previous advice. Here's the clever part: the researchers then measure how the agent's behavior changes when those skills are present versus absent. The difference in token-level probabilities — how much more (or less) likely each action becomes when the agent has its skills — is converted directly into a training signal. They call this "skill-induced distillation": the agent is distilling wisdom from its past self into its current self, continuously, without any external teacher at all.</p>
+
+      <p>This gives two training signals running simultaneously: the standard sparse outcome reward (did the episode succeed?) and a dense, step-by-step distillation signal derived entirely from the agent's accumulated self-knowledge. Because the skills are extracted from the same policy that's currently being trained — not a separate, frozen model — the guidance stays relevant as the agent improves. In RL terminology, this makes it "on-policy": the teacher and the student are the same evolving model.</p>
+
+      <h3>What they actually did</h3>
+      <p>The researchers tested SEED on two kinds of tasks. The first is ALFWorld — a well-established text-based household simulation where an agent must complete multi-step tasks ("put the apple in the fridge," "find the candle and bring it to the desk") by navigating room descriptions and issuing language commands. It's a classic test of agent planning because tasks span many steps across a map of rooms, with no visual input. The second set involves vision-based agentic benchmarks, where the agent also has to perceive and reason about images.</p>
+
+      <p>In both cases, the baseline was outcome-only RL: the same model, the same training setup, but with no hindsight skill mechanism. Every other variable was held constant to isolate what the skills actually contribute.</p>
+
+      <h3>What they found</h3>
+      <p>The improvement was stark. On ALFWorld, SEED achieved a macro-average success rate improvement of <strong>14.9 to 45.9 percentage points</strong> over outcome-only RL — in the same number of training steps. That's not a marginal gain; it roughly doubled or tripled success rates on several task categories. The improvements extended to the vision-based benchmarks too, suggesting the mechanism isn't specific to text environments.</p>
+
+      <p>The most revealing finding is about <em>sample efficiency</em>: SEED reached a given performance level much faster than the baseline. Because the dense distillation signal provides step-level guidance from the very first episode, the model doesn't need to stumble through as many total failures before the lesson lands. In settings where training episodes are expensive — computationally or logistically — this matters enormously.</p>
+
+      <p>The notable failure mode: the skill extraction step works best when failures have identifiable, explainable causes. In environments with highly stochastic outcomes — where randomness can overwhelm the signal — the extracted "lessons" may attribute outcomes to the wrong decisions. The authors don't test in highly noisy environments, so how well SEED holds up there is an open question.</p>
+
+      <h3>The catch</h3>
+      <p>SEED adds meaningful complexity: a skill-extraction fine-tuning stage before the main RL loop begins, plus retrieval overhead on every episode. All experiments use relatively small model scales, so it's unclear whether the pattern persists at the sizes of frontier models (which are thousands of times larger). And every experiment runs in simulation; real-world agentic tasks introduce unpredictability that may make "hindsight skills" noisier and harder to extract cleanly. This is promising, reproducible lab work that still needs scaling and real-world validation before it can be called a general principle.</p>
+
+      <p><strong>If you remember one thing:</strong> teaching an AI agent to write notes to itself after each attempt — and read those notes before the next one — can dramatically outperform simply rewarding it for success, because the notes fill in the step-level guidance that an outcome alone can never provide.</p>
+
+      <!-- SVG: SEED's self-improvement loop -->
+      <figure>
+        <svg viewBox="0 0 720 320" role="img" aria-label="SEED's four-step feedback loop: run episode, extract skills, bank skills, augment next episode, generating dense training signal alongside sparse outcome reward">
+          <defs>
+            <marker id="arrG"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#87867F"/></marker>
+            <marker id="arrC"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#D97757"/></marker>
+            <marker id="arrO"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#788C5D"/></marker>
+            <marker id="arrS"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6A8CAF"/></marker>
+          </defs>
+
+          <!-- Background -->
+          <rect x="10" y="10" width="700" height="300" rx="12" fill="#F7F6F2" stroke="#D1CFC5" stroke-width="1"/>
+
+          <!-- 1. Run Episode — top-left -->
+          <rect x="40" y="40" width="170" height="54" rx="8" fill="#D97757"/>
+          <text x="125" y="63" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="bold" fill="white">1. Run episode</text>
+          <text x="125" y="82" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,0.88)">agent acts · outcome recorded</text>
+
+          <!-- 2. Sparse Reward — top-right -->
+          <rect x="510" y="40" width="170" height="54" rx="8" fill="#87867F"/>
+          <text x="595" y="63" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="bold" fill="white">2. Sparse reward</text>
+          <text x="595" y="82" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,0.88)">success / failure at end</text>
+
+          <!-- 3. Extract Skills — bottom-right -->
+          <rect x="510" y="226" width="170" height="54" rx="8" fill="#6A8CAF"/>
+          <text x="595" y="249" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="bold" fill="white">3. Extract skills</text>
+          <text x="595" y="268" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,0.88)">agent reads its own trajectory</text>
+
+          <!-- 4. Skills Bank — bottom-left -->
+          <rect x="40" y="226" width="170" height="54" rx="8" fill="#788C5D"/>
+          <text x="125" y="249" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="bold" fill="white">4. Skills bank</text>
+          <text x="125" y="268" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,0.88)">"don't add spice before oil…"</text>
+
+          <!-- Center box: Policy Update -->
+          <rect x="265" y="130" width="190" height="60" rx="10" fill="white" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="360" y="155" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="bold" fill="#141413">Policy update</text>
+          <text x="360" y="172" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">sparse + dense signals combined</text>
+
+          <!-- Arrow 1→2: top (episode completes) -->
+          <line x1="210" y1="67" x2="508" y2="67" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrG)"/>
+          <text x="360" y="60" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">episode completes</text>
+
+          <!-- Arrow 2→center: right-top to center (sparse reward in) -->
+          <line x1="595" y1="94" x2="595" y2="160" stroke="#87867F" stroke-width="1.5"/>
+          <line x1="595" y1="160" x2="457" y2="160" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrG)"/>
+
+          <!-- Arrow 2→3: right side down (trigger skill extraction, dashed) -->
+          <line x1="620" y1="94" x2="620" y2="224" stroke="#6A8CAF" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrS)"/>
+          <text x="648" y="163" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#6A8CAF" transform="rotate(90 648 163)">also triggers skill extraction</text>
+
+          <!-- Arrow 3→4: bottom (skills stored, right to left) -->
+          <line x1="508" y1="253" x2="212" y2="253" stroke="#6A8CAF" stroke-width="1.5" marker-end="url(#arrS)"/>
+          <text x="360" y="246" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#6A8CAF">natural-language skills stored</text>
+
+          <!-- Arrow 4→center: left-bottom to center (dense signal in) -->
+          <line x1="125" y1="226" x2="125" y2="150" stroke="#788C5D" stroke-width="1.5"/>
+          <line x1="125" y1="150" x2="263" y2="150" stroke="#788C5D" stroke-width="1.5" marker-end="url(#arrO)"/>
+          <text x="75" y="190" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#788C5D" transform="rotate(-90 75 190)">dense distillation signal</text>
+
+          <!-- Arrow center→1: improved policy loops back (dashed clay) -->
+          <line x1="265" y1="145" x2="125" y2="100" stroke="#D97757" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrC)"/>
+          <text x="168" y="117" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#D97757" transform="rotate(-27 168 117)">improved policy</text>
+        </svg>
+        <figcaption>SEED's self-improvement loop. After each episode (1), a sparse outcome signal flows into the policy update (2 → center). Simultaneously, the agent reads back its own trajectory and writes natural-language "hindsight skills" (3), which are stored and retrieved before the next episode (4). The gap between how the agent behaves with versus without those skills is converted into a dense, token-level training signal — the green path into the center box. The agent distills lessons from its past self, with no external teacher. (Wu et al., arXiv 2607.14777)</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span><strong>autoresearch</strong> — Andrej Karpathy's newest public repository lets AI agents run machine-learning experiments overnight on a single GPU: the agent modifies training code autonomously, runs 5-minute training windows, evaluates improvement, and iterates without human input. At 91,500 stars it's the clearest public demonstration of what autonomous research infrastructure looks like at the small scale. (Karpathy joined Anthropic's pretraining team in May — making this public toolkit an interesting signal of what he's been thinking about.) <a href="https://github.com/karpathy/autoresearch">github.com/karpathy/autoresearch</a></span></li>
+        <li><span class="tag tech">Garry Tan</span><span><strong>GStack</strong> — the Y Combinator president open-sourced his personal Claude Code configuration: 23 specialist slash commands acting as CEO, designer, security officer, QA lead, and release engineer inside a single coding agent. It crossed 108,000 GitHub stars within weeks — the "400× productivity" framing seems to land for founders building with lean teams. <a href="https://github.com/garrytan/gstack">github.com/garrytan/gstack</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The governance moment and the technical moment are arriving together, and that timing is not accidental. The labs calling for independent oversight are the same ones shipping systems that, by their own admission, no one fully understands yet. The SEED paper is a small window into why: AI agents are now being trained not just on human-curated data, but on their own experience — writing lessons to themselves, reading their own notes, distilling insight from their own failures. This self-improvement loop is part of why fifteen Nobel laureates felt enough urgency to sign a joint statement this week. The question isn't whether to slow down — nobody serious is proposing that — but whether governance frameworks can be built fast enough to keep pace with systems that are, in a quiet but literal sense, teaching themselves to be better at every attempt.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.axios.com/2026/07/16/ai-regulations-openai-anthropic-google">Axios — AI labs converge on regulation</a> ·
+        <a href="https://news.un.org/en/story/2026/07/1167862">UN News — Geneva AI governance summit</a> ·
+        <a href="https://www.ungeneva.org/en/news-media/news/2026/07/120326/global-push-ai-governance-amid-warnings-catastrophic-harm">UN Geneva — catastrophic harm warning</a> ·
+        <a href="https://spacedaily.com/m-on-july-9-2026-openai-opened-its-most-powerful-system-yet-to-the-public-gpt-5-6-in-three-tiers-named-sol-terra-and-luna-alongside-an-agent-it-calls-chatgpt-work-built-to-carry/">SpaceDaily — GPT-5.6 Sol on Cerebras</a> ·
+        <a href="https://aitoolsrecap.com/Blog/AINewsJuly2026.aspx">AI Tools Recap — July 2026 model updates</a> ·
+        <a href="https://arxiv.org/abs/2607.14777">arXiv 2607.14777 — SEED paper</a> ·
+        <a href="https://github.com/jinyangwu/SEED">GitHub — jinyangwu/SEED</a> ·
+        <a href="https://github.com/karpathy/autoresearch">GitHub — karpathy/autoresearch</a> ·
+        <a href="https://github.com/garrytan/gstack">GitHub — garrytan/gstack</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Distillation</div>
+        <div>In machine learning, <em>distillation</em> means training a model to mimic the behavior of a better one — using the better model's step-level outputs as a detailed teaching signal, rather than just raw data. SEED's twist: the "better model" and the "student model" are the same model, looking at its own past behavior. It's less like school and more like a musician who studies recordings of their own performances to identify exactly what to fix.</div>
+      </div>
+      <dl>
+        <dt>Sparse reward</dt>
+        <dd>A training signal given only at the end of a task — success or failure — with no feedback on intermediate steps. Like grading an essay with a single letter and no comments. Easy to define, but hard to learn from when the task takes hundreds of steps.</dd>
+        <dt>On-policy</dt>
+        <dd>A reinforcement learning approach where training data always comes from the model's current behavior, not stored replays or a different model. The guidance stays aligned with what the agent actually does right now — which matters when the model is changing rapidly.</dd>
+        <dt>Hindsight skill</dt>
+        <dd>In the SEED paper, a short natural-language note the agent writes about a completed episode — capturing what worked, what failed, and why. Stored and retrieved before future attempts, like reading your own previous notes before trying again.</dd>
+        <dt>Agentic RL</dt>
+        <dd>Reinforcement learning applied to AI systems that take sequences of actions across long, multi-step tasks — navigating environments, using tools, calling APIs — rather than making a single prediction. The "agentic" part means the system acts in the world over time, not just answers questions.</dd>
+        <dt>ALFWorld</dt>
+        <dd>A benchmark environment where an AI agent completes household tasks in text-based simulation: "put the apple in the fridge," "find the candle and bring it to the desk." Widely used to test agent planning because tasks require multi-step reasoning across a map of rooms with no visual input — just language descriptions.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
