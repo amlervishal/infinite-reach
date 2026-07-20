@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №52 — Twenty-Nine Founding Members · Infinite Reach</title>
+  <meta name="description" content="China launched a 29-nation AI cooperation body this weekend while its biggest open-weight model topped coding charts. A 4-billion-parameter academic model then quietly outscored GPT-5 at reading videos — without spending a fraction of the compute." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №52 &middot; Sunday, July 20, 2026</p>
+      <h1>Twenty-Nine Founding Members</h1>
+      <p>China's biggest annual technology gathering closed this weekend with something new: a formal international body for AI cooperation, backed by 29 countries and headquartered in Shanghai. The same week produced the world's largest open-weight AI model and a quietly surprising paper — a small academic team showed that a four-billion-parameter model, engineered thoughtfully, can outperform systems with hundreds of times more computing power at understanding what's happening in a video.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On July 16, representatives from 29 countries — including Russia, Indonesia, Kazakhstan, Pakistan, and Laos — signed an agreement in Shanghai establishing the <strong>World Artificial Intelligence Cooperation Organization</strong>, or WAICO. It is designed as an independent intergovernmental body, open to all sovereign states, with a focus on development and what its founders call "equitable" global AI governance. UN Secretary-General António Guterres attended the signing ceremony. Chinese President Xi Jinping delivered the opening keynote at the World AI Conference the following morning, the first time he has addressed the event directly. Xi called for an international framework that gives every country — not just the wealthiest — meaningful access to AI's benefits and a voice in setting its rules. Whether WAICO develops real authority is an open question: it has no enforcement mechanism yet, and the countries that dominate frontier AI development — the United States and its closest allies — are conspicuously absent from its founding roster. But 29 governments signed their names to it, and the UN Secretary-General showed up. That is not nothing.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Open model</span><span>Moonshot AI's <strong>Kimi K3</strong> — a 2.8-trillion-parameter Mixture-of-Experts model with a 1-million-token context window — launched July 16 and immediately topped coding leaderboards, outperforming Claude Opus 4.8 and GPT 5.5. Moonshot plans to fully open-source it by the end of July. It is the largest open-weight model released by any Chinese lab. <a href="https://www.bloomberg.com/news/articles/2026-07-17/china-s-powerful-new-moonshot-ai-model-closes-gap-with-us-rivals">Bloomberg</a></span></li>
+        <li><span class="tag policy">Cyber</span><span>The intelligence agencies of the US, UK, Australia, Canada, and New Zealand issued a rare joint warning: AI systems capable of serious cyberattacks are <strong>"months, not years" away</strong>. They urged corporate boards to upgrade defenses and patch vulnerabilities now, rather than waiting for the attack to demonstrate the threat. <a href="https://www.cybersecuritydive.com/news/ai-cyberattacks-five-eyes-frontier-models-warning/823526/">Cybersecurity Dive</a></span></li>
+        <li><span class="tag money">Hardware</span><span>South Korea coordinated <strong>$880 billion</strong> in pledged investment from Samsung, SK Hynix, and other companies for semiconductor fabrication and AI infrastructure over the next ten years — one of the largest national technology commitments ever assembled by a single government. <a href="https://www.techspot.com/news/112926-south-korea-betting-880-billion-next-ai-race.html">TechSpot</a></span></li>
+        <li><span class="tag tech">Access</span><span>China's cyberspace regulator cleared <strong>Apple Intelligence</strong> for mainland iPhones on July 15 — 22 months after Apple first announced it. The catch: Alibaba's Qwen model will handle the generation, not Apple's own systems. Alibaba's stock jumped 4% on the news. <a href="https://techcrunch.com/2026/07/15/apple-intelligence-approved-for-launch-in-china-with-alibabas-qwen-ai/">TechCrunch</a></span></li>
+        <li><span class="tag policy">Regulation</span><span>The European Commission ordered Google to give rival AI assistants the same system-level Android access currently reserved for Gemini, and to share anonymized search data with competing AI services — moves under the Digital Markets Act that could fundamentally change which AI assistant greets you when you pick up your phone in Europe. <a href="https://www.euronews.com/my-europe/2026/07/16/eu-orders-google-to-share-search-data-open-android-to-ai-rivals-competitors">Euronews</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~650 words -->
+      <h2>Paper, explained: the small model that could see</h2>
+      <p class="kicker">"VideoChat3: Fully Open Video MLLM for Efficient and Generalist Video Understanding" &middot; 27 researchers from Nanjing University, Shanghai AI Laboratory, Nanyang Technological University, Peking University &middot; <a href="https://arxiv.org/abs/2607.14935">arXiv 2607.14935</a></p>
+
+      <p>A team of 27 researchers released a video-understanding model with 4 billion parameters — a size considered modest at a moment when frontier systems run to the hundreds of billions — and proceeded to outscore GPT-5 and Gemini 2.5 Flash on the benchmarks that specifically test whether a model knows <em>when</em> something happens in a video. The paper was posted July 16, and it reached the top tier of Hugging Face's trending papers within a day.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Most people interact with video as a passive medium — you watch it, you feel it. But building a computer system that can watch a video and answer precise questions about timing is surprisingly hard. The challenge has a name: <em>temporal grounding</em>. A system has to be able to answer questions like "at exactly what moment does the teacher pick up the pen?" or "find the 12-second clip where the car turns left." That's not the same as recognizing that a pen, a teacher, and a car are present. It requires tracking change across time.</p>
+
+      <p>Current large video models handle this poorly for a structural reason. They were designed around image-understanding — each frame is analyzed like a still photograph, and the frames are stitched together. That works tolerably for questions about content ("is there a dog in this video?") but fails for motion questions, because the <em>change between frames</em> is never directly computed. The model sees a slideshow; it doesn't see flow.</p>
+
+      <p>A second problem is cost. Processing video at high resolution is brutally expensive: a standard video understanding model might generate thousands of "visual tokens" for a single clip — each one consuming compute. Scaling that to long videos, or to real-time streaming, becomes impractical quickly.</p>
+
+      <h3>How it works — the analogy</h3>
+      <p>Imagine trying to understand a dance performance. You could describe it by writing down what each dancer looks like in a series of photographs, taken one per second. Or you could describe the <em>movement itself</em> — the arc of an arm, the direction of a step. The second description captures something the first misses entirely, and it takes fewer words.</p>
+
+      <p>VideoChat3's core innovation, the <strong>Inflated 3D Vision Transformer</strong> (I3D-ViT), works like the second approach. A standard vision transformer — the type of model that reads images — processes 2D patches of pixels. The team "inflated" those 2D reading patterns into 3D ones, so the model explicitly computes relationships between patches across neighboring frames, not just within a single frame. It doesn't just see what's in each image; it sees how things are moving between images.</p>
+
+      <p>The second piece is <strong>Adaptive Frame Resolution</strong>: rather than sampling every frame at the same resolution and cost, the model adjusts on the fly. Fast-moving action gets more tokens; static scenes get fewer. The result is that VideoChat3 generates roughly half the visual tokens that comparable models like Qwen3-VL produce for the same video — meaning it costs less to run, can process longer videos, and is practical for live streaming, not just pre-recorded clips.</p>
+
+      <p>The team also built three custom training datasets totalling approximately 3 million instruction samples, covering general video understanding, long-form content, and streaming scenarios. All of it — the model weights, training code, and datasets — was released publicly alongside the paper.</p>
+
+      <h3>What they actually did</h3>
+      <p>The researchers evaluated VideoChat3 on the <strong>TimeLens</strong> benchmark suite, which tests temporal grounding across three standard tasks: Charades-STA (fine-grained activity localization in short clips), ActivityNet Captions (finding moments described in natural language in longer videos), and QVHighlights (highlight detection and moment retrieval). They ran the same benchmarks on GPT-5 and Gemini 2.5 Flash for direct comparison. The metric is <em>mIoU</em> — mean Intersection over Union — which measures how closely the model's predicted time window overlaps with the ground-truth window. Higher is better; a score of 100 would mean a perfect match every time.</p>
+
+      <h3>What they found</h3>
+      <p>VideoChat3 (4B parameters) beat both GPT-5 and Gemini 2.5 Flash on all three tasks:</p>
+      <ul>
+        <li><strong>Charades-STA:</strong> VideoChat3 scored 56.1 mIoU, versus GPT-5's 40.5 and Gemini 2.5 Flash's 48.6.</li>
+        <li><strong>ActivityNet Captions:</strong> 54.6 versus 42.9 (GPT-5) and 52.5 (Gemini).</li>
+        <li><strong>QVHighlights:</strong> 67.0 versus 52.1 (GPT-5) and 64.3 (Gemini).</li>
+      </ul>
+      <p>These aren't marginal differences. On Charades-STA, VideoChat3's score is nearly 40% higher than GPT-5's. The pattern holds across all three tasks: a model a fraction of the size, built by a university lab, systematically outperforms the best proprietary commercial systems on this particular capability. The efficiency gains are similarly striking — half the visual token cost for comparable or better results.</p>
+
+      <h3>The catch</h3>
+      <p>These benchmarks specifically test temporal grounding, which is one slice of what a video-understanding model needs to do. On broader video understanding tasks — general Q&amp;A, summarization, multi-modal reasoning — the largest frontier models still hold substantial advantages. VideoChat3 is not a general replacement for GPT-5 at video; it's a specialist that has been deliberately optimized for the temporal understanding component. The training datasets, while large, were curated by the research team and may reflect the specific task formats of the benchmarks they're targeting. How well the efficiency claims hold up on domain-shifted real-world video (sports, medical imaging, live events) is untested.</p>
+
+      <p><strong>If you remember one thing:</strong> a 4-billion-parameter academic model just outscored GPT-5 at knowing <em>when</em> things happen in videos — by teaching itself to track motion between frames rather than reading each frame like a photograph.</p>
+
+      <!-- SVG: grouped bar chart of benchmark scores -->
+      <figure>
+        <svg viewBox="0 0 720 300" role="img" aria-label="Bar chart showing VideoChat3, GPT-5, and Gemini 2.5 Flash scores on three temporal grounding benchmarks. VideoChat3 leads on all three.">
+
+          <!-- Background -->
+          <rect x="0" y="0" width="720" height="300" rx="10" fill="#F7F6F2"/>
+
+          <!-- Y-axis gridlines and labels -->
+          <!-- y=250 is zero line; chart height=200; scale=200/80=2.5px per unit -->
+          <!-- gridlines at 0, 20, 40, 60, 80 -->
+          <line x1="72" y1="250" x2="700" y2="250" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="72" y1="200" x2="700" y2="200" stroke="#D1CFC5" stroke-width="0.7" stroke-dasharray="4,4"/>
+          <line x1="72" y1="150" x2="700" y2="150" stroke="#D1CFC5" stroke-width="0.7" stroke-dasharray="4,4"/>
+          <line x1="72" y1="100" x2="700" y2="100" stroke="#D1CFC5" stroke-width="0.7" stroke-dasharray="4,4"/>
+          <line x1="72" y1="50"  x2="700" y2="50"  stroke="#D1CFC5" stroke-width="0.7" stroke-dasharray="4,4"/>
+
+          <text x="62" y="254" text-anchor="end" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">0</text>
+          <text x="62" y="204" text-anchor="end" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">20</text>
+          <text x="62" y="154" text-anchor="end" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">40</text>
+          <text x="62" y="104" text-anchor="end" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">60</text>
+          <text x="62" y="54"  text-anchor="end" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">80</text>
+          <text x="20" y="155" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" transform="rotate(-90,20,155)">mIoU score</text>
+
+          <!-- GROUP 1: Charades-STA  (x_start=100) -->
+          <!-- VideoChat3: 56.1 → height=140.25, y=250-140.25=109.75 -->
+          <rect x="100" y="109.75" width="30" height="140.25" fill="#D97757" rx="3"/>
+          <text x="115" y="105" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#D97757">56.1</text>
+          <!-- GPT-5: 40.5 → height=101.25, y=148.75 -->
+          <rect x="136" y="148.75" width="30" height="101.25" fill="#87867F" rx="3"/>
+          <text x="151" y="144" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#87867F">40.5</text>
+          <!-- Gemini: 48.6 → height=121.5, y=128.5 -->
+          <rect x="172" y="128.5" width="30" height="121.5" fill="#6A8CAF" rx="3"/>
+          <text x="187" y="124" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#6A8CAF">48.6</text>
+
+          <text x="151" y="272" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" fill="#141413">Charades-STA</text>
+
+          <!-- GROUP 2: ActivityNet (x_start=305) -->
+          <!-- VideoChat3: 54.6 → height=136.5, y=113.5 -->
+          <rect x="305" y="113.5" width="30" height="136.5" fill="#D97757" rx="3"/>
+          <text x="320" y="109" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#D97757">54.6</text>
+          <!-- GPT-5: 42.9 → height=107.25, y=142.75 -->
+          <rect x="341" y="142.75" width="30" height="107.25" fill="#87867F" rx="3"/>
+          <text x="356" y="138" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#87867F">42.9</text>
+          <!-- Gemini: 52.5 → height=131.25, y=118.75 -->
+          <rect x="377" y="118.75" width="30" height="131.25" fill="#6A8CAF" rx="3"/>
+          <text x="392" y="114" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#6A8CAF">52.5</text>
+
+          <text x="356" y="272" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" fill="#141413">ActivityNet Captions</text>
+
+          <!-- GROUP 3: QVHighlights (x_start=510) -->
+          <!-- VideoChat3: 67.0 → height=167.5, y=82.5 -->
+          <rect x="510" y="82.5" width="30" height="167.5" fill="#D97757" rx="3"/>
+          <text x="525" y="78" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#D97757">67.0</text>
+          <!-- GPT-5: 52.1 → height=130.25, y=119.75 -->
+          <rect x="546" y="119.75" width="30" height="130.25" fill="#87867F" rx="3"/>
+          <text x="561" y="115" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#87867F">52.1</text>
+          <!-- Gemini: 64.3 → height=160.75, y=89.25 -->
+          <rect x="582" y="89.25" width="30" height="160.75" fill="#6A8CAF" rx="3"/>
+          <text x="597" y="85" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#6A8CAF">64.3</text>
+
+          <text x="561" y="272" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" fill="#141413">QVHighlights</text>
+
+          <!-- Legend (top right) -->
+          <rect x="490" y="12" width="12" height="12" fill="#D97757" rx="2"/>
+          <text x="507" y="22" font-family="system-ui,sans-serif" font-size="11" fill="#141413">VideoChat3-4B</text>
+          <rect x="490" y="30" width="12" height="12" fill="#87867F" rx="2"/>
+          <text x="507" y="40" font-family="system-ui,sans-serif" font-size="11" fill="#141413">GPT-5</text>
+          <rect x="490" y="48" width="12" height="12" fill="#6A8CAF" rx="2"/>
+          <text x="507" y="58" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Gemini 2.5 Flash</text>
+
+          <!-- Title -->
+          <text x="75" y="22" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="bold" fill="#141413">Temporal grounding benchmarks (mIoU, higher = better)</text>
+        </svg>
+        <figcaption>VideoChat3 (4B parameters, fully open) versus GPT-5 and Gemini 2.5 Flash on three standard tests of temporal grounding — the ability to pinpoint <em>when</em> something happens in a video. VideoChat3 leads on all three benchmarks despite being a fraction of the size of the proprietary systems it is compared against.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy's GitHub shows a repo called <strong>nanochat</strong>, updated July 4, described as "The best ChatGPT that $100 can buy." In the tradition of his nano-series (nanoGPT, nanoBERT), it looks like a minimal, runnable personal language model deployment aimed at people who want to understand and own the full stack — not just call an API. <a href="https://github.com/karpathy">GitHub</a></span></li>
+        <li><span class="tag money">Garry Tan</span><span>The Y Combinator CEO posted on X that agentic-assisted coding now lets him ship 37,000 lines of code per day across five projects. A Polish developer then audited his public site and found 78,400 total lines — which would mean he shipped the whole site in about two days. The debate that followed is a useful microcosm of what AI-assisted productivity claims actually mean in practice. <a href="https://aiweekly.co/alerts/developer-audits-yc-ceo-garry-tans-37k-ai-lines-per-day-claim">AI Weekly</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three things happened this week that individually seem unrelated but together sketch the same picture. A 29-nation body formed in Shanghai to claim a seat at the table in AI governance — one conspicuously free of the countries building the most powerful systems. A 4-billion-parameter open model outperformed the leading proprietary giants on a specific, measurable task. And the world's largest open-weight model arrived from a Chinese lab, free to download. The common thread: the assumption that frontier AI is a small club controlled by a handful of Western companies is under real pressure, from multiple directions at once. Access, influence, and raw capability are all becoming more distributed. That doesn't mean the playing field is equal — the gaps remain enormous, and WAICO has no enforcement power yet. But the shape of the landscape is changing faster than the governance frameworks designed to manage it.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://english.www.gov.cn/news/202607/17/content_WS6a59a226c6d00ca5f9a0c432.html">China.gov — WAICO founding</a> ·
+        <a href="https://easternherald.com/2026/07/17/china-waico-world-ai-cooperation-organization-shanghai-2/">Eastern Herald — WAICO launch</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-07-17/china-s-powerful-new-moonshot-ai-model-closes-gap-with-us-rivals">Bloomberg — Kimi K3</a> ·
+        <a href="https://www.cnbc.com/2026/07/17/moonshot-ai-kimi-k3-model-openai-anthropic-china.html">CNBC — Kimi K3</a> ·
+        <a href="https://www.cybersecuritydive.com/news/ai-cyberattacks-five-eyes-frontier-models-warning/823526/">Cybersecurity Dive — Five Eyes</a> ·
+        <a href="https://www.techspot.com/news/112926-south-korea-betting-880-billion-next-ai-race.html">TechSpot — South Korea chips</a> ·
+        <a href="https://techcrunch.com/2026/07/15/apple-intelligence-approved-for-launch-in-china-with-alibabas-qwen-ai/">TechCrunch — Apple Intelligence China</a> ·
+        <a href="https://www.euronews.com/my-europe/2026/07/16/eu-orders-google-to-share-search-data-open-android-to-ai-rivals-competitors">Euronews — EU Android ruling</a> ·
+        <a href="https://arxiv.org/abs/2607.14935">arXiv 2607.14935 — VideoChat3</a> ·
+        <a href="https://www.techtimes.com/articles/320953/20260719/videochat3-beats-gpt-5-video-grounding-open-source-full-training-stack-released.htm">TechTimes — VideoChat3 results</a> ·
+        <a href="https://github.com/karpathy">Karpathy GitHub</a> ·
+        <a href="https://aiweekly.co/alerts/developer-audits-yc-ceo-garry-tans-37k-ai-lines-per-day-claim">AI Weekly — Garry Tan audit</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Temporal grounding</div>
+        <div>The ability to pinpoint <em>when</em> something happens in a video, not just <em>whether</em> it happens. If you ask "find the moment the teacher drops the pen," a model doing temporal grounding returns a time window, not a yes or no. It's the difference between a witness who saw the event and one who can tell you the exact minute it occurred.</div>
+      </div>
+      <dl>
+        <dt>MLLM</dt>
+        <dd>Multimodal Large Language Model — a language model that can also process images, video, or audio, not just text. VideoChat3 is a video MLLM: it takes video as input alongside text questions.</dd>
+
+        <dt>mIoU</dt>
+        <dd>Mean Intersection over Union. A score from 0 to 100 that measures how much a predicted time window overlaps with the correct answer. A score of 67 means the model's window overlaps about two-thirds of the real answer on average. Higher is better.</dd>
+
+        <dt>MoE (Mixture of Experts)</dt>
+        <dd>A model architecture where only a fraction of the network is "switched on" for any given input. Kimi K3's 2.8 trillion total parameters sounds enormous, but for each request, only a small active subset processes the tokens. It lets a model be big without paying the full cost on every query.</dd>
+
+        <dt>Open-weight</dt>
+        <dd>A model whose numerical parameters (the "weights" that encode what it has learned) are publicly released for anyone to download. Open-weight models can be run locally, modified, and deployed without the lab's permission or servers — unlike commercial APIs where you send data to someone else's system.</dd>
+
+        <dt>I3D-ViT</dt>
+        <dd>Inflated 3D Vision Transformer. VideoChat3's core innovation: a standard image-reading pattern stretched into three dimensions so the model computes how pixels relate across neighboring frames, not just within a single frame. It "sees" motion directly rather than inferring it from a slideshow of stills.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
