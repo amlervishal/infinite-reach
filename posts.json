@@ -1,5 +1,12 @@
 [
   {
+    "num": 53,
+    "date": "2026-07-21",
+    "slug": "issues/2026-07-21.html",
+    "title": "The Room Where Thinking Happens",
+    "blurb": "Anthropic built a tool that lets researchers read what a language model is actively reasoning with — not by asking it, but by measuring its internal state. And the EU gave AI providers a deadline: label your machines, or face consequences."
+  },
+  {
     "num": 52,
     "date": "2026-07-20",
     "slug": "issues/2026-07-20.html",
