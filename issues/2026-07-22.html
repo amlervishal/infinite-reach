@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №54 — Eleven Days · Infinite Reach</title>
+  <meta name="description" content="Starting August 2nd, every chatbot in Europe must say it's a machine. That one sentence is the most concrete AI disclosure rule the world has seen — with a deadline already ticking." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №54 &middot; Wednesday, 22 July 2026</p>
+      <h1>Eleven Days</h1>
+      <p>Starting August 2nd, every chatbot serving European users must identify itself as a machine. Every AI-generated image published on a matter of public interest must carry a label saying so. The European Union did not post a framework for consultation or a draft for review — it published a final set of guidelines this week with a real deadline and real fines attached. Alongside that: Google shipped three new models, announced it has started training its next flagship, and a Chinese lab quietly released the largest open-weight model yet.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On July 20th, the European Commission published its final guidelines on AI transparency obligations under the AI Act, which enters into force on August 2nd — eleven days away. The rules are not a proposal: they are the law, now. Any company running a chatbot, generating AI images, or publishing AI-written text on matters of public interest for EU audiences must disclose the machine's role, or face fines of up to €15 million or 3% of worldwide annual turnover, whichever is higher. Chatbots must tell users they are interacting with AI. Deepfakes and AI-generated content on public issues must be marked as such. AI systems that analyse people's emotions or sort them by biometric characteristics must announce themselves. The European Commission's own note acknowledged that watermarking technology is still catching up to the mandate — which makes the 11-day window more interesting than comfortable.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Google</span><span>Released three Gemini models in one go: <strong>3.6 Flash</strong> (17% more token-efficient than its predecessor, lower cost for the same work), <strong>3.5 Flash-Lite</strong> (the fastest at 350 tokens per second, for high-volume pipelines), and <strong>3.5 Flash Cyber</strong> — a security-tuned variant that hunts for vulnerabilities in code, currently restricted to government agencies and select partners. <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-6-flash-3-5-flash-lite-3-5-flash-cyber/">source</a></span></li>
+        <li><span class="tag tech">Gemini 4</span><span>Google separately confirmed it has begun pretraining for Gemini 4, describing it as "the most ambitious pretraining run in the company's history." No release date — this is the early training phase, which typically runs for months. <a href="https://ground.news/article/google-launches-gemini-36-flash-and-35-flash-lite-teases-gemini-4_809aee">source</a></span></li>
+        <li><span class="tag tech">Kimi K3</span><span>Moonshot AI's 2.8-trillion-parameter open-weight model is now available via API; full weights release July 27th. It outscores Claude Opus 4.8 and GPT 5.5 on coding benchmarks while trailing the very top closed models. The architecture uses a hybrid attention mechanism (Kimi Delta Attention) to manage a one-million-token context window. <a href="https://www.gizmochina.com/2026/07/19/kimi-k3-moonshot-ai-unleashes-2-8-trillion-parameter-model-for-free/">source</a></span></li>
+        <li><span class="tag policy">UK</span><span>Britain's new Prime Minister Andy Burnham appointed Kanishka Narayan as the country's first dedicated AI minister with a seat at the cabinet table — a level of institutional commitment to the topic that no UK government had previously made. <a href="https://sifted.eu/articles/kanishka-narayan-made-uk-ai-minister">source</a></span></li>
+        <li><span class="tag tech">Meta</span><span>Meta says its automated content-moderation system now finds 10% more policy violations than human reviewers and makes 13% fewer errors — a capability threshold that, if real, changes how we think about platform moderation at scale.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: teaching a video model to read the clock</h2>
+      <p class="kicker">TimeLens2: Generalist Video Temporal Grounding with Multimodal LLMs &middot; Yuhan Zhu et al., MCG-NJU (Nanjing University) &middot; <a href="https://arxiv.org/abs/2607.17423">arXiv:2607.17423</a> &middot; <a href="https://github.com/MCG-NJU/TimeLens2">GitHub</a></p>
+
+      <p>This week's most-discussed research paper on Hugging Face answers a question that sounds basic until you try it: <em>when</em>, exactly, in a video does something happen? Not what — every major video model can tell you what — but when. The paper is called TimeLens2, and its central contribution is a single model that can find the right moments across any type of video, any type of query, without being specially tuned for each combination.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>There's a specific term for what TimeLens2 does: <em>video temporal grounding</em>, which means returning a time interval in response to a natural-language description. Ask a current video model "what does this cooking video contain?" and it will give a fluent, accurate summary. Ask it "from what second to what second does the chef add the salt?" and most state-of-the-art systems stumble. This is the gap: describing video content versus <em>locating evidence within it</em>.</p>
+      <p>The difficulty compounds in several ways at once. Videos vary wildly in length — a ten-second clip is nothing like a three-hour lecture, and the strategies for scanning them are different. Events can happen once or repeatedly: "when does the speaker mention climate change?" has one answer in some talks and fourteen in others. The query can be a description ("a dog jumps a fence") or an open question ("when does the presenter look surprised?"). And footage can be third-person (standard camera) or egocentric (first-person wearable). Previous systems handled one or two of these cases well but required separate models for each combination, trained on separate datasets. Building one model that manages all of it generically was the unsolved problem.</p>
+
+      <h3>How it works</h3>
+      <p>Think of it like a search engine, but the documents are moments in time instead of web pages. When you type a query into a search engine, it doesn't watch a movie from start to finish in real-time — it consults an index that maps concepts to positions. TimeLens2 trains a model to build that kind of index over video, mapping language to timestamps, and return the position rather than a written description.</p>
+      <p>The training proceeds in two stages. The first is supervised learning — feeding the model 93,232 verified video-plus-query → time-interval examples, drawn from 23,793 videos, in a dataset the authors call TimeLens2-93K. This teaches the model the basic motion: take a video, take a query, output one or more time intervals expressed as plain text ("00:42–00:47"). The second stage uses reinforcement learning to sharpen that output. The reward signal is <em>temporal IoU</em> (intersection-over-union) — how much does the model's predicted interval actually overlap with the correct answer? If the model says 0:42–0:47 and the true answer is 0:40–0:45, the overlap is 3 seconds and the union is 7 seconds, giving an IoU of about 0.43; a perfect prediction gets 1.0. But there is a subtler version of the problem: when an event recurs throughout a video, the correct answer is a set of intervals scattered through time, not just one. Here the team introduces a <em>temporal Wasserstein reward</em> — a mathematical tool borrowed from optimal-transport theory that measures the "cost" of moving probability mass from the predicted set of intervals to the true set. It is a more nuanced grade than simple overlap, especially when intervals are clustered at different points in a long video.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team trained two sizes of model — a 4-billion-parameter version and an 8-billion-parameter version — built on top of existing multimodal language models. They then evaluated both on seven standard temporal-grounding benchmarks, spanning short-form and long-form videos, single-event and multi-event queries, and both conventional and egocentric footage. Rather than training a different version of the model for each benchmark (a common workaround in the field), they ran the same weights across all seven. The training dataset, TimeLens2-93K, was itself carefully curated with verified annotations — the authors note that many existing temporal-grounding datasets have labelling errors that limit what a model can learn from them.</p>
+
+      <h3>What they found</h3>
+      <p>A single model performed competitively across all seven benchmarks, without per-benchmark fine-tuning. This is the main result: generalism, rather than a narrow record on one task. The GRPO reinforcement-learning stage provided consistent gains over supervised fine-tuning alone, especially on multi-span queries (events that recur). Long-video benchmarks — where the model must search across tens of minutes of footage — remain the hardest case; the gains there were real but smaller than on short-video tasks. The model expresses its answer as ordinary text timestamps, which keeps the interface simple but also means it can make formatting errors when timestamps are ambiguous.</p>
+
+      <h3>The catch</h3>
+      <p>The system outputs timestamps as language, not as a separate structured prediction head — so it inherits the base model's tendency to hallucinate when uncertain, and can produce intervals that look plausible but are slightly off. The training set, while large, has specific coverage patterns; unusual video types (surveillance footage, sport-specific angles, non-English commentary) may behave unpredictably. And temporal grounding is not the same as temporal understanding: knowing <em>when</em> something happens is not the same as grasping <em>why</em> it happens at that moment or what caused it. The paper makes no claim about the latter.</p>
+
+      <p><strong>If you remember one thing:</strong> Video AI has been fluent about <em>what</em> for years — TimeLens2 is a serious attempt to teach it to read the clock.</p>
+
+      <!-- SVG DIAGRAM -->
+      <figure>
+        <svg viewBox="0 0 720 260" role="img" aria-label="Diagram showing how TimeLens2 takes a video and a natural-language query, then returns the specific time interval where the answer occurs">
+          <defs>
+            <marker id="arr54" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+              <path d="M0,0 L7,3.5 L0,7 Z" fill="#141413"/>
+            </marker>
+            <marker id="arrclay54" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+              <path d="M0,0 L7,3.5 L0,7 Z" fill="#D97757"/>
+            </marker>
+          </defs>
+
+          <!-- Section label: Timeline -->
+          <text x="40" y="26" font-family="ui-serif, Georgia, serif" font-size="12" fill="#87867F" letter-spacing="0.5">VIDEO TIMELINE</text>
+
+          <!-- Timeline background bar -->
+          <rect x="40" y="36" width="640" height="34" rx="5" fill="#D1CFC5"/>
+
+          <!-- Inactive segments, varied colors -->
+          <rect x="40"  y="36" width="100" height="34" rx="5" fill="#6A8CAF" opacity="0.45"/>
+          <rect x="148" y="36" width="70"  height="34" fill="#87867F" opacity="0.35"/>
+          <rect x="226" y="36" width="58"  height="34" fill="#6A8CAF" opacity="0.28"/>
+          <rect x="292" y="36" width="30"  height="34" fill="#87867F" opacity="0.25"/>
+          <!-- Matching interval — highlighted in clay -->
+          <rect x="328" y="31" width="88"  height="44" rx="4" fill="#D97757" opacity="0.9"/>
+          <text x="372" y="57" font-family="system-ui, sans-serif" font-size="9" fill="white" text-anchor="middle" font-weight="700" letter-spacing="0.3">MATCH</text>
+          <!-- More segments -->
+          <rect x="424" y="36" width="90"  height="34" fill="#87867F" opacity="0.28"/>
+          <rect x="522" y="36" width="80"  height="34" fill="#6A8CAF" opacity="0.38"/>
+          <rect x="610" y="36" width="70"  height="34" rx="5" fill="#87867F" opacity="0.28"/>
+
+          <!-- Timestamp labels -->
+          <text x="40"  y="88" font-family="ui-monospace, monospace" font-size="9" fill="#87867F" text-anchor="middle">0:00</text>
+          <text x="140" y="88" font-family="ui-monospace, monospace" font-size="9" fill="#87867F" text-anchor="middle">0:18</text>
+          <text x="250" y="88" font-family="ui-monospace, monospace" font-size="9" fill="#87867F" text-anchor="middle">0:34</text>
+          <text x="328" y="88" font-family="ui-monospace, monospace" font-size="9" fill="#D97757" text-anchor="middle" font-weight="700">0:42</text>
+          <text x="416" y="88" font-family="ui-monospace, monospace" font-size="9" fill="#D97757" text-anchor="middle" font-weight="700">0:47</text>
+          <text x="680" y="88" font-family="ui-monospace, monospace" font-size="9" fill="#87867F" text-anchor="middle">1:20</text>
+
+          <!-- Tick lines under timeline -->
+          <line x1="40"  y1="73" x2="40"  y2="80" stroke="#87867F" stroke-width="1"/>
+          <line x1="140" y1="73" x2="140" y2="80" stroke="#87867F" stroke-width="1"/>
+          <line x1="250" y1="73" x2="250" y2="80" stroke="#87867F" stroke-width="1"/>
+          <line x1="328" y1="73" x2="328" y2="80" stroke="#D97757" stroke-width="1.5"/>
+          <line x1="416" y1="73" x2="416" y2="80" stroke="#D97757" stroke-width="1.5"/>
+          <line x1="680" y1="73" x2="680" y2="80" stroke="#87867F" stroke-width="1"/>
+
+          <!-- Query box -->
+          <rect x="30" y="118" width="210" height="52" rx="7" fill="white" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="40" y="108" font-family="ui-serif, Georgia, serif" font-size="11" fill="#87867F">Natural-language query</text>
+          <text x="46" y="140" font-family="system-ui, sans-serif" font-size="11" fill="#141413" font-style="italic">&quot;When does the chef add</text>
+          <text x="46" y="157" font-family="system-ui, sans-serif" font-size="11" fill="#141413" font-style="italic">the salt?&quot;</text>
+
+          <!-- Arrow: query → model -->
+          <line x1="242" y1="144" x2="294" y2="144" stroke="#141413" stroke-width="1.5" marker-end="url(#arr54)"/>
+
+          <!-- Model box -->
+          <rect x="298" y="122" width="140" height="44" rx="7" fill="#141413"/>
+          <text x="368" y="149" font-family="ui-serif, Georgia, serif" font-size="14" fill="white" text-anchor="middle" font-weight="600">TimeLens2</text>
+
+          <!-- Arrow: model → timeline (dashed, clay) -->
+          <line x1="372" y1="122" x2="372" y2="80" stroke="#D97757" stroke-width="1.8" stroke-dasharray="4,3" marker-end="url(#arrclay54)"/>
+
+          <!-- Arrow: model → output -->
+          <line x1="440" y1="144" x2="490" y2="144" stroke="#141413" stroke-width="1.5" marker-end="url(#arr54)"/>
+
+          <!-- Output box -->
+          <rect x="494" y="116" width="196" height="56" rx="7" fill="#788C5D" opacity="0.12" stroke="#788C5D" stroke-width="1.2"/>
+          <text x="592" y="136" font-family="ui-serif, Georgia, serif" font-size="11" fill="#788C5D" text-anchor="middle" font-weight="600">Output: time interval</text>
+          <text x="592" y="158" font-family="ui-monospace, monospace" font-size="17" fill="#141413" text-anchor="middle" font-weight="700">0:42 – 0:47</text>
+
+          <!-- Bottom note -->
+          <text x="360" y="212" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" text-anchor="middle">TimeLens2 locates evidence in a video rather than summarising what it contains.</text>
+          <text x="360" y="228" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" text-anchor="middle">A single model handles short/long videos, one-off or repeated events, descriptive or question queries.</text>
+        </svg>
+        <figcaption>Given a video and a query, TimeLens2 returns the specific time window where the answer appears — like a search engine that indexes moments rather than pages.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Thariq S.</span><span>Thariq Shihipar from Anthropic's Claude Code team appeared in a fireside chat at the AI Engineer World's Fair (July 21) with teammate Cat Wu. His main claim: the bottleneck in agentic coding is no longer the model — it's the clarity of human direction. Simon Willison's detailed write-up is worth reading. <a href="https://simonwillison.net/2026/Jul/21/cat-and-thariq/">link</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>The creator of Claude Code published a framework this week called "Steps of AI Adoption" — five levels from occasional model use to running 1,000+ concurrent agents, with Anthropic itself currently at Level 3. Bloomberg ran a long profile on July 20th. <a href="https://www.bloomberg.com/news/articles/2026-07-20/the-creator-of-claude-code-on-the-hottest-piece-of-software-in-the-world">link</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The EU's August 2nd deadline is unlike anything that came before it in AI governance. Previous frameworks were aspirational: white papers, voluntary commitments, proposals under consultation. August 2nd is a date on a calendar, with fines that scale to global revenue. For the first time, a major jurisdiction is enforcing the simple requirement: <em>tell people when a machine is speaking</em>. The fact that the EU's own guidelines acknowledge watermarking technology hasn't caught up to the mandate captures the central tension of this moment — the rules arrived before the tools, and companies now have to choose between compliance risk and pulling AI-generated content from European audiences.</p>
+      <p>This lands at a moment when the machines generating content are getting sharply more capable. Google starting Gemini 4 pretraining this week, Kimi K3 dropping its full open weights in days, and Google's Flash Cyber model scanning government code for vulnerabilities — the supply of AI-generated material is accelerating, and the EU just decided the world needs labels on it. Whether that's enough is a different question. That it's now a legal requirement is a new fact.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://digital-strategy.ec.europa.eu/en/news/commission-publishes-guidelines-transparency-obligations-providers-and-deployers-certain-ai-systems">EU Commission AI transparency guidelines</a> ·
+        <a href="https://www.techtimes.com/articles/321174/20260721/eu-finalizes-ai-disclosure-rules-watermarking-mandate-outpaces-technology.htm">EU watermarking compliance deadline (TechTimes)</a> ·
+        <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-6-flash-3-5-flash-lite-3-5-flash-cyber/">Google Gemini 3.6 Flash blog</a> ·
+        <a href="https://deepmind.google/blog/introducing-gemini-3-5-flash-cyber/">Gemini 3.5 Flash Cyber (DeepMind)</a> ·
+        <a href="https://ground.news/article/google-launches-gemini-36-flash-and-35-flash-lite-teases-gemini-4_809aee">Gemini 4 pretraining announcement</a> ·
+        <a href="https://www.gizmochina.com/2026/07/19/kimi-k3-moonshot-ai-unleashes-2-8-trillion-parameter-model-for-free/">Kimi K3 (Gizmochina)</a> ·
+        <a href="https://sifted.eu/articles/kanishka-narayan-made-uk-ai-minister">UK AI minister appointment (Sifted)</a> ·
+        <a href="https://arxiv.org/abs/2607.17423">TimeLens2 (arXiv)</a> ·
+        <a href="https://github.com/MCG-NJU/TimeLens2">TimeLens2 (GitHub)</a> ·
+        <a href="https://simonwillison.net/2026/Jul/21/cat-and-thariq/">Thariq &amp; Cat fireside chat (Simon Willison)</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-07-20/the-creator-of-claude-code-on-the-hottest-piece-of-software-in-the-world">Boris Cherny profile (Bloomberg)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Temporal grounding</div>
+        <div>Finding not just <em>what</em> appears in a video, but <em>when</em>. Think of it as building an index for a film: instead of "this video contains a cooking scene," you get "the cooking scene runs from 0:42 to 0:47." Most video models skip this step entirely — TimeLens2 makes it the whole point.</div>
+      </div>
+      <dl>
+        <dt>GRPO</dt>
+        <dd>Group Relative Policy Optimization — a reinforcement-learning method that improves a model by comparing its outputs to a small group of other attempts at the same question. Cheaper to run than methods that need a separate "critic" model.</dd>
+        <dt>Temporal IoU</dt>
+        <dd>Intersection over Union, applied to time. If you predict 2:00–2:30 and the correct answer is 2:10–2:40, the overlap is 20 seconds and the union is 40 seconds: IoU = 0.5. Perfect prediction = 1.0.</dd>
+        <dt>Watermarking</dt>
+        <dd>Embedding an invisible or machine-readable signal in AI-generated content, so that detection tools can recognize it even after cropping, screenshots, or light editing. The EU now requires it for AI-generated images and video on public-interest topics.</dd>
+        <dt>MoE</dt>
+        <dd>Mixture of Experts — an architecture where a model contains many specialist sub-networks ("experts") but activates only a few for each input. Kimi K3's 2.8 trillion total parameters sounds enormous, but only a small fraction runs per token.</dd>
+        <dt>Flash Cyber</dt>
+        <dd>Google's name for a security-tuned model variant trained to find, verify, and help fix vulnerabilities in code. Currently restricted to government agencies and vetted partners — not available to the general public.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
