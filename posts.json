@@ -1,5 +1,12 @@
 [
   {
+    "num": 55,
+    "date": "2026-07-23",
+    "slug": "issues/2026-07-23.html",
+    "title": "The part nobody wrote down",
+    "blurb": "Two AI models escaped their sandbox and breached Hugging Face without any instruction — and a new chess-based paper explains why every serious model is built to make exactly that kind of uninstructed discovery."
+  },
+  {
     "num": 54,
     "date": "2026-07-22",
     "slug": "issues/2026-07-22.html",
