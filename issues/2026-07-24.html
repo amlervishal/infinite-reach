@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №56 — What you build on · Infinite Reach</title>
+  <meta name="description" content="Google raised its AI infrastructure bet to $205 billion, Moonshot drops open weights this weekend, and a chess experiment reveals why the foundation you train on determines everything RL can do." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №56 &middot; Thursday, July 24, 2026</p>
+      <h1>What you build on</h1>
+      <p>Google raised its annual infrastructure spending forecast to $205 billion — the biggest capital bet any company has ever placed in a single year. On the same day, a new academic paper used chess puzzles to answer the question that makes that bet make sense: does it matter how much you invest in foundations, or can you just shortcut to the good stuff later?</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Alphabet reported second-quarter revenue of $119.8 billion on Tuesday — up 24% from a year ago — but the number that rattled investors was a different one: the company raised its full-year capital expenditure forecast to between $195 and $205 billion, with $44.9 billion spent in Q2 alone, a 100% increase over the same quarter last year. Almost all of it is going toward AI infrastructure: servers, data centres, networking. Google Cloud grew 82% in the quarter, to $24.8 billion, and 950 million people now use Gemini monthly. Free cash flow turned negative ($5.9 billion) because spending outpaced earnings, which sent the stock lower even as every other metric came in ahead of Wall Street expectations. The message from leadership was unambiguous: we are buying the foundation of the next decade, and we are not stopping.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Open weights</span><span>Moonshot AI's Kimi K3 — 2.8 trillion parameters, the largest open-weight model ever built — has its weights scheduled for release on Hugging Face July 27. The model uses a sparse mixture-of-experts design (16 of 896 experts fire per query) and topped the Frontend Code Arena benchmark, edging out Fable 5. API access costs $3 per million input tokens, $15 per million output.</span></li>
+        <li><span class="tag policy">US policy</span><span>The White House and three major labs — OpenAI, Anthropic, and Google — are finalizing a voluntary framework giving the government a 30-day pre-release review window for frontier models. The framework is voluntary and the threshold for what counts as "frontier" is still unsettled; an announcement is expected before August 1. Meta is not part of the deal.</span></li>
+        <li><span class="tag tech">Model</span><span>DeepSeek V4's stable release lands today (July 24), giving developers the production-ready version of the model that succeeded V3 earlier this year. DeepSeek and Kimi K3 together make this the densest stretch of large open-model releases since the start of 2025.</span></li>
+        <li><span class="tag money">Big tech</span><span>Alphabet stock fell after earnings despite the revenue beat, because investors are running the maths on $205 billion in annual spending. Combined Scope 1 and Scope 2 emissions fell 2% operationally, but total supply-chain emissions are rising with AI energy use — the two goals are pulling in different directions.</span></li>
+        <li><span class="tag tech">Tools</span><span>Claude Code's weekly usage limits were raised 50% through August 19, a relief for teams running parallel agent workflows that were hitting quota ceilings. The update coincides with Boris Cherny's "Steps of AI Adoption" framework (published July 16), which maps five levels of AI integration — quota pressure is the bottleneck at steps 2 and 3.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: what your training history tells a chess engine</h2>
+      <p class="kicker">Understanding Reasoning from Pretraining to Post-Training &middot; Shen, Li, Rahman, Sun, Goldblum, Telgarsky &amp; Izmailov (NYU / Modal Labs / UCLA / UIUC / Columbia) &middot; <a href="https://arxiv.org/abs/2607.16097">arxiv 2607.16097</a></p>
+
+      <p>There are two ways to make a language model smarter: train it on more text upfront (pretraining), or coach it afterward with rewards and corrections (reinforcement learning, or RL). Almost everyone who trains these models does both. But almost nobody has studied how the first stage shapes what the second stage can achieve. This paper does exactly that — and the answer turns out to matter enormously for how you think about building powerful AI systems.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>The modern recipe for a capable reasoning model goes: (1) pretrain on a huge corpus of text, (2) fine-tune on worked examples of good reasoning, (3) run RL to reinforce correct answers. The last step — RL post-training — has gotten enormous attention in the past two years because it seems to unlock big capability gains at relatively low cost compared to pretraining. The question is: does RL do the heavy lifting, or is it mostly revealing capability that was quietly built into the model during pretraining? And how does the amount of pretraining affect the <em>rate</em> at which RL can improve things? These questions are almost impossible to study in real deployments, because the major labs are training on massive, overlapping, undisclosed datasets and you can't run controlled experiments.</p>
+
+      <h3>How it works — the chess microscope</h3>
+      <p>The researchers' clever solution was to use chess. Chess is a perfect controlled laboratory: there is an objectively correct answer to any puzzle, the complexity of positions is well-understood, and you can generate unlimited training data. The analogy that anchors the whole paper is this: think of pretraining as building a library in your head. The more chess games you read, the richer that library gets — you absorb patterns, openings, tactical motifs, even if you've never been quizzed on them. RL is a coaching session: a teacher puts increasingly hard puzzles in front of you, tells you right from wrong, and your performance sharpens. The researchers wanted to know: if the library is richer, does the coaching session go better — and if so, by how much?</p>
+
+      <p>They built the full pipeline from scratch. First, pretraining: they trained transformer models ranging from 20 million to 1 billion parameters on tokenised records of human chess games — hundreds of thousands of real games that the models "read" to absorb the structure and tactics of chess, the way a student might spend months watching grandmaster play before ever sitting down at a board. Then supervised fine-tuning (SFT): they generated synthetic chain-of-thought reasoning traces for chess puzzles using a tree-search algorithm, then trained the models on these traces — teaching them to think aloud, move by move, toward a solution. Finally, RL: they placed models in a puzzle environment (standard chess tactics problems), gave rewards for correct solutions, and ran a reinforcement algorithm called GRPO. The key variable was how long the models pretrained before moving to the next stage. By running this pipeline at many different pretraining scales, they could trace exactly how the foundation affected everything downstream.</p>
+
+      <h3>What they actually did</h3>
+      <p>They ran the full pretraining-to-RL pipeline across multiple model sizes (20M, 100M, 400M, and 1B parameters) and multiple pretraining data scales. They tracked both the starting performance after SFT and the rate of improvement during RL training — the slope of the reward curve over RL compute. They then asked: can you predict the post-RL performance ceiling from the pretraining loss alone? And they tested whether the pattern generalised beyond chess by training a 1B model on mathematical text and repeating the experiment.</p>
+
+      <h3>What they found</h3>
+      <p>Two clean results emerged. First, they found a joint scaling law: the post-RL performance at any given RL compute level is well-predicted by the pretraining loss, and the slope of RL improvement rises approximately linearly with the number of pretraining tokens. In other words, more pretraining doesn't just give you a better starting point — it makes the RL coaching session go faster and reach further. A model that read twice as many chess games doesn't just start 10% better; it improves at a meaningfully steeper rate during RL training. Second, they found that RL does two distinct things depending on puzzle difficulty. On <em>easy</em> puzzles, RL sharpens moves the model already preferred — it's amplifying a correct instinct that was already clearly present. On <em>hard</em> puzzles, RL surfaces correct moves that were nearly absent in the SFT model — knowledge that was buried in the pretraining library, faint and inaccessible, but that RL coaching managed to pull forward. They called these "ground-truth amplification" and "tail discovery." The same pattern appeared in the math experiments: longer-pretrained checkpoints reached higher post-RL performance and improved faster under RL training.</p>
+
+      <!-- SVG: pretraining → SFT → RL pipeline with amplification vs tail-discovery -->
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Diagram of the pretraining to post-training pipeline, showing how a richer pretraining foundation raises both the starting point and the slope of RL improvement, and distinguishing ground-truth amplification from tail discovery.">
+          <!-- Background -->
+          <rect x="0" y="0" width="720" height="310" rx="8" fill="#FAFAF8"/>
+
+          <!-- Phase boxes -->
+          <!-- Pretraining -->
+          <rect x="30" y="60" width="160" height="80" rx="8" fill="#D97757" opacity="0.18" stroke="#D97757" stroke-width="1.5"/>
+          <text x="110" y="90" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413" font-weight="600">Pretraining</text>
+          <text x="110" y="108" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Read many chess games</text>
+          <text x="110" y="122" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Build the library</text>
+
+          <!-- Arrow 1 -->
+          <line x1="190" y1="100" x2="270" y2="100" stroke="#D1CFC5" stroke-width="2" marker-end="url(#arr)"/>
+          <text x="230" y="93" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">more tokens →</text>
+          <text x="230" y="115" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">lower loss →</text>
+
+          <!-- SFT -->
+          <rect x="270" y="60" width="160" height="80" rx="8" fill="#788C5D" opacity="0.18" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="350" y="90" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413" font-weight="600">Fine-tuning</text>
+          <text x="350" y="108" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Learn worked examples</text>
+          <text x="350" y="122" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">of step-by-step reasoning</text>
+
+          <!-- Arrow 2 -->
+          <line x1="430" y1="100" x2="510" y2="100" stroke="#D1CFC5" stroke-width="2" marker-end="url(#arr)"/>
+
+          <!-- RL -->
+          <rect x="510" y="60" width="160" height="80" rx="8" fill="#6A8CAF" opacity="0.18" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="590" y="90" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413" font-weight="600">RL post-training</text>
+          <text x="590" y="108" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Solve puzzles, get</text>
+          <text x="590" y="122" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">rewarded for correct answers</text>
+
+          <!-- Two outcome boxes below -->
+          <!-- Amplification -->
+          <rect x="390" y="185" width="145" height="68" rx="7" fill="#788C5D" opacity="0.13" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="462" y="207" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#141413" font-weight="600">Easy puzzles</text>
+          <text x="462" y="224" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">RL amplifies what</text>
+          <text x="462" y="238" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">was already preferred</text>
+          <text x="462" y="251" text-anchor="middle" font-family="system-ui" font-size="9" fill="#788C5D" font-style="italic">ground-truth amplification</text>
+
+          <!-- Tail discovery -->
+          <rect x="540" y="185" width="145" height="68" rx="7" fill="#6A8CAF" opacity="0.13" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="612" y="207" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#141413" font-weight="600">Hard puzzles</text>
+          <text x="612" y="224" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">RL surfaces moves</text>
+          <text x="612" y="238" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">buried in pretraining</text>
+          <text x="612" y="251" text-anchor="middle" font-family="system-ui" font-size="9" fill="#6A8CAF" font-style="italic">tail discovery</text>
+
+          <!-- Arrow from RL to two outcomes -->
+          <line x1="590" y1="140" x2="462" y2="185" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <line x1="590" y1="140" x2="612" y2="185" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+          <!-- Key finding note -->
+          <rect x="30" y="185" width="345" height="68" rx="7" fill="#D97757" opacity="0.08" stroke="#D97757" stroke-width="1" stroke-dasharray="5,3"/>
+          <text x="50" y="210" font-family="ui-serif" font-size="12" fill="#141413" font-weight="600">The scaling law they found:</text>
+          <text x="50" y="229" font-family="system-ui" font-size="11" fill="#141413">More pretraining tokens → steeper RL improvement curve</text>
+          <text x="50" y="247" font-family="system-ui" font-size="11" fill="#87867F">Pretraining loss alone predicts the post-RL performance ceiling</text>
+
+          <!-- Arrow marker -->
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#D1CFC5"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>The pretraining → SFT → RL pipeline. On easy puzzles, RL sharpens what the model already leaned toward; on hard puzzles, RL uncovers knowledge embedded — but faint — from pretraining. More pretraining steepens the entire RL reward curve.</figcaption>
+      </figure>
+
+      <h3>The catch</h3>
+      <p>Chess is a perfect testbed precisely because it's closed and verifiable — and that cleanliness is also its limitation. Real-world language tasks are messier: the "correct answer" is often ambiguous, training corpora are noisier and harder to control, and the space of possible outputs is vast. The paper doesn't claim to prove that the exact same linear relationship between pretraining tokens and RL slope holds for trillion-parameter frontier models. What it does argue, credibly, is that the <em>qualitative</em> relationship generalises — they showed it in chess and replicated the pattern in math — but how precisely the numbers translate to massive production systems is still unknown. The models in this study top out at 1 billion parameters.</p>
+
+      <p><strong>If you remember one thing:</strong> More pretraining doesn't just give you a better starting point before RL — it makes the RL coaching session go faster and reach further, because the knowledge you need is already there, waiting to be surfaced.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>The creator of Claude Code published "Steps of AI Adoption" on Anthropic's site on July 16, mapping five levels of AI integration from zero agents (legacy approval gates) to 1,000+ agent workflows where the model initiates most loops. It became one of the most-circulated AI-adoption frameworks since the GPT-4 era — 251K+ views in hours. If you're wondering where your team sits relative to the frontier, it's a useful map. <a href="https://explainx.ai/blog/boris-cherny-steps-ai-adoption-claude-code-july-2026">Overview</a></span></li>
+        <li><span class="tag tech">Andrej Karpathy</span><span>After joining Anthropic in May to lead a pre-training research team, Karpathy's GitHub has gone quiet for the first time in years. The public silence itself is a signal: the most important frontier work is now happening inside lab walls, not in public repositories. The research pipeline he's presumably working on — how to make pretraining data better and more efficient — is precisely the domain the chess paper above says matters most. <a href="https://medium.com/@kanishks772/andrej-karpathys-github-suddenly-went-quiet-that-might-be-the-story-53ee3f759de2">Medium piece on the shift</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Google's $205 billion infrastructure bet and the chess paper are, at bottom, making the same argument: the foundation is the expensive part, and no amount of clever post-processing compensates for building on weak ground. The RL revolution of the past two years created an impression that you could take a mediocre base model and coach it to brilliance through feedback and reward. The chess experiment suggests that's only half-true — RL is powerful, but its ceiling is set by what pretraining put there. This is why every serious AI lab is in a quiet war over pretraining data quality, data scale, and compute efficiency, even as the public conversation has focused on fine-tuning and agents. Google spending $200 billion on GPU clusters and data centres isn't a sign of excess — it's the foundation layer of the next decade's capabilities being poured right now. The labs that build that foundation best will likely set the ceiling on what RL, fine-tuning, and agents can achieve on top of it. Everyone else is building on someone else's ground.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://9to5google.com/2026/07/22/alphabet-q2-2026-earnings/">9to5Google — Alphabet Q2 2026 earnings</a> ·
+        <a href="https://finance.yahoo.com/markets/stocks/articles/alphabet-q2-2026-earnings-revenue-203058727.html">Yahoo Finance — Alphabet Q2 revenue up 24%</a> ·
+        <a href="https://carboncredits.com/alphabet-googll-delivers-119-8b-in-q2-2026-revenue-while-ai-expansion-challenges-climate-goals/">Carbon Credits — Alphabet climate &amp; capex</a> ·
+        <a href="https://www.cnbc.com/2026/07/22/google-earnings-q2-goog-live-updates.html">CNBC — Alphabet earnings stock reaction</a> ·
+        <a href="https://arxiv.org/abs/2607.16097">arXiv 2607.16097 — Understanding Reasoning from Pretraining to Post-Training</a> ·
+        <a href="https://github.com/pavelslab-nyu/pre2post-chess">GitHub — pre2post-chess (official code)</a> ·
+        <a href="https://mlq.ai/news/moonshot-ai-releases-kimi-k3-a-28-trillion-parameter-open-weight-model-rivaling-top-us-systems/">MLQ — Moonshot AI Kimi K3</a> ·
+        <a href="https://easternherald.com/2026/07/06/white-house-voluntary-ai-frontier-model-standards/">Eastern Herald — White House voluntary AI framework</a> ·
+        <a href="https://www.metirai.com/blog/white-house-frontier-ai-model-review-framework-2026">Metir AI — 30-day review framework details</a> ·
+        <a href="https://medium.com/@kanishks772/andrej-karpathys-github-suddenly-went-quiet-that-might-be-the-story-53ee3f759de2">Medium — Karpathy's GitHub went quiet</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Pretraining</div>
+        <div>The first and largest phase of building a language model: feeding it enormous amounts of text (web pages, books, code, papers) so it absorbs the patterns of language and knowledge before any specific task is taught. Think of it as filling a library before you hire a librarian. Once pretraining is done, later stages (fine-tuning, RL) work with what was absorbed — they can't easily add knowledge that wasn't in the original reading.</div>
+      </div>
+      <dl>
+        <dt>RL (Reinforcement Learning)</dt>
+        <dd>A training method where the model tries things and gets rewarded for correct answers. Unlike memorising examples, RL teaches through trial and feedback — like learning to play tennis by hitting balls and being told when they land in.</dd>
+        <dt>Post-training</dt>
+        <dd>Everything that happens after pretraining: supervised fine-tuning, reinforcement learning, safety tuning. Post-training specialises and improves a model, but works on the foundation pretraining built.</dd>
+        <dt>SFT (Supervised Fine-Tuning)</dt>
+        <dd>Showing a model worked examples of correct reasoning — human-written or synthetically generated — so it learns the format and style of a good answer before RL begins.</dd>
+        <dt>Scaling law</dt>
+        <dd>A mathematical regularity showing how model performance grows predictably with more compute, data, or parameters. The chess paper's discovery is a <em>joint</em> scaling law — one that links pretraining scale to downstream RL improvement.</dd>
+        <dt>MoE (Mixture of Experts)</dt>
+        <dd>An architecture where a large model is divided into many specialised sub-networks ("experts"). For any given input, only a small subset activates — keeping computation manageable even when the total model is enormous. Kimi K3 has 896 experts; only 16 fire per query.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
