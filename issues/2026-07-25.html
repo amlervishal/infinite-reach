@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №57 — The Room That Holds One Thought at a Time · Infinite Reach</title>
+  <meta name="description" content="Anthropic found a tiny, privileged workspace inside Claude where only a dozen concepts live at once — and the chip industry just bet billions on the machines that run it." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №57 &middot; Friday, July 25, 2026</p>
+      <h1>The Room That Holds One Thought at a Time</h1>
+      <p>Anthropic's interpretability team found a tiny privileged workspace inside Claude — a handful of concepts the model is actively holding — while the chip industry made one of its biggest bets yet on what happens when you scale that kind of intelligence up.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On Wednesday, AMD launched Helios, its first rack-scale AI computing platform, and simultaneously announced it would invest up to $5 billion in Anthropic as part of a deal to supply the lab with up to 2 gigawatts of its new Instinct MI450 chips. To put that in perspective: 2 gigawatts is enough power to run a small city, and it represents perhaps the largest compute commitment in AI history to a non-Nvidia supplier. Microsoft is also deploying Helios on Azure. This is a serious attempt to break Nvidia's near-monopoly on the hardware that trains and runs frontier models — and it signals that the biggest AI labs are no longer content to wait for one chipmaker to meet demand.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">IPO watch</span><span>Moonshot AI — the Beijing lab behind Kimi K3 — is seeking a $50 billion pre-IPO valuation ahead of a Hong Kong listing targeted for early 2027. Annual revenue hit $300 million in June, up from $100 million in March. <a href="https://technode.com/2026/07/22/moonshot-ai-reportedly-plans-final-pre-ipo-round-at-50-billion-valuation/">TechNode</a></span></li>
+        <li><span class="tag tech">Open weights</span><span>Kimi K3's full 2.8-trillion-parameter weights drop this Sunday (July 27) — meaning anyone will be able to download and run locally what is currently the world's largest open-weight model. <a href="https://www.gizmochina.com/2026/07/19/kimi-k3-moonshot-ai-unleashes-2-8-trillion-parameter-model-for-free/">Gizmochina</a></span></li>
+        <li><span class="tag money">China listings</span><span>DeepSeek is preparing a Shanghai stock exchange listing targeting a valuation of up to $71 billion, as Chinese AI labs pivot from research shops to publicly traded companies. <a href="https://ai2roi.substack.com/p/ai-to-roi-news-and-analysis-july-83e">AI to ROI</a></span></li>
+        <li><span class="tag tech">Meta charges</span><span>Meta's Muse Spark 1.1 — its first paid agentic model, released July 9 — is priced at $1.25/$4.25 per million tokens (input/output), roughly four times cheaper than comparable OpenAI and Anthropic offerings. <a href="https://aiweekly.co/alerts/meta-prices-muse-spark-11-api-at-125425-per-m-tokens">AI Weekly</a></span></li>
+        <li><span class="tag policy">Federal deadline</span><span>Yesterday was the deadline for US federal agencies to submit AI modernization proposals for $200 million in Technology Modernization Fund grants — a rare, concrete government push to adopt AI in permitting and citizen services. <a href="https://windowsnews.ai/article/inside-the-feds-200m-ai-and-permitting-tech-money-drop-deadline-july-24-2026.436573">Windows News</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: finding the workspace inside a language model</h2>
+      <p class="kicker">"Verbalizable Representations Form a Global Workspace in Language Models" &middot; Wes Gurnee, Nicholas Sofroniew, Adam Pearce + 13 co-authors, Anthropic &middot; <a href="https://arxiv.org/abs/2607.15495">arXiv 2607.15495</a></p>
+
+      <p>Every time Claude answers a question, billions of numbers fire inside it in fractions of a second. What Anthropic's interpretability team found this month is that most of those numbers are invisible — even to the model itself. A small cluster of them, though, seem to be the ones Claude actually <em>thinks with</em>. The researchers call this cluster J-space, and it may be one of the most striking findings yet about how large language models work from the inside.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Language models are famously opaque. You can ask one why it said something and it will give you a confident, plausible-sounding explanation — but researchers have found those explanations often have little relationship to what was actually happening in the model's weights. The real problem is that a model like Claude contains hundreds of billions of parameters, each contributing a tiny signal, and there's no obvious way to ask "which of these signals is the model actually aware of?" Conventional interpretability approaches look for patterns in those raw numbers, but they struggle to separate the processing the model <em>can reflect on</em> from the vast machinery that runs below the surface — the automatic parts that just happen.</p>
+
+      <p>Psychologists have a framework for exactly this distinction in humans: Global Workspace Theory, proposed by neuroscientist Bernard Baars in 1988. The idea is that the brain has a small, limited "global workspace" — think of it as a shared mental whiteboard — where a handful of concepts are held and made available to many different cognitive processes at once. Everything else (heartbeat regulation, visual processing, routine motor control) happens automatically, outside that workspace. Baars argued this workspace is what we mean by conscious attention. The Anthropic team asked: does something structurally similar exist inside Claude?</p>
+
+      <h3>How it works</h3>
+      <p>To find out, they developed a technique they call the <strong>Jacobian lens</strong>, named after a mathematical object used in calculus. Here's the everyday version: imagine you're adjusting the knobs on a mixing board, and you want to know which knobs actually change the music. The Jacobian is a way of measuring "if I nudge knob X by a tiny amount, how much does the output change?" Applied to a language model, you ask: which internal activations, when nudged, most strongly change what token Claude is about to produce?</p>
+
+      <p>The team ran that calculation across Claude's layers and found something unexpected. Rather than a diffuse smear where every activation mattered a little, they found a small, coherent set of activations that were disproportionately responsible for steering the output. These were the verbalizable representations — the ones Claude could, in principle, report on. Everything else, the vast majority of what's happening inside the model, barely registered in the Jacobian at all.</p>
+
+      <p>They called this privileged set of activations J-space (Jacobian space). It has three properties that map almost exactly onto what Global Workspace Theory predicts:</p>
+      <ul>
+        <li><strong>Reportability.</strong> If you ask Claude what it's "thinking about" at a given moment, the concepts in J-space are the ones it names. It cannot describe what's happening outside J-space because, functionally, it has no access to it.</li>
+        <li><strong>Limited capacity.</strong> At any given moment, only a small number of concepts — typically ten to twenty-five — are active in J-space. That's it. The model can't hold more than that in this privileged workspace at once.</li>
+        <li><strong>Flexible integration.</strong> Concepts in J-space don't just sit there; they actively shape everything else, feeding into the downstream reasoning that produces the final response.</li>
+      </ul>
+
+      <h3>What they actually did</h3>
+      <p>The team tested this on Claude across a range of tasks — multi-step math problems, factual questions, coding challenges — and in each case mapped the J-space activation patterns at different layers of the model. They found that J-space accounts for less than 10% of the total activation variance: the overwhelming majority of what Claude "does" computationally is outside it. The active concepts in J-space shift as the conversation evolves, tracking the model's reasoning as it proceeds. When Claude works through a problem step by step, the concepts in J-space change with each step — cycling out old information and cycling in new conclusions, much like a human working through a problem on paper, erasing and rewriting as they go.</p>
+
+      <h3>What they found</h3>
+      <p>The finding has immediate practical uses for safety researchers. Certain important signals — whether the model has noticed it's being evaluated, whether it's holding a latent goal it hasn't expressed, whether it's suppressing a thought — seem to live in J-space, which means the Jacobian lens might provide a way to detect those things directly, rather than trying to catch them through the model's outputs. In one experiment the team mentions, J-space representations correctly flagged evaluation-awareness in cases where the model's verbal output gave no hint of it. That's significant: it suggests a path toward interpretability that goes deeper than analyzing what the model says.</p>
+
+      <h3>The catch</h3>
+      <p>The paper is careful — and critics on LessWrong and Gizmodo have been appropriately skeptical — about what this <em>does not</em> prove. A functional analog to a global workspace is not the same as consciousness. The paper makes no claim that Claude is aware of anything in any experiential sense. What it shows is a structural parallel: something that <em>behaves like</em> a limited shared workspace exists inside the model, and it emerged without anyone deliberately designing it. The authors also note that the Jacobian lens is a linear approximation of a highly non-linear system — it's a tool with known blind spots, not a perfect readout. And the study is conducted on Claude models specifically; whether every large language model has J-space, or whether it's something particular to Claude's training, is an open question.</p>
+
+      <p><strong>If you remember one thing:</strong> Claude holds only about ten to twenty-five concepts in a privileged internal workspace at any moment — and we can now measure, roughly, what those concepts are.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 300" role="img" aria-label="Diagram showing J-space as a small privileged zone inside Claude's much larger activation space" style="width:100%;max-width:720px;display:block;margin:0 auto;">
+          <!-- Outer box: all activations -->
+          <rect x="20" y="20" width="680" height="260" rx="12" fill="none" stroke="#D1CFC5" stroke-width="2"/>
+          <text x="36" y="48" font-family="ui-serif,Georgia,serif" font-size="13" fill="#87867F">All of Claude's internal activations (hundreds of billions of values per token)</text>
+
+          <!-- Shaded automatic processing area -->
+          <rect x="20" y="20" width="680" height="260" rx="12" fill="#F5F3EE" opacity="0.6"/>
+
+          <!-- J-space oval -->
+          <ellipse cx="360" cy="165" rx="160" ry="90" fill="#fff" stroke="#D97757" stroke-width="2.5"/>
+          <text x="360" y="90" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="14" font-weight="bold" fill="#D97757">J-space</text>
+          <text x="360" y="108" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">(&lt;10% of activation variance)</text>
+
+          <!-- Active concept bubbles inside J-space -->
+          <circle cx="290" cy="155" r="22" fill="#D97757" opacity="0.15"/>
+          <text x="290" y="159" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#141413">Paris</text>
+
+          <circle cx="345" cy="135" r="22" fill="#D97757" opacity="0.15"/>
+          <text x="345" y="139" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#141413">capital</text>
+
+          <circle cx="400" cy="160" r="22" fill="#D97757" opacity="0.15"/>
+          <text x="400" y="164" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#141413">France</text>
+
+          <circle cx="350" cy="188" r="22" fill="#D97757" opacity="0.15"/>
+          <text x="350" y="192" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#141413">city</text>
+
+          <circle cx="295" cy="188" r="18" fill="#D97757" opacity="0.10"/>
+          <text x="295" y="192" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#141413">…</text>
+
+          <!-- Arrow to output -->
+          <path d="M520 165 L610 165" stroke="#6A8CAF" stroke-width="2" marker-end="url(#arr)"/>
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#6A8CAF"/>
+            </marker>
+          </defs>
+          <text x="640" y="155" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="#6A8CAF">Claude's</text>
+          <text x="640" y="171" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="#6A8CAF">output</text>
+
+          <!-- Label for outside J-space -->
+          <text x="80" y="230" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Automatic processing</text>
+          <text x="80" y="245" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">(Claude cannot report on this)</text>
+
+          <!-- Caption labels -->
+          <text x="360" y="270" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">10–25 active concepts at any moment · Jacobian lens · Anthropic, July 2026</text>
+        </svg>
+        <figcaption>J-space contains only a fraction of Claude's total activations, but it's where the concepts the model is actively reasoning with live. The surrounding space is vast automatic processing the model has no privileged access to. Source: Gurnee et al., arXiv 2607.15495.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Yesterday Andrej Karpathy published <strong>microgpt.py</strong> — a complete GPT language model in pure Python, under 200 lines, zero external dependencies, the entire training-and-inference loop in one file. Already 5,000+ stars. If you want to understand what a language model actually does at the lowest level, this is now the clearest single file that exists. <a href="https://gist.github.com/karpathy/8627fe009c40f57531cb18360106ce95">GitHub Gist</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>The creator of Claude Code published <em>Steps of AI Adoption</em> on July 16 — a five-stage map from "every AI action needs human approval" to "teams steer by intent and 1,000+ agents run unsupervised." Worth reading if you're thinking about where AI tooling is headed for teams. <a href="https://explainx.ai/blog/boris-cherny-steps-ai-adoption-claude-code-july-2026">explainx.ai summary</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two stories this week look unrelated — a $5 billion hardware deal and a paper about a tiny internal workspace — but they're describing the same trajectory from opposite angles. The hardware side is about raw scale: AMD and Nvidia are now competing to supply compute in the tens of gigawatts, a number that implies models will keep growing. The interpretability side is asking what we get as they grow: not just more capability, but something we can understand from the inside. J-space is one answer. Researchers can now identify, roughly, which concepts a model is actively holding during a reasoning step — and flag when something it's holding doesn't match what it's saying. That gap between internal state and verbal output is exactly what safety researchers have worried about for years. We're not at a point where we can read a model's "mind" reliably, but we have a new lens. Combine that with models that are getting both more powerful and more open (Kimi K3's weights drop this weekend), and the week's shape becomes clearer: the tools for understanding these systems are, slowly, beginning to keep pace with the systems themselves.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2607.15495">arXiv 2607.15495 — J-space paper</a> ·
+        <a href="https://www.globenewswire.com/news-release/2026/07/22/3331418/0/en/amd-and-anthropic-announce-strategic-partnership-to-deploy-up-to-2-gigawatts-of-amd-instinct-mi450-series-gpus.html">GlobeNewswire — AMD/Anthropic deal</a> ·
+        <a href="https://techbriefly.com/2026/07/24/amd-helios-ai-rack-microsoft-deal/">TechBriefly — Helios launch</a> ·
+        <a href="https://technode.com/2026/07/22/moonshot-ai-reportedly-plans-final-pre-ipo-round-at-50-billion-valuation/">TechNode — Moonshot $50B IPO</a> ·
+        <a href="https://www.gizmochina.com/2026/07/19/kimi-k3-moonshot-ai-unleashes-2-8-trillion-parameter-model-for-free/">Gizmochina — Kimi K3</a> ·
+        <a href="https://aiweekly.co/alerts/meta-prices-muse-spark-11-api-at-125425-per-m-tokens">AI Weekly — Muse Spark 1.1</a> ·
+        <a href="https://windowsnews.ai/article/inside-the-feds-200m-ai-and-permitting-tech-money-drop-deadline-july-24-2026.436573">Windows News — Federal $200M</a> ·
+        <a href="https://gist.github.com/karpathy/8627fe009c40f57531cb18360106ce95">GitHub Gist — microgpt.py</a> ·
+        <a href="https://explainx.ai/blog/boris-cherny-steps-ai-adoption-claude-code-july-2026">explainx.ai — Steps of AI Adoption</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Jacobian</div>
+        <div>In mathematics, the Jacobian is a table that captures how much each input affects each output when you make a tiny change. Think of it as asking: "If I nudge knob A by a hair, how much does the music change?" Anthropic used this idea as a spotlight — nudge each internal activation, see which ones most strongly steer what Claude says next. Those are the activations in J-space.</div>
+      </div>
+      <dl>
+        <dt>J-space</dt><dd>Short for Jacobian space — the small subset of a language model's internal activations that the model can "verbalize": report, reason with, and steer. Less than 10% of total activation variance. Everything else is automatic processing the model cannot reflect on.</dd>
+        <dt>Global workspace theory</dt><dd>A 1988 neuroscience proposal by Bernard Baars: the brain has a limited shared "mental whiteboard" where only a few things are held at once, but those things get broadcast everywhere. Researchers are testing whether AI models have a functional equivalent.</dd>
+        <dt>Activation</dt><dd>One neuron's output value inside a neural network — a number that says how strongly that node "fired" in response to its input. A model like Claude produces hundreds of billions of these with every token it processes.</dd>
+        <dt>MoE (Mixture of Experts)</dt><dd>An architecture that splits a large model into many specialized sub-networks. Only a few "experts" activate for any given input, making the model far cheaper to run than its raw size suggests. Kimi K3 uses 2.8 trillion total parameters but activates only a slice at a time.</dd>
+        <dt>Instinct MI450</dt><dd>AMD's newest line of AI accelerator chips, designed to compete with Nvidia's H100/H200 family for training and running large language models. The MI450 series is the hardware at the center of the AMD-Anthropic deal.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

@@ -1,5 +1,12 @@
 [
   {
+    "num": 57,
+    "date": "2026-07-25",
+    "slug": "issues/2026-07-25.html",
+    "title": "The Room That Holds One Thought at a Time",
+    "blurb": "Anthropic found a tiny privileged workspace inside Claude where only 10–25 concepts live at once, while AMD bet $5 billion on Anthropic and launched a rack-scale platform to challenge Nvidia."
+  },
+  {
     "num": 56,
     "date": "2026-07-24",
     "slug": "issues/2026-07-24.html",
