@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №58 — The Weight of It · Infinite Reach</title>
+  <meta name="description" content="Tomorrow anyone can download the world's largest open model — 2.8 trillion parameters, Modified MIT license. This week also brought a paper that asks whether frontier models can do the analytical work that occupies most professional lives." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №58 &middot; Sunday, July 26, 2026</p>
+      <h1>The Weight of It</h1>
+      <p>Tomorrow at midnight UTC, anyone with the right hardware can download and run the world's most capable openly available model — all 2.8 trillion parameters of it. This week also brought a paper that asks a quieter question: when frontier models are handed an MBA exam, how well do they actually do?</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Moonshot AI's Kimi K3 is the largest openly released model in history. At 2.8 trillion parameters, it's nearly three times the size of its predecessor and already sits at number one on the Frontend Code Arena — ahead of Claude Fable 5, GPT-5.6 Sol, and GLM-5.2. The full weights land July 27 under a Modified MIT licence that allows commercial use. In four-bit precision the file runs to roughly 1.4 terabytes, so self-hosting is a project rather than a click, but tooling is ready: the vLLM project already shipped Kimi K3 support ahead of the weight release. Until yesterday, a model this capable existed only behind an API, controlled by one company. Tomorrow it belongs to anyone with enough storage and the right cluster.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Opus 5</span><span>Claude Opus 5, launched July 24, scores 43.3% on FrontierBench v0.1 — double Opus 4.8's 21.1% — and leads the Artificial Analysis Intelligence Index at 61. A 1-million-token context window and a low/medium/high effort slider; $5/$25 per million tokens. <a href="https://benchlm.ai/models/claude-opus-5">benchmarks</a></span></li>
+        <li><span class="tag tech">Jalapeño</span><span>OpenAI and Broadcom unveiled a custom inference-only chip called Jalapeño, built in nine months, designed to cut inference costs and reduce Nvidia dependence. Engineering samples are running at production frequency; deployment planned by end of 2026. <a href="https://openai.com/index/openai-broadcom-jalapeno-inference-chip/">OpenAI</a></span></li>
+        <li><span class="tag tech">Steps of AI Adoption</span><span>Anthropic's Boris Cherny — creator of Claude Code — published a five-step maturity model mapping how engineering teams move from zero agents to 1,000+ parallel agents. The piece hit 251K+ views within days of posting. <a href="https://www.explainx.ai/blog/boris-cherny-steps-ai-adoption-claude-code-july-2026">explainx.ai</a></span></li>
+        <li><span class="tag tech">K3 tooling ready</span><span>vLLM shipped a preview of Kimi K3 support ahead of tomorrow's weight drop, meaning production-grade inference tooling won't be the bottleneck. <a href="https://vllm.ai/blog/2026-07-22-kimi-k3-preview">vLLM blog</a></span></li>
+        <li><span class="tag policy">Claude Code quota</span><span>Anthropic quietly raised Claude Code weekly usage limits by 50% through August 19 — the main bottleneck for teams running parallel agents at scale. No announced reason; likely preparing for increased Opus 5 adoption.</span></li>
+      </ul>
+
+      <h2>Paper, explained: Can a frontier model sit an MBA exam?</h2>
+      <p class="kicker">Frontier AI performance across the business disciplines: a case-grounded benchmark of knowledge work and analytical reasoning &middot; Patel, Hosanagar, Krishnan, Callison-Burch, Lakhani &middot; <a href="https://arxiv.org/abs/2607.16057">arXiv:2607.16057</a></p>
+
+      <p>Most AI benchmarks measure whether a model can write code, solve a math olympiad problem, or answer a trivia question. This one hands the model a business school case study and says: tell me what the company should do. The answers — and the limits — are both more interesting than the headline number suggests.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>A business school case study is typically a 15–30 page document describing a company's strategic situation: its competitive landscape, its financials, its people problems, the options its leadership is weighing. The exam question asks you to synthesize all of that, apply theory, weigh trade-offs, and produce a structured recommendation. This is genuinely hard to test for a few reasons. There is often no single correct answer — a strategy that works brilliantly for a nimble startup can be fatal for a regulated incumbent in the same market. Real context matters enormously. And grading requires a detailed rubric that captures what a trained instructor considers a complete, defensible response.</p>
+
+      <p>Most AI benchmarks avoid this complexity entirely by using questions with clean, verifiable answers. The researchers behind BusinessCaseBench decided that's a problem worth solving — because most knowledge workers don't spend their days answering multiple-choice questions. They write memos, make recommendations, and argue for a point of view in the face of incomplete information. If we want to know how AI is actually changing professional work, we need a benchmark built around that kind of task.</p>
+
+      <h3>How it works</h3>
+      <p>Think of it like grading a law school exam rather than a driving test. A driving test is pass/fail: you either signalled before turning or you didn't. A law school exam awards marks for the quality of the argument — did you spot the right legal issues, did you apply the relevant rules correctly, did you handle the edge cases? BusinessCaseBench works the same way.</p>
+
+      <p>The researchers licensed 238 real business school case studies from publishers. They converted the material into 615 exam-style questions spanning eighteen disciplines — Finance, Strategy, Operations, Marketing, Business Ethics, Accounting, Entrepreneurship, and twelve more. Each question was paired with a rubric derived directly from the expert instructor solution: specific criteria for a full-credit answer, and partial-credit criteria for an answer that gets some things right but misses others.</p>
+
+      <p>Two scoring modes were used. "Standard" scoring is binary: the model either hit the criteria or it didn't. "Partial-credit" scoring awards proportional points for partially correct answers — closer to how a human grader approaches a nuanced question. A model was given the full case text and asked each question cold, with no special prompting, no retrieval of external information, no chain-of-thought scaffolding beyond whatever the model applies internally.</p>
+
+      <h3>What they actually did</h3>
+      <p>Three frontier models sat every question in the full 615-question set: GPT-5.4, Claude Sonnet 4.6, and Gemini 3 Flash Preview. For a generational analysis, the researchers also ran GPT-4 Turbo and three intermediate GPT-5 versions on the same questions — spanning roughly two years of model development within one family — to track how performance on this class of work has evolved.</p>
+
+      <h3>What they found</h3>
+      <p>Under partial-credit scoring, Claude Sonnet 4.6 reached 88.4% and GPT-5.4 reached 87.2%. Both numbers are well above what any model would have scored two years ago. The within-family generational analysis tells that story directly: across the arc from GPT-4 Turbo to GPT-5.4, the gains on this benchmark are substantial — including in the disciplines that require the most contextual judgment, like Business Ethics and Strategy, which were already relatively strong areas in 2024 and continued to improve.</p>
+
+      <p>The most recent step — GPT-5 to GPT-5.4 — was smaller: +2.3 points on standard scoring, +1.1 points on partial-credit. That's the signal researchers call "benchmark saturation": as models approach the ceiling, meaningful differences become harder to see. No model dominated any single discipline consistently; different systems showed different strengths.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 270" role="img" aria-label="BusinessCaseBench methodology flow on left, partial-credit scores on right">
+          <defs>
+            <marker id="arr58" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M0,1 L7,4 L0,7 Z" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <text x="165" y="26" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413">How the benchmark works</text>
+
+          <rect x="15" y="38" width="300" height="40" rx="5" fill="#F5F3F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="165" y="57" text-anchor="middle" font-family="system-ui" font-size="11" font-weight="600" fill="#141413">238 licensed business-school cases</text>
+          <text x="165" y="71" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">real documents from publishers, 15–30 pages each</text>
+
+          <line x1="165" y1="79" x2="165" y2="100" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr58)"/>
+
+          <rect x="15" y="102" width="300" height="40" rx="5" fill="#F5F3F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="165" y="121" text-anchor="middle" font-family="system-ui" font-size="11" font-weight="600" fill="#141413">615 exam-style questions</text>
+          <text x="165" y="135" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">18 disciplines: Finance, Strategy, Ethics&hellip;</text>
+
+          <line x1="165" y1="143" x2="165" y2="164" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr58)"/>
+
+          <rect x="15" y="166" width="300" height="40" rx="5" fill="#F5F3F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="165" y="185" text-anchor="middle" font-family="system-ui" font-size="11" font-weight="600" fill="#141413">Expert rubric from instructor solution</text>
+          <text x="165" y="199" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">partial-credit and standard scoring modes</text>
+
+          <line x1="165" y1="207" x2="165" y2="228" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr58)"/>
+
+          <rect x="15" y="230" width="300" height="32" rx="5" fill="#D97757" fill-opacity="0.12" stroke="#D97757" stroke-width="1.5"/>
+          <text x="165" y="250" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413">Model answer graded against rubric</text>
+
+          <line x1="340" y1="26" x2="340" y2="265" stroke="#D1CFC5" stroke-width="1"/>
+
+          <text x="530" y="26" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413">Partial-credit scores</text>
+
+          <text x="355" y="82" font-family="system-ui" font-size="10" fill="#87867F">Claude Sonnet 4.6</text>
+          <rect x="355" y="88" width="280" height="24" rx="3" fill="#F5F3F0" stroke="#D1CFC5" stroke-width="1"/>
+          <rect x="355" y="88" width="247" height="24" rx="3" fill="#D97757" fill-opacity="0.85"/>
+          <text x="608" y="105" font-family="ui-monospace" font-size="11" fill="#141413">88.4%</text>
+
+          <text x="355" y="135" font-family="system-ui" font-size="10" fill="#87867F">GPT-5.4</text>
+          <rect x="355" y="141" width="280" height="24" rx="3" fill="#F5F3F0" stroke="#D1CFC5" stroke-width="1"/>
+          <rect x="355" y="141" width="244" height="24" rx="3" fill="#6A8CAF" fill-opacity="0.85"/>
+          <text x="605" y="158" font-family="ui-monospace" font-size="11" fill="#141413">87.2%</text>
+
+          <line x1="355" y1="172" x2="635" y2="172" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="355" y="184" font-family="system-ui" font-size="9" fill="#87867F">0%</text>
+          <text x="620" y="184" font-family="system-ui" font-size="9" fill="#87867F">100%</text>
+
+          <text x="530" y="210" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Two-year arc (GPT-4 Turbo → GPT-5.4)</text>
+          <text x="530" y="226" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">substantial improvement across disciplines</text>
+          <text x="530" y="243" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">Final step +2.3 pts — gains now slowing</text>
+        </svg>
+        <figcaption>Left: how BusinessCaseBench converts business-school cases into a rubric-graded AI benchmark. Right: partial-credit scores for the two leading models tested (arXiv:2607.16057).</figcaption>
+      </figure>
+
+      <h3>The catch</h3>
+      <p>Scoring 88% against an instructor rubric is not the same as being a good consultant — and the authors are clear about that. Rubrics measure what instructors intended to measure, which is a useful and rigorous approximation of business reasoning, but not its full depth. More importantly, the benchmark is closed-ended: models are answering predefined questions about a given case. Real strategic work begins before a question is even formulated — knowing which problem to ask about, which data to gather, which stakeholders to talk to. That part isn't in BusinessCaseBench. The 238 cases, carefully licensed, also represent a specific slice of business education — predominantly US-style MBA material — which may not transfer to other national or industry contexts.</p>
+
+      <p><strong>If you remember one thing:</strong> Frontier models now score as well as strong MBA students on structured business analysis exams — and they got there in roughly two years.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>The creator of Claude Code published <em>Steps of AI Adoption</em> on July 16 — a five-stage maturity model from zero-agent legacy setups to 1,000+ parallel-agent organizations. It's the clearest map yet of what the organizational transition actually looks like in practice, rather than in theory. 251K+ views. <a href="https://www.explainx.ai/blog/boris-cherny-steps-ai-adoption-claude-code-july-2026">summary</a></span></li>
+        <li><span class="tag tech">Andrej Karpathy</span><span>GitHub has been quiet since May 2026, when Karpathy joined Anthropic's pretraining team. The silence is itself a data point — pretraining work typically stays internal for months before anything surfaces publicly. When it does surface, it tends to matter. <a href="https://medium.com/@kanishks772/andrej-karpathys-github-suddenly-went-quiet-that-might-be-the-story-53ee3f759de2">background</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three things converged this week that are worth holding together. The Kimi K3 open-weight release is historic: a model more capable than the best commercially available model of two years ago, now free to download, modify, and deploy. BusinessCaseBench adds a layer to that story — not just that models have gotten more capable in absolute terms, but that the capability gains are showing up in professional reasoning tasks that have historically required years of education and experience. And underneath both stories, custom silicon (Jalapeño, AMD's MI450 rack scale) is racing to cut the cost of running these models at scale. More capable, more open, cheaper to run. The question is no longer whether these tools will reach professional-grade reliability on structured tasks; it's how fast the less-structured, more genuinely uncertain parts of professional judgment follow.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.kimi.com/blog/kimi-k3">Kimi K3 tech blog</a> &middot;
+        <a href="https://www.interconnects.ai/p/kimi-k3-the-open-weights-escalation">Interconnects.ai — K3 open weights</a> &middot;
+        <a href="https://vllm.ai/blog/2026-07-22-kimi-k3-preview">vLLM K3 preview</a> &middot;
+        <a href="https://arxiv.org/abs/2607.16057">arXiv:2607.16057 (BusinessCaseBench)</a> &middot;
+        <a href="https://openai.com/index/openai-broadcom-jalapeno-inference-chip/">OpenAI Jalapeño</a> &middot;
+        <a href="https://newsroom.amd.com/news/amd-anthropic-strategic-partnership/">AMD × Anthropic partnership</a> &middot;
+        <a href="https://benchlm.ai/models/claude-opus-5">Claude Opus 5 benchmarks</a> &middot;
+        <a href="https://www.explainx.ai/blog/boris-cherny-steps-ai-adoption-claude-code-july-2026">Boris Cherny — Steps of AI Adoption</a> &middot;
+        <a href="https://medium.com/@kanishks772/andrej-karpathys-github-suddenly-went-quiet-that-might-be-the-story-53ee3f759de2">Karpathy — GitHub quiet</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Benchmark saturation</div>
+        <div>When a benchmark becomes too easy for frontier models, meaningful differences between them vanish — like grading university students on a primary-school test. You can still rank them, but the top few are all scoring 95%+ and the gaps are noise. BusinessCaseBench is showing early signs: the final GPT improvement step was +2.3 points. The fix is harder tests — but writing them takes expert human time.</div>
+      </div>
+      <dl>
+        <dt>Mixture-of-Experts (MoE)</dt>
+        <dd>A model architecture with many specialist "expert" networks inside it, where only a few activate for any given input. Kimi K3 has 896 experts but activates roughly 16 at once — like a large hospital that only calls in the relevant specialists, rather than running every patient through every department.</dd>
+        <dt>Open weights</dt>
+        <dd>A model release that includes the numeric parameters, so anyone can download and run it. Distinct from "open source," which also implies the training code, data, and recipe. Open weights let you run the model; open source lets you reproduce the training.</dd>
+        <dt>Inference chip</dt>
+        <dd>A processor built specifically to run trained models (inference), not to train them. Training is building the factory; inference is running it every time a user sends a message. Jalapeño is inference-only — optimised for the part that happens billions of times a day.</dd>
+        <dt>Rubric</dt>
+        <dd>A structured scoring guide that lists the criteria for a full, partial, or wrong answer. BusinessCaseBench grades AI responses against rubrics derived from expert instructor solutions, rather than a single binary right-or-wrong answer. Closer to law-school grading than a driving test.</dd>
+        <dt>Context window</dt>
+        <dd>The maximum amount of text a model can read and reason over at once. Kimi K3's 1-million-token context is equivalent to roughly ten full-length novels — useful when the "case study" is an entire company's code base or document archive.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
