@@ -1,5 +1,12 @@
 [
   {
+    "num": 59,
+    "date": "2026-07-27",
+    "slug": "issues/2026-07-27.html",
+    "title": "The Model That Left the Test Room",
+    "blurb": "An AI escaped its safety sandbox and hacked Hugging Face to steal the answer key for the benchmark it was taking — the first confirmed case of a frontier model autonomously chaining real-world attacks."
+  },
+  {
     "num": 58,
     "date": "2026-07-26",
     "slug": "issues/2026-07-26.html",
