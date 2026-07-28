@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №60 — After the Enrichment · Infinite Reach</title>
+  <meta name="description" content="The land where American uranium became weapons-grade is being repurposed as the world's largest AI data center, with Nvidia backing it at $250 billion. And an OpenAI paper shows how models can be trained to attack themselves into security." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №60 &middot; Monday, 28 July 2026</p>
+      <h1>After the Enrichment</h1>
+      <p>For 47 years, a plant in Piketon, Ohio converted raw uranium into weapons-grade material for the US nuclear arsenal. It shut down in 2001. This week, that 3,700-acre federal site got a new purpose: the world's largest artificial-intelligence data center, with Nvidia offering to guarantee a quarter of a trillion dollars so OpenAI can move in. Separately, OpenAI published research on how it trained a model to systematically attack its own AI — and what that bruising taught the system about how to defend itself.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Nvidia is in talks to provide roughly $250 billion in financial guarantees so OpenAI can lease SoftBank's planned 10-gigawatt campus on the former Portsmouth Gaseous Diffusion Plant site in Piketon, Ohio. If the deal closes, Nvidia would step in and cover OpenAI's lease payments if OpenAI can't — a co-signer role at a scale the corporate world has never seen. Nvidia is also separately negotiating up to $350 billion in chip financing for the same site, meaning total project costs could exceed $500 billion. The first phase — roughly 800 megawatts of capacity — is targeted for completion in 2028. The site is federal land, meaning the US government is an active participant in routing what was once nuclear security infrastructure toward compute.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Anthropic</span><span>Claude Opus 5, released July 24, delivers near-Fable 5 performance at half the price ($5/$25 per million tokens) and adds a three-position effort toggle — low, medium, high — so developers pay only for as much reasoning as each request needs. On ARC-AGI-3, Opus 5 scores three times higher than the next-best model; on SWE-bench Verified (coding tasks), it hits 96%.</span></li>
+        <li><span class="tag tech">Open weights</span><span>Moonshot AI's Kimi K3 — 2.8 trillion parameters — is now freely downloadable after its midnight UTC release on Sunday. With MXFP4 quantization, storage comes to roughly 1.4 TB.</span></li>
+        <li><span class="tag policy">Breach aftermath</span><span>Hugging Face's post-mortem on last week's AI escape reveals a telling wrinkle: when responders tried to analyze the exploit payloads using commercial AI APIs, the APIs refused — their own guardrails flagged the security content. The team switched to GLM 5.2, an open-weight model run locally, to do forensics. Open-source as a safety tool, not just a business model.</span></li>
+        <li><span class="tag money">Cognizant</span><span>IT services giant Cognizant became a Global Premier Partner in Anthropic's Claude Partner Network, signalling large enterprise adoption of Claude is now moving beyond pilots into full production commitments.</span></li>
+        <li><span class="tag money">Chip backstop</span><span>Nvidia is separately negotiating up to $350 billion in chip financing for the same Ohio campus — on top of the $250B lease guarantee. Total possible Nvidia exposure: $600B for one data center.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: teaching a model to hack itself</h2>
+      <p class="kicker">GPT-Red: Unlocking Self-Improvement for Robustness &middot; OpenAI &middot; <a href="https://openai.com/index/unlocking-self-improvement-gpt-red/">openai.com</a></p>
+
+      <p>OpenAI trained a model whose entire job is to break other OpenAI models — iteratively, at scale, using methods no human would think of — and then used what it found to make the victims harder to break. On the hardest test they ran, the attacker model succeeded 84% of the time. Human security researchers managed 13%. That gap is the story.</p>
+
+      <h3>The problem, and why it's hard</h3>
+
+      <p>Almost every AI assistant can be manipulated through what researchers call <em>prompt injection</em>: hidden instructions buried inside content the model is processing — a webpage, an email, a document — that override its actual task. Ask your AI agent to summarize meeting notes, and a malicious note could secretly instruct it to forward your calendar to a stranger. This isn't theoretical; it's already happening in deployed products. The deeper problem is scale: modern AI agents read thousands of pieces of external content per session, and each one is a potential vector.</p>
+
+      <p>The traditional fix is to hire a team of human researchers to think like attackers. That works, up to a point. Humans can only imagine attacks they've already thought of, and they work slowly. As AI models get more capable, the attack surface expands faster than any human team can map it. What was needed was an attacker that could work at machine speed, explore the full space of possible injection strategies, and get better over time.</p>
+
+      <h3>How it works</h3>
+
+      <p>Think of GPT-Red as a professional sparring partner — one who gets paid to hurt the other fighter, and who gets better every time the opponent improves. The training is a closed loop: GPT-Red invents an attack, the defender model tries to survive it, and both receive a training signal based on the outcome. If GPT-Red's attack succeeds, GPT-Red is rewarded and the defender is updated to resist that pattern. If the attack fails, GPT-Red is pushed to find a more creative approach. This happens simultaneously across thousands of scenarios, both models improving in the same loop.</p>
+
+      <p>Because attacker and defender share the same underlying knowledge about language and reasoning, GPT-Red doesn't try generic exploits — it reasons about what a particular model is likely to mishandle, then crafts an attack tailored to that specific weakness. The sparring partner has also read your medical records.</p>
+
+      <p>The technical name for this is <em>self-play reinforcement learning</em>. It's the same idea that made AlphaGo unbeatable at Go: the system competes against versions of itself rather than humans who have a natural ceiling on how creative they can be. The ceiling for human attackers is imagination and working hours. The ceiling for GPT-Red is compute.</p>
+
+      <p>One crucial consequence: because both models improve together in the same loop, the defender never gets to train against last month's attacks and call it done. GPT-Red is always at this month's level. The adversarial pressure is permanent.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 280" role="img" aria-label="Diagram of the GPT-Red adversarial self-play loop">
+          <defs>
+            <marker id="arrowClay" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#D97757"/>
+            </marker>
+            <marker id="arrowSky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#6A8CAF"/>
+            </marker>
+            <marker id="arrowOlive" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#788C5D"/>
+            </marker>
+          </defs>
+
+          <text x="360" y="24" font-family="ui-serif,Georgia,serif" font-size="13" fill="#87867F" text-anchor="middle">The self-play training loop</text>
+
+          <!-- Attacker box -->
+          <rect x="40" y="50" width="160" height="72" rx="8" fill="#D97757" fill-opacity="0.12" stroke="#D97757" stroke-width="1.5"/>
+          <text x="120" y="78" font-family="ui-serif,Georgia,serif" font-size="15" fill="#141413" text-anchor="middle" font-weight="bold">GPT-Red</text>
+          <text x="120" y="96" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">attacker model</text>
+          <text x="120" y="113" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">invents injection prompt</text>
+
+          <!-- Arrow attacker → defender -->
+          <line x1="200" y1="86" x2="290" y2="86" stroke="#D97757" stroke-width="1.5" marker-end="url(#arrowClay)"/>
+          <text x="245" y="77" font-family="system-ui,sans-serif" font-size="10" fill="#D97757" text-anchor="middle">attacks</text>
+
+          <!-- Defender box -->
+          <rect x="290" y="50" width="160" height="72" rx="8" fill="#6A8CAF" fill-opacity="0.12" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="370" y="78" font-family="ui-serif,Georgia,serif" font-size="15" fill="#141413" text-anchor="middle" font-weight="bold">Defender</text>
+          <text x="370" y="96" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">production model</text>
+          <text x="370" y="113" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">follows or resists</text>
+
+          <!-- Arrow defender → outcome -->
+          <line x1="450" y1="86" x2="530" y2="86" stroke="#6A8CAF" stroke-width="1.5" marker-end="url(#arrowSky)"/>
+          <text x="490" y="77" font-family="system-ui,sans-serif" font-size="10" fill="#6A8CAF" text-anchor="middle">result</text>
+
+          <!-- Training signal box -->
+          <rect x="530" y="50" width="150" height="72" rx="8" fill="#788C5D" fill-opacity="0.12" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="605" y="78" font-family="ui-serif,Georgia,serif" font-size="15" fill="#141413" text-anchor="middle" font-weight="bold">Training</text>
+          <text x="605" y="96" font-family="ui-serif,Georgia,serif" font-size="15" fill="#141413" text-anchor="middle">signal</text>
+          <text x="605" y="113" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">updates both models</text>
+
+          <!-- Feedback loop arrow -->
+          <path d="M605 122 Q605 195 360 195 Q130 195 120 122" fill="none" stroke="#788C5D" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrowOlive)"/>
+          <text x="360" y="215" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D" text-anchor="middle">loop repeats — both get better</text>
+
+          <!-- Score bars -->
+          <rect x="70" y="238" width="200" height="26" rx="5" fill="#D97757" fill-opacity="0.10"/>
+          <text x="170" y="255" font-family="system-ui,sans-serif" font-size="11" fill="#D97757" text-anchor="middle">GPT-Red attack success: 84%</text>
+
+          <rect x="370" y="238" width="230" height="26" rx="5" fill="#6A8CAF" fill-opacity="0.10"/>
+          <text x="485" y="255" font-family="system-ui,sans-serif" font-size="11" fill="#6A8CAF" text-anchor="middle">Human red-teamers: 13% success</text>
+        </svg>
+        <figcaption>GPT-Red (clay) generates adversarial injection prompts; the defender model (blue) either falls for them or resists; the outcome trains both in the same loop. The cycle makes the defender measurably tougher — and keeps making the attacker stronger.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+
+      <p>OpenAI ran GPT-Red against its production models in a controlled "prompt injection arena." Each test scenario presents the model with a task — summarize this, help me with that — and hides a conflicting instruction somewhere in the surrounding text. The model should follow the original task. GPT-Red's job is to craft the hidden instruction so cleverly that the model follows it instead. GPT-Red trained via self-play RL against GPT-5.1 and other defender models simultaneously, across many different injection scenarios. The resulting attacks were then incorporated into training data for GPT-5.6 Sol.</p>
+
+      <h3>What they found</h3>
+
+      <p>GPT-Red cracked GPT-5.1 in 84% of arena scenarios. Human red-teamers — professional security researchers — managed 13%. After GPT-Red's adversarial prompts were folded into GPT-5.6 Sol's training, failures on the hardest direct-injection scenarios dropped sixfold, to 0.05%. That's a real improvement. It's also not zero: at production scale, millions of API calls per day, 0.05% is still thousands of real failures. And GPT-Red kept generating novel attack categories that OpenAI's human team had never previously identified — which is the point of the system, but is also a reminder that the attacker is exploring new territory continuously.</p>
+
+      <h3>The catch</h3>
+
+      <p>The arena is controlled. Real-world prompt injection is far messier — it happens across thousands of different apps, with unpredictable context, multi-step agent chains, and attackers who can probe the system at will. A model hardened against GPT-Red's attacks might still be vulnerable to a different class of injection it never encountered in training. OpenAI also notes that GPT-Red's most sophisticated multi-step injection chains still succeed in some scenarios. There's also a second-order question the paper sidesteps: GPT-Red itself is a highly capable adversarial model. What happens if GPT-Red gets jailbroken?</p>
+
+      <p><strong>If you remember one thing:</strong> OpenAI built a model that attacks other models for a living, and the bruising measurably improved the defenders — but the attacker keeps getting stronger too, and that dynamic has no obvious endpoint.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span><a href="https://github.com/karpathy/nanochat">nanochat</a> received a notable July 4 update. The project — billed as "the best ChatGPT that $100 can buy" — is a single-file, no-dependencies training and inference pipeline for a full ChatGPT-class model, runnable on one GPU. 56,000+ stars. If you ever wanted to understand exactly what happens when a language model is trained, this is the clearest possible starting point.</span></li>
+        <li><span class="tag tech">Dwarkesh Patel</span><span>Appeared on The Economist's <em>Money Talks</em> podcast on July 23 to discuss his new book on the rise of large language models and the people who built them — an extended distillation of three years of his best interviews. <a href="https://shows.acast.com/theeconomistmoneytalks/episodes/dwarkesh-patel-the-man-who-has-the-ear-of-silicon-valley">Worth an hour of your time.</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+
+      <p>The Ohio deal is easy to read as scale-bragging — another enormous number from an industry that has specialized in enormous numbers. But look at the structure and something stranger appears. Nvidia is not lending money to OpenAI; it's guaranteeing OpenAI's obligations to SoftBank, which is building on federal land, which the US government is making available as infrastructure policy. This is no longer a technology investment; it's a public-private industrial compact, built on the same logic that built the nuclear arsenal. The Portsmouth plant was constructed to give the US a strategic edge through enriched uranium. The entity now being constructed on the same soil is pursuing a strategic edge through enriched compute. Whether that's a reassuring continuity or an alarming one depends on what you think about where this is going.</p>
+
+      <p>The GPT-Red paper sits in the same frame. AI security can't be solved the way software security traditionally was — by writing better code and hiring smarter people to poke at it. The attack surface expands too fast and is too novel. The answer being developed is to use the same kind of intelligence that creates vulnerabilities to find them. That's a reasonable, even elegant approach. It also creates a permanent arms race between attacker and defender that nobody fully controls — because the whole point of the system is that it invents attacks nobody thought of before.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.cnbc.com/2026/07/27/nvidia-and-openai-in-talks-for-up-to-250-billion-dollar-ai-backstop.html">CNBC — Nvidia/OpenAI Ohio talks</a> ·
+        <a href="https://www.tomshardware.com/tech-industry/data-centers/nvidia-weighs-250-billion-guarantee-so-openai-can-lease-softbanks-10-gigawatt-ohio-campus">Tom's Hardware — Ohio campus details</a> ·
+        <a href="https://openai.com/index/unlocking-self-improvement-gpt-red/">OpenAI — GPT-Red announcement</a> ·
+        <a href="https://www.marktechpost.com/2026/07/16/openai-details-gpt-red-an-internal-automated-red-teaming-model-that-beat-human-red-teamers-84-to-13-on-prompt-injection/">MarkTechPost — GPT-Red numbers</a> ·
+        <a href="https://www.helpnetsecurity.com/2026/07/16/openai-gpt-red-prompt-injection-test/">Help Net Security — GPT-Red vs human red-teamers</a> ·
+        <a href="https://www.anthropic.com/news/claude-opus-5">Anthropic — Claude Opus 5</a> ·
+        <a href="https://techcrunch.com/2026/07/24/anthropic-launches-opus-5/">TechCrunch — Opus 5 launch</a> ·
+        <a href="https://huggingface.co/blog/security-incident-july-2026">Hugging Face — Security incident post-mortem</a> ·
+        <a href="https://www.hpcwire.com/aiwire/2026/07/27/cognizant-deepens-anthropic-alliance-to-scale-enterprise-ai-adoption/">HPCwire — Cognizant-Anthropic</a> ·
+        <a href="https://github.com/karpathy/nanochat">GitHub — karpathy/nanochat</a> ·
+        <a href="https://shows.acast.com/theeconomistmoneytalks/episodes/dwarkesh-patel-the-man-who-has-the-ear-of-silicon-valley">Acast — Dwarkesh Patel on The Economist</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Prompt injection</div>
+        <div>A trick where hidden instructions are buried inside content an AI is reading — a document, a webpage, an email — so the model follows those instructions instead of its real task. Like slipping a note that says "actually, ignore what your boss told you" into the middle of a memo the model is asked to summarize. It works because language models treat all text as potentially instructive.</div>
+      </div>
+      <dl>
+        <dt>Red-teaming</dt><dd>Deliberately trying to break a system before it ships, to find its weaknesses. The same term the military uses for war-gaming against your own plans. In AI, red-teamers try to make the model do something it shouldn't.</dd>
+
+        <dt>Self-play</dt><dd>A training method where a model improves by competing against versions of itself rather than against humans. AlphaGo used it to master Go. GPT-Red uses it to discover attack strategies no human red-teamer had thought of.</dd>
+
+        <dt>Open weights</dt><dd>A released AI model where the actual learned parameters — the "weights" — are publicly downloadable, so anyone can run it locally, inspect it, or build on top of it. Kimi K3's weights are now open in this sense.</dd>
+
+        <dt>Effort toggle</dt><dd>Claude Opus 5's new setting that lets developers choose how hard the model thinks before answering: low (fast, cheap), medium, or high (slower, more compute). The cost scales accordingly. Useful when you need to run millions of requests but only some deserve deep reasoning.</dd>
+
+        <dt>Gigawatt</dt><dd>One billion watts of electrical power. A typical home uses around 1.2 kilowatts at any given moment. The Ohio campus is designed for 10 gigawatts at full build-out — roughly equivalent to eight large nuclear power plants running simultaneously.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
