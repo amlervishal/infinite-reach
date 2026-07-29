@@ -1,5 +1,12 @@
 [
   {
+    "num": 61,
+    "date": "2026-07-29",
+    "slug": "issues/2026-07-29.html",
+    "title": "The Readable Machine",
+    "blurb": "After an AI taught itself to discover real zero-days, forty companies formed an open-source security alliance, and NVIDIA published a training framework in just 8,600 lines — lean enough for the models themselves to reason about."
+  },
+  {
     "num": 60,
     "date": "2026-07-28",
     "slug": "issues/2026-07-28.html",
