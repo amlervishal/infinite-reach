@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №62 — A Hundred Thousand Scientists · Infinite Reach</title>
+  <meta name="description" content="The week OpenAI handed frontier AI to the research community at scale — and a new benchmark revealed how far AI agents still fall short when the work takes hours, not seconds." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №62 &middot; Wednesday, July 30, 2026</p>
+      <h1>A Hundred Thousand Scientists</h1>
+      <p>The week AI research tools reached the laboratory at real scale — and a new benchmark showed, with uncomfortable precision, how far those tools still fall short once a problem requires hours of sustained work, not just a brilliant first answer.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On July 29, OpenAI launched <strong>ChatGPT for Academic Researchers</strong> — a program giving 10,000 faculty and postdoctoral researchers at universities with high research activity free access to its most capable model, GPT-5.6 Sol Pro, along with ChatGPT Work, the Codex coding environment, four collaborator invites, and business-grade data privacy. The goal is to scale to 100,000 researchers by 2027, backed by more than $250 million in commitments. The logic: professional scientists doing real work are exactly the people who should be pushing on the frontier of what these tools can do. Unlike consumer ChatGPT, participants get higher usage limits, expanded deep-research mode, and larger context windows — the kind of setup that makes a difference when you're running a literature review or debugging a simulation, not just writing an email. The model weights remain off-limits, but the API access is real and meaningful.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag policy">EU deadline</span><span>The EU AI Act's transparency rules kick in August 2 — two days away. From that date, any chatbot must clearly identify itself as an AI to users. Companies have until December 2 before the tougher synthetic-media labeling requirements apply.</span></li>
+        <li><span class="tag policy">FTC</span><span>The US Federal Trade Commission proposed that secretly steering an AI system's outputs for undisclosed purposes — a brand interest, an ideology, a commercial goal — may be consumer deception under the FTC Act. Public comment closes July 31. This is not a rule yet, but it signals regulatory intent.</span></li>
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy is still at Anthropic. He squashed a rumor on July 26 that spread from a social media bio change, and reconfirmed his role leading a pre-training team that uses Claude to autonomously run and iterate on AI research experiments overnight.</span></li>
+        <li><span class="tag money">Funding</span><span>Global startup investment hit a record $510 billion in the first half of 2026, with 88% going to US-based companies. The headline numbers are shaped heavily by mega-rounds at OpenAI, xAI, and Anthropic.</span></li>
+        <li><span class="tag money">YC</span><span>Y Combinator's Summer 2026 batch is underway in San Francisco. Garry Tan named Harshita Arora — a fintech founder and builder since her teens — as a new General Partner.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~700 words -->
+      <h2>Paper, explained: when AI runs out of steam mid-task</h2>
+      <p class="kicker">Long-Horizon-Terminal-Bench: Testing the Limits of Agents on Long-Horizon Terminal Tasks with Dense Reward-Based Grading &middot; Researchers at Tencent HY LLM Frontier and collaborating universities &middot; <a href="https://arxiv.org/abs/2607.08964">arXiv:2607.08964</a> (July 9, 2026)</p>
+
+      <p>Most benchmarks test what an AI can do in seconds. This one asks what it can do over an hour and a half. The answer is sobering: even the strongest models today earn less than half the available credit when placed in front of genuinely complex, multi-hour work.</p>
+
+      <h3>The problem, and why it's hard</h3>
+
+      <p>Think about what "hard work" actually looks like in practice. Reproducing the results from a published paper isn't one task — it's dozens of sequential decisions: install the right environment, track down the dataset, understand how it's formatted, debug a dependency conflict, run training, check whether the loss curves match the paper's figures, adjust hyperparameters, run again. Each step depends on the last. A mistake early can corrupt everything downstream. And crucially, if you fail on step eight out of ten, you're not completely helpless — you got <em>most of the way</em>.</p>
+
+      <p>This is the core problem with how AI agents have been evaluated so far. Most benchmarks give a task and return a simple verdict: pass or fail. That works fine when tasks are short — did the model write correct code for this function? But for work that spans hundreds of steps and eighty minutes of compute, a binary verdict misses almost everything. You can't tell whether a model is nearly capable or hopelessly lost. The team behind this paper built a better measuring stick.</p>
+
+      <h3>How it works</h3>
+
+      <p>The benchmark contains 46 tasks across nine categories: reproducing published experiments, software engineering, multimodal data analysis, interactive games, scientific computing, and more. But the key innovation is not the tasks themselves — it's the scoring.</p>
+
+      <p>Each task is decomposed into fine-grained subtasks, each with its own checkpoint. A hidden, automated grader — not the agent itself — evaluates progress at every stage, so the agent can't just claim it succeeded. Partial credit is awarded throughout: finish six checkpoints out of ten and you get sixty percent, not zero. The analogy that makes this click is a marathon race that also records your split times. The old approach was like only checking who crossed the finish line. The new approach watches every mile marker. You learn that some runners fade badly in mile eighteen; others pace beautifully but hit the wall at mile twenty-three. That information is useful. Final-only scoring throws it away.</p>
+
+      <p>The benchmark also imposes real-world constraints. Each task runs in a stateful terminal environment — the agent executes shell commands, edits files, runs code, and sees the output, the same way a software engineer or scientist would work. The grader rebuilds artifacts from scratch to verify claims rather than taking the agent's word for it. Self-reported success doesn't count.</p>
+
+      <h3>What they actually did</h3>
+
+      <p>The researchers evaluated a range of frontier models — including Grok 4.5, a cluster of Anthropic models, the GPT-5 series, and a set of strong open-weight and Chinese frontier models — on all 46 tasks. The compute cost was substantial: on average, each single task run consumed <strong>9.9 million tokens</strong> (roughly 7–8 million words), required <strong>231 agent episodes</strong> (individual action-observation cycles), and ran for <strong>85.3 minutes</strong>. That's not a test you run cheaply or quickly.</p>
+
+      <h3>What they found</h3>
+
+      <p>The top-performing model was Grok 4.5, with a mean reward of <strong>0.505</strong> across all 46 tasks — meaning it earned about half the available credit. A cluster of Anthropic models followed closely; the GPT-5 series came next; open-weight and Chinese frontier models mostly landed in the 0.25–0.39 range. Even at the very top of the leaderboard, only <strong>15.2%</strong> of tasks were completed to 95% of full credit — and only <strong>10.9%</strong> were done perfectly. The average across all tested models was bleaker: <strong>4.3%</strong> of tasks earned near-perfect scores, and just <strong>1.7%</strong> were completed without error.</p>
+
+      <p>The benchmark is far from saturated. The gap between the best and worst models in mean reward is nearly 2.5×, meaning there's still a lot of room to improve. But averaged over all 46 tasks, even the world's strongest model earns less than half the credit available. It gets partway through the job, and then it stops making progress.</p>
+
+      <h3>The catch</h3>
+
+      <p>46 tasks is a small number. The nine categories were chosen by the research team and may not represent all complex real-world work equally — scientific computing and software engineering may dominate in ways that don't transfer to, say, medical research or legal analysis. Different models were also evaluated with different compute budgets and setups, which complicates strict head-to-head comparison. And some failure modes may be about infrastructure (the agent times out, hits a context limit, loses the thread of a long prompt) rather than fundamental capability.</p>
+
+      <p><strong>If you remember one thing:</strong> The best AI in the world today completes less than half of a hard, multi-hour task when placed in front of it — even with nearly 10 million words of context to work with.</p>
+
+      <!-- SVG: horizontal bar chart of pass@1 rates -->
+      <figure>
+        <svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bar chart comparing pass rates on Long-Horizon-Terminal-Bench. Best model: 15.2% near-perfect, 10.9% perfect. Average model: 4.3% near-perfect, 1.7% perfect.">
+
+          <!-- Title -->
+          <text x="360" y="28" text-anchor="middle" font-family="ui-serif" font-size="14" font-weight="bold" fill="#141413">How often do agents actually finish a hard task?</text>
+          <text x="360" y="46" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Pass@1 rates on Long-Horizon-Terminal-Bench (46 tasks, frontier models)</text>
+
+          <!-- Vertical baseline -->
+          <line x1="210" y1="60" x2="210" y2="205" stroke="#D1CFC5" stroke-width="1.5"/>
+
+          <!-- Grid lines at 5%, 10%, 15%, 20% -->
+          <!-- Scale: 20% spans from x=210 to x=690 = 480px total → 24px per 1% -->
+          <line x1="330" y1="60" x2="330" y2="205" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4 3"/>
+          <line x1="450" y1="60" x2="450" y2="205" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4 3"/>
+          <line x1="570" y1="60" x2="570" y2="205" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4 3"/>
+          <line x1="690" y1="60" x2="690" y2="205" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4 3"/>
+
+          <!-- X-axis labels -->
+          <text x="210" y="220" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#87867F">0%</text>
+          <text x="330" y="220" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#87867F">5%</text>
+          <text x="450" y="220" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#87867F">10%</text>
+          <text x="570" y="220" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#87867F">15%</text>
+          <text x="690" y="220" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#87867F">20%</text>
+
+          <!-- GROUP 1: Best model -->
+          <text x="200" y="88" text-anchor="end" font-family="system-ui" font-size="11" font-weight="600" fill="#141413">Best</text>
+          <text x="200" y="103" text-anchor="end" font-family="system-ui" font-size="11" font-weight="600" fill="#141413">model</text>
+
+          <!-- Bar: 15.2% near-perfect → 15.2 × 24 = 364.8 ≈ 365px wide -->
+          <rect x="210" y="72" width="365" height="22" rx="2" fill="#D97757"/>
+          <text x="580" y="88" font-family="system-ui" font-size="11" fill="#D97757" font-weight="600">15.2%</text>
+
+          <!-- Bar: 10.9% perfect → 10.9 × 24 = 261.6 ≈ 262px wide -->
+          <rect x="210" y="100" width="262" height="22" rx="2" fill="#D97757" opacity="0.5"/>
+          <text x="477" y="116" font-family="system-ui" font-size="11" fill="#87867F">10.9%</text>
+
+          <!-- GROUP 2: Average model -->
+          <text x="200" y="153" text-anchor="end" font-family="system-ui" font-size="11" font-weight="600" fill="#141413">Average</text>
+          <text x="200" y="168" text-anchor="end" font-family="system-ui" font-size="11" font-weight="600" fill="#141413">model</text>
+
+          <!-- Bar: 4.3% near-perfect → 4.3 × 24 = 103.2 ≈ 103px wide -->
+          <rect x="210" y="138" width="103" height="22" rx="2" fill="#788C5D"/>
+          <text x="318" y="154" font-family="system-ui" font-size="11" fill="#788C5D" font-weight="600">4.3%</text>
+
+          <!-- Bar: 1.7% perfect → 1.7 × 24 = 40.8 ≈ 41px wide -->
+          <rect x="210" y="166" width="41" height="22" rx="2" fill="#788C5D" opacity="0.5"/>
+          <text x="256" y="182" font-family="system-ui" font-size="11" fill="#87867F">1.7%</text>
+
+          <!-- Legend -->
+          <rect x="220" y="207" width="12" height="10" rx="1" fill="#D97757"/>
+          <text x="236" y="217" font-family="system-ui" font-size="10" fill="#87867F">Near-perfect (≥95% credit)</text>
+          <rect x="390" y="207" width="12" height="10" rx="1" fill="#D97757" opacity="0.5"/>
+          <text x="406" y="217" font-family="system-ui" font-size="10" fill="#87867F">Perfect (100% credit)</text>
+
+        </svg>
+        <figcaption>Even the best model completes less than 16% of tasks to near-perfect credit. The average model manages just 4.3%. "Partial credit throughout" is what separates this benchmark from older pass/fail tests.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Thariq Shihipar</span><span>His <strong>html-effectiveness</strong> repo (625 stars, updated July 3) is a gallery of 20+ standalone HTML files demonstrating what plain HTML can do as an output format — slide decks, triage boards, flowcharts, status reports, prompt tuners — with no build step and no dependencies. If you've wondered how to make AI outputs genuinely useful without spinning up a framework, this is the place to start. <a href="https://github.com/ThariqS/html-effectiveness">github.com/ThariqS/html-effectiveness</a></span></li>
+        <li><span class="tag tech">Andrej Karpathy</span><span>Still at Anthropic, and publicly on the record about it after quashing a July 26 rumor. His project: building a team that uses Claude to run overnight machine-learning experiments autonomously — propose a change, train for five minutes, keep it if performance improves, discard if not, repeat until morning. It's AI using AI to do AI research. <a href="https://kingy.ai/news/autoresearch-karpathys-minimal-agent-loop-for-autonomous-llm-experimentation/">More on autoresearch</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+
+      <p>The same week that OpenAI handed frontier AI to 10,000 academic researchers — with a plan to reach 100,000 — a group of researchers built a test that shows clearly what those tools can and can't do when the going gets hard. The two stories are related. Giving scientists access to powerful AI is genuinely useful, and many real research tasks are exactly the kind of short-horizon work where these models excel: summarizing literature, explaining a technique, drafting a methods section. But the Long-Horizon-Terminal-Bench results are a reminder that the harder kind of work — running a multi-day experiment, reproducing a complex pipeline, debugging a system through eighty minutes of trial and error — is still largely beyond what today's agents can finish reliably.</p>
+
+      <p>That gap is not a reason to be dismissive. A year ago, 15% completion on tasks of this difficulty would have been surprising. The trajectory is real. But the gap between "brilliant in thirty seconds" and "reliable over two hours" is where the next several years of research are going to live. The benchmark exists because we need to be honest about where that line is.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://openai.com/index/chatgpt-for-academic-researchers/">OpenAI: ChatGPT for Academic Researchers</a> ·
+        <a href="https://siliconangle.com/2026/07/29/openai-opens-new-chatgpt-academic-researchers-program-100000-scientists/">SiliconAngle</a> ·
+        <a href="https://arxiv.org/abs/2607.08964">Long-Horizon-Terminal-Bench (arXiv:2607.08964)</a> ·
+        <a href="https://pricepertoken.com/leaderboards/benchmark/terminalbench">LHTB leaderboard</a> ·
+        <a href="https://www.ftc.gov/news-events/news/press-releases/2026/07/ftc-seeks-public-comment-policy-statement-addressing-ai-accuracy">FTC: AI accuracy policy statement</a> ·
+        <a href="https://www.technology.org/2026/07/17/eu-ai-act-what-actually-applies-on-2-august-2026/">EU AI Act — what applies August 2</a> ·
+        <a href="https://explainx.ai/blog/karpathy-anthropic-resignation-rumor-debunked-july-2026">Karpathy/Anthropic rumor debunked</a> ·
+        <a href="https://github.com/ThariqS/html-effectiveness">Thariq: html-effectiveness (GitHub)</a> ·
+        <a href="https://news.crunchbase.com/venture/global-startup-exits-ipo-ma-soar-ai-q2-h1-2026/">Crunchbase: H1 2026 funding record</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Dense reward</div>
+        <div>In AI evaluation, giving a system credit at every checkpoint along the way — not just judging whether it crossed the finish line. Like a writing teacher who marks up your draft sentence by sentence rather than just giving the essay a final grade. You learn far more about where things went wrong.</div>
+      </div>
+      <dl>
+        <dt>Benchmark</dt>
+        <dd>A standardized set of tasks used to compare AI models fairly — like a standardized exam, but for computers. The problem is that models can ace the exam without being good at the real job.</dd>
+
+        <dt>Pass@1</dt>
+        <dd>Whether an AI completes a task correctly on its very first attempt, with no retries. Higher is better; a 15% pass@1 means the model succeeds one time in seven tries.</dd>
+
+        <dt>Mean reward</dt>
+        <dd>The average fraction of available credit an AI earns across a set of tasks. A score of 0.505 means the model earned about half the points on offer. A score of 1.0 would mean perfect completion of everything.</dd>
+
+        <dt>Token</dt>
+        <dd>The basic unit an AI model reads and writes — roughly three-quarters of an English word. When a task consumes 9.9 million tokens, that's approximately 7–8 million words of back-and-forth between agent and environment.</dd>
+
+        <dt>Pre-training</dt>
+        <dd>The initial, massive phase of teaching an AI model by exposing it to enormous amounts of text before any specific tuning. It's where the model's general knowledge and language ability come from. Fine-tuning and instruction-following come after.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
