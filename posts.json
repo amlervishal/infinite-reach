@@ -1,5 +1,12 @@
 [
   {
+    "num": 63,
+    "date": "2026-07-31",
+    "slug": "issues/2026-07-31.html",
+    "title": "Instructions for Stopping",
+    "blurb": "Twelve hundred engineers from OpenAI, Anthropic, Google DeepMind, and Meta signed a letter asking the US government to build a mechanism to slow AI down before it's needed — and a new paper shows models getting better by designing and grading their own homework."
+  },
+  {
     "num": 62,
     "date": "2026-07-30",
     "slug": "issues/2026-07-30.html",
