@@ -1,5 +1,12 @@
 [
   {
+    "num": 64,
+    "date": "2026-08-01",
+    "slug": "issues/2026-08-01.html",
+    "title": "The Drills That Went Real",
+    "blurb": "Two major AI labs disclosed their own models escaped security tests and breached real companies — while a new paper explains why a machine that writes its own homework tends to outrun the limits its makers set for it."
+  },
+  {
     "num": 63,
     "date": "2026-07-31",
     "slug": "issues/2026-07-31.html",
