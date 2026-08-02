@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №65 — The Machine Must Say So · Infinite Reach</title>
+  <meta name="description" content="From today, every AI chatbot serving European users must announce that it's not human. The EU's AI Act gains its enforcement teeth — and a new paper shows AI agents running faster by remembering their own history." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №65 &middot; Sunday, August 2, 2026</p>
+      <h1>The Machine Must Say So</h1>
+      <p>From today, every AI chatbot or voice agent serving European users must announce that it is not a human. The EU's landmark AI rulebook gains its enforcement powers on the same morning that researchers show AI agents can run meaningfully faster — not by getting bigger, but by remembering what they've already done.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>The European Union's AI Act entered its main enforcement phase today, August 2, 2026. Starting now, the EU's AI Office can investigate AI companies, demand documentation, require fixes, and issue fines. The immediate practical change is this: any chatbot or voice assistant used in Europe must tell users it's an AI — not imply it's human. Any AI-generated video, image, or audio must carry a machine-readable label so detection tools can identify it. And deepfakes have to be marked even if there was no intent to deceive. The obligations fall on the businesses that deploy these systems, not just the companies that build the underlying models. The high-risk rules — for AI in hiring, credit scoring, and medical decisions — were pushed to December 2027, so this week's change is specifically about transparency.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Voice AI</span><span>xAI launched Grok Voice Think Fast 2.0, which reasons while it speaks rather than pausing to think first. It scored 82.9% on Artificial Analysis's speech quality index — beating GPT-Realtime-2.1 at 79.1% and Gemini 3.1 Flash at 69.5% — and is priced at $0.08 per minute. <a href="https://x.ai/news/grok-voice-think-fast-2">source</a></span></li>
+        <li><span class="tag money">Big Tech</span><span>Microsoft revealed its in-house MAI models have cut GPU costs up to 89% in specific products compared with the OpenAI models they replaced — PowerPoint's image generation is 84% cheaper, Dynamics 365 contact-center voice is 89% cheaper. MAI-Transcribe-1.5 now powers Dragon Copilot's medical transcription across 58 languages. <a href="https://venturebeat.com/infrastructure/microsoft-launches-new-in-house-ai-models-it-says-cut-costs-up-to-89-versus-openai">source</a></span></li>
+        <li><span class="tag policy">Government</span><span>California Governor Gavin Newsom struck a deal with Anthropic giving all state agencies and local governments access to Claude at 50% of standard commercial pricing, with training included. It is the largest state-level AI procurement deal announced so far in the US. <a href="https://digital-strategy.ec.europa.eu/en/news/commission-starts-enforcing-ai-act-rules-and-new-transparency-requirements-2-august">source</a></span></li>
+        <li><span class="tag tech">Coding agents</span><span>Boris Cherny's team stripped more than 80% of Claude Code's system prompt when Opus 5 arrived — and the model performed better without the scaffolding. The old prompts were written to compensate for limitations in earlier models; Opus 5 needed fewer guardrails and fewer instructions. <a href="https://finance.biggo.com/news/7df48019614f68c0">source</a></span></li>
+        <li><span class="tag money">Research access</span><span>OpenAI is expanding free frontier-model access to 100,000 academic researchers through 2027, starting from an initial 10,000 at institutions including the Institute for Advanced Study and École normale supérieure. <a href="https://openai.com/research/index/release/">source</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: agents that remember their own past</h2>
+      <p class="kicker">Speculate with Memory: Lossless Acceleration for LLM Agents &middot; Yu Li, Qinyuan Ye, Prafulla Kumar Choubey, Jiaxin Zhang, Chien-Sheng Wu &middot; <a href="https://arxiv.org/abs/2607.12236">arXiv:2607.12236, July 2026</a></p>
+
+      <p>Most AI agents feel slow. You ask one to search the web, summarise a document, or run a piece of code, and there are long pauses between steps while the model waits for results and then figures out what to do next. A July paper proposes a way to close those gaps — not by using a faster computer, but by giving the agent a memory of what it's done before.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When an AI agent uses a tool — say, calling a web search API — the big language model has to wait for the result before deciding what to do next. Those waiting moments are wasted time. <em>Speculative execution</em> is the existing idea for filling them: you run a second, smaller model in parallel that tries to predict the agent's next action before the real result even arrives. If the small model guesses right, the big model can skip that step entirely and you've saved time. If it guesses wrong, you discard the prediction and continue normally — no harm done, just a small wasted effort.</p>
+
+      <p>The catch is that today's speculators start fresh every single task. They've "seen" thousands of agent runs during training, but at the moment of prediction they can't access any of that experience for the specific situation in front of them. It's like hiring someone with years of experience but requiring them to wear a blindfold during each job — they can't look at what they've already done today, and can't check whether a similar situation came up an hour ago. Prediction quality plateaus because the speculator can't learn from live experience.</p>
+
+      <h3>How it works</h3>
+      <p>The paper's answer is to give the speculator a notebook — specifically, three kinds of notes that it writes during a session and reads from when it needs to predict:</p>
+
+      <p>Think of the analogy of a sous chef. The head chef (the big language model) is working through each course of a meal one dish at a time. The sous chef (the small speculator) tries to rush ahead: "The head chef just finished the soup — I'll start prepping the pasta." That's the existing idea. Now imagine the sous chef also has three things on their side: a tally sheet of which courses tend to follow which ("after soup, pasta appears 73% of the time"), a notepad of complete past menus from similar dinners, and a list of their own frequent mistakes ("I keep setting up the dessert station too early at five-course meals"). Each of those tools makes their predictions sharper.</p>
+
+      <p>The paper formalises this with three <em>online memory systems</em> — systems that update in real time as the agent works, not just during training. First: a <strong>contrastive transition table</strong>, which is the tally sheet — it tracks how often each action leads to each subsequent action, giving the speculator a probability distribution to draw from. Second: an <strong>episodic memory</strong>, which stores whole segments of past trajectories and retrieves whichever past segment looks most like the current situation; the speculator can then predict from a similar completed example rather than from scratch. Third: a <strong>confusion tracker</strong>, which records where the speculator has repeatedly guessed wrong and deprioritises those predictions in the future — effectively suppressing chronic mistakes.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team evaluated their approach across six benchmarks and three types of prediction tasks: predicting what action the agent takes next, predicting what response will come back from the environment, and chained prediction (predicting a whole sequence of future steps). They tested with the speculator in two modes — with and without the memory systems — so the accuracy gains from memory alone could be isolated cleanly.</p>
+
+      <!-- SVG Diagram -->
+      <figure>
+        <svg viewBox="0 0 720 320" role="img" aria-label="Diagram showing speculative execution with three memory systems feeding into a small speculator model, which predicts agent actions while the main LLM waits for tool results." xmlns="http://www.w3.org/2000/svg">
+          <!-- Background -->
+          <rect width="720" height="320" fill="none"/>
+
+          <!-- Memory boxes at top -->
+          <!-- Transition Table -->
+          <rect x="30" y="20" width="160" height="64" rx="8" fill="#788C5D" opacity="0.15" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="110" y="46" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#788C5D" font-weight="600">Transition Table</text>
+          <text x="110" y="62" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">action → next action</text>
+          <text x="110" y="76" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">frequencies</text>
+
+          <!-- Episodic Memory -->
+          <rect x="278" y="20" width="164" height="64" rx="8" fill="#6A8CAF" opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="360" y="46" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#6A8CAF" font-weight="600">Episodic Memory</text>
+          <text x="360" y="62" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">similar past</text>
+          <text x="360" y="76" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">trajectories</text>
+
+          <!-- Confusion Tracker -->
+          <rect x="530" y="20" width="160" height="64" rx="8" fill="#D97757" opacity="0.12" stroke="#D97757" stroke-width="1.5"/>
+          <text x="610" y="46" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#D97757" font-weight="600">Confusion Tracker</text>
+          <text x="610" y="62" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">suppress recurring</text>
+          <text x="610" y="76" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">errors</text>
+
+          <!-- Arrows from memory to speculator -->
+          <line x1="110" y1="84" x2="300" y2="150" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <line x1="360" y1="84" x2="360" y2="148" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <line x1="610" y1="84" x2="418" y2="150" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+          <!-- Speculator (small model) -->
+          <rect x="260" y="148" width="200" height="60" rx="10" fill="#141413" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="360" y="173" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#D1CFC5" font-weight="600">Small Speculator</text>
+          <text x="360" y="191" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">predicts next action</text>
+
+          <!-- LLM (main agent) -->
+          <rect x="60" y="236" width="180" height="60" rx="10" fill="#D97757" opacity="0.12" stroke="#D97757" stroke-width="1.5"/>
+          <text x="150" y="261" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#D97757" font-weight="600">Main LLM Agent</text>
+          <text x="150" y="279" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">verifies prediction</text>
+
+          <!-- Environment -->
+          <rect x="480" y="236" width="180" height="60" rx="10" fill="#6A8CAF" opacity="0.12" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="570" y="261" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#6A8CAF" font-weight="600">Environment</text>
+          <text x="570" y="279" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">tools, APIs, results</text>
+
+          <!-- Arrow: speculator → environment (pre-launch) -->
+          <line x1="420" y1="193" x2="530" y2="236" stroke="#6A8CAF" stroke-width="1.8"/>
+          <polygon points="530,236 520,228 524,240" fill="#6A8CAF"/>
+          <text x="505" y="218" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#6A8CAF">pre-launch</text>
+
+          <!-- Arrow: LLM → environment (real action) -->
+          <line x1="240" y1="266" x2="480" y2="266" stroke="#D97757" stroke-width="1.8"/>
+          <polygon points="480,266 468,260 468,272" fill="#D97757"/>
+          <text x="360" y="258" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#D97757">real action</text>
+
+          <!-- Arrow: environment → LLM (observation, feed to memory) -->
+          <line x1="480" y1="285" x2="240" y2="285" stroke="#87867F" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <polygon points="240,285 252,279 252,291" fill="#87867F"/>
+          <text x="360" y="298" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">observation → updates memory</text>
+
+          <!-- Arrow: LLM ↔ Speculator -->
+          <line x1="240" y1="252" x2="260" y2="210" stroke="#D97757" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <text x="220" y="228" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#D97757">verify</text>
+        </svg>
+        <figcaption>How speculative memory works: three continuously-updated memory systems feed the small speculator so it can predict ahead while the main LLM is still processing the current step. The environment pre-executes the predicted action; observations loop back to update the memories.</figcaption>
+      </figure>
+
+      <h3>What they found</h3>
+      <p>Memory-augmented speculation improved action prediction accuracy by 19 to 39 percent relative to the stateless baseline — meaning the speculator's guesses are right noticeably more often when it has its notebooks than when it doesn't. On observation prediction tasks in environments with repetitive action patterns (like file-system agents that do similar things over and over), accuracy improved by up to 2.5 times. Because speculative execution is only beneficial when the speculator guesses correctly, more accurate predictions translate directly into more time saved per task.</p>
+
+      <p>The failures are instructive too. In environments that change dramatically between steps — where there's low overlap between past trajectories and the current situation — the episodic memory system retrieves unhelpfully different past examples. And the confusion tracker can overshoot: if an action keeps getting predicted wrong for a legitimate contextual reason rather than a genuine recurring mistake, suppressing it makes things worse. The benefits were clearest in structured, repetitive environments and narrowed in fully open-ended settings.</p>
+
+      <h3>The catch</h3>
+      <p>The paper measures <em>prediction accuracy</em>, not wall-clock speed improvement in real deployments. Whether you actually get the 2.5× faster experience depends heavily on how long your tools take to run (the longer they take, the more headroom the speculator has to save time) and how often predictions are correct. It also assumes you have the ability to run the speculator as a genuinely separate concurrent process — many developer environments run tool calls synchronously, which limits the benefit. And the memory systems require storage of past trajectories, which adds an engineering cost that the paper doesn't fully quantify.</p>
+
+      <p><strong>If you remember one thing:</strong> AI agents get meaningfully faster when the small "guesser" model inside them can read a running log of its own recent experience — same idea as giving any new employee access to their predecessor's notes.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>The Claude Code creator published that his team deleted more than 80% of the system prompt when Opus 5 launched — the old guardrails were crutches for earlier, weaker models. The insight cuts both ways: better models need less instruction, which changes how you should think about writing AI directions. <a href="https://finance.biggo.com/news/7df48019614f68c0">source</a></span></li>
+        <li><span class="tag tech">Karpathy</span><span>His Sequoia Ascent 2026 blog post — defining "Software 3.0" (context window = RAM, model weights = CPU, LLMs automate whatever humans can verify) — continues to circulate widely as a framing document. Worth reading if you haven't. <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">link</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two stories from this week point toward the same underlying shift. The EU AI Act enforcement is not about banning anything; it's about forcing disclosure. The theory is that if users know they're talking to a machine, they'll calibrate their trust appropriately — and if AI-generated video has to carry a label, misinformation campaigns become harder to run invisibly. Whether that theory holds in practice will be tested in the coming months.</p>
+
+      <p>The paper on speculative memory is a smaller story but structurally similar: it says that AI systems that accumulate and draw on experience are meaningfully better than those that don't. Microsoft's pivot to home-grown models and Boris Cherny's system-prompt trimming both point the same direction — capable AI needs less scaffolding, not more, as the underlying models improve. The implication for how companies build with AI: simpler is often better now, and complexity is increasingly a sign of compensating for a weaker foundation rather than engineering sophistication.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://digital-strategy.ec.europa.eu/en/news/commission-starts-enforcing-ai-act-rules-and-new-transparency-requirements-2-august">EU Commission: AI Act enforcement, 2 August</a> ·
+        <a href="https://artificialintelligenceact.eu/transparency-rules-article-50/">EU AI Act Article 50 Transparency Rules</a> ·
+        <a href="https://www.techtimes.com/articles/322563/20260731/eu-ai-act-chatbot-disclosure-reaches-api-builders-sunday-vendors-cannot-comply-you.htm">TechTimes: Chatbot disclosure, Aug 2</a> ·
+        <a href="https://x.ai/news/grok-voice-think-fast-2">xAI: Grok Voice Think Fast 2.0</a> ·
+        <a href="https://venturebeat.com/infrastructure/microsoft-launches-new-in-house-ai-models-it-says-cut-costs-up-to-89-versus-openai">VentureBeat: Microsoft MAI models</a> ·
+        <a href="https://arxiv.org/abs/2607.12236">arXiv: Speculate with Memory (2607.12236)</a> ·
+        <a href="https://finance.biggo.com/news/7df48019614f68c0">BigGo: Boris Cherny / Claude Code system prompt cut</a> ·
+        <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">Karpathy: Sequoia Ascent 2026 / Software 3.0</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">GPAI</div>
+        <div>Short for General-Purpose AI — a model trained to do many different things (write, code, translate, answer questions) rather than one specific task. The EU AI Act treats GPAI providers as a special category subject to their own transparency and documentation rules. Think of it as the label for the "big, versatile" models like Claude, GPT, and Gemini.</div>
+      </div>
+      <dl>
+        <dt>Speculative execution</dt><dd>A trick for making AI agents faster: a small, cheap model races ahead and predicts the agent's next action while the main model waits for a tool result. If the guess is right, time is saved; if wrong, it's discarded harmlessly.</dd>
+
+        <dt>Episodic memory</dt><dd>A type of AI memory that stores whole chunks of past experience (what happened, what came next) and retrieves whichever past episode looks most similar to the present moment. Named by analogy with human episodic memory — the kind that stores events, not just facts.</dd>
+
+        <dt>System prompt</dt><dd>A set of instructions given to an AI model before the conversation starts — its briefing. It can include rules ("never do X"), role descriptions ("you are a helpful assistant"), and output format guidance. The Boris Cherny finding this week: stronger models need shorter briefings.</dd>
+
+        <dt>Market surveillance</dt><dd>The EU regulatory mechanism where authorities monitor products already in circulation to check they comply with rules. For AI, it means national regulators can test deployed systems, request documents, and pull non-compliant products from the European market.</dd>
+
+        <dt>Latency</dt><dd>The delay between asking and receiving — the pause while an AI model thinks, calls a tool, or waits for a server. In the agent acceleration paper, latency is the gap the speculator is trying to fill.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
