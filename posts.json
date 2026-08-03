@@ -1,5 +1,12 @@
 [
   {
+    "num": 66,
+    "date": "2026-08-03",
+    "slug": "issues/2026-08-03.html",
+    "title": "Ten Questions, Twenty-Seven Years",
+    "blurb": "OpenAI's unreleased Astra model cracked ten mathematical puzzles open for decades — including the first new example of an impossible group structure in 27 years — for about $2,000 in compute."
+  },
+  {
     "num": 65,
     "date": "2026-08-02",
     "slug": "issues/2026-08-02.html",

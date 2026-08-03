@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №66 — Ten Questions, Twenty-Seven Years · Infinite Reach</title>
+  <meta name="description" content="OpenAI's unreleased Astra model cracked ten mathematical puzzles that had been open for decades — including the first new example of an impossible group structure in 27 years — for about $2,000 in compute." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №66 &middot; Monday, August 3, 2026</p>
+      <h1>Ten Questions, Twenty-Seven Years</h1>
+      <p>On Friday, OpenAI announced its next model by publishing the answers to ten mathematics problems that had stumped experts for decades. The proofs are written in a form a computer can check line by line. The total compute bill was around two thousand dollars.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>OpenAI's unreleased model, called Astra, produced verified proofs for ten long-open problems in mathematics and theoretical computer science. The headline result: the first explicit construction of a <em>non-sofic group</em> — a type of mathematical structure whose existence had been an open question since 1999. The proofs come with machine-checkable certificates written in Lean 4, a computer language that lets software verify every step of a mathematical argument. OpenAI published a 249-page manuscript and the full Lean code on GitHub, where the "sorry count" — the number of unproven steps — is zero. Astra isn't released to the public yet; this announcement was partly a way to introduce the model before its official launch, and Sam Altman had already demoed it privately to lawmakers in Washington, D.C. The broader signal: AI has moved from retrieving and recombining knowledge to producing original results that qualified mathematicians say they could not have found themselves.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag policy">Washington</span><span>Sam Altman showed Astra to U.S. policymakers and regulators on Capitol Hill before the math announcement went public — a now-standard OpenAI move of giving government officials a private preview of a major model before it ships. <a href="https://finance.biggo.com/news/991763e3-7527-49a1-8c1d-bab99af1df55">source</a></span></li>
+        <li><span class="tag money">Sovereign fund</span><span>Abu Dhabi's MGX closed its inaugural AI-focused fund at $49 billion — beating a $45 billion target — with investments spread across 14 companies spanning chip design, data center infrastructure, and AI platforms. <a href="https://aifundingtracker.com/ai-startup-funding-news-today/">source</a></span></li>
+        <li><span class="tag tech">Model releases</span><span>Three new models shipped over the weekend: DeepSeek-V4-Flash-0731 (a lightweight update to DeepSeek's Flash line), GPT-5.6 Luna (the third member of OpenAI's GPT-5.6 family), and Meta Muse Spark 1.1 (a creative-generation update). The pace of releases makes model-selection strategy more important than any single launch. <a href="https://blog.mean.ceo/new-ai-model-releases-news-august-2026/">source</a></span></li>
+        <li><span class="tag money">Japan</span><span>Microsoft committed $10 billion to AI infrastructure in Japan through 2029, in partnership with SoftBank and Sakura Internet, and pledged to train one million engineers and developers in the country by 2030. <a href="https://llm-stats.com/ai-news">source</a></span></li>
+        <li><span class="tag tech">Claude Code</span><span>Claude Code's weekly usage limits were raised 50% through August 19, as developer demand has outpaced the previous quotas — especially for teams running large fleets of parallel agents. <a href="https://llm-stats.com/llm-updates">source</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE: the Astra math paper -->
+      <h2>Paper, explained: the machine that proved what mathematicians couldn't</h2>
+      <p class="kicker">Ten Advances in Mathematics and Theoretical Computer Science &middot; OpenAI / Astra team &middot; <a href="https://openai.com/index/ten-advances-in-mathematics/">openai.com, August 1 2026</a></p>
+
+      <p>Every field of mathematics has a list of unsolved problems — questions that specialists have been poking at for years or decades without finding an answer. OpenAI's Astra model just crossed ten of them off that list, in a single announcement, with proofs that have been checked not by humans but by a computer. That last part is what makes this different.</p>
+
+      <h3>The problem, and why it's hard</h3>
+
+      <p>First, a word about what "solving a math problem" actually means. In most fields, when a scientist discovers something, they write it up and colleagues check it over. If the argument holds, it's accepted. Mathematics has always been stricter than that: a proof must be airtight — every step must follow logically from the ones before it, with no intuitive leaps allowed. But even strict proofs can harbour subtle errors that go unnoticed for years. The Lean 4 proof assistant changes that by insisting every step be expressed in a formal language that a computer can verify. If the software accepts the proof, there is no gap anywhere. It is the mathematical equivalent of a spell-checker that also checks grammar, logic, and the laws of physics simultaneously.</p>
+
+      <p>The ten problems Astra tackled had been open for varying lengths of time, but all had resisted serious effort. The most celebrated, the non-sofic group problem, dates to 1999. The others include: disproving Connes's rigidity conjecture (which concerned a branch of math called operator algebras); proving Ehrhart's volume conjecture; finding the first improved general sphere-packing exponent since 1978 (a problem in high-dimensional geometry); and proving quantum parallel repetition for two-player entangled games (a result in quantum complexity theory). The remaining problems span coding theory, arithmetic circuit complexity, Ramsey theory, and lattice cryptography. None of these are household names, but each represents a question that qualified researchers had tried and failed to answer.</p>
+
+      <h3>How it works</h3>
+
+      <p>Astra is not a single model that sits and thinks. It is a <em>multi-agent system</em> — a design where multiple AI processes run in parallel, each working on a piece of the larger problem, and then handing off to each other. Think of it like the way a law firm handles a complex case: one team does document review, another researches precedent, a third drafts arguments, and a senior partner reviews everything before it goes to court. No single person holds the whole case in their head at once.</p>
+
+      <p>For mathematics, Astra appears to have worked in two phases. In the first, the system explores possible approaches — generating candidate arguments, testing whether they lead anywhere, and discarding dead ends. This is the phase where most of the reasoning happens and most of the $2,000 was probably spent. In the second phase, the best candidate argument gets <em>formalised</em>: translated step by step into Lean 4 code. This is painstaking work even for a machine, because Lean accepts no approximations — every claim must be backed by a prior theorem or axiom from Lean's mathematical library. The system then runs the Lean verifier, which either accepts the proof (returning "zero sorrys") or flags the first gap. If it flags a gap, the system goes back and fills it.</p>
+
+      <p>The everyday analogy is a structural engineer checking bridge designs. A human designer sketches the bridge; the computer-aided analysis software then stress-tests every joint under every load condition the code specifies. If a joint fails the simulation, the designer goes back and reinforces it. You don't ship the bridge until the software says every joint holds. Astra did the same thing with logical steps: no joint — no step — was left unsupported when it published.</p>
+
+      <h3>What they actually did</h3>
+
+      <p>OpenAI published a 249-page manuscript covering all ten results, plus a public GitHub repository containing the Lean 4 certificate files. The repository reports a "sorry count of zero" — meaning not a single step in any of the ten proofs was marked as assumed rather than proven. The team estimated the total compute cost at roughly $2,000 at Sol API rates (Sol is OpenAI's current mid-tier production model). The problems span at least eight distinct mathematical subfields, which means the system was not exploiting deep specialisation in a single area but working across genuinely different domains. OpenAI also published the model's own chain-of-thought reasoning for each problem, so readers can see how it approached each one — not just the final cleaned-up argument.</p>
+
+      <!-- SVG: flow of how Astra produced and verified its proofs -->
+      <figure>
+        <svg viewBox="0 0 720 220" role="img" aria-label="Flowchart showing how Astra solved open math problems: from open question through multi-agent exploration to draft proof to Lean 4 formalization to verified certificate." xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <!-- Step 1: Open question -->
+          <rect x="20" y="80" width="120" height="60" rx="8" fill="#D97757" opacity="0.12" stroke="#D97757" stroke-width="1.5"/>
+          <text x="80" y="108" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" font-weight="600">Open question</text>
+          <text x="80" y="124" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">unsolved for</text>
+          <text x="80" y="136" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">years or decades</text>
+
+          <!-- Arrow 1 -->
+          <line x1="142" y1="110" x2="168" y2="110" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Step 2: Multi-agent exploration -->
+          <rect x="170" y="60" width="130" height="100" rx="8" fill="#788C5D" opacity="0.12" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="235" y="88" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" font-weight="600">Multi-agent</text>
+          <text x="235" y="104" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" font-weight="600">exploration</text>
+          <text x="235" y="122" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">agents try approaches</text>
+          <text x="235" y="136" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">discard dead ends</text>
+          <text x="235" y="150" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">~$2,000 compute</text>
+
+          <!-- Arrow 2 -->
+          <line x1="302" y1="110" x2="328" y2="110" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Step 3: Draft argument -->
+          <rect x="330" y="72" width="120" height="76" rx="8" fill="#6A8CAF" opacity="0.12" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="390" y="100" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" font-weight="600">Draft proof</text>
+          <text x="390" y="116" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">best approach</text>
+          <text x="390" y="130" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">written out in</text>
+          <text x="390" y="142" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">plain argument</text>
+
+          <!-- Arrow 3 -->
+          <line x1="452" y1="110" x2="478" y2="110" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Step 4: Lean 4 formalization -->
+          <rect x="480" y="72" width="120" height="76" rx="8" fill="#D97757" opacity="0.12" stroke="#D97757" stroke-width="1.5"/>
+          <text x="540" y="100" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" font-weight="600">Lean 4</text>
+          <text x="540" y="116" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" font-weight="600">formalisation</text>
+          <text x="540" y="132" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">every step checked</text>
+          <text x="540" y="146" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">sorry count: 0</text>
+
+          <!-- Arrow 4 -->
+          <line x1="602" y1="110" x2="626" y2="110" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Step 5: Verified -->
+          <rect x="628" y="80" width="76" height="60" rx="8" fill="#788C5D" opacity="0.25" stroke="#788C5D" stroke-width="2"/>
+          <text x="666" y="107" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" font-weight="700">Verified</text>
+          <text x="666" y="123" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">theorem</text>
+          <text x="666" y="135" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">confirmed</text>
+
+          <!-- Label at bottom -->
+          <text x="360" y="195" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Astra's pipeline from open question to machine-verified proof</text>
+        </svg>
+        <figcaption>How Astra turned open questions into verified theorems: multi-agent exploration found the arguments; Lean 4 formalisation confirmed every step without a single gap.</figcaption>
+      </figure>
+
+      <h3>What they found</h3>
+
+      <p>The headline result is the non-sofic group. Here is the plain-English version: in 1999, the mathematician Mikhail Gromov introduced a concept called <em>soficity</em>. A group is sofic if it can be faithfully approximated by a large but finite system — think of it as asking whether you can simulate a set of rules using enough players following finite instructions. Gromov and others suspected not every group had this property, but nobody could find a counterexample. Astra found one. It constructed an explicit group and proved, in Lean, that it cannot be approximated this way. That closes a 27-year-old question.</p>
+
+      <p>A second result disproved the Connes embedding conjecture's rigidity relative to von Neumann algebras — a finding with implications for how mathematicians think about infinite symmetry structures. A third improved the best-known bound on how efficiently you can pack spheres in high-dimensional space, a problem last advanced in 1978. Across all ten results, OpenAI says professional mathematicians have reviewed the arguments and found them correct — though full community verification will take time.</p>
+
+      <h3>The catch</h3>
+
+      <p>A few honest caveats. First, these ten problems were chosen because they have clean formal statements — they could be expressed precisely enough for a computer to verify the answer. Not every hard mathematical question works that way; many of the most important open problems in the field are too loosely defined to formalise. Second, Astra is not publicly available. We can read its proofs, but we cannot audit the process that produced them, and we have no way to independently test whether the multi-agent approach generalises beyond the problems OpenAI selected. Third, the announcement doubles as a product reveal, which gives OpenAI a commercial incentive to frame the results optimistically. And finally, solving an abstract group-theory question does not cure a disease or fix a bridge — the direct applications of these particular results may take years to materialise.</p>
+
+      <p><strong>If you remember one thing:</strong> An AI system just demonstrated it can do original mathematics — not retrieve known results, not help a human do the work, but find new proofs that no human had found — and it published the evidence in a form that a computer can verify without trusting anyone's word.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>Cherny set Claude Code an unusual test: rewrite the Claude desktop app entirely from Electron to Swift, with no stopping condition except "don't stop until you're done." The model spun up its own Slack channel, started posting pixel-comparison screenshots every few minutes, and has now been running for more than two weeks. A Daring Fireball post from yesterday describes the experiment — and the philosophy behind giving models ambitious, open-ended tasks rather than narrow, constrained ones. <a href="https://news.ycombinator.com/item?id=49149800">Hacker News discussion</a></span></li>
+        <li><span class="tag tech">Thariq Shihipar</span><span>Shihipar's piece "A harness for every task" explains how Claude Code's dynamic workflows let the model spin up specialist subagents for complex tasks rather than trying to hold everything in one context window. With Astra's multi-agent math proofs in the news today, the design philosophy behind both is worth reading side by side. <a href="https://claude.com/blog/a-harness-for-every-task-dynamic-workflows-in-claude-code">Claude blog</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>OpenAI didn't announce Astra by publishing benchmark numbers. They announced it by publishing answers. That is a deliberate shift in how the field signals capability: instead of "our model scores X% on this test," the message is "our model did something a human expert could not." The ten math proofs are chosen precisely because they are verifiable — anyone who wants to check the results can run the Lean files. This matters beyond pure mathematics. If a multi-agent system can run for days on an open problem, produce a formal argument, and have it machine-verified, the same architecture can in principle be pointed at drug targets, materials properties, or software security bugs. The math announcement is a demonstration of a general capability. We're watching the moment where AI stops being a tool that augments human researchers and starts being, in at least some narrow but real sense, a researcher itself.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://openai.com/index/ten-advances-in-mathematics/">OpenAI – Ten Advances in Mathematics</a> ·
+        <a href="https://thenextweb.com/news/openai-astra-model-ten-math-proofs-non-sofic-groups">The Next Web – Astra's math proofs</a> ·
+        <a href="https://siliconangle.com/2026/08/02/openais-astra-solves-10-long-open-math-problems-publishes-proofs/">SiliconAngle – Astra solves 10 problems</a> ·
+        <a href="https://aiweekly.co/alerts/openai-releases-ten-astra-math-proofs-with-lean-certificates">AI Weekly – Lean certificates</a> ·
+        <a href="https://finance.biggo.com/news/991763e3-7527-49a1-8c1d-bab99af1df55">BigGo – Altman demos Astra in DC</a> ·
+        <a href="https://the-decoder.com/openai-announces-its-next-major-model-astra-by-dropping-ten-previously-unsolved-math-solutions/">The Decoder – Astra announcement</a> ·
+        <a href="https://caimpare.ai/articles/openai-s-unreleased-astra-model-solves-decades-old-math-problems-demoed-to-dc-policymakers">cAImpare – DC demo</a> ·
+        <a href="https://aifundingtracker.com/ai-startup-funding-news-today/">AI Funding Tracker – MGX fund</a> ·
+        <a href="https://blog.mean.ceo/new-ai-model-releases-news-august-2026/">Mean CEO – Model releases August 2026</a> ·
+        <a href="https://claude.com/blog/a-harness-for-every-task-dynamic-workflows-in-claude-code">Claude blog – Dynamic workflows</a> ·
+        <a href="https://daringfireball.net/linked/2026/08/02/cherny-claude-swift">Daring Fireball – Boris Cherny / Claude app rewrite</a> ·
+        <a href="https://news.ycombinator.com/item?id=49149800">Hacker News – Cherny Claude app discussion</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Lean 4</div>
+        <div>A computer language for writing mathematical proofs in a form that software can check step by step. Think of it as a very strict grammar checker — but for logic. If Lean accepts your proof, there is no gap anywhere in the argument, guaranteed. A "sorry" in Lean is the equivalent of writing "trust me" in a proof — acceptable only as a placeholder, never in a finished result.</div>
+      </div>
+      <dl>
+        <dt>Open problem</dt>
+        <dd>A mathematical question for which no answer has yet been found and published. Some open problems are famous (the Riemann hypothesis), others are known mainly to specialists. The ten Astra solved fall in the second category.</dd>
+
+        <dt>Non-sofic group</dt>
+        <dd>A mathematical structure (a "group" — a set with a combining rule, like the rotations of a cube) that cannot be faithfully approximated by a large finite system. Since 1999, mathematicians suspected such things exist. Astra found the first one.</dd>
+
+        <dt>Multi-agent system</dt>
+        <dd>An AI architecture where many separate processes — each with a specific role — work in parallel on a task and hand work to each other. Contrasted with a single model trying to do everything at once. Astra is multi-agent; most current chatbots are not.</dd>
+
+        <dt>Formal proof</dt>
+        <dd>A proof expressed in a fully precise language where every step is either an axiom (an accepted starting rule) or follows directly from earlier steps by an allowed rule. No intuition, no "it's obvious that." A machine can check it.</dd>
+
+        <dt>Sphere packing</dt>
+        <dd>The mathematical problem of fitting as many identical spheres as possible into a given space without overlap. In high dimensions this is surprisingly hard and has real applications in data compression and error-correcting codes. Astra improved the best-known upper bound on how efficient packing can be.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
