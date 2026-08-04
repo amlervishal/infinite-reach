@@ -1,5 +1,12 @@
 [
   {
+    "num": 67,
+    "date": "2026-08-04",
+    "slug": "issues/2026-08-04.html",
+    "title": "The Asking Price",
+    "blurb": "A study of 4,643 AI runs finds that telling a model to 'compare approaches' can multiply its compute cost sevenfold without improving the answer — and a new benchmark shows agents nearly stop working when their tools get relabeled."
+  },
+  {
     "num": 66,
     "date": "2026-08-03",
     "slug": "issues/2026-08-03.html",

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №67 — The Asking Price · Infinite Reach</title>
+  <meta name="description" content="A study of 4,643 AI runs finds that telling a model to 'think deeply' can multiply its compute cost by up to seven times without improving the answer — and a new benchmark shows agents nearly stop working when their tools get relabeled." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №67 &middot; Tuesday, August 4, 2026</p>
+      <h1>The Asking Price</h1>
+      <p>Two papers published in the last 48 hours land on the same uncomfortable insight from different directions: AI agents are surprisingly sensitive to how you talk to them and how stable their environment is — and in both cases, the failure modes are hidden until they aren't.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Researchers at Nanyang Technological University in Singapore published a benchmark called <em>ScrambleToolBench</em> that does something deceptively simple: it randomly reshuffles the names of an AI agent's tools without changing what any of those tools actually do. In a stable environment, agents completed tasks at a 93% rate. Once the benchmark introduced "mapping drift" — relabeled tools, unpredictable failures, and time-limited windows — that completion rate fell to 3%. The agents couldn't reason from their earlier experience to deduce the new naming scheme. Instead they either clung to their old mental map despite contrary evidence (the paper calls this "belief inertia") or abandoned deduction entirely and started checking every option in sequence by brute force. This matters because real software environments don't stay still: APIs get versioned, tools get renamed in updates, configurations shift. A 93%-to-3% cliff under mild relabeling suggests a failure mode that standard, stable-environment tests won't reveal.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Models</span><span>DeepSeek's V4-Flash officially left preview at $0.14/$0.28 per million tokens, outscoring the company's own more-expensive V4-Pro flagship on all nine agent benchmarks DeepSeek published — a demonstration that compute efficiency and benchmark performance are no longer in tension at this price point. <a href="https://www.geeky-gadgets.com/deepseek-v4-flash-beta/">source</a></span></li>
+        <li><span class="tag money">Infrastructure</span><span>Fireworks AI closed a $1.5 billion Series D round at a $17.5 billion valuation. The AI inference platform has grown its annualized revenue five-fold since its last raise, to over $1 billion, driven by enterprise demand for dedicated model infrastructure. <a href="https://siliconangle.com/2026/07/16/ai-infrastructure-startup-fireworks-closes-1-5b-round-17-5b-valuation/">source</a></span></li>
+        <li><span class="tag policy">Congress</span><span>OpenAI's ChatGPT accounts for roughly $9 in every $10 spent on identifiable AI tools by US House offices, and OpenAI's federal lobbying spend was up 82.5% year-over-year in Q1 2026. That degree of concentration in government procurement rarely escapes regulatory scrutiny for long. <a href="https://www.cnbc.com/2026/08/03/openai-chatgpt-anthropic-congress-house-ai-spending.html">source</a></span></li>
+        <li><span class="tag tech">Pricing</span><span>Claude Sonnet 5's introductory rate of $2 per million tokens ends September 1 and rises to $3/M. Anthropic also updated the tokenizer in a way that may encode up to 35% more tokens per equivalent passage of text — meaning the real cost increase is bigger than the sticker price change alone. <a href="https://llm-stats.com/ai-news">source</a></span></li>
+        <li><span class="tag policy">Adoption</span><span>Gartner predicts 40% of enterprise applications will ship with embedded task-specific AI agents by the end of 2026 — up from under 5% a year ago — with more than 60% of organisations expecting deployment within two years. <a href="https://aiagentstore.ai/ai-agent-news/this-week">source</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE: Prompt-Induced Waste -->
+      <h2>Paper, explained: when your instructions cost more than the answer</h2>
+      <p class="kicker"><em>Prompt-Induced Waste in Large Reasoning Models: A Preregistered Two-Harness Benchmark of Coding Agents</em> &middot; Holzenberger et al. &middot; <a href="https://arxiv.org/abs/2608.01347">arxiv:2608.01347</a></p>
+
+      <p>The number at the centre of this paper is hard to look past: asking an AI reasoning model to "develop and compare several approaches" before answering multiplies its thinking cost by 2.4 to 7.4 times — across every model tested — without improving whether the answer is actually correct. Same result. Seven times the bill.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Modern AI "reasoning models" are a specific type that generates an internal chain of deliberation before producing a final answer. Think of it as visible thinking: the model reasons step by step, checks its logic, and only then writes the response you see. This process costs real compute. Every reasoning token is a token a provider charges for, whether it produced a useful insight or not. The working assumption has been intuitive: more deliberation equals better output. Tell the model to think harder; it thinks harder; you get a better answer. Reasonable. Also, it turns out, not consistently true.</p>
+
+      <p>The difficulty in testing this is controlling for everything else. If you change the model, the task, or the harness, you can't know whether the prompt wording is really the cause. This is why the study is preregistered — the authors locked their hypotheses and methods into a public record before touching the data. That protects against unconsciously adjusting conclusions to fit results, a pervasive problem in research on systems that are hard to benchmark cleanly.</p>
+
+      <h3>How it works</h3>
+      <p>Imagine you're hiring a contractor to fix a leaking pipe. You can say "fix the leak in the kitchen" — a clear task with an implicit stopping point — or you can say "spare no expense, consider every possible cause, document your reasoning, and don't leave until you've compared all the options." The second version might feel more thorough. But if the problem is a loose fitting that takes twenty minutes to tighten, the extra instruction doesn't make your contractor more competent: it bills you for a full afternoon of unnecessary deliberation on possibilities that weren't relevant. The pipe gets fixed either way; you pay four times as much for the same repair.</p>
+
+      <p>AI reasoning models respond almost exactly this way. The researchers identified three types of what they call "thinking theater" — deliberation that looks productive but doesn't connect to output quality:</p>
+      <ul>
+        <li><strong>Solution tournaments.</strong> The model invents several candidate approaches and runs an internal competition to decide which is best — even when one approach is obviously adequate for the task at hand. The tournament concludes, the obvious approach wins, and you've paid for the competition.</li>
+        <li><strong>Unverified hints.</strong> The model reasons from assumptions it hasn't checked. ("This is probably a sorting problem…") If the assumption is wrong, the reasoning built on top of it is wasted.</li>
+        <li><strong>Scope creep.</strong> A "think deeply" instruction leads the model to redefine the task as larger than it actually is — generalising where a specific solution was asked for, adding edge cases that don't apply, or producing commentary nobody requested.</li>
+      </ul>
+
+      <p>The authors' central insight is that these patterns are triggered by prompt wording and are replicable across models and harnesses. They are not random noise. They are instruction-shaped waste.</p>
+
+      <h3>What they actually did</h3>
+      <p>The study ran 4,643 valid test runs across six large reasoning models: DeepSeek-V4-Pro, Kimi-K2.6, Kimi-K2.7-Code, Nemotron-3-Ultra, Inkling, and GLM-5.2. These ran inside two real agentic coding harnesses: PI.DEV (which sends 1,147 to 1,642 prefix tokens before your message arrives) and Claude Code (which sends 15,983 to 20,330 prefix tokens — a useful reminder that the harness itself is a major cost variable, independent of what you type). The tasks were 24 deterministic coding problems: each had a single objectively correct answer, verified automatically by a hidden evaluator. That's crucial — it means quality can be measured without human judges, and a correct answer is a correct answer regardless of how many tokens it took to get there.</p>
+
+      <p>The prompt conditions tested included: a plain baseline request; a "think deeply" generic cue; a "develop and compare several approaches" instruction; and what the authors call a bounded-efficiency template — a prompt specifying the task scope, the acceptance criteria (what does "done" look like?), and an explicit stop condition ("stop when all tests pass").</p>
+
+      <h3>What they found</h3>
+      <p>The "compare approaches" instruction increased reasoning token use by 2.4× to 7.4× across all six models. Every single model, in every run category, spent more tokens per correct answer under that prompt than under the baseline. The generic "think deeply" cue increased token use by 1.6× to 2.2×. Neither instruction improved the rate at which models produced the correct answer. The bounded-efficiency template — scope, criteria, stop condition — was cost-neutral relative to the baseline and in some cases reduced reasoning use by roughly half.</p>
+
+      <p>The paper's headline recommendation is that the cheapest improvements are subtractive: delete the tournament instruction. Delete the "think deeply" cue. Delete unverified hints. In their place: state what success looks like, set a scope, and name a stopping point. You keep the result; you lose the theater.</p>
+
+      <h3>The catch</h3>
+      <p>The study covers coding tasks only, and only tasks with a single correct answer. For open-ended work — strategy, writing, analysis — it remains plausible that asking a model to consider multiple angles genuinely improves output quality in ways this study can't measure. The six models tested are large reasoning models; smaller or non-reasoning models may behave differently. And the finding that harness context (15,983 versus 1,147 prefix tokens) varies so dramatically between PI.DEV and Claude Code means the prompt wording is never the only variable in real deployments — it's the variable this study isolated, but not the only one that matters.</p>
+
+      <p><strong>If you remember one thing:</strong> "Compare approaches" and "think deeply" reliably multiply what AI reasoning costs without reliably improving what it produces — bounded, specific instructions are cheaper and equally effective.</p>
+
+      <!-- SVG figure: reasoning token multiplier bar chart -->
+      <figure>
+        <svg viewBox="0 0 720 240" role="img" aria-label="Bar chart showing how different prompt types multiply AI reasoning token use. Compare approaches increases cost 2.4–7.4×. Think deeply increases cost 1.6–2.2×. Bounded template is cost-neutral or cheaper.">
+          <!-- Background -->
+          <rect x="0" y="0" width="720" height="240" fill="none"/>
+
+          <!-- Chart area: left margin 240, right margin 40, top 20, bottom 50 -->
+          <!-- Max bar width = 720 - 240 - 40 = 440px. Scale: 8x = 440px → 1x = 55px -->
+
+          <!-- Gridlines at 1×, 2×, 4×, 6×, 8× -->
+          <line x1="295" y1="20" x2="295" y2="180" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="350" y1="20" x2="350" y2="180" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="460" y1="20" x2="460" y2="180" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="570" y1="20" x2="570" y2="180" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="680" y1="20" x2="680" y2="180" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+
+          <!-- x-axis labels -->
+          <text x="295" y="200" text-anchor="middle" fill="#87867F" font-size="11" font-family="system-ui">1×</text>
+          <text x="350" y="200" text-anchor="middle" fill="#87867F" font-size="11" font-family="system-ui">2×</text>
+          <text x="460" y="200" text-anchor="middle" fill="#87867F" font-size="11" font-family="system-ui">4×</text>
+          <text x="570" y="200" text-anchor="middle" fill="#87867F" font-size="11" font-family="system-ui">6×</text>
+          <text x="680" y="200" text-anchor="middle" fill="#87867F" font-size="11" font-family="system-ui">8×</text>
+          <text x="487" y="225" text-anchor="middle" fill="#87867F" font-size="11" font-family="system-ui">Reasoning token multiplier (vs. plain baseline)</text>
+
+          <!-- Row 1: Bounded-efficiency template (olive, efficient) -->
+          <!-- Range: 0.5–1.0× → from 267.5px to 295px width. Start at 267.5, width 27.5 -->
+          <text x="235" y="53" text-anchor="end" fill="#141413" font-size="12" font-family="system-ui">Bounded</text>
+          <text x="235" y="67" text-anchor="end" fill="#141413" font-size="12" font-family="system-ui">template</text>
+          <rect x="267.5" y="38" width="27.5" height="26" fill="#788C5D" rx="3"/>
+          <!-- dot at 295 = 1× as left edge, range goes from 267.5 to 295 -->
+          <text x="299" y="55" fill="#788C5D" font-size="11" font-family="system-ui" font-weight="600">0.5–1.0×</text>
+
+          <!-- Row 2: Baseline (sky) -->
+          <text x="235" y="103" text-anchor="end" fill="#141413" font-size="12" font-family="system-ui">Baseline prompt</text>
+          <rect x="295" y="88" width="1" height="26" fill="#6A8CAF"/>
+          <rect x="293" y="90" width="6" height="22" fill="#6A8CAF" rx="3"/>
+          <text x="305" y="105" fill="#6A8CAF" font-size="11" font-family="system-ui" font-weight="600">1.0× (reference)</text>
+
+          <!-- Row 3: "Think deeply" (clay, medium waste) -->
+          <!-- Range: 1.6–2.2× → 1.6×=88px, 2.2×=121px from left edge 295 -->
+          <!-- 295 + (1.6-1)*55 = 295+33 = 328 start, width = (2.2-1.6)*55=33 -->
+          <text x="235" y="143" text-anchor="end" fill="#141413" font-size="12" font-family="system-ui">"Think deeply"</text>
+          <rect x="295" y="128" width="121" height="26" fill="#D97757" rx="3" opacity="0.7"/>
+          <text x="421" y="145" fill="#D97757" font-size="11" font-family="system-ui" font-weight="600">1.6–2.2×</text>
+
+          <!-- Row 4: "Compare approaches" (clay, heavy waste) -->
+          <!-- Range: 2.4–7.4× → 2.4×=77px from baseline, 7.4×=352px from baseline -->
+          <!-- start=295+(2.4-1)*55=295+77=372, end=295+(7.4-1)*55=295+352=647, width=275 -->
+          <text x="235" y="183" text-anchor="end" fill="#141413" font-size="12" font-family="system-ui">"Compare</text>
+          <text x="235" y="197" text-anchor="end" fill="#141413" font-size="12" font-family="system-ui">approaches"</text>
+          <!-- start at 295+(2.4-1)*55=372, width=(7.4-2.4)*55=275 -->
+          <rect x="372" y="168" width="275" height="26" fill="#D97757" rx="3"/>
+          <!-- also shade from baseline to start of range to show minimum -->
+          <rect x="295" y="168" width="77" height="26" fill="#D97757" rx="3" opacity="0.35"/>
+          <text x="652" y="185" fill="#D97757" font-size="11" font-family="system-ui" font-weight="600">2.4–7.4×</text>
+        </svg>
+        <figcaption>Reasoning token multipliers by prompt type, across 4,643 runs on six large reasoning models. A "compare approaches" instruction costs up to 7.4× more compute than a plain request — for the same correct-answer rate. A bounded template with scope, acceptance criteria, and a stop condition is cost-neutral or cheaper. Source: arxiv:2608.01347.</figcaption>
+      </figure>
+
+      <h2>Why it matters</h2>
+      <p>These two papers arrive in the same week and point at the same pattern, from different angles. The Prompt-Induced Waste study shows that AI agents are sensitive to instruction wording in ways that don't show up in the answer — only in the bill. The ScrambleToolBench study shows they're sensitive to environmental stability in ways that don't show up in standard tests — only when the ground shifts. Both findings describe a class of hidden fragility: the system appears capable, until you look at a dimension you weren't monitoring.</p>
+
+      <p>This is where AI deployment actually is in 2026. Models can write good code, pass bar exams, and prove theorems. They also collapse from 93% to 3% completion when tool names change, and quietly burn seven times the compute budget when asked to "think carefully." The engineering challenge isn't capability any more — it's knowing which conditions expose the gap between what a model can do and what it reliably does. That knowledge is still largely missing.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2608.02358">ScrambleToolBench paper (arxiv:2608.02358)</a> ·
+        <a href="https://arxiv.org/abs/2608.01347">Prompt-Induced Waste paper (arxiv:2608.01347)</a> ·
+        <a href="https://www.geeky-gadgets.com/deepseek-v4-flash-beta/">DeepSeek V4-Flash review — Geeky Gadgets</a> ·
+        <a href="https://siliconangle.com/2026/07/16/ai-infrastructure-startup-fireworks-closes-1-5b-round-17-5b-valuation/">Fireworks AI Series D — SiliconANGLE</a> ·
+        <a href="https://www.cnbc.com/2026/08/03/openai-chatgpt-anthropic-congress-house-ai-spending.html">Congressional AI spending — CNBC</a> ·
+        <a href="https://llm-stats.com/ai-news">LLM model pricing — llm-stats.com</a> ·
+        <a href="https://aiagentstore.ai/ai-agent-news/this-week">AI Agents weekly news — aiagentstore.ai</a> ·
+        <a href="https://benchlm.ai/models/deepseek-v4-flash">DeepSeek V4-Flash benchmarks — BenchLM</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Reasoning token</div>
+        <div>A token of text generated during a model's hidden "thinking" phase — not part of the answer you see, but compute you pay for. Reasoning models can generate thousands of reasoning tokens before writing a single word of their reply.</div>
+      </div>
+      <dl>
+        <dt>Chain of thought</dt>
+        <dd>The step-by-step reasoning an AI model generates before its answer. Reasoning models do this internally; some show it as a collapsed "thinking" block. Prompt-Induced Waste specifically measures its cost.</dd>
+
+        <dt>Deterministic task</dt>
+        <dd>A task with one objectively correct answer — here, a coding problem checked by automated tests. Useful for research because quality can be measured without human opinion.</dd>
+
+        <dt>Mapping drift</dt>
+        <dd>In ScrambleToolBench: the deliberate renaming of tools across evaluation sessions, used to test whether agents can adapt when their environment relabels itself. Real-world equivalent: an API versioning event or config rename.</dd>
+
+        <dt>Belief inertia</dt>
+        <dd>An agent's tendency to stick with its previous model of how something works, even after receiving evidence that it has changed. One of two failure modes ScrambleToolBench observed in agents facing mapping drift.</dd>
+
+        <dt>Harness</dt>
+        <dd>The scaffolding around an AI model — the system that passes context, manages tool calls, and handles conversation state. The same underlying model can perform very differently in different harnesses, because the harness controls how much context the model sees and how it is framed.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
