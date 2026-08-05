@@ -1,5 +1,12 @@
 [
   {
+    "num": 68,
+    "date": "2026-08-05",
+    "slug": "issues/2026-08-05.html",
+    "title": "The Pen Stays Yours",
+    "blurb": "The Rust project told contributors that AI may advise but may not write code — while a new paper shows reasoning models cutting their thinking in half and getting more accurate by tracking uncertainty like momentum."
+  },
+  {
     "num": 67,
     "date": "2026-08-04",
     "slug": "issues/2026-08-04.html",

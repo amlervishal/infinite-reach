@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №68 — The Pen Stays Yours · Infinite Reach</title>
+  <meta name="description" content="The Rust project told its contributors that AI may advise but may not write — while a new paper shows reasoning models thinking 50% less and getting smarter." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №68 &middot; Tuesday, August 5, 2026</p>
+      <h1>The Pen Stays Yours</h1>
+      <p>One of the world's most important and safety-critical software communities — the people who write the Rust programming language — published a formal policy this morning: machines may read, advise, and review, but a human has to write the code. Meanwhile, researchers figured out how to make reasoning models spend half the thinking they normally do and get smarter in the process.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Rust is the programming language powering Firefox, the Windows kernel, the Linux kernel, and parts of Android — software running on billions of devices where a bug can mean a crash or a security breach. Today the Rust project's compiler, libraries, types, documentation, and bootstrap teams adopted a formal policy on how contributors may use language models. The short version: you can use one to answer questions about the codebase, distill what you've read, spot problems in a draft, or suggest an edit. But a machine may not <em>create</em> the code, the documentation, or the error messages. Any use of an AI tool must be disclosed. The reason, as the policy puts it, is simple: Rust reviewers need to know what they're reading, and "LLM review does not substitute for human review." No other major open-source project of this scale has drawn the line this explicitly — and the fact that they felt they needed to says something about where the rest of the world is heading.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Open weights</span><span>LG AI Research released K-EXAONE 2.0, South Korea's largest model — 750 billion parameters, free to download and modify under Apache 2.0, supporting 10 languages including Korean, Japanese, Chinese, and English. The model uses a mixture-of-experts design that keeps only 37 billion parameters active at a time, making it cheaper to run than its total size implies. On a long-context retrieval benchmark, it scored 94.4, edging out comparable models from Qwen and DeepSeek. <a href="https://www.koreaherald.com/article/10827054">Korea Herald</a></span></li>
+        <li><span class="tag tech">Agentic coding</span><span>DeepSeek's V4 Flash 0731 update — same model architecture as before, but re-trained — climbed 10 points on the Artificial Analysis Intelligence Index and nearly tripled its Elo rating on a benchmark of real-world agentic work tasks (from 1,189 to 1,559). Price stayed flat at $0.14 per million tokens. <a href="https://www.marktechpost.com/2026/07/31/deepseek-upgrades-deepseek-v4-flash-0731-with-major-agentic-and-coding-gains/">MarkTechPost</a></span></li>
+        <li><span class="tag money">Drug discovery</span><span>Chai Discovery, which uses machine learning to predict how proteins fold and bind to molecules, raised $400 million in a Series C at a $3.8 billion valuation. The company says its models can suggest candidate drug molecules in hours instead of months. <a href="https://aifundingtracker.com/ai-startup-funding-news-today/">AI Funding Tracker</a></span></li>
+        <li><span class="tag policy">EU enforcement</span><span>The EU AI Act's rules for high-risk systems — covering tools used in education, employment, credit scoring, law enforcement, and critical infrastructure — became legally binding as of August 2. Companies operating in Europe that use such systems now face real compliance deadlines for the first time. <a href="https://artificialintelligenceact.eu/">EU AI Act tracker</a></span></li>
+        <li><span class="tag money">Security</span><span>Anaconda, the data-science platform company, acquired Enkrypt AI, a startup specialising in pre-deployment red-teaming for AI systems. Enkrypt reportedly found 143,000 vulnerabilities across 73% of MCP servers it scanned — MCP being the protocol many coding agents use to plug into tools. <a href="https://radicaldatascience.wordpress.com/2026/08/04/ai-news-briefs-bulletin-board-for-august-2026/">Radical Data Science</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~600-800 words -->
+      <h2>Paper, explained: knowing when to think harder</h2>
+      <p class="kicker">MUR: Momentum Uncertainty guided Reasoning for Large Language Models &middot; Hang Yan, Fangzhi Xu et al. &middot; <a href="https://arxiv.org/abs/2507.14958">arXiv 2507.14958</a></p>
+      <p>A reasoning model that cuts its own token use by more than half and still gets more accurate answers caught our eye this week. The method is simple enough to describe in a sentence, elegant enough to explain with a single analogy, and useful enough that it can bolt onto any model already in the field without retraining.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Modern reasoning models — the kind that "think before they answer" — generate long chains of internal reasoning steps before producing a response. Asking one to solve a hard maths problem might generate 2,000 tokens of working before the final answer. That extended thinking genuinely helps; on the hardest benchmarks, more thinking almost always means better answers. But the problem is that these models spend the same amount of effort on every step, regardless of how obviously right or wrong a given move is. A step the model is completely sure about gets exactly as many compute resources as a step where the model is genuinely confused. That's wasteful in the same way that a surgeon scrubbing in for ten minutes before placing a bandaid is wasteful. You want to scale effort to difficulty, not apply it uniformly. The challenge is that the model can't easily query its own confidence — it just generates tokens, one after another.</p>
+
+      <h3>How it works</h3>
+      <p>The authors introduce a single new signal: <em>step-level uncertainty</em>, measured at each reasoning step by looking at how spread out the model's probability distribution is over possible next words. If the model produces each token with near-certainty — say, it's 98% sure the next word is "therefore" — uncertainty is low. If it's almost equally likely to say several different things, uncertainty is high. That part isn't new. What MUR adds is <em>momentum</em>: instead of just checking how uncertain the current step is, it keeps a running score — a momentum value — that accumulates when uncertainty stays high across consecutive steps. Think of it like a car's traction-control system. The sensor doesn't slam on the brakes at the first wobble; it monitors whether the wheels have been slipping for a sustained period before intervening. A single uncertain step might be a quirk. Three uncertain steps in a row means the model is in genuinely tricky territory, and that's when MUR tells it to slow down and think harder. Conversely, a run of confident steps triggers the opposite: speed up, allocate fewer tokens, move on. The whole mechanism is controlled by a single hyperparameter, gamma, which adjusts how fast the momentum builds and decays. No extra training required: you plug MUR into inference, tune gamma, and run.</p>
+
+      <h3>What they actually did</h3>
+      <p>The authors tested MUR on four benchmarks that researchers use to measure how well models handle difficult maths and science: MATH-500 (competition-style algebra and geometry problems), AIME 2024 and AIME 2025 (the hardest US national maths olympiad tests), and GPQA-diamond (graduate-level biology, chemistry, and physics questions designed to stump experts). They ran experiments on three sizes of Qwen3, an open reasoning model: 1.7 billion, 4 billion, and 8 billion parameters. They compared MUR against best-of-N sampling (asking the model N times and taking the most popular answer), critic-based feedback, foresight sampling, and Qwen's own built-in "thinking mode."</p>
+
+      <h3>What they found</h3>
+      <p>Across all four benchmarks and all three model sizes, MUR reduced the number of tokens generated during reasoning by more than 50% on average. Despite thinking less, accuracy improved by between 0.33 and 3.46 percentage points compared to the best competing method. The accuracy gains were largest on GPQA-diamond — the toughest science problems — and on the smaller 1.7B model, suggesting MUR helps most where reasoning budgets are tightest. The model wasn't just spending fewer tokens; it was spending them in the right places. Failure modes were modest: on a small number of very easy problems, the low-uncertainty momentum never quite triggered proper thinking, and the model occasionally coasted when it should have been more careful. The authors note this is tunable with gamma.</p>
+
+      <h3>The catch</h3>
+      <p>All experiments used Qwen3 models ranging from 1.7B to 8B parameters. It is not yet known how well MUR transfers to much larger frontier models, where the uncertainty landscape might look different. The method is also purely about <em>when</em> to think, not <em>what</em> to think — a poorly reasoned confident step still gets passed through quickly. And measuring "uncertainty" from the token distribution is an imperfect proxy; a model can be confidently wrong.</p>
+
+      <p><strong>If you remember one thing:</strong> MUR is traction control for AI reasoning — it reads how confidently the model has been moving and decides when to push harder, cutting wasted compute in half while quietly improving accuracy.</p>
+
+      <!-- SVG figure: reasoning chain with uncertainty and momentum -->
+      <figure>
+        <svg viewBox="0 0 720 260" role="img" aria-label="MUR diagram: uncertainty and momentum across five reasoning steps" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+          <!-- Background -->
+          <rect x="0" y="0" width="720" height="260" fill="transparent"/>
+
+          <!-- Title -->
+          <text x="360" y="22" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413" font-weight="600">MUR: momentum signals when to think harder</text>
+
+          <!-- Step boxes -->
+          <!-- Step 1: low uncertainty -->
+          <rect x="40" y="55" width="90" height="40" rx="6" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="85" y="79" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#141413">Step 1</text>
+
+          <!-- Step 2: low -->
+          <rect x="165" y="55" width="90" height="40" rx="6" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="210" y="79" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#141413">Step 2</text>
+
+          <!-- Step 3: high uncertainty -->
+          <rect x="290" y="55" width="90" height="40" rx="6" fill="#D97757" stroke="#c06843" stroke-width="1"/>
+          <text x="335" y="79" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#fff">Step 3</text>
+
+          <!-- Step 4: high -->
+          <rect x="415" y="55" width="90" height="40" rx="6" fill="#D97757" stroke="#c06843" stroke-width="1"/>
+          <text x="460" y="79" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#fff">Step 4</text>
+
+          <!-- Step 5: low again -->
+          <rect x="540" y="55" width="90" height="40" rx="6" fill="#788C5D" stroke="#657a4e" stroke-width="1"/>
+          <text x="585" y="79" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#fff">Step 5</text>
+
+          <!-- Arrows between steps -->
+          <line x1="130" y1="75" x2="165" y2="75" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="255" y1="75" x2="290" y2="75" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="380" y1="75" x2="415" y2="75" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="505" y1="75" x2="540" y2="75" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <!-- Uncertainty bars (above the steps) -->
+          <text x="28" y="52" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">Uncertainty</text>
+
+          <!-- Step 1 bar: low (small) -->
+          <rect x="75" y="30" width="20" height="20" rx="2" fill="#6A8CAF" opacity="0.3"/>
+          <rect x="75" y="40" width="20" height="10" rx="2" fill="#6A8CAF"/>
+          <text x="85" y="28" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#87867F">low</text>
+
+          <!-- Step 2 bar: low -->
+          <rect x="200" y="30" width="20" height="20" rx="2" fill="#6A8CAF" opacity="0.3"/>
+          <rect x="200" y="38" width="20" height="12" rx="2" fill="#6A8CAF"/>
+          <text x="210" y="28" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#87867F">low</text>
+
+          <!-- Step 3 bar: high -->
+          <rect x="325" y="30" width="20" height="20" rx="2" fill="#D97757" opacity="0.3"/>
+          <rect x="325" y="30" width="20" height="20" rx="2" fill="#D97757"/>
+          <text x="335" y="28" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#D97757">high</text>
+
+          <!-- Step 4 bar: high -->
+          <rect x="450" y="30" width="20" height="20" rx="2" fill="#D97757" opacity="0.3"/>
+          <rect x="450" y="30" width="20" height="20" rx="2" fill="#D97757"/>
+          <text x="460" y="28" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#D97757">high</text>
+
+          <!-- Step 5 bar: low -->
+          <rect x="575" y="30" width="20" height="20" rx="2" fill="#6A8CAF" opacity="0.3"/>
+          <rect x="575" y="42" width="20" height="8" rx="2" fill="#6A8CAF"/>
+          <text x="585" y="28" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#87867F">low</text>
+
+          <!-- Momentum line below -->
+          <text x="28" y="140" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">Momentum</text>
+          <!-- momentum curve -->
+          <polyline points="85,170 210,168 335,148 460,133 585,158" fill="none" stroke="#D97757" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- momentum baseline -->
+          <line x1="40" y1="175" x2="650" y2="175" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <!-- threshold label -->
+          <text x="654" y="178" font-family="ui-monospace, monospace" font-size="9" fill="#87867F">threshold</text>
+          <!-- dots on momentum line -->
+          <circle cx="85" cy="170" r="4" fill="#D97757"/>
+          <circle cx="210" cy="168" r="4" fill="#D97757"/>
+          <circle cx="335" cy="148" r="4" fill="#D97757"/>
+          <circle cx="460" cy="133" r="4" fill="#D97757"/>
+          <circle cx="585" cy="158" r="4" fill="#D97757"/>
+
+          <!-- thinking budget labels below momentum -->
+          <text x="85" y="200" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#788C5D">budget: low</text>
+          <text x="210" y="200" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#788C5D">budget: low</text>
+          <text x="335" y="200" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#D97757">budget: raised</text>
+          <text x="460" y="200" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#D97757">budget: raised</text>
+          <text x="585" y="200" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#788C5D">budget: low</text>
+
+          <!-- annotation for steps 3-4 -->
+          <rect x="285" y="210" width="230" height="34" rx="5" fill="#D97757" opacity="0.1"/>
+          <text x="400" y="226" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413">Momentum crosses threshold →</text>
+          <text x="400" y="240" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413">model gets more thinking tokens</text>
+        </svg>
+        <figcaption>MUR tracks uncertainty step by step and builds a momentum score. When momentum crosses a threshold — meaning confusion has persisted, not just flickered — it gives the model a larger thinking budget. Crucially, the model gets more compute where it is genuinely lost, not uniformly on every step.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy's nanochat repo was updated this week — his project for training GPT-2-level language models on a single GPU for around $48. The repository, which grows out of his autoresearch experiments (autonomous agents iterating on their own training code overnight), has become a kind of benchmark for how cheap and accessible serious model training has become. <a href="https://github.com/karpathy/nanochat">github.com/karpathy/nanochat</a></span></li>
+        <li><span class="tag tech">Dwarkesh</span><span>Dwarkesh Patel published an essay and video (Aug 3) arguing that <em>smarter</em> AI models could make compute <em>more</em> expensive, not less — because if a model can do the work of a human software engineer, the H100 running it justifies $250,000 a year in rent, roughly 15 times today's spot price. The piece zooms out from "prices are falling" to ask what happens when they start pricing against human labour. <a href="https://www.dwarkesh.com/p/why-compute-might-get-10x-more-expensive">dwarkesh.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things happened this week that seem opposite but are actually the same argument made from different directions. A paper showed that if you teach a reasoning model to monitor its own confidence and scale effort accordingly, it can get smarter while working less. And a community of engineers — the ones building some of the world's most critical software infrastructure — said that for their purposes, the model's confidence is irrelevant: authorship must be human. Both are really about the same question: not whether machines can write, but <em>when</em> it matters that a human did. The Rust community decided: it matters here, because reviewers need to know what they're accountable for. Researchers building MUR decided: it matters at the step level, because the model should know when it's out of its depth. The same granular logic — apply effort where it counts, not everywhere equally — is threading through both. Whether you're an open-source maintainer or a model deciding how many tokens to burn, the answer turning out to be the same is worth noticing.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://blog.rust-lang.org/inside-rust/2026/08/05/rust-langrust-is-adopting-an-llm-policy/">Inside Rust Blog — LLM policy</a> ·
+        <a href="https://github.com/rust-lang/rust-forge/pull/1040">rust-forge PR #1040</a> ·
+        <a href="https://drewdevault.com/blog/LLM-policy-for-Rust/">Drew DeVault on the policy</a> ·
+        <a href="https://arxiv.org/abs/2507.14958">MUR paper (arXiv 2507.14958)</a> ·
+        <a href="https://www.koreaherald.com/article/10827054">Korea Herald — K-EXAONE 2.0</a> ·
+        <a href="https://en.sedaily.com/finance/2026/08/01/lgs-k-exaone-triples-in-scale-outpaces-chinas-top-ai">Seoul Economic Daily — K-EXAONE 2.0</a> ·
+        <a href="https://www.marktechpost.com/2026/07/31/deepseek-upgrades-deepseek-v4-flash-0731-with-major-agentic-and-coding-gains/">MarkTechPost — DeepSeek V4 Flash 0731</a> ·
+        <a href="https://artificialintelligenceact.eu/">EU AI Act tracker</a> ·
+        <a href="https://aifundingtracker.com/ai-startup-funding-news-today/">AI Funding Tracker — Chai Discovery</a> ·
+        <a href="https://radicaldatascience.wordpress.com/2026/08/04/ai-news-briefs-bulletin-board-for-august-2026/">Radical Data Science — Anaconda/Enkrypt</a> ·
+        <a href="https://www.dwarkesh.com/p/why-compute-might-get-10x-more-expensive">Dwarkesh — compute prices essay</a> ·
+        <a href="https://github.com/karpathy/nanochat">Karpathy / nanochat</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Momentum (in ML)</div>
+        <div>Borrowed from physics: in machine learning, momentum means keeping a running average of past signals rather than reacting to each one fresh. A ball rolling down a hill doesn't stop the moment the slope flattens — it carries its speed forward. MUR applies the same idea to uncertainty: one wobbly step might be noise, but sustained wobbliness builds momentum that triggers a real response.</div>
+      </div>
+      <dl>
+        <dt>Open-weight model</dt>
+        <dd>A model whose trained parameters (the "weights") are released publicly so anyone can download, run, or modify it. Different from open-source: the code might be open, but if the weights aren't, you can't actually use the model without the company's servers.</dd>
+        <dt>Mixture of Experts (MoE)</dt>
+        <dd>An architecture where the model is divided into many specialised sub-networks ("experts"), only a few of which are used for any given piece of text. K-EXAONE has 750 billion total parameters but only activates 37 billion at a time — making it cheaper to run than its headline number suggests.</dd>
+        <dt>Test-Time Scaling</dt>
+        <dd>Making a model smarter at <em>inference</em> (when answering) rather than at training. Instead of changing the model's weights, you give it more time to think — more tokens, more attempts, more reasoning steps — and accuracy improves. MUR is a method for doing this more efficiently.</dd>
+        <dt>Inference</dt>
+        <dd>The process of running a trained model to produce an output — asking it a question and getting an answer. Separate from training (the expensive process of teaching it). When people talk about "inference compute" or "inference costs," they mean the cost of each response, not the one-time cost of building the model.</dd>
+        <dt>Apache 2.0</dt>
+        <dd>A widely-used open-source software licence that lets anyone use, modify, and redistribute the code or model — including commercially — with minimal restrictions. K-EXAONE and DeepSeek both use it, making them genuinely free for business use.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
