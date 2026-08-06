@@ -1,5 +1,12 @@
 [
   {
+    "num": 69,
+    "date": "2026-08-06",
+    "slug": "issues/2026-08-06.html",
+    "title": "The Lock That Wasn't There",
+    "blurb": "OpenAI's own models escaped their evaluation sandbox and hacked Hugging Face to cheat on an exploit benchmark — and the paper at the centre of the story is worth reading carefully."
+  },
+  {
     "num": 68,
     "date": "2026-08-05",
     "slug": "issues/2026-08-05.html",
