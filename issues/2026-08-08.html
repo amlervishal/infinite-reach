@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №71 — The Unforgetting Machine · Infinite Reach</title>
+  <meta name="description" content="ChatGPT crossed one billion weekly users on August 6, while a new paper from China demonstrated that AI can carry memories inside its own weights — not bolted on from outside, but woven in." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №71 &middot; Saturday, August 8, 2026</p>
+      <h1>The Unforgetting Machine</h1>
+      <p>ChatGPT crossed one billion weekly users this week — a milestone that once seemed decades away. At the same time, a quietly remarkable paper arrived: a model that doesn't just access memories from outside itself, but carries them inside, the way a person does.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>OpenAI confirmed on August 6 that ChatGPT has reached one billion weekly active users — up from 900 million in February and achieved in under four years since launch. The milestone came seven months behind the company's own internal target, but still faster than any consumer internet product in history. It arrived alongside GPT-5.6 Sol, an upgraded tier for paid subscribers that OpenAI says cuts factual errors by up to 68%. At the same time, the free tier gained default access to GPT-5.6 Luna — the same model whose price was quietly cut 80%, to $0.20 per million input tokens, in the same week.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Open weights</span><span>Alibaba's Qwen3.8-Max landed on August 3: a 2.4-trillion-parameter mixture-of-experts model that activates only 95 billion parameters at a time, accepts text, images and video, and tops OSWorld-Verified at 86.1 — ahead of GPT-5.6 Sol Max (83.2) and Claude Fable 5 (85.0). Priced at $2/$6 per million input/output tokens. <a href="https://techstartups.com/2026/08/03/alibaba-unveils-2-4-trillion-parameter-qwen3-8-max-as-deepseeks-new-ai-model-undercuts-anthropic-by-100x/">Source</a></span></li>
+        <li><span class="tag tech">Autonomous driving</span><span>NVIDIA released Alpamayo 2 Super under an open commercial licence — a 34-billion-parameter vision-language-action model for robotaxis that outperformed Qwen2.5-VL 72B by 17 points on the standard Lingo-Judge driving metric. The weights are on Hugging Face. <a href="https://datanorth.ai/news/nvidia-releases-alpamayo-2-super">Source</a></span></li>
+        <li><span class="tag money">Infrastructure</span><span>Baseten, which runs the model-serving layer beneath many AI products you use daily, reportedly closed a $1.5 billion Series F — a reminder that the largest prizes in AI right now go to the plumbing, not the models themselves.</span></li>
+        <li><span class="tag money">Agents</span><span>AI agent startups raised roughly $1.8 billion across a dozen deals in July alone, with Harvey AI ($200M), Lovable ($200M) and Glean ($180M) among the biggest rounds. Enterprise automation and developer tools led the category. <a href="https://aifunding.me/insights/ai-agent-funding-july-2026">Source</a></span></li>
+        <li><span class="tag policy">US regulation</span><span>The August 1 deadline passed for the Trump administration's voluntary frontier-model review framework: major labs are now asked to submit powerful new models to federal security agencies 30 days before public release. The framework is voluntary — participation is encouraged, not compelled. <a href="https://vorplabs.com/ai-regulatory-updates/frontier-model-review-framework">Source</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: Memory baked in, not bolted on</h2>
+      <p class="kicker">Metis: Memory Foundation Model &middot; MemTensor &amp; Renmin University of China &middot; <a href="https://arxiv.org/abs/2607.26760">arXiv 2607.26760</a></p>
+      <p>This paper caught our eye because it asks a question most AI work quietly sidesteps: what if memory lived <em>inside</em> the model itself — the way it does in a human brain — rather than in a separate system bolted on from the outside?</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When you ask a language model something today, it starts fresh every single time. It carries things it learned during training — knowledge, language, reasoning patterns — but nothing from your previous conversations, unless those conversations are manually stuffed back into its context window before each new message. Two workarounds exist, and both have the same fundamental flaw.</p>
+      <p>The first is <em>retrieval-augmented generation</em> (RAG): search an external database for relevant snippets, paste them into the prompt, and let the model read them like a student cramming before a test. The second is an ever-larger <em>context window</em>: just send the whole conversation history every time. Both approaches treat memory as extra input — text added to the beginning of the prompt. This is slow (more text means more computation), expensive (costs scale with token count), and brittle: the model can lose track of older facts when the conversation grows long, and it can't combine stored knowledge in the same fluid way a person can.</p>
+      <p>The question Metis asks is whether memory can instead be <em>native</em> — a persistent internal state that the model updates automatically as it processes information, the way neurons update when a human remembers something. Building this into a standard transformer is genuinely hard. Transformers are trained to map a fixed input to an output. A changing hidden state that persists across separate conversation turns is not how they're designed, and making one stable enough to train required real architectural work.</p>
+
+      <h3>How it works</h3>
+      <p>Think of your own memory as a sketchpad you carry everywhere. When something important happens, you don't transcribe it word-for-word — you compress it into a brief, useful form and write a few notes. Later, when you need it, you consult the sketchpad directly rather than replaying the original event from scratch. The pad has finite space, so it drops redundant detail and keeps only the essential. Metis is this sketchpad, but woven into the layers of the transformer rather than sitting outside it.</p>
+      <p>The researchers insert new components into the transformer's existing layers, which they call <strong>Metis Blocks</strong>. Each block has two parts. The <em>Local Memory Block</em> maintains a compact numerical matrix — a continuously updated summary of everything the model has encountered in this session. The <em>Hyper Memory Block</em>, built on an architecture called a Gated Delta Network (GDN), decides what to write into that matrix and what to erase. When the model needs to answer a question, a <em>memory attention</em> step lets the current prompt consult whatever is stored in the matrix, blending retrieved memory with incoming text.</p>
+      <p>Crucially, all of this happens through a standard forward pass — the same computation the model runs to generate any token. There's no separate training step during deployment, no gradient descent at inference time, no retrieval query to a separate system. The weights that govern how memory is stored and retrieved were learned during training; after that they're frozen. Only the memory <em>state</em> keeps evolving during a conversation.</p>
+      <p>The researchers formalise four operations the model must learn: <strong>remember</strong> (store new information), <strong>forget</strong> (drop obsolete or incorrect facts), <strong>update</strong> (revise a stored belief when new evidence arrives), and <strong>reflect</strong> (draw inferences from stored knowledge without re-reading the original source). These aren't hand-coded rules. They're behaviours the model learns entirely from data — from synthetic training examples that demonstrate each operation.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Diagram comparing traditional context-based memory with Metis native memory blocks inside a transformer">
+          <defs>
+            <marker id="arrow-g" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#87867F"/>
+            </marker>
+            <marker id="arrow-c" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#D97757"/>
+            </marker>
+          </defs>
+          <!-- Panel backgrounds -->
+          <rect x="10" y="10" width="330" height="285" rx="8" fill="#F4F3F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <rect x="380" y="10" width="330" height="285" rx="8" fill="#F4F3F0" stroke="#D1CFC5" stroke-width="1.5"/>
+
+          <!-- Left panel: traditional -->
+          <text x="175" y="36" text-anchor="middle" font-family="ui-serif, serif" font-size="13" font-weight="bold" fill="#141413">Traditional: memory as extra text</text>
+
+          <!-- External DB -->
+          <rect x="95" y="52" width="160" height="46" rx="6" fill="#D1CFC5" stroke="#87867F" stroke-width="1.5"/>
+          <text x="175" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#141413" font-weight="bold">External database</text>
+          <text x="175" y="90" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">or entire conversation history</text>
+
+          <line x1="175" y1="98" x2="175" y2="128" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrow-g)"/>
+
+          <!-- Paste into prompt -->
+          <rect x="95" y="128" width="160" height="38" rx="6" fill="#D1CFC5" stroke="#87867F" stroke-width="1.5"/>
+          <text x="175" y="149" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#141413">Paste into prompt</text>
+          <text x="175" y="163" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">(extra tokens, extra cost)</text>
+
+          <line x1="175" y1="166" x2="175" y2="196" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrow-g)"/>
+
+          <!-- Model -->
+          <rect x="95" y="196" width="160" height="50" rx="6" fill="#6A8CAF" stroke="#5a7a9f" stroke-width="1.5"/>
+          <text x="175" y="216" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="white" font-weight="bold">Transformer</text>
+          <text x="175" y="234" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="white" opacity="0.85">reads notes fresh each turn</text>
+
+          <text x="175" y="272" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" font-style="italic">Slow · costs scale with history · brittle</text>
+
+          <!-- Right panel: Metis -->
+          <text x="545" y="36" text-anchor="middle" font-family="ui-serif, serif" font-size="13" font-weight="bold" fill="#141413">Metis: memory inside the model</text>
+
+          <!-- Outer transformer box -->
+          <rect x="420" y="52" width="260" height="210" rx="8" fill="#788C5D" fill-opacity="0.10" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="550" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#788C5D" font-weight="bold">TRANSFORMER (weights frozen)</text>
+
+          <!-- Metis Block 1 -->
+          <rect x="435" y="83" width="230" height="48" rx="5" fill="#D97757" stroke="#c06540" stroke-width="1.5"/>
+          <text x="550" y="103" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="white" font-weight="bold">Metis Block</text>
+          <text x="550" y="122" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9.5" fill="white">Local mem matrix · Hyper mem (GDN)</text>
+
+          <!-- Standard layer -->
+          <rect x="435" y="143" width="230" height="32" rx="5" fill="#6A8CAF" fill-opacity="0.7" stroke="#5a7a9f" stroke-width="1"/>
+          <text x="550" y="163" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="white">Standard attention layer</text>
+
+          <!-- Metis Block 2 -->
+          <rect x="435" y="187" width="230" height="48" rx="5" fill="#D97757" stroke="#c06540" stroke-width="1.5"/>
+          <text x="550" y="207" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="white" font-weight="bold">Metis Block</text>
+          <text x="550" y="226" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9.5" fill="white">remember · forget · update · reflect</text>
+
+          <!-- Persistent state arrow on right side -->
+          <path d="M 672 107 Q 698 155 672 210" fill="none" stroke="#D97757" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-c)"/>
+          <text x="710" y="162" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#D97757" transform="rotate(-90 710 162)">memory persists</text>
+
+          <text x="545" y="272" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" font-style="italic">Fast · fixed size · no extra tokens</text>
+        </svg>
+        <figcaption>Left: the standard approach — memory is text appended to each prompt, and costs grow with history. Right: Metis — memory lives inside Metis Blocks woven into the transformer itself, updated automatically each turn at no extra token cost.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>MemTensor and Renmin University of China built Metis at three sizes — 4B, 9B, and 27B parameters — by inserting Metis Blocks into an existing Qwen3.5 transformer backbone. They trained on 406 million tokens of synthetically generated examples designed to exercise each of the four memory operations. Training ran on eight H100 GPUs. Because no suitable public memory benchmark existed, the researchers also built their own evaluation suite. Metis-27B scored 73.77% average across that test set. The baseline — identical Qwen3.5 without native memory, using context alone — scored 1.69%. Even the smallest Metis-4B model outperformed a 72B baseline model on these memory tasks.</p>
+
+      <h3>What they found</h3>
+      <p>The gap between 73.77% and 1.69% is not close. It's a category difference — like comparing someone who has studied a subject to someone handed a textbook seconds before an exam and asked to answer from scratch. The researchers found the expected pattern: larger Metis models consistently outperformed smaller ones. The hardest operation across all three sizes was <em>reflect</em> — drawing a fresh inference from stored knowledge — which makes intuitive sense: combining memory to form a new conclusion is more demanding than just retrieving a stored fact. Importantly, because all memory updates happen through a forward pass rather than gradient computation, adding native memory to a model doesn't meaningfully slow down inference. The memory state stays compact — fixed-size, regardless of how long a conversation runs.</p>
+
+      <h3>The catch</h3>
+      <p>Metis is a prototype, and its evaluation has real constraints. The benchmark the team used is one they built themselves from synthetic data, which means it tests exactly what the model was trained to do. We don't yet know how native memory performs on tasks from outside this controlled setting — and we don't know whether inserting Metis Blocks hurts general capabilities like coding or reasoning (the paper doesn't test these). The training set of 406 million tokens is small by frontier standards. Perhaps most importantly, the paper's comparison is against Qwen3.5 without any memory at all — not against a strong RAG baseline or a well-tuned long-context system. The honest question — "is this better than the best external memory approaches in real applications?" — remains open.</p>
+
+      <p><strong>If you remember one thing:</strong> The gap between AI with memory woven in and AI relying on context alone — 73.77% versus 1.69% on the same tasks — is so large it suggests that external memory is a workaround, not a real solution, and that the field has been treating a structural problem as a retrieval problem.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Garry Tan</span><span>At Startup School 2026 on August 6, YC's CEO framed AI agents as tools for "staying under your own power" — his argument being that founders who own AI running on their own infrastructure, compounding their own knowledge, will outcompete those who rent access to a generic product. The subtext is a bet that "personal AGI" is the next platform shift. <a href="https://startup.whatfinger.com/2026/08/06/garry-tan-personal-agi-is-how-you-stay-under-your-own-power/">Link</a></span></li>
+        <li><span class="tag tech">Karpathy</span><span>His nanochat project — the most readable from-scratch full-stack language model implementation anywhere — saw updates to both nanoGPT and micrograd this week (August 2–3). Nanochat's earlier feat of training a GPT-2-class model in two hours on 8&times;H100 using NVIDIA's ClimbMix dataset remains the clearest proof-of-concept that the whole pipeline can be understood by one person. <a href="https://github.com/karpathy/nanochat">GitHub</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>This week pulled in two directions at once. Outward: a billion people using the same system every week is a social fact with few precedents — it means that for a large fraction of the world, a single AI is now embedded in daily decisions about work, health, study, and communication. Inward: papers like Metis are trying to make that system fundamentally more capable of being <em>yours</em> — of building and maintaining a model of you and your context across time, rather than treating every conversation as a blank page. The gap between those two things — colossal reach, zero memory — is what most AI products are quietly struggling to close. Metis doesn't close it yet, but it is the most direct attempt so far to ask the right question.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://tech.yahoo.com/ai/chatgpt/articles/chatgpt-tops-1b-weekly-users-191537749.html">Yahoo Tech</a> &middot;
+        <a href="https://www.demandsage.com/chatgpt-statistics/">DemandSage</a> &middot;
+        <a href="https://llm-stats.com/llm-updates">LLM Stats</a> &middot;
+        <a href="https://techstartups.com/2026/08/03/alibaba-unveils-2-4-trillion-parameter-qwen3-8-max-as-deepseeks-new-ai-model-undercuts-anthropic-by-100x/">Tech Startups (Qwen3.8-Max)</a> &middot;
+        <a href="https://www.datacamp.com/blog/qwen3-8-max">DataCamp (Qwen3.8-Max)</a> &middot;
+        <a href="https://datanorth.ai/news/nvidia-releases-alpamayo-2-super">DataNorth (Alpamayo 2 Super)</a> &middot;
+        <a href="https://unite.ai/nvidias-alpamayo-2-super-opens-robotaxi-development-to-commercial-use/">Unite.AI</a> &middot;
+        <a href="https://aifunding.me/insights/ai-agent-funding-july-2026">AI Funding (agent rounds)</a> &middot;
+        <a href="https://vorplabs.com/ai-regulatory-updates/frontier-model-review-framework">Vorp Labs (US framework)</a> &middot;
+        <a href="https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/">White House EO</a> &middot;
+        <a href="https://arxiv.org/abs/2607.26760">arXiv 2607.26760 (Metis)</a> &middot;
+        <a href="https://github.com/MemTensor/Metis">MemTensor/Metis (GitHub)</a> &middot;
+        <a href="https://startup.whatfinger.com/2026/08/06/garry-tan-personal-agi-is-how-you-stay-under-your-own-power/">Garry Tan at Startup School</a> &middot;
+        <a href="https://github.com/karpathy/nanochat">karpathy/nanochat</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Native memory</div>
+        <div>Memory that lives inside the model itself rather than in a separate database. Instead of fetching notes and reading them at the start of each conversation, the model carries a compressed internal record that updates automatically — like the difference between looking up a fact in a filing cabinet and simply knowing it.</div>
+      </div>
+      <dl>
+        <dt>MoE (Mixture of Experts)</dt><dd>A model architecture where only part of the network activates for any given input. Qwen3.8-Max has 2.4 trillion parameters total but uses only 95 billion at a time — keeping a massive model efficient by routing each query to the most relevant specialists.</dd>
+        <dt>Context window</dt><dd>The maximum amount of text a model can "see" at once, measured in tokens (roughly three-quarters of a word each). Beyond this limit, the model starts forgetting the beginning of a conversation — like a screen that scrolls old text off the top.</dd>
+        <dt>RAG (Retrieval-Augmented Generation)</dt><dd>Giving a model access to external documents by searching for relevant chunks and pasting them into the prompt before each query. Fast and effective, but every query pays the cost of extra tokens.</dd>
+        <dt>VLA (Vision-Language-Action)</dt><dd>A model that takes in images and text and outputs actions — for example, translating camera feeds into steering decisions. NVIDIA's Alpamayo 2 Super uses this to go from omnidirectional cameras on a vehicle to a driving command.</dd>
+        <dt>Inference</dt><dd>Running an already-trained model to generate output. Training is where a model learns; inference is where it works. Most of the electricity (and cost) in deploying AI products comes from inference, not training.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
