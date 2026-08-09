@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №72 — Declared · Infinite Reach</title>
+  <meta name="description" content="Europe began enforcing its AI transparency law on 2 August — chatbots must now say they're chatbots — while Xiaomi published evidence that the same data-scaling rules that made language models smart now work for physical robots." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №72 &middot; Sunday, 9 August 2026</p>
+      <h1>Declared</h1>
+      <p>Europe activated a rule last week requiring chatbots to say they're chatbots — the largest mandatory disclosure obligation for automated systems since GDPR. Meanwhile, a paper from Xiaomi showed that the "more data equals smarter" principle that powered the large-language-model era is now working on physical robots.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On 2 August 2026, the European Commission began enforcing the transparency chapter of the EU AI Act. Any chatbot operating in Europe must now tell users, upfront, that they are interacting with an automated system — not a human. Separately, synthetic content such as video deepfakes must carry machine-readable labels so platforms and regulators can detect it. Fines for non-compliance reach up to €15 million or 3% of a company's global annual revenue, whichever is higher. A transitional window to December 2 gives AI-generated-content systems time to add detection markers; chatbot disclosure is immediate. This is the first time any major jurisdiction has made AI self-identification a hard legal requirement with real financial teeth, and it covers every company whose products reach EU users — not just EU-based ones.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Qwen3.8-Max</span><span>Alibaba released a 2.4-trillion-parameter mixture-of-experts model on 3 August — 95 billion active parameters, a one-million-token context window, native image and video input, and open weights slated for release this week alongside a smaller Qwen3.8-27B. Priced at $2 per million input tokens. <a href="https://www.marktechpost.com/2026/08/03/alibaba-qwen-releases-qwen3-8-max/">source</a></span></li>
+        <li><span class="tag tech">DeepSeek V4-Flash</span><span>DeepSeek's fast, lean model got its official API on 31 July at $0.14 per million input tokens — a 98% discount for cached prompts ($0.0028). The larger V4-Pro is expected before the month is out. <a href="https://www.caixinglobal.com/2026-08-01/deepseek-releases-official-v4-flash-model-as-chinas-ai-race-intensifies-102470292.html">source</a></span></li>
+        <li><span class="tag tech">Xiaomi-Robotics-1</span><span>Xiaomi open-sourced a robot foundation model trained on 100,000+ hours of real-world manipulation data; it topped two major industry benchmarks and can adapt to new tasks with minimal extra training. More below. <a href="https://github.com/XiaomiRobotics/Xiaomi-Robotics-1">source</a></span></li>
+        <li><span class="tag policy">UK AI minister</span><span>New Prime Minister Burnham named Kanishka Narayan as Britain's first Cabinet-level Minister for AI within days of taking office — a signal that AI governance is now a top-tier political portfolio, backed by £1.1 billion in hardware investment. <a href="https://www.mintz.com/insights-center/viewpoints/54941/2026-08-07-ai-washington-report-august-2026-edition">source</a></span></li>
+        <li><span class="tag money">Inference infrastructure</span><span>Baseten closed a $1.5 billion Series F at a $13 billion valuation — the largest dedicated inference-infrastructure round yet — as demand for the plumbing that runs models fast and cheaply at production scale outpaces demand for the models themselves. <a href="https://convergedigest.com/baseten-raises-1-5-billion-to-expand-ai-inference-infrastructure/">source</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: The robot that learned from 100,000 hours of watching</h2>
+      <p class="kicker">Xiaomi-Robotics-1: Scaling Vision-Language-Action Models with over 100K Hours of Real-World Trajectories &middot; Xiaomi Robotics &middot; <a href="https://arxiv.org/abs/2607.15330">arXiv:2607.15330</a></p>
+
+      <p>When researchers began training large language models on internet-scale text, they discovered something almost physics-like: add more data and more compute, and performance improves in a smooth, predictable curve. This "scaling law" turned out to be one of the most consequential findings in modern computing. This week, Xiaomi published evidence that the same law holds for physical robots — and the numbers are striking enough to warrant a careful look.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Language models have a natural advantage: the internet is a vast, essentially free training dataset — hundreds of billions of documents, available at the cost of a crawl. Robots don't have that. Physical-world data is expensive to collect because you need actual hardware, actual space, and human operators willing to move things around for hundreds of hours. As a result, most robot models train on a few hundred hours of demonstration data — useful enough for narrow factory settings, but brittle the moment anything changes. A cup in the wrong position, a new type of object, a slightly different surface — any of these can cause a carefully trained robot to fail completely.</p>
+      <p>The deeper issue is generalisation. A model trained only on blue cups will likely struggle with red ones, because it hasn't seen enough variety to abstract "cup" from "blue cup". The obvious fix is to collect more diverse data, but the field had never tested whether doing so at scale — 100,000 hours, across thousands of scenarios — would produce the same kind of general capability improvement seen in language models. Until this paper, that question was open.</p>
+
+      <h3>How it works</h3>
+      <p>Think of learning to cook. You could be handed a single recipe and practise it until you've got it memorised (narrow fine-tuning on a specific task). Or you could spend years working in professional kitchens around the world — every cuisine, every technique, every style of movement — and then do a short orientation when you start a new job to learn that kitchen's specific equipment and its customers' preferences (broad pre-training followed by targeted post-training). Xiaomi's approach follows this second logic almost exactly.</p>
+
+      <p>The data-collection tool is a UMI device — short for Universal Manipulation Interface. It's a handheld rig combining a camera with a hand-mount that lets an operator move objects naturally while recording exactly what their hand is doing. No full robot required. Using UMI rigs, Xiaomi collected footage across more than 1,700 different scenarios: objects being picked up, sorted, folded, poured, assembled, and placed — in homes, offices, and lab settings. The raw output is video. What turns it into a useful training dataset is the <em>auto-labeling pipeline</em>: software that watches each clip and automatically writes a natural-language caption describing what happened ("picked up the red cup and placed it on the left shelf"). This is the key innovation, because it means the model learns to connect physical movement with human-readable instructions at a scale that manual annotation could never reach.</p>
+
+      <p>The model architecture is called a Vision-Language-Action model, or VLA. A large language model, at its core, takes text as input and predicts the next most-likely token of text. A VLA takes camera images and a language instruction as input and predicts the next motor command for a robotic arm — essentially the same predict-the-next-thing structure, but where "things" are joint angles instead of words. Pre-training on 100,000 hours of captioned manipulation footage gives the model a rich vocabulary of physical actions. Post-training — a shorter, targeted phase — aligns those general skills to a specific robot's hardware and to the natural way humans give instructions ("put the mug on the shelf", not "extend joint three by twelve degrees").</p>
+
+      <h3>What they actually did</h3>
+      <p>The team trained on over 100,000 hours of real-world manipulation trajectories collected across 1,700+ scenarios using the UMI pipeline. They evaluated on four simulation benchmarks standard in the robotics research community: RoboCasa, RoboCasa365, VLABench, and RoboDojo. The model ranked first on both the RoboCasa365 and RoboDojo leaderboards as of 15 July 2026. The paper also reports that the model can follow novel language instructions in environments it has never seen during training — the basic test of out-of-the-box generalisation — and can adapt to entirely new downstream tasks with only a small amount of additional fine-tuning data. Full weights and code were open-sourced on Hugging Face and GitHub.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 200" role="img" aria-label="Five-stage training pipeline: UMI data collection, auto-labeling, VLA pre-trained model, robot alignment, deployed robot">
+          <defs>
+            <marker id="a72" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <!-- Left band: pre-training -->
+          <rect x="4" y="4" width="428" height="164" rx="8" fill="#D97757" fill-opacity="0.07" stroke="#D97757" stroke-width="1.2" stroke-dasharray="6,3"/>
+          <text x="214" y="22" font-family="ui-serif" font-size="12" fill="#D97757" text-anchor="middle" font-weight="bold">Pre-training — broad physical knowledge</text>
+
+          <!-- Right band: post-training -->
+          <rect x="444" y="4" width="272" height="164" rx="8" fill="#788C5D" fill-opacity="0.07" stroke="#788C5D" stroke-width="1.2" stroke-dasharray="6,3"/>
+          <text x="580" y="22" font-family="ui-serif" font-size="12" fill="#788C5D" text-anchor="middle" font-weight="bold">Post-training — specific deployment</text>
+
+          <!-- Node 1 -->
+          <rect x="16" y="42" width="118" height="66" rx="7" fill="#D97757" fill-opacity="0.18" stroke="#D97757" stroke-width="1.4"/>
+          <text x="75" y="66" font-family="system-ui" font-size="11" fill="#141413" text-anchor="middle" font-weight="600">UMI device</text>
+          <text x="75" y="82" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">100K+ hours</text>
+          <text x="75" y="97" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">1,700+ scenarios</text>
+          <line x1="134" y1="75" x2="152" y2="75" stroke="#87867F" stroke-width="1.5" marker-end="url(#a72)"/>
+
+          <!-- Node 2 -->
+          <rect x="152" y="42" width="118" height="66" rx="7" fill="#6A8CAF" fill-opacity="0.16" stroke="#6A8CAF" stroke-width="1.4"/>
+          <text x="211" y="66" font-family="system-ui" font-size="11" fill="#141413" text-anchor="middle" font-weight="600">Auto-labeling</text>
+          <text x="211" y="82" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">video clips →</text>
+          <text x="211" y="97" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">language captions</text>
+          <line x1="270" y1="75" x2="288" y2="75" stroke="#87867F" stroke-width="1.5" marker-end="url(#a72)"/>
+
+          <!-- Node 3 (VLA model) -->
+          <rect x="288" y="34" width="130" height="80" rx="7" fill="#D97757" fill-opacity="0.24" stroke="#D97757" stroke-width="1.8"/>
+          <text x="353" y="62" font-family="ui-serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="bold">VLA Model</text>
+          <text x="353" y="80" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">general action</text>
+          <text x="353" y="94" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">knowledge</text>
+          <line x1="418" y1="75" x2="448" y2="75" stroke="#87867F" stroke-width="1.8" marker-end="url(#a72)"/>
+
+          <!-- Node 4 -->
+          <rect x="456" y="42" width="118" height="66" rx="7" fill="#788C5D" fill-opacity="0.18" stroke="#788C5D" stroke-width="1.4"/>
+          <text x="515" y="66" font-family="system-ui" font-size="11" fill="#141413" text-anchor="middle" font-weight="600">Robot alignment</text>
+          <text x="515" y="82" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">hardware +</text>
+          <text x="515" y="97" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">human phrasing</text>
+          <line x1="574" y1="75" x2="592" y2="75" stroke="#87867F" stroke-width="1.5" marker-end="url(#a72)"/>
+
+          <!-- Node 5 (deployed) -->
+          <rect x="592" y="34" width="112" height="80" rx="7" fill="#788C5D" fill-opacity="0.24" stroke="#788C5D" stroke-width="1.8"/>
+          <text x="648" y="62" font-family="ui-serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="bold">Robot</text>
+          <text x="648" y="80" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">generalises,</text>
+          <text x="648" y="94" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">adapts fast</text>
+
+          <!-- Bottom labels -->
+          <text x="214" y="187" font-family="system-ui" font-size="10" fill="#D97757" text-anchor="middle">100,000 hours of real physical-world data</text>
+          <text x="580" y="187" font-family="system-ui" font-size="10" fill="#788C5D" text-anchor="middle">1st on RoboCasa365 &amp; RoboDojo</text>
+        </svg>
+        <figcaption>Xiaomi-Robotics-1's two-stage pipeline. Pre-training ingests 100,000+ hours of real-world robot footage auto-labeled with language captions, building general physical knowledge in a VLA model. Post-training then aligns that model to specific hardware and natural human instructions — turning broad capability into a deployable robot that adapts to new tasks quickly.</figcaption>
+      </figure>
+
+      <h3>What they found</h3>
+      <p>The model generalises to unseen environments and objects out of the box, which is the basic test anyone who wants to deploy a robot in the real world actually cares about. It also adapts to new tasks with only a small amount of additional data — a crucial practical property, because every deployment context is slightly different and few companies can afford to collect thousands of hours of custom demonstrations. The four-benchmark sweep confirmed state-of-the-art performance, with first-place rankings on RoboCasa365 and RoboDojo as of July 15. The authors frame their results as direct empirical evidence for an embodied-AI scaling law — the first systematic, large-scale proof that physical robotics obeys the same performance-versus-data growth curve seen in language models years earlier.</p>
+
+      <h3>The catch</h3>
+      <p>All four benchmarks are simulation environments, not real kitchens or warehouses. The gap between controlled-lab performance and real-world deployment has undone many promising robot models before, and this paper doesn't bridge it — it demonstrates that simulation performance scales with data, which is meaningful but not the same as proving robustness in the wild. The UMI data-collection method, while portable compared to full robot setups, still requires specific hardware and trained operators, so the 100,000-hour dataset isn't something a startup can replicate overnight. And while 100,000 hours sounds enormous, it is still far narrower than the trillion-word text corpora that language models train on — the diversity ceiling for physical data remains much lower than for text, which means harder generalisation limits.</p>
+
+      <p><strong>If you remember one thing:</strong> The same data-scaling principle that made language models so capable has now been validated for physical robots — and the lab that provided the proof wasn't Boston Dynamics or Google DeepMind, it was Xiaomi's robotics team.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>Published "8 Predictions for the Era of Continual Learning" on 7 August — his argument that the next major shift isn't a new model architecture but models that update continuously from live experience, the way a surgeon improves through operations rather than by going back to school. Worth a slow read. <a href="https://www.dwarkesh.com/p/era-of-continual-learning">dwarkesh.com</a></span></li>
+        <li><span class="tag tech">Andrej Karpathy</span><span>Updated his <em>microgpt.py</em> gist on 8 August — a compact GPT implementation. Since joining Anthropic's pre-training team in May, his public code activity has been sparse, which makes any update from him worth a look. <a href="https://gist.github.com/karpathy">gist.github.com/karpathy</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The week's two headline stories — Europe's chatbot disclosure law and a Chinese robot model trained on 100,000 hours of real-world data — look unrelated at first glance. But they share an underlying theme: visibility. The EU transparency rule is about making automated systems legible to the people who encounter them, so that users can make informed choices about who they are talking to and what content has been manufactured rather than witnessed. The Xiaomi paper is about a different kind of legibility: a model's capacity to read and respond meaningfully to physical environments it has never been explicitly programmed for. Both represent the same shift: systems that used to be opaque black boxes — either about their own nature or about the physical world — are now being held to a higher standard of transparency. The policy world and the capability world are, for once, asking the same question. That convergence is new, and worth watching.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://digital-strategy.ec.europa.eu/en/news/commission-starts-enforcing-ai-act-rules-and-new-transparency-requirements-2-august">EU AI Act enforcement announcement (Aug 2)</a> ·
+        <a href="https://www.cooley.com/news/insight/2026/2026-08-03-eu-ai-act-transparency-obligations-take-effect-2-august-2026">Cooley: AI Act transparency obligations</a> ·
+        <a href="https://artificialintelligenceact.eu/transparency-rules-article-50/">AI Act Article 50 (transparency rules)</a> ·
+        <a href="https://www.marktechpost.com/2026/08/03/alibaba-qwen-releases-qwen3-8-max/">Qwen3.8-Max (MarkTechPost, Aug 3)</a> ·
+        <a href="https://www.caixinglobal.com/2026-08-01/deepseek-releases-official-v4-flash-model-as-chinas-ai-race-intensifies-102470292.html">DeepSeek V4-Flash official (Caixin, Aug 1)</a> ·
+        <a href="https://arxiv.org/abs/2607.15330">Xiaomi-Robotics-1 paper (arXiv:2607.15330)</a> ·
+        <a href="https://github.com/XiaomiRobotics/Xiaomi-Robotics-1">Xiaomi-Robotics-1 GitHub</a> ·
+        <a href="https://robotics.xiaomi.com/xiaomi-robotics-1.html">Xiaomi robotics project page</a> ·
+        <a href="https://www.mintz.com/insights-center/viewpoints/54941/2026-08-07-ai-washington-report-august-2026-edition">AI: Washington Report, Aug 2026 (Mintz)</a> ·
+        <a href="https://convergedigest.com/baseten-raises-1-5-billion-to-expand-ai-inference-infrastructure/">Baseten $1.5B Series F (Converge Digest)</a> ·
+        <a href="https://www.dwarkesh.com/p/era-of-continual-learning">Dwarkesh Patel: 8 Predictions (Aug 7)</a> ·
+        <a href="https://gist.github.com/karpathy">Karpathy gists (GitHub)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Continual learning</div>
+        <div>The ability of a model to keep updating from new experiences after its initial training is finished — the way a doctor improves with each new patient, rather than only knowing what they learned in medical school. Most current models are trained once and then frozen. Whether and how to change that is one of the bigger open questions in the field right now.</div>
+      </div>
+      <dl>
+        <dt>VLA model</dt><dd>Vision-Language-Action: a model that takes camera images and a language instruction as input and outputs robot motor commands. Structurally similar to a language model — but where a language model predicts the next word, a VLA predicts the next physical movement.</dd>
+        <dt>Scaling law</dt><dd>The empirical observation that AI model performance improves in a smooth, predictable curve as you add more training data and compute — like a mathematical law discovered by experiment rather than derivation.</dd>
+        <dt>MoE (Mixture of Experts)</dt><dd>A model architecture split into specialised sub-networks ("experts"). For any given input, only a small subset activates — making a very large total model affordable to run, because most of it sits idle most of the time.</dd>
+        <dt>Embodied AI</dt><dd>AI that operates in a physical body — a robot — rather than purely as software. The challenge is that the real world is vastly messier than any training dataset.</dd>
+        <dt>Transparency obligation</dt><dd>Under the EU AI Act: the legal duty to tell users they are interacting with an automated system, or that content they are viewing has been generated or significantly altered by one.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
