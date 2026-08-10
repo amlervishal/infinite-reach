@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №73 — Viable · Infinite Reach</title>
+  <meta name="description" content="OpenAI's upcoming Astra model is the first ever to approach a 'critical' cyber-capability rating — while Stanford researchers used a genomic language model to write functional viruses from scratch, 16 of 285 designs coming to life in the lab." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №73 &middot; Monday, August 10, 2026</p>
+      <h1>Viable</h1>
+      <p>Two thresholds crossed in one week: OpenAI flagged its upcoming Astra model as the first ever to approach the "critical" level for cyber danger under its own safety rules — while a team at Stanford and the Arc Institute used a genomic language model to write complete virus genomes from scratch, and 16 of their 285 designs came to life in a laboratory dish.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On Friday, OpenAI announced it cannot rule out that its unreleased Astra model has what its safety guidelines call "critical" cybersecurity capabilities — meaning the ability to autonomously find and exploit zero-day vulnerabilities in real systems, without a human directing each step. That is a first: every earlier frontier model, including GPT-5.6, stayed in the tier below. In response, OpenAI has paused parts of internal development, sandboxed the model with encrypted weights and restricted network access, and says it will work with government agencies and independent safety researchers before any release. The safety framework was designed precisely to trigger this kind of halt — and this week it did, for the first time.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Scale</span><span>The <em>Financial Times</em>, citing three people familiar with the project, reported that ByteDance is pretraining a model with up to <strong>10 trillion parameters</strong> — more than three times the size of Moonshot's 2.8-trillion Kimi K3 and, by the FT's account, aimed at rivaling Anthropic's top-tier Mythos 5. Whether the architecture is dense or a sparse mixture-of-experts — which would activate only a fraction of those parameters per token — has not been confirmed.</span></li>
+        <li><span class="tag money">Federal science</span><span>The White House committed <strong>over $5 billion</strong> across fifteen-plus federal agencies to embed AI into national scientific research under the "Genesis Mission" — the largest single US government injection into AI-assisted science.</span></li>
+        <li><span class="tag tech">Video</span><span>ByteDance released <strong>Seedance 2.5</strong>, the latest version of its AI video-generation model, with improvements to temporal coherence — meaning objects and scenes stay consistent across frames — and finer motion control.</span></li>
+        <li><span class="tag policy">Astra + oversight</span><span>Alongside the critical-capability announcement, OpenAI confirmed Astra will now undergo testing with government agencies and independent organizations before any commercial release, continuing a 2026 pattern of frontier models entering formal pre-release government review.</span></li>
+        <li><span class="tag tech">Biology</span><span>The Stanford/Arc bacteriophage paper landed in <em>Science</em> this week — the first demonstration that a genomic language model can generate complete virus genomes from scratch and have them function inside living cells. Full story below.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~670 words -->
+      <h2>Paper, explained: the AI that wrote a living virus</h2>
+      <p class="kicker">Generative design of bacteriophages with genome language models &middot; Stanford University &amp; Arc Institute &middot; <a href="https://www.science.org/doi/10.1126/science.aec2657"><em>Science</em>, 2026 — DOI: 10.1126/science.aec2657</a></p>
+
+      <p>It caught our eye because the result is not a metaphor. The researchers didn't train an AI to <em>predict</em> what a virus looks like, or to <em>tweak</em> an existing one by a few mutations — they asked it to write a complete, novel virus genome from scratch, chemically synthesized what it produced, and put the result in a dish with bacteria. Sixteen of the 285 designs came to life.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Bacteriophages — viruses that infect bacteria, not humans — are attracting serious scientific interest as antibiotic resistance grows. In principle, an engineered phage could target a specific dangerous bacterium with far more precision than a broad antibiotic that wipes out your entire gut flora. In practice, designing a phage genome has always required decades of accumulated evolutionary knowledge. A working phage must do many things at once: its genome encodes the proteins that package its own DNA, the proteins that inject it into a cell, the proteins that hijack the cell's machinery to produce thousands of copies, and the molecular signals that tell it when to burst out and find the next host. All of those instructions must be internally consistent, and they must work correctly with the specific host cell. Change one part and you risk breaking the rest. Until now, the practical options were finding a phage in nature or editing an existing one incrementally — not writing one from nothing.</p>
+
+      <h3>How it works</h3>
+      <p>Think of DNA as a recipe book written in a four-letter alphabet: A, T, C, G. A genome is a recipe for building and running a living organism. The central idea of this paper is that a language model trained on enough real DNA sequences can learn the "grammar" of that alphabet — which four-letter words tend to appear together, which patterns encode proteins that fold correctly, which sequences almost always appear at the start of a gene. Once it has learned those patterns, it can generate new sequences that follow the same rules, in the same way that a well-trained language model can write a grammatically correct sentence it has never seen before.</p>
+
+      <p>The models here — Evo 1 and Evo 2, developed at the Arc Institute — were trained on millions of microbial DNA sequences. After training, they generate new genomes by predicting one nucleotide at a time: given everything so far, what comes next? The result is a never-before-seen sequence that nonetheless follows the learned patterns of what functional microbial DNA looks like.</p>
+
+      <p>The team targeted ΦX174, a well-studied bacteriophage whose circular genome is just 5,386 nucleotides — short enough to be chemically synthesized in a laboratory at reasonable cost. They asked the models to generate sequences in the same structural family and overall layout, without copying the original letter-for-letter. The analogy: if you trained a composer on millions of pieces in a particular style, then asked them to write a new one — same instrumentation, same rough structure, no direct copying — most attempts would be interesting-sounding but unplayable. Some would genuinely work as music. A rare few might surprise even the experts. That is roughly what happened.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team generated 285 candidate phage genomes using Evo 1 and Evo 2, chemically synthesized each one, and exposed them to laboratory strains of <em>E. coli</em> to see whether they could infect the bacteria, replicate, and kill them. Of 285, sixteen worked — a success rate of roughly 5.6%. Several of the AI-generated phages showed faster lysis (the speed at which they burst the host cell) or higher overall fitness than the natural ΦX174 they were modeled on. To understand why at least one of the best performers worked so well, the researchers imaged it using cryo-electron microscopy (cryo-EM), which produces near-atomic-resolution pictures of protein structures. What they found: the phage was using a DNA packaging protein from a completely different evolutionary lineage — a structural solution the model had independently discovered, one that evolution had also arrived at separately somewhere else in the tree of life.</p>
+
+      <h3>What they found</h3>
+      <p>The main result is that generative genome design works at a practical level: starting with a language model and ending with functional viruses, without editing any natural sequence. The cryo-EM finding is more striking still. The model wasn't just recombining patterns it had seen at the surface; at least one of its designs arrived at a structurally valid protein solution from a distant evolutionary branch, suggesting it has learned something about the underlying chemistry of how proteins assemble, not only the statistics of which DNA letters cluster together in databases.</p>
+
+      <h3>The catch</h3>
+      <p>A fair critique from independent reviewers: 16-in-285 is a success rate, but the paper does not tell us whether it is a <em>good</em> success rate. No comparison is made against simpler alternatives — consensus-sequence designs, ancestral reconstruction, or constrained randomization — so we cannot say with confidence that Evo 2 is outperforming a well-tuned classical method. The paper demonstrates feasibility more clearly than superiority. The team also deliberately excluded eukaryotic-virus sequences (those that infect animals and humans) from training data, and worked with nonpathogenic host strains — but the technique itself will require careful governance as it matures and scales to more complex organisms.</p>
+
+      <!-- SVG DIAGRAM -->
+      <figure>
+        <svg viewBox="0 0 720 250" role="img" aria-label="Diagram: Evo 2 generates 285 candidate bacteriophage genomes from scratch; 16 are viable in the lab, several outperforming the natural ΦX174">
+
+          <!-- Step 1: Training data -->
+          <rect x="16" y="72" width="134" height="106" rx="8" fill="#F5F3EF" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="83" y="98" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" font-weight="600">Millions of</text>
+          <text x="83" y="114" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" font-weight="600">microbial genomes</text>
+          <text x="83" y="138" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">training data</text>
+          <text x="83" y="156" text-anchor="middle" font-family="ui-monospace,Courier,monospace" font-size="9" fill="#87867F">ATCGGCTA…TTACG</text>
+
+          <!-- Arrow 1 -->
+          <line x1="150" y1="125" x2="186" y2="125" stroke="#D1CFC5" stroke-width="2"/>
+          <polygon points="186,120 196,125 186,130" fill="#D1CFC5"/>
+
+          <!-- Step 2: Evo 2 model -->
+          <rect x="196" y="62" width="168" height="126" rx="8" fill="#EDF3F8" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="280" y="92" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="14" fill="#141413" font-weight="700">Evo 2</text>
+          <text x="280" y="110" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#6A8CAF">genomic language model</text>
+          <text x="280" y="132" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#141413">Predicts next nucleotide</text>
+          <text x="280" y="149" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#141413">one letter at a time</text>
+          <text x="280" y="169" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">→ outputs novel genomes</text>
+
+          <!-- Arrow 2 -->
+          <line x1="364" y1="125" x2="400" y2="125" stroke="#D1CFC5" stroke-width="2"/>
+          <polygon points="400,120 410,125 400,130" fill="#D1CFC5"/>
+
+          <!-- Step 3: 285 designs -->
+          <rect x="410" y="72" width="124" height="106" rx="8" fill="#F5F3EF" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="472" y="98" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" font-weight="600">285 genome</text>
+          <text x="472" y="114" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" font-weight="600">candidates</text>
+          <text x="472" y="138" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">synthesized &amp;</text>
+          <text x="472" y="154" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">tested with E. coli</text>
+
+          <!-- Arrow 3 -->
+          <line x1="534" y1="125" x2="570" y2="125" stroke="#D1CFC5" stroke-width="2"/>
+          <polygon points="570,120 580,125 570,130" fill="#D1CFC5"/>
+
+          <!-- Step 4: Results -->
+          <rect x="580" y="62" width="124" height="126" rx="8" fill="#FBF0EC" stroke="#D97757" stroke-width="1.5"/>
+          <text x="642" y="92" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="28" fill="#D97757" font-weight="700">16</text>
+          <text x="642" y="112" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#141413">viable phages</text>
+          <text x="642" y="128" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">(5.6% success rate)</text>
+          <line x1="596" y1="138" x2="688" y2="138" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="642" y="155" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#788C5D" font-weight="600">Several outperformed</text>
+          <text x="642" y="170" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#788C5D">natural ΦX174</text>
+
+          <!-- Footer label -->
+          <text x="360" y="228" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9.5" fill="#87867F">Target family: ΦX174 · circular genome, 5,386 nucleotides · non-pathogenic E. coli host strains</text>
+        </svg>
+        <figcaption>Evo 2 learned the DNA grammar of millions of microbes, then generated 285 novel phage genomes without copying any natural sequence. Sixteen became viable in the lab — and several outperformed the original phage they were modeled on.</figcaption>
+      </figure>
+
+      <p><strong>If you remember one thing:</strong> A language model trained on DNA sequences can write a functional virus from scratch — and at least one of its designs independently discovered a protein structure that evolution found separately, elsewhere in the tree of life.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span><strong>autoresearch</strong> — the repo that lets an AI agent run overnight ML experiments and keep only the validated improvements — has reached <strong>93,600+ stars</strong> and 13,300 forks, making it one of the most-starred AI research tools on GitHub. New community forks for AMD and Mac hardware have recently landed in the "Notable forks" section of the readme. <a href="https://github.com/karpathy/autoresearch">github.com/karpathy/autoresearch</a></span></li>
+        <li><span class="tag tech">Dwarkesh</span><span>A new episode of the Dwarkesh Podcast arrived August 7: <em>"8 Predictions for the Era of Continual Learning"</em> — covering what changes when AI models can keep learning from new data after deployment rather than freezing at training cutoff. <a href="https://www.dwarkesh.com/podcast">dwarkesh.com/podcast</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two different fields, two different teams, one consistent pattern: the evaluation frameworks that researchers put in place to flag danger are now being reached. OpenAI's Preparedness Framework was written to describe a threshold it hoped not to see — and this week it triggered for the first time. The bacteriophage paper is not dangerous in the way Astra is, but it represents a different kind of threshold: the moment when AI stops being a tool that helps biologists and becomes something that can independently write biology. Neither event is a catastrophe, and both teams handled them thoughtfully. What they share is that the outer markers of what these systems were expected to do are now, in the summer of 2026, being routinely reached. The frameworks were not placed arbitrarily. Reaching them is news.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://openai.com/index/responding-next-frontier-critical-cyber-capabilities/">OpenAI — Responding to the next frontier of critical cyber capabilities</a> ·
+        <a href="https://techcrunch.com/2026/08/07/openai-says-it-slowed-astra-model-development-over-security-concerns/">TechCrunch — OpenAI slows Astra over security concerns</a> ·
+        <a href="https://www.science.org/doi/10.1126/science.aec2657">Science — Generative design of bacteriophages with genome language models (DOI: 10.1126/science.aec2657)</a> ·
+        <a href="https://cen.acs.org/biological-chemistry/genomics/ai-program-designs-new-bacteriophages/104/web/2026/08">C&amp;EN — AI program designs new bacteriophages</a> ·
+        <a href="https://aiweekly.co/alerts/bytedance-pretrains-10-trillion-parameter-model-ft-reports">AI Weekly — ByteDance pretrains 10-trillion parameter model</a> ·
+        <a href="https://cryptobriefing.com/bytedance-10-trillion-parameter-model/">CryptoBriefing — ByteDance 10T model</a> ·
+        <a href="https://www.mintz.com/insights-center/viewpoints/54941/2026-08-07-ai-washington-report-august-2026-edition">Mintz — AI: The Washington Report, August 2026</a> ·
+        <a href="https://github.com/karpathy/autoresearch">GitHub — karpathy/autoresearch</a> ·
+        <a href="https://www.dwarkesh.com/podcast">Dwarkesh Podcast</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Preparedness Framework</div>
+        <div>OpenAI's internal rulebook for deciding how dangerous a new model is before releasing it. Think of it like a flight pre-clearance checklist — except instead of checking fuel, you are asking whether the model can autonomously hack critical infrastructure or help make weapons. Models are rated Low, Medium, High, or Critical. Critical means halt development and bring in outside experts. This week, for the first time, a model hit that threshold.</div>
+      </div>
+      <dl>
+        <dt>Bacteriophage</dt><dd>A virus that attacks bacteria rather than human cells — "phage" for short. They are attracting new interest as antibiotic resistance grows, because a phage can be targeted at a specific bacterium without disturbing the rest of your gut.</dd>
+        <dt>Genomic language model</dt><dd>A language model trained on DNA sequences rather than text. Just as a text model predicts the next word, a genomic model predicts the next nucleotide (A, T, C, or G). After training on millions of real genomes, it can generate plausible new ones that follow the rules of biology.</dd>
+        <dt>Zero-day exploit</dt><dd>A software vulnerability that nobody knows about yet — so defenders have zero days of warning before it can be used against them. Autonomously finding and weaponizing these, without human guidance, is precisely what OpenAI's "critical" threshold is designed to flag.</dd>
+        <dt>MoE (Mixture of Experts)</dt><dd>A neural-network design where the model is divided into specialist sub-networks. For each input, only a small subset activates — so a model can have ten trillion total parameters while using far fewer for any given token. This is why raw parameter counts are an incomplete measure of a model's scale or cost.</dd>
+        <dt>Cryo-EM</dt><dd>Cryo-electron microscopy — a technique that flash-freezes a protein or virus and images it with electrons, producing near-atomic-resolution pictures. Used in this paper to show exactly how a synthetic phage was assembling itself, revealing the unexpected protein from a distant evolutionary branch.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
