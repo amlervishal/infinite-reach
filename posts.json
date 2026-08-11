@@ -1,5 +1,12 @@
 [
   {
+    "num": 74,
+    "date": "2026-08-11",
+    "slug": "issues/2026-08-11.html",
+    "title": "Orthogonal",
+    "blurb": "Four architects of Google DeepMind left to found a lab that automates scientific research — while a new paper explains why reinforcement learning lets an AI learn four skills at once without any of them clobbering the others."
+  },
+  {
     "num": 73,
     "date": "2026-08-10",
     "slug": "issues/2026-08-10.html",

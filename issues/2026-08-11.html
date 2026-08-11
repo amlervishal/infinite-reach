@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №74 — Orthogonal · Infinite Reach</title>
+  <meta name="description" content="Four architects of Google DeepMind left to found a lab that automates scientific research — while a new paper explains why reinforcement learning lets an AI learn four skills at once without any of them clobbering the others." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №74 &middot; Tuesday, August 11, 2026</p>
+      <h1>Orthogonal</h1>
+      <p>Four of the architects of Google DeepMind left the company last week to build something new — while a fresh paper explains why teaching an AI model many skills at once usually makes it worse at most of them, and suggests a fix borrowed from the branch of training that works by reward rather than correction.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Jeff Dean, Sanjay Ghemawat, Oriol Vinyals, and Quoc Le resigned from Google last week to found <strong>Discovery Loop</strong>, an independent public-benefit corporation focused on automating the scientific process. Together, the four co-founders authored or co-authored papers that shaped the modern field: MapReduce, TensorFlow, sequence-to-sequence learning, AlphaGo. Their declared goal is to build AI that proposes its own experiments, runs them in parallel, learns from each result, and iterates without a human in the loop — starting with machine-learning research, then moving on to hardware design, drug discovery, and clean energy. Radical Ventures and Khosla Ventures are co-leading the seed round. Google serves as founding investor and cloud partner. Alphabet's stock dropped roughly 5% — an estimated $160–200 billion in market value — on the day the news broke. On the same day, Demis Hassabis stepped back from running DeepMind to become chairman of Google DeepMind and Alphabet's Chief Scientist, with Koray Kavukcuoglu moving up from CTO to senior vice president responsible for Gemini model development and research.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Infrastructure</span><span>Anthropic, Australia's Macquarie Asset Management, and Singapore's sovereign wealth fund GIC announced <strong>Theseus Infrastructure</strong> on August 10 — a joint venture to develop, own, and lease AI data centers built to Anthropic's specifications. Macquarie and GIC own the real estate; Anthropic becomes the long-term anchor tenant. Anthropic also pledged to cover 100% of grid-upgrade costs and any consumer electricity price increases tied to its demand.</span></li>
+        <li><span class="tag policy">Safety grades</span><span>The Future of Life Institute published its Summer 2026 AI Safety Index on August 10. Anthropic scored C+ (2.66 out of 4.0); OpenAI and Google DeepMind each earned a C; Meta a D+; and xAI, DeepSeek, and Mistral received outright F grades. For the second consecutive report, not one company scored above D in the existential-safety category. Reviewers noted that all four leading labs have <em>weakened</em> earlier pledges to pause development at defined danger thresholds.</span></li>
+        <li><span class="tag tech">Solo founders</span><span>Garry Tan, president of Y Combinator, told Startup School attendees on August 9 that the defining theme of the next wave of companies is "personal AGI" — AI agents that build a persistent, individual understanding of the user and expand what a single founder can accomplish. He reported a personal productivity increase of roughly 400× and said many current YC startups now attribute more than 95% of their codebase to AI.</span></li>
+        <li><span class="tag tech">Self-improving tools</span><span>Andrej Karpathy's <strong>nanochat</strong> — a minimal, from-scratch ChatGPT training library — cut its benchmark training time from 2.02 hours to 1.80 hours (roughly 11%) after Karpathy ran an autonomous AI agent on the repo for about 12 hours, letting it make 110 iterative changes and retain only those that improved a held-out validation loss. The primary gains came from switching the pretraining dataset to NVIDIA ClimbMix and enabling FP8 precision.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~700 words -->
+      <h2>Paper, explained: when learning one thing breaks another</h2>
+      <p class="kicker">SFT Conflicts, RL Coexists: A Theoretical and Empirical Analysis of Multi-Task Learning for LLMs &middot; Kejian Zhu, Zhuoran Jin, Shangqing Tu, Hongbang Yuan, Yushi Bai, Kang Liu, Juanzi Li &amp; Jun Zhao (Tsinghua University / BAAI) &middot; <a href="https://arxiv.org/abs/2608.03573">arXiv 2608.03573</a></p>
+
+      <p>It caught our eye because the problem it identifies is one you have almost certainly noticed in everyday AI use: a model that handles one kind of request beautifully and stumbles on something it should also be able to do. The paper offers the clearest explanation yet of why that happens — and points toward a fix.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>A large language model is built in stages. First comes pretraining: the model reads an enormous corpus and absorbs a general understanding of language, facts, and reasoning. Then comes fine-tuning, where you take that general model and improve it at specific skills: mathematics, coding, logical puzzles, scientific knowledge. The goal is a single model that is genuinely good at all of them.</p>
+
+      <p>The standard method for fine-tuning is <em>supervised fine-tuning</em>, or SFT: you show the model thousands of correct worked examples — here is a hard maths problem, here is the correct solution — and it adjusts its internal parameters to make those correct outputs more likely. This works well for one task at a time. The trouble, which this paper measures with unusual clarity, is what happens when you do it sequentially for several tasks. Train on mathematics first, then switch to coding: the model gets better at coding, but its maths score quietly drops. Train on four tasks in sequence and the model ends up worse at the first three than it was immediately after their dedicated sessions. The skills are fighting each other over the same internal parameters.</p>
+
+      <h3>How it works</h3>
+      <p>To understand why, imagine the model's millions of parameters as a vast landscape of dials. Every training step adjusts those dials in some direction to make the model better at the current example. If two tasks require turning the same dial in opposite directions, they fight. SFT updates are large and concentrated: a training step on maths turns a lot of dials hard toward maths — and those same dials happen to matter for coding and logic too, so the maths update quietly undoes earlier work. The skills compete for the same territory.</p>
+
+      <p>Reinforcement learning (RL) is different in one crucial respect. In RL, the model doesn't learn from correct examples; it learns from reward signals — indications of whether its output was good or bad — without ever seeing the "right" answer directly. That mechanism produces something mathematically surprising: the parameter adjustments for each task end up approximately <em>orthogonal</em> — pointing in directions that don't meaningfully cross. A training step toward better maths doesn't undo progress in coding, because they're travelling at roughly right angles through parameter space. The key technical reason is that RL uses <em>advantage normalization</em>: it rescales reward signals relative to a moving baseline, which bounds the gradient updates by their variance rather than their raw magnitude. Smaller, more diffuse nudges that spread into different directions rather than hammering a shared region.</p>
+
+      <p>Think of it this way: SFT is like painting different colour murals on the same wall in sequence — each coat partially covers the last. RL is more like painting in separate rooms that share no walls. Each piece of learning has space that is genuinely its own.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team ran structured experiments across four domains: mathematics (tested on MATH500 and AIME 2025), science (MMLU subjects and GPQA-Diamond), coding (LiveCodeBench), and logic (Knights-and-Knaves puzzles). They trained models using SFT and RL separately on each domain, then measured cross-domain effects — what happens to the maths score when you fine-tune on coding? — and examined the gradient update patterns directly, mapping exactly where each training step pointed in parameter space. They also provided a theoretical proof showing why RL advantage normalization imposes a variance bound on gradient updates across tasks, while SFT interference scales with the raw gradient norm.</p>
+
+      <h3>What they found</h3>
+      <p>SFT training on one task reliably damaged performance on the others. RL training on one task largely preserved or improved performance on the others. The gradient analysis confirmed the mechanism: SFT updates clustered and overlapped, RL updates spread and separated. Based on this, the authors propose <strong>Parallel-RL</strong>: train each task completely independently using RL, then merge the resulting weights into a single model. Early results show that Parallel-RL performs better across all four domains than either sequential SFT or standard multi-task RL.</p>
+
+      <h3>The catch</h3>
+      <p>The experiments test a specific range of model sizes and a particular set of tasks. Whether the orthogonality finding holds at the largest frontier scale, or across a much broader and messier set of capabilities, has not yet been established. Parallel-RL also multiplies the compute cost: you need separate training runs for each domain before merging, which is feasible for a well-resourced lab and harder for everyone else. And the theory is elegant but idealised — real gradient landscapes are messier than the proof assumes, and the "approximately orthogonal" finding is an empirical one that could weaken in conditions the paper doesn't test.</p>
+
+      <!-- SVG DIAGRAM -->
+      <figure>
+        <svg viewBox="0 0 720 280" role="img" aria-label="Diagram comparing SFT and RL multi-task learning: SFT updates conflict in overlapping directions, RL updates are approximately orthogonal">
+
+          <!-- ===== SFT panel ===== -->
+          <rect x="16" y="16" width="320" height="248" rx="8" fill="#F5F3EF" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="176" y="46" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="700" fill="#141413">Supervised fine-tuning (SFT)</text>
+          <text x="176" y="64" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">large, overlapping updates → tasks conflict</text>
+
+          <!-- Origin dot -->
+          <circle cx="176" cy="168" r="5" fill="#141413"/>
+
+          <!-- Task A arrow — upper-right, bold -->
+          <line x1="176" y1="168" x2="246" y2="102" stroke="#D97757" stroke-width="3"/>
+          <polygon points="246,102 235,112 243,122" fill="#D97757"/>
+          <text x="252" y="98" font-family="system-ui,sans-serif" font-size="10" fill="#D97757" font-weight="600">Maths</text>
+
+          <!-- Task B arrow — lower-right (conflicts) -->
+          <line x1="176" y1="168" x2="252" y2="218" stroke="#D97757" stroke-width="3" opacity="0.65"/>
+          <polygon points="252,218 240,209 247,199" fill="#D97757" opacity="0.65"/>
+          <text x="256" y="230" font-family="system-ui,sans-serif" font-size="10" fill="#D97757" font-weight="600" opacity="0.65">Code</text>
+
+          <!-- Task C arrow — upper-left (conflicts) -->
+          <line x1="176" y1="168" x2="104" y2="108" stroke="#D97757" stroke-width="3" opacity="0.4"/>
+          <polygon points="104,108 116,116 114,104" fill="#D97757" opacity="0.4"/>
+          <text x="44" y="104" font-family="system-ui,sans-serif" font-size="10" fill="#D97757" font-weight="600" opacity="0.4">Logic</text>
+
+          <!-- Collision zone label -->
+          <circle cx="176" cy="168" r="26" fill="none" stroke="#D97757" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
+
+          <!-- Result panel -->
+          <rect x="36" y="216" width="260" height="32" rx="4" fill="#FBF0EC" stroke="#D97757" stroke-width="1"/>
+          <text x="166" y="236" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">Training Maths damages Code &amp; Logic scores</text>
+
+          <!-- ===== RL panel ===== -->
+          <rect x="384" y="16" width="320" height="248" rx="8" fill="#F2F5F0" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="544" y="46" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="700" fill="#141413">Reinforcement learning (RL)</text>
+          <text x="544" y="64" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">small, orthogonal updates → tasks coexist</text>
+
+          <!-- Origin dot -->
+          <circle cx="544" cy="162" r="5" fill="#141413"/>
+
+          <!-- Task A arrow — pointing straight up -->
+          <line x1="544" y1="162" x2="544" y2="98" stroke="#788C5D" stroke-width="2.5"/>
+          <polygon points="544,98 539,110 549,110" fill="#788C5D"/>
+          <text x="520" y="93" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D" font-weight="600">Maths</text>
+
+          <!-- Task B arrow — pointing straight right (orthogonal) -->
+          <line x1="544" y1="162" x2="618" y2="162" stroke="#788C5D" stroke-width="2.5"/>
+          <polygon points="618,162 607,157 607,167" fill="#788C5D"/>
+          <text x="622" y="166" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D" font-weight="600">Code</text>
+
+          <!-- Task C arrow — pointing at ~200 deg (orthogonal to both) -->
+          <line x1="544" y1="162" x2="490" y2="215" stroke="#788C5D" stroke-width="2.5" opacity="0.7"/>
+          <polygon points="490,215 500,206 503,218" fill="#788C5D" opacity="0.7"/>
+          <text x="452" y="230" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D" font-weight="600" opacity="0.7">Logic</text>
+
+          <!-- Right-angle marks -->
+          <polyline points="544,148 558,148 558,162" fill="none" stroke="#788C5D" stroke-width="1" opacity="0.5"/>
+
+          <!-- Result panel -->
+          <rect x="404" y="216" width="280" height="32" rx="4" fill="#EBF0EB" stroke="#788C5D" stroke-width="1"/>
+          <text x="544" y="236" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D">Each skill trained independently; none damages the others</text>
+
+        </svg>
+        <figcaption>In supervised fine-tuning, large gradient updates for each task collide in the same region of parameter space — each new skill partially overwrites the last. Reinforcement learning produces smaller, approximately orthogonal updates: each task's training step moves in a different direction, so skills can coexist without conflict.</figcaption>
+      </figure>
+
+      <p><strong>If you remember one thing:</strong> Reinforcement learning lets a model learn multiple skills at once without any of them clobbering the others — because each RL training update travels in a direction that doesn't collide with the rest.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span><strong>nanochat</strong> and <strong>micrograd</strong> both received updates this week. The standout change in nanochat: an autonomous AI agent ran ~110 iterative changes over 12 hours and cut the benchmark training time by ~11% (from 2.02 to 1.80 hours on 8×H100), mainly by switching to NVIDIA ClimbMix data and enabling FP8. The repo sits at 57,120+ stars. <a href="https://github.com/karpathy/nanochat">github.com/karpathy/nanochat</a></span></li>
+        <li><span class="tag tech">Dwarkesh</span><span>New episode posted August 7: <em>"8 Predictions for the Era of Continual Learning"</em> — exploring what changes when AI models can keep updating from new experience after deployment rather than freezing at a training cutoff. One framing that stuck: like a saxophonist, an AI needs accumulated experience, not just a larger practice room. <a href="https://www.dwarkesh.com/podcast">dwarkesh.com/podcast</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The Discovery Loop departure and the SFT-vs-RL paper are about different things, but they share a shape. In the paper, the old approach looks efficient on the surface but creates hidden friction: skills conflict, progress in one direction costs progress in another, and the overall system underperforms. The proposed fix is to allow each thing to proceed independently — in its own direction — before combining at the end. In the broader landscape this week, something structurally similar is happening. Researchers who built foundational infrastructure inside a very large institution are leaving to pursue independent directions, with Google serving as investor rather than director. Whether Discovery Loop produces better science than its founders would have done inside Google is unknowable yet. What is clear is that the field is comfortable enough now with its core methods that its best people feel confident enough to go build their own.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://techcrunch.com/2026/08/05/jeff-dean-and-other-top-ai-researchers-are-leaving-google-to-launch-their-own-startup/">TechCrunch — Jeff Dean and colleagues leave Google</a> ·
+        <a href="https://www.axios.com/2026/08/06/googles-ai-leadership-shuffle">Axios — Google AI leadership shuffle</a> ·
+        <a href="https://fortune.com/2026/08/10/how-stalled-models-missed-deadlines-and-staff-burnout-lead-to-the-unraveling-of-googles-deepmind/">Fortune — Behind the exit of DeepMind's CEO</a> ·
+        <a href="https://radical.vc/our-investment-in-discovery-loop/">Radical Ventures — Discovery Loop investment</a> ·
+        <a href="https://finance.yahoo.com/technology/ai/articles/anthropic-macquarie-gic-form-venture-123117352.html">Yahoo Finance — Theseus Infrastructure</a> ·
+        <a href="https://www.macquarie.com/au/en/about/news/2026/anthropic-mam-gic-data-centre-infrastructure-partnership.html">Macquarie — Theseus announcement</a> ·
+        <a href="https://futureoflife.org/ai-safety-index-summer-2026/">Future of Life Institute — AI Safety Index Summer 2026</a> ·
+        <a href="https://www.forbes.com/sites/joemckendrick/2026/08/09/go-all-ai-y-combinator-head-urges/">Forbes — Garry Tan on personal AGI</a> ·
+        <a href="https://arxiv.org/abs/2608.03573">arXiv 2608.03573 — SFT Conflicts, RL Coexists</a> ·
+        <a href="https://github.com/GaryStack/Parallel-RL">GitHub — GaryStack/Parallel-RL</a> ·
+        <a href="https://blockchain.news/ainews/karpathy-s-autoresearch-boosts-nanochat-training-11-faster-time-to-gpt-2-benchmark-analysis-and-business-implications">Blockchain.news — nanochat 11% improvement</a> ·
+        <a href="https://github.com/karpathy/nanochat">GitHub — karpathy/nanochat</a> ·
+        <a href="https://www.dwarkesh.com/podcast">Dwarkesh Podcast</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Orthogonal</div>
+        <div>In geometry, orthogonal means "at right angles" — two lines that don't interfere with each other because they're pointing in completely different directions. In machine learning, when researchers say RL gradient updates are "approximately orthogonal" across tasks, they mean each skill's training nudge goes in a direction that doesn't undo the others. It's the difference between painting different murals on the same wall in sequence (each coat covers the last) and painting them in separate rooms that share no walls.</div>
+      </div>
+      <dl>
+        <dt>SFT (supervised fine-tuning)</dt><dd>Teaching a model by showing it correct worked examples — "here is the question, here is the right answer." Effective for a single skill, but the large parameter updates can overwrite progress on other skills when applied in sequence.</dd>
+        <dt>RL (reinforcement learning)</dt><dd>Teaching a model through reward signals rather than correct answers: "that response was good" or "that was poor." The model explores and adjusts over many attempts. Produces smaller, more diffuse parameter updates than SFT.</dd>
+        <dt>Gradient</dt><dd>The mathematical signal that tells a model which direction to nudge its parameters on a given training step. If two tasks push gradients in opposite directions, they fight; if they're orthogonal, they don't interact.</dd>
+        <dt>Task conflict</dt><dd>When fine-tuning on one skill degrades the model's performance on another. The model has a fixed set of parameters, and concentrating them on one task can physically displace what made another task work.</dd>
+        <dt>Advantage normalization</dt><dd>A step inside RL training that rescales reward signals relative to a running baseline, keeping the resulting gradient updates small and bounded by their variance rather than their raw size. This is what makes RL updates approximately orthogonal across tasks.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
