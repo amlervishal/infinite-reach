@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №75 — Sanctioned · Infinite Reach</title>
+  <meta name="description" content="OpenAI handed its first purpose-built hacking tool to a short list of verified defenders — while a 150-million-parameter model from a small research startup broke the cost-efficiency record on a famous reasoning benchmark by thinking entirely in silence." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №75 &middot; Wednesday, August 12, 2026</p>
+      <h1>Sanctioned</h1>
+      <p>OpenAI this week handed its most capable hacking tool to a short list of verified defenders — while a research startup nobody was watching proved that a model one-hundredth the size of the competition can top a famous reasoning benchmark by thinking entirely in silence, at one-seventh of the going rate.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On August 10, OpenAI launched <strong>GPT-5.6-Cyber</strong> — a dedicated cybersecurity model built on top of GPT-5.6 Sol and available only through a new, vetted access programme called <strong>Daybreak Red</strong>. The model is trained to refuse far less than a standard assistant when asked about security techniques, and completes 95% of requests on OpenAI's internal Advanced Cybersecurity Completion Rate evaluation — compared with 1.5% for GPT-5.6 Sol on the same tasks. Before the launch, OpenAI used the model in-house to find two previously unknown vulnerabilities in V8, the JavaScript engine that runs inside Chrome. Google fixed both and assigned them CVE-2026-15903. Corporate partners with Daybreak Red access announced at launch include Accenture, IBM, CrowdStrike, and Cloudflare. A lower tier, <strong>Daybreak Blue</strong>, gives a wider set of approved defenders access to standard frontier models with the usual security refusals lifted, for work like malware analysis and incident response. OpenAI's case for the programme is straightforward: attackers are already using capable models, so defenders should not be disadvantaged. Critics, including reporters at The Hacker News, noted that the refusal-reduced tier puts OpenAI's commercial incentive in direct tension with the safety commitments it has made publicly.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Open weights</span><span>Meta released <strong>Muse Glimmer</strong> on August 10 — a roughly 30-billion-parameter open-weight model under an Apache 2.0 licence, distilled from its closed Muse Spark system. It runs on a single consumer GPU and is designed for multi-step agentic work: calling tools, writing and debugging code, working with files and screenshots across a sustained session. Mark Zuckerberg published a companion manifesto, "The Future Is for Everyone," arguing that superintelligence should not be concentrated in a handful of corporations or governments.</span></li>
+        <li><span class="tag policy">Closed doors</span><span>The White House finalised its voluntary AI safety review framework this week — and then declined to make it public. The framework, administered by NIST's Center for AI Standards and Innovation, requires a 30-day pre-release cybersecurity evaluation for frontier models from OpenAI, Anthropic, Google, Meta, and Microsoft. Open-weight models are explicitly outside its scope. The public will not see the evaluation criteria; they are shared only with the companies being reviewed.</span></li>
+        <li><span class="tag policy">Honesty rules</span><span>The Federal Trade Commission's proposed policy statement on AI output steering — which would treat secretly redirecting AI answers toward a company's commercial interests as consumer deception under Section 5 of the FTC Act — cleared its public comment period on July 29. The FTC's position: companies that have marketed AI as a tool that aims to give users accurate answers have created a reasonable expectation they are obliged to meet. Undisclosed steering violates that expectation regardless of whether any state law sanctioned it.</span></li>
+        <li><span class="tag tech">Plumbing</span><span>Claude Code shipped its August update: new marketplace controls for managing approved extensions, a <code>/teleport</code> command for migrating a running cloud session to a local machine, and clearer in-session warnings when a session approaches context or cost limits. The update reflects a pattern in Claude Code's development — the product is being built as much for the experience of staying in an agent session for hours as for the first five minutes.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: the model that reasons in the dark</h2>
+      <p class="kicker">BDH-CQ: In-Context Learning with Recurrent Latent Reasoning &middot; Pathway &middot; <a href="https://arxiv.org/abs/2608.09888">arXiv 2608.09888</a></p>
+
+      <p>It caught our eye because it challenges one of the least-questioned assumptions in the current generation of AI: that a model needs to write its thinking in words before it can arrive at a correct answer. A 150-million-parameter model from a research startup called Pathway — trained on a design philosophy the field has largely abandoned — just set a new cost-efficiency record on one of the hardest reasoning benchmarks in use. Here is what it does differently.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>For the past three years, the dominant technique for improving reasoning in language models has been <em>chain-of-thought</em>: before giving a final answer, the model writes a scratchpad of intermediate steps. "First I notice that… then applying the rule… so the answer must be…" This works remarkably well. The problem is structural: every step is a word, and every word costs money. The harder the problem, the longer the chain, the higher the bill. On the most demanding reasoning benchmarks, a single answer can cost pennies or even dollars in inference compute. Cost scales with difficulty in a way that is difficult to escape — because the reasoning is happening in the most expensive medium available: language itself.</p>
+
+      <p>The specific benchmark where this tension shows up most clearly is <strong>ARC-AGI-1</strong>, a set of abstract visual puzzles designed by researcher François Chollet to resist the pattern-matching that language models do best. Each puzzle presents a handful of example transformations — a grid changes according to some rule; here are three demonstrations — and asks the model to apply the same rule to a new input. The tasks are deliberately simple enough for any ten-year-old but hard for trained models, because they require inferring a novel rule from just a few examples rather than recognising something memorised. Most top-performing solutions on ARC-AGI-1 achieve their scores by spending heavily on compute: large models, long reasoning traces, multiple attempts. The cost per task on existing high-performing approaches runs from a few cents to several dollars.</p>
+
+      <h3>How it works</h3>
+      <p>Pathway's BDH-CQ takes a fundamentally different approach, built around the idea that reasoning does not have to leave the model's own head.</p>
+
+      <p>The analogy that makes this click: imagine the difference between a mathematician who fills a whiteboard with every step of a calculation before committing to an answer — and a chess grandmaster who calculates ten moves ahead, entirely in their head, then makes the move without saying a word. Both arrive at an answer. Only one fills the board.</p>
+
+      <p>BDH-CQ is built around a <em>recurrent latent memory</em> — an internal state that gets updated continuously as the model processes information. When you show the model a set of ARC-AGI demonstration puzzles, those examples do not get appended to a growing text context. Instead, they are absorbed into the model's recurrent memory, updating a compact, high-dimensional mathematical vector — a kind of evolving summary of "what I've understood so far." The model then solves the target puzzle by iterating over that memory state, refining the answer through multiple internal passes, entirely inside its own parameters. No intermediate words are generated at any point. The scratchpad, in other words, lives in a space that has no tokens and no cost-per-word pricing.</p>
+
+      <p>This matters because the number of tokens the model produces stays nearly constant regardless of problem difficulty. The additional computation for a hard puzzle versus an easy one is absorbed into extra internal iterations — more passes through the recurrent state — not into a longer output sequence. A hard puzzle does not cost more to answer. It just runs the loop more times.</p>
+
+      <p>The architecture also inherits from the <em>in-context learning</em> tradition: the model uses the example demonstrations it sees at inference time to update its recurrent state on the fly, without any additional training. It adapts to the specific rule in front of it using only the examples provided, in real time, no gradient updates required. This is not a retrieval system or a fine-tuned specialist — it is a generalist that reshapes itself from examples alone.</p>
+
+      <!-- SVG DIAGRAM -->
+      <figure>
+        <svg viewBox="0 0 720 300" role="img" aria-label="Two panels comparing chain-of-thought reasoning (left) with BDH-CQ recurrent latent reasoning (right)">
+
+          <!-- ===== Left panel: Chain-of-Thought ===== -->
+          <rect x="12" y="12" width="330" height="276" rx="8" fill="#F5F3EF" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="177" y="40" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="700" fill="#141413">Chain-of-thought</text>
+          <text x="177" y="57" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">cost grows with problem difficulty</text>
+
+          <!-- Input box -->
+          <rect x="57" y="70" width="226" height="26" rx="5" fill="#D97757"/>
+          <text x="170" y="87" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" font-weight="600" fill="white">Input + examples</text>
+
+          <line x1="170" y1="96" x2="170" y2="108" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Growing token blocks -->
+          <rect x="57" y="110" width="226" height="20" rx="3" fill="#ECDFD0" stroke="#D97757" stroke-width="0.8"/>
+          <text x="170" y="124" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8.5" fill="#141413">"First I notice the pattern shifts by…" ①</text>
+
+          <rect x="57" y="134" width="226" height="20" rx="3" fill="#ECDFD0" stroke="#D97757" stroke-width="0.8"/>
+          <text x="170" y="148" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8.5" fill="#141413">"So applying that rule means…" ②</text>
+
+          <rect x="57" y="158" width="226" height="20" rx="3" fill="#ECDFD0" stroke="#D97757" stroke-width="0.8"/>
+          <text x="170" y="172" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8.5" fill="#141413">"Therefore the output grid is…" ③</text>
+
+          <!-- Growing arrow annotation -->
+          <line x1="294" y1="110" x2="294" y2="178" stroke="#D97757" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <polygon points="294,180 290,172 298,172" fill="#D97757"/>
+          <text x="298" y="140" font-family="system-ui,sans-serif" font-size="8.5" fill="#D97757">grows with</text>
+          <text x="298" y="152" font-family="system-ui,sans-serif" font-size="8.5" fill="#D97757">difficulty</text>
+
+          <line x1="170" y1="178" x2="170" y2="190" stroke="#87867F" stroke-width="1.5"/>
+          <polygon points="170,192 166,184 174,184" fill="#87867F"/>
+
+          <!-- Answer box -->
+          <rect x="57" y="192" width="226" height="26" rx="5" fill="#788C5D"/>
+          <text x="170" y="209" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" font-weight="600" fill="white">Answer (after N tokens)</text>
+
+          <!-- Cost label -->
+          <text x="170" y="242" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9.5" fill="#87867F">Inference cost ∝ reasoning chain length</text>
+          <text x="170" y="258" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9.5" fill="#D97757" font-weight="600">~$0.005–$0.05 per ARC-AGI task</text>
+          <text x="170" y="274" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">(harder puzzles = longer chains = higher cost)</text>
+
+          <!-- ===== Right panel: BDH-CQ ===== -->
+          <rect x="378" y="12" width="330" height="276" rx="8" fill="#F5F3EF" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="543" y="40" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="700" fill="#141413">BDH-CQ latent reasoning</text>
+          <text x="543" y="57" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">cost stays flat regardless of difficulty</text>
+
+          <!-- Input box -->
+          <rect x="423" y="70" width="226" height="26" rx="5" fill="#6A8CAF"/>
+          <text x="536" y="87" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" font-weight="600" fill="white">Input + examples</text>
+
+          <line x1="536" y1="96" x2="536" y2="108" stroke="#87867F" stroke-width="1.5"/>
+          <polygon points="536,110 532,102 540,102" fill="#87867F"/>
+
+          <!-- Recurrent memory ellipse -->
+          <ellipse cx="536" cy="170" rx="96" ry="52" fill="#EBF0F5" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="536" y="159" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" font-weight="600" fill="#6A8CAF">Recurrent latent memory</text>
+          <text x="536" y="175" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8.5" fill="#87867F">iterates internally · no text generated</text>
+          <text x="536" y="191" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8.5" fill="#87867F">hard puzzles = more loops, same tokens</text>
+
+          <!-- Loop arrow around ellipse -->
+          <path d="M 628 152 Q 668 110 648 170 Q 640 200 632 190" fill="none" stroke="#6A8CAF" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <polygon points="632,190 624,183 634,180" fill="#6A8CAF"/>
+
+          <line x1="536" y1="222" x2="536" y2="234" stroke="#87867F" stroke-width="1.5"/>
+          <polygon points="536,236 532,228 540,228" fill="#87867F"/>
+
+          <!-- Answer box -->
+          <rect x="423" y="236" width="226" height="26" rx="5" fill="#788C5D"/>
+          <text x="536" y="253" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" font-weight="600" fill="white">Answer (fixed token count)</text>
+
+          <!-- Cost label -->
+          <text x="536" y="278" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9.5" fill="#788C5D" font-weight="600">$0.0007 per task · 11× below previous frontier</text>
+        </svg>
+        <figcaption>Chain-of-thought (left) externalises reasoning as text — the scratchpad grows with problem difficulty, pushing up cost. BDH-CQ (right) keeps reasoning inside a recurrent latent state: the token count stays flat, so harder puzzles cost the same as easier ones.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The team at Pathway evaluated BDH-CQ on the public ARC-AGI-1 evaluation set — François Chollet's benchmark for fluid, generalisation-based reasoning. They used controlled ARC-like interventions to study exactly what the model learns from the demonstrations it receives at inference time: how reliably it infers the correct transformation rule, how consistently it applies that rule to new inputs, and which types of concepts — colour, spatial symmetry, object counting — remain difficult even after seeing worked examples. The headline configuration is a model with 150 million parameters: roughly one-hundredth the scale of many frontier models tested on the same benchmark, and runnable on a single mid-range GPU.</p>
+
+      <h3>What they found</h3>
+      <p>The 150-million-parameter model reached 29.5% pass@2 on the public ARC-AGI-1 evaluation — meaning it solved roughly three in ten puzzles on its second allowed attempt. The computed inference cost was $0.0007 per task — seventy cents per thousand puzzles. That breaks through what the authors call the previously reported cost-accuracy Pareto frontier: the best-known combination of accuracy and cost from any published system at the time. The model is approximately eleven times cheaper to run than the previous cost-efficiency leader while reaching similar accuracy levels. The analysis of where the model struggles pointed to colour reasoning and spatial symmetry as persistent failure modes — concepts that do not compress well into a recurrent state trained on general examples.</p>
+
+      <h3>The catch</h3>
+      <p>ARC-AGI-1, while a respected test of abstract reasoning, is a bounded and known puzzle family. Performance there does not automatically transfer to arbitrary real-world problems. Pathway's result is specifically about cost efficiency on this one benchmark: it tells you the architecture is capable of novel rule inference from few examples, cheaply — it does not establish broad general intelligence at 150 million parameters, which would be an extraordinary claim. The 29.5% figure is also well below human performance, which approaches 100% on the same tasks. And the paper is candid that its diagnostic experiments, while carefully controlled, test a curated subset of puzzle types; how far the findings generalise to puzzle families the model has never encountered at training time remains an open question.</p>
+
+      <p><strong>If you remember one thing:</strong> A model that reasons in silence rather than in words can match models twenty times its size on a famous reasoning benchmark — and cost eleven times less per answer.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>Published "<a href="https://www.dwarkesh.com/p/era-of-continual-learning">8 Predictions for the Era of Continual Learning</a>" on August 7 — his clearest public statement yet on why he thinks AGI timelines are somewhat longer than many of his podcast guests assume. The core argument: AI systems cannot do sustained knowledge work the way a human colleague can if they forget everything between sessions. Continual learning — the ability to accumulate and apply knowledge across interactions without catastrophic forgetting — is harder than it looks, and until it's solved, agents are powerful tools rather than autonomous colleagues. The piece is worth reading alongside the ongoing debates about what "agents doing jobs" actually requires.</span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>Claude Code's August update, shaped by Cherny's team, adds marketplace controls for managing approved extensions, a <code>/teleport</code> command for moving a running cloud session to a local machine mid-task, and sharper context and cost warnings. The update reflects a consistent theme: the product is being refined as much for the experience of staying inside an agent session for three hours as for the first five minutes. <a href="https://releasebot.io/updates/anthropic/claude-code">Full release notes.</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things happened this week that seem unrelated but are part of the same story. The first is about selective access: GPT-5.6-Cyber requires a vetting process, the White House framework covers only named companies, Daybreak Red lives behind an approved-partners list. The people deciding who gets the powerful tools are a small number of corporations and one government — and the criteria for inclusion are not public. The second is about the cost floor: Pathway's 150-million-parameter model just demonstrated that sophisticated reasoning, the kind that breaks benchmark records, can now run for a fraction of a cent per query. These two things are on a collision course. Access restrictions make sense when a capable tool is genuinely scarce. But the efficiency race is eroding scarcity faster than governance can formalise access rules. The question of who gets to use powerful reasoning isn't just a policy question — it's a race between two clocks, and the cost-reduction clock runs faster.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://thehackernews.com/2026/08/openai-launches-gpt-56-cyber-with.html">The Hacker News — GPT-5.6-Cyber</a> ·
+        <a href="https://securityboulevard.com/2026/08/openai-ties-gpt-5-6-cyber-access-to-new-daybreak-red-tier/">Security Boulevard — Daybreak Red tier</a> ·
+        <a href="https://www.infosecurity-magazine.com/news/openai-daybreak-blue-red-gpt-cyber/">Infosecurity Magazine — Daybreak Blue/Red</a> ·
+        <a href="https://techbriefly.com/2026/08/11/openai-daybreak-gpt-5-6-cyber-higher-risk-tasks/">TechBriefly — Daybreak overview</a> ·
+        <a href="https://www.newsnationnow.com/business/tech/ai/meta-newest-ai-model-muse-glimmer/">NewsNation — Meta Muse Glimmer</a> ·
+        <a href="https://www.axios.com/2026/08/04/white-house-ai-framework-under-wraps">Axios — White House framework kept private</a> ·
+        <a href="https://www.federalregister.gov/documents/2026/07/07/2026-13628/policy-statement-concerning-the-suppression-of-accuracy-in-artificial-intelligence-systems">Federal Register — FTC AI output steering policy statement</a> ·
+        <a href="https://arxiv.org/abs/2608.09888">arXiv 2608.09888 — BDH-CQ paper</a> ·
+        <a href="https://www.dwarkesh.com/p/era-of-continual-learning">Dwarkesh Patel — 8 Predictions for the Era of Continual Learning</a> ·
+        <a href="https://releasebot.io/updates/anthropic/claude-code">Claude Code August release notes</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Dual-use</div>
+        <div>Technology — a tool, piece of knowledge, or material — that can serve both peaceful and harmful purposes. The term comes from nuclear physics and arms control: uranium enrichment underlies both power plants and weapons. In AI, a model trained to find software vulnerabilities serves both the defender who patches the flaw and the attacker who exploits it. GPT-5.6-Cyber is the most explicit commercial example yet of a lab deciding to offer a dual-use capability at full strength — and choosing to manage the risk through vetting the people who access it rather than restricting what the model can do.</div>
+      </div>
+      <dl>
+        <dt>ARC-AGI</dt><dd>The Abstraction and Reasoning Corpus, a benchmark of abstract visual puzzles designed by François Chollet to resist memorisation. Each puzzle shows a few transformation examples and asks a model to infer the rule and apply it to a new case. Humans score near 100%; frontier models typically score 20–45%.</dd>
+        <dt>Recurrent</dt><dd>A system that loops — feeding each step's output back as the next step's input. BDH-CQ's reasoning is recurrent: rather than writing out a chain of words, it iterates over an internal memory state multiple times, refining the answer with each pass.</dd>
+        <dt>Pareto frontier</dt><dd>The set of options where you cannot improve one thing without making something else worse. In AI benchmarks, the cost-accuracy Pareto frontier is the best-known combination of accuracy and inference cost — any solution inside it is either more expensive than necessary or less accurate than achievable. Pathway claims BDH-CQ sits outside the previously known frontier.</dd>
+        <dt>Zero-day</dt><dd>A software vulnerability the software maker doesn't know about yet — so there are "zero days" for them to patch it before it can be exploited. GPT-5.6-Cyber found two zero-days in Chrome's V8 JavaScript engine before launch; Google issued fixes as CVE-2026-15903.</dd>
+        <dt>Open weight</dt><dd>A model whose trained parameters are released publicly, so anyone can download, inspect, run, or adapt it. Meta's Muse Glimmer is open-weight. GPT-5.6-Cyber is not — only OpenAI runs it, and access requires approval. The White House's new safety framework covers only the latter category.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
