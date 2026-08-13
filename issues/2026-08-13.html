@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №76 — After the Ship Date · Infinite Reach</title>
+  <meta name="description" content="A Stockholm startup just raised $400 million to let anyone describe a website and have it built — while a new paper from China cracks open the question nobody has seriously answered: what should an AI model do after it ships?" />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №76 &middot; Wednesday, August 13, 2026</p>
+      <h1>After the Ship Date</h1>
+      <p>The tool you downloaded last month is not the same one today. Three stories about systems — and one company worth $13 billion — that keep evolving long after they leave the factory.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Swedish startup Lovable raised $400 million yesterday at a $13.3 billion valuation — double what it was worth in December. Lovable lets anyone describe a website or web app in plain language and generates the working software immediately. Since launching in November 2024, people have built more than 60 million projects on it, and those apps attract roughly 900 million visits a month. Annual revenue is tracking toward $600 million by end of August, up from $200 million earlier this year. Tencent co-led the round alongside Menlo Ventures and Balderton Capital. This is the first "describe-it-and-build-it" startup to cross a $10 billion valuation — a real signal, not just a round number.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Meta</span><span>Meta released Muse Glimmer, a 30-billion-parameter open-weights model that runs on a single consumer graphics card — tuned for local AI agents, coding, and multilingual use across 100+ languages under Apache 2.0. <a href="https://siliconangle.com/2026/08/10/meta-releases-open-source-muse-glimmer-model-30b-parameters/">SiliconAngle</a></span></li>
+        <li><span class="tag policy">Anthropic</span><span>Anthropic announced it will watermark all Claude-generated text and files worldwide using the C2PA open standard — not just in the EU where the AI Act now requires it, but globally. <a href="https://techcrunch.com/2026/08/11/anthropic-says-it-will-watermark-text-generated-by-its-ai-models/">TechCrunch</a></span></li>
+        <li><span class="tag policy">Security</span><span>The largest AI supply-chain breach of 2026: compromised LiteLLM packages exposed 2,500+ companies and 434,000 CI/CD pipelines. NVIDIA, AWS, and Cisco are among high-confidence targets; the FBI advisory remains active. <a href="https://www.cloudsek.com/blog/ai-supply-chain-breach-2500-companies-434000-cicd-pipelines">CloudSEK</a></span></li>
+        <li><span class="tag money">OpenAI</span><span>OpenAI expanded its Daybreak program into two tiers — Blue (frontier models for defenders, safeguards removed) and Red (access to GPT-5.6-Cyber, which completes 95% of advanced security queries). Hardware keys become mandatory for all Daybreak accounts September 1. <a href="https://www.axios.com/2026/08/10/openai-gpt-astra-restrictions-safety-hacking-defenders">Axios</a></span></li>
+        <li><span class="tag tech">ByteDance</span><span>Seedance 2.5, ByteDance's video-generation model, shipped August 8 — the latest in a string of multimodal releases from Chinese labs this month. <a href="https://llm-stats.com/ai-news">LLM Stats</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: the AI model that never stops learning</h2>
+      <p class="kicker"><em>Macaron-V1: Towards Open Continual Learning with Self-Improvement and Mixture-of-LoRA</em> &middot; Mind Lab &middot; <a href="https://arxiv.org/abs/2608.09819">arxiv:2608.09819</a> &middot; August 10, 2026</p>
+
+      <p>Every AI model in production today was frozen at the moment it shipped. The knowledge it has is the knowledge it was trained on. Every correction you give it, every example that would make it better at your specific work — gone the next session. A team from China's Mind Lab just published the most serious open attempt yet to fix that.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>The standard way to build a language model is to train it on a vast dataset, lock it in place, then ship it. You can fine-tune it afterward — but fine-tuning usually means retraining on new data, which risks a well-documented problem called catastrophic forgetting: the more you teach the model something new, the more likely it is to overwrite what it already knew. Teach a customer support model your new product line and it forgets how to discuss the old one. The neural network equivalent of studying for one exam by erasing your notes from the last one.</p>
+      <p>The deeper problem is structural: today, <em>training</em> and <em>deployment</em> are treated as two distinct phases, with a hard wall between them. You train, you ship, you're done. But the world keeps moving. A legal assistant without last month's case law is already stale. A code-review agent that can't learn your team's conventions over time is less useful than a human colleague. Researchers have wanted to close this gap for decades; until now, no approach has worked reliably at production scale.</p>
+
+      <h3>How it works</h3>
+      <p>Think of Macaron-V1 like a Swiss Army knife that can grow new blades after you buy it — without disturbing the ones already there.</p>
+      <p>The core technique is called <strong>Mixture-of-LoRA</strong> (MoL). LoRA — Low-Rank Adaptation — is already a popular tool: instead of retraining a model's billions of parameters, you add a small, cheap "plug-in" of adjustments on top. Think of it as adding sheet music to a piano rather than rebuilding the piano. Macaron-V1 takes this further by having <em>multiple</em> plug-ins simultaneously: four specialist adapters — one for conversation, one for coding, one for multi-step agentic tasks, one for user-interface work. The base model underneath is permanently frozen — never touched. New adapters can be added any time for any new domain without touching the existing set.</p>
+      <p>When a query arrives, a lightweight <strong>router</strong> reads it and selects the best-fit adapter for that task. The base model processes the input with the selected adapter active; the others idle. If a genuinely new domain appears — one no current adapter handles well — a new adapter can be trained and bolted on, without retraining anything else.</p>
+      <p>Two supporting systems make this practical. <strong>LongStraw</strong> is a training method that extends how long a context window the model can learn from during post-training — up to 2 million tokens, far more than was previously feasible. That matters because learning from experience means learning from long histories of interaction, not just short examples. <strong>MindForge</strong> is the reinforcement-learning framework that closes the feedback loop: the model observes the outcomes of its own actions (did the code run? did the plan succeed?), and that success-or-failure signal drives future improvement. It is a recursive self-improvement loop — each training round builds on the last.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Mixture-of-LoRA: a router selects the right specialist adapter for each request without touching the frozen base model">
+          <defs>
+            <marker id="arr" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#141413"/>
+            </marker>
+            <marker id="arr-clay" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#D97757"/>
+            </marker>
+            <marker id="arr-muted" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <!-- Title -->
+          <text x="30" y="26" font-family="ui-serif" font-size="14" font-weight="600" fill="#141413">Mixture-of-LoRA: one base model, many specialists</text>
+
+          <!-- Legend -->
+          <rect x="30" y="36" width="12" height="12" rx="2" fill="#D97757" opacity="0.7"/>
+          <text x="48" y="47" font-family="system-ui" font-size="11" fill="#141413">Active adapter</text>
+          <rect x="155" y="36" width="12" height="12" rx="2" fill="#6A8CAF" opacity="0.4"/>
+          <text x="173" y="47" font-family="system-ui" font-size="11" fill="#141413">Idle adapter</text>
+          <rect x="275" y="36" width="12" height="12" rx="2" fill="#788C5D" opacity="0.35"/>
+          <text x="293" y="47" font-family="system-ui" font-size="11" fill="#141413">Frozen base model</text>
+          <line x1="420" y1="42" x2="455" y2="42" stroke="#D97757" stroke-width="2" marker-end="url(#arr-clay)"/>
+          <text x="462" y="47" font-family="system-ui" font-size="11" fill="#141413">Active path</text>
+          <line x1="545" y1="42" x2="580" y2="42" stroke="#87867F" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr-muted)"/>
+          <text x="587" y="47" font-family="system-ui" font-size="11" fill="#141413">Idle path</text>
+
+          <!-- Query box -->
+          <rect x="20" y="78" width="96" height="42" rx="7" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="68" y="98" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413">Query</text>
+          <text x="68" y="114" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">"write a function"</text>
+
+          <!-- Arrow query → router -->
+          <line x1="116" y1="99" x2="218" y2="99" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Router box -->
+          <rect x="218" y="76" width="108" height="46" rx="7" fill="#D1CFC5" stroke="#87867F" stroke-width="1.5"/>
+          <text x="272" y="98" text-anchor="middle" font-family="ui-serif" font-size="14" fill="#141413">Router</text>
+          <text x="272" y="114" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">picks specialist</text>
+
+          <!-- Router → LoRA adapters (fan out downward) -->
+          <!-- Chat (idle) -->
+          <line x1="240" y1="122" x2="80" y2="168" stroke="#87867F" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr-muted)"/>
+          <!-- Code (active) -->
+          <line x1="265" y1="122" x2="230" y2="168" stroke="#D97757" stroke-width="2" marker-end="url(#arr-clay)"/>
+          <!-- Agent (idle) -->
+          <line x1="290" y1="122" x2="380" y2="168" stroke="#87867F" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr-muted)"/>
+          <!-- UI (idle) -->
+          <line x1="310" y1="122" x2="530" y2="168" stroke="#87867F" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr-muted)"/>
+
+          <!-- LoRA: Chat -->
+          <rect x="30" y="168" width="100" height="42" rx="6" fill="#6A8CAF" opacity="0.2" stroke="#6A8CAF" stroke-width="1"/>
+          <text x="80" y="188" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413">LoRA: Chat</text>
+          <text x="80" y="203" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">conversations</text>
+
+          <!-- LoRA: Code (active) -->
+          <rect x="178" y="168" width="106" height="42" rx="6" fill="#D97757" opacity="0.25" stroke="#D97757" stroke-width="2"/>
+          <text x="231" y="188" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413">LoRA: Code ✦</text>
+          <text x="231" y="203" text-anchor="middle" font-family="system-ui" font-size="10" fill="#D97757">selected</text>
+
+          <!-- LoRA: Agent -->
+          <rect x="330" y="168" width="100" height="42" rx="6" fill="#6A8CAF" opacity="0.2" stroke="#6A8CAF" stroke-width="1"/>
+          <text x="380" y="188" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413">LoRA: Agent</text>
+          <text x="380" y="203" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">tasks &amp; tools</text>
+
+          <!-- LoRA: UI -->
+          <rect x="480" y="168" width="100" height="42" rx="6" fill="#6A8CAF" opacity="0.2" stroke="#6A8CAF" stroke-width="1"/>
+          <text x="530" y="188" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413">LoRA: UI</text>
+          <text x="530" y="203" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">interfaces</text>
+
+          <!-- New LoRA (dashed, future) -->
+          <rect x="620" y="168" width="82" height="42" rx="6" fill="none" stroke="#D97757" stroke-width="1.5" stroke-dasharray="5,4"/>
+          <text x="661" y="188" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#D97757">+ New LoRA</text>
+          <text x="661" y="203" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">add later</text>
+
+          <!-- Arrows: LoRAs → Base Model -->
+          <line x1="80" y1="210" x2="230" y2="252" stroke="#87867F" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr-muted)"/>
+          <line x1="231" y1="210" x2="308" y2="252" stroke="#D97757" stroke-width="2" marker-end="url(#arr-clay)"/>
+          <line x1="380" y1="210" x2="380" y2="252" stroke="#87867F" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr-muted)"/>
+          <line x1="530" y1="210" x2="460" y2="252" stroke="#87867F" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr-muted)"/>
+
+          <!-- Base model -->
+          <rect x="150" y="252" width="370" height="48" rx="8" fill="#788C5D" opacity="0.2" stroke="#788C5D" stroke-width="2"/>
+          <text x="335" y="273" text-anchor="middle" font-family="ui-serif" font-size="14" fill="#141413">Base Model — permanently frozen</text>
+          <text x="335" y="291" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">748 billion parameters · never retrained after release</text>
+
+          <!-- Arrow out → Answer -->
+          <line x1="520" y1="276" x2="580" y2="276" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+          <rect x="580" y="260" width="120" height="36" rx="7" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="640" y="281" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413">Answer + feedback</text>
+        </svg>
+        <figcaption>The Mixture-of-LoRA structure: a router picks one specialist adapter per request. The base model never changes; new adapters can be added without touching existing ones. Dashed lines show idle paths.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>Mind Lab released two model sizes: Macaron-V1-Venti (748 billion parameters, built on top of GLM-5.2) and Macaron-V1-Tall (50 billion parameters, built on Qwen3.6 for local deployment). Both are fully open-weights, downloadable from Hugging Face. LongStraw extended GLM-5.2's effective training context to 2.1 million tokens — making million-token reinforcement learning practical under a fixed compute budget. The team evaluated on five benchmarks: ChatBench (everyday conversation), LivingBench (tasks whose answers update monthly), PinchBench (difficult edge cases), TerminalBench 2.1 (command-line and coding), and UI4ABench (user-interface agent tasks).</p>
+
+      <h3>What they found</h3>
+      <p>Macaron-V1-Venti led all listed baselines across every one of those categories. More importantly: adding a new LoRA adapter for a new domain did <em>not</em> degrade scores on existing tasks. In prior continual-learning research, that's the hard part — and here the frozen base model design essentially sidesteps it. The MindForge RL loop produced consistent gains across training iterations, each round building measurably on the last.</p>
+
+      <h3>The catch</h3>
+      <p>All five benchmarks are controlled environments; the model has not been stress-tested in a fully open, unpredictable real-world deployment where the incoming data distribution shifts in unexpected ways. Catastrophic forgetting is managed, not abolished — severe distribution shifts could still cause instability. The Venti model at 748 billion parameters is enormous: most organizations cannot run it without purpose-built infrastructure. And while the weights are public, the full training stack (the MinT platform, MindForge, LongStraw) is complex to reproduce independently.</p>
+
+      <p><strong>If you remember one thing:</strong> Every AI model today is a frozen snapshot; Macaron-V1's plug-in design means you can teach it a new skill without erasing the ones it already has — which, if it holds in the wild, changes what it means to "ship" a model.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Now at Anthropic leading pre-training research, Karpathy demonstrated Claude Opus building a procedural 3D Lord of the Rings world from a single opening paragraph — 5,500 lines of Three.js code, written autonomously. A quiet signal that the gap between "follow instructions" and "author large creative systems" is narrowing. <a href="https://www.benzinga.com/markets/tech/26/08/60861644/andrej-karpathy-says-ai-has-moved-beyond-simple-prompts-after-claude-opus-builds-3d-lord-of-the-rings-world">Benzinga</a></span></li>
+        <li><span class="tag tech">Cherny</span><span>Boris Cherny, creator of Claude Code, spoke at YC Startup School 2026 about how the latest models are changing what it means to build software — and noted that Anthropic just shipped Opus 5. A good ten-minute watch for anyone using AI tools in their workflow. <a href="https://www.ycombinator.com/library/UN-boris-cherny-building-claude-code">YC Library</a></span></li>
+        <li><span class="tag tech">Dwarkesh</span><span>The August 7 episode of the Dwarkesh Podcast — "8 Predictions for the Era of Continual Learning" — is eight minutes and very much worth it. Patel sketches where self-improving AI systems are headed and what the transition period actually looks like in practice. <a href="https://www.dwarkesh.com/podcast">dwarkesh.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three threads to hold together: The LiteLLM breach is a reminder that AI infrastructure is now woven into corporate supply chains as deeply as any other software dependency — and it is fragile in exactly the same ways. Lovable's $400 million round confirms that "describe it and it builds itself" is a real market, not a novelty; the question shifts from whether natural-language software creation works to who will own it. And Macaron-V1 quietly challenges an assumption baked into how every major AI product works today: that training and deployment are separate chapters. If continual learning proves durable in the wild, the model you deploy in January could be meaningfully better at your work by June, without a retraining cycle, without a re-release. That is a different kind of tool — less like software and more like a colleague who keeps getting better. Whether we can trust that process, and govern it, is a question the field has not caught up to yet.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2608.09819">Macaron-V1 paper (arXiv)</a> ·
+        <a href="https://macaron.im/mindlab/research/introducing-macaron-v1">Mind Lab blog</a> ·
+        <a href="https://techcrunch.com/2026/08/12/lovable-confirms-new-13-3b-valuation-raises-another-400m/">Lovable / TechCrunch</a> ·
+        <a href="https://siliconangle.com/2026/08/10/meta-releases-open-source-muse-glimmer-model-30b-parameters/">Meta Muse Glimmer / SiliconAngle</a> ·
+        <a href="https://www.axios.com/2026/08/10/openai-gpt-astra-restrictions-safety-hacking-defenders">OpenAI Daybreak / Axios</a> ·
+        <a href="https://www.cloudsek.com/blog/ai-supply-chain-breach-2500-companies-434000-cicd-pipelines">LiteLLM breach / CloudSEK</a> ·
+        <a href="https://techcrunch.com/2026/08/11/anthropic-says-it-will-watermark-text-generated-by-its-ai-models/">Anthropic watermarking / TechCrunch</a> ·
+        <a href="https://www.benzinga.com/markets/tech/26/08/60861644/andrej-karpathy-says-ai-has-moved-beyond-simple-prompts-after-claude-opus-builds-3d-lord-of-the-rings-world">Karpathy / Benzinga</a> ·
+        <a href="https://www.ycombinator.com/library/UN-boris-cherny-building-claude-code">Boris Cherny / YC</a> ·
+        <a href="https://www.dwarkesh.com/podcast">Dwarkesh Podcast</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Continual learning</div>
+        <div>The ability of a model to learn from new information over time without forgetting what it already knows. Today's AI models mostly cannot do this — they are frozen at the moment they ship, like a textbook printed on a fixed date. Macaron-V1 is an attempt to give the textbook a pencil and let it keep annotating itself.</div>
+      </div>
+      <dl>
+        <dt>LoRA</dt>
+        <dd>Low-Rank Adaptation — a technique for teaching an AI model a new skill by adding a small plug-in of adjustments, rather than retraining the whole thing. Much cheaper and faster. Think of it as adding sheet music to a piano instead of building a new piano.</dd>
+        <dt>Catastrophic forgetting</dt>
+        <dd>When a neural network learns something new, it tends to overwrite what it knew before — like studying for a chemistry exam by erasing your physics notes. The central problem that continual learning tries to solve.</dd>
+        <dt>Reinforcement learning (RL)</dt>
+        <dd>Training a model by rewarding it when its actions lead to good outcomes and penalizing it when they don't. The model learns from results, not from labeled examples. Used in MindForge to let Macaron-V1 improve from its own experience.</dd>
+        <dt>CI/CD pipeline</dt>
+        <dd>Continuous Integration / Continuous Deployment — the automated system that tests and ships code. In the LiteLLM breach, attackers slipped malicious packages into these pipelines, poisoning software before it reached developers.</dd>
+        <dt>C2PA</dt>
+        <dd>Coalition for Content Provenance and Authenticity — an open technical standard for attaching invisible, machine-readable "watermarks" to digital files that record how they were created and by whom. Anthropic is adopting it to mark Claude's outputs.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
