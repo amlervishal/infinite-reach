@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №77 — Built to Extend · Infinite Reach</title>
+  <meta name="description" content="Thirty California AI bills face a single-day kill-or-survive vote; DeepSeek's flagship Chinese model exits preview; and a new paper shows a strong AI can nearly double a weaker one's score just by writing better scaffolding around it." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №77 &middot; Thursday, August 14, 2026</p>
+      <h1>Built to Extend</h1>
+      <p>Thirty California AI bills face a single-day kill-or-survive vote in Sacramento; China's most capable open model leaves its four-month preview; and a paper published two days ago makes a clean, counter-intuitive argument: the best way to upgrade a small AI may not be to retrain it at all, but to give it a better frame — written by a bigger one.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>California's two appropriations committees held back-to-back suspense hearings today, putting the state's entire 2026 AI legislative agenda through a single compressed vote. Around thirty measures cover everything from chatbot safety for children and algorithmic management of workers to healthcare transparency, copyright protections for creative professionals, and the architecture of a first-in-nation voluntary AI safety certification body. Bills that survive today's vote move to full chamber floor votes in the coming days and must reach the governor's desk before the legislature adjourns August 31. No other US state has attempted this breadth of AI regulation in a single session; the outcome will set a template — or a cautionary tale — for the rest of the country.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">China</span><span>DeepSeek V4 Pro exited a four-month preview period on August 12, arriving on the web, app, and API for anyone. The model focuses on agentic tasks — multi-step workflows where software uses tools — with a one-million-token context window and the ability to run in "thinking" or non-thinking mode. Its prices rise significantly on August 16, with output tokens jumping from $0.87 to $3.96 per million at peak hours. (<a href="https://www.technology.org/2026/08/14/deepseek-v4-pro-official-release-agent-benchmarks/">source</a>)</span></li>
+        <li><span class="tag money">Scale</span><span>Google's Gemini app crossed one billion monthly active users, making it the fastest-growing product in the company's 28-year history and its 14th product to reach that milestone. Sixty-three percent of users interact by voice, and Gemini generates more than 150 million images daily. One detail Google chose not to share: how many of those users pay for anything. (<a href="https://www.forbes.com/sites/antoniopequenoiv/2026/08/11/gemini-becomes-googles-fastest-growing-product-ever-after-hitting-1-billion-monthly-users/">Forbes</a>)</span></li>
+        <li><span class="tag money">Funding</span><span>Thrive Holdings — a private-equity-style firm that buys traditional accounting and IT businesses and wires AI into them — raised $2 billion at a $12 billion valuation from SoftBank, D1 Capital, and Altimeter. OpenAI holds an ownership stake and sends employees to work inside Thrive's portfolio companies. The new capital targets a third vertical: physical assets. (<a href="https://finance.yahoo.com/technology/ai/articles/openai-backed-thrive-holdings-raises-174129787.html">Yahoo Finance</a>)</span></li>
+        <li><span class="tag tech">Open weights</span><span>Meta Superintelligence Labs released Muse Glimmer, a 30-billion-parameter model under an Apache 2.0 licence that runs on a single consumer GPU, using under 20 gigabytes of memory. It is purpose-built for always-on local agents — autonomous software that uses tools and completes multi-step work without cloud access — and scores 94.7 on the 2026 AIME math test and 75.5 on the MCP Atlas agent benchmark. (<a href="https://siliconangle.com/2026/08/10/meta-releases-open-source-muse-glimmer-model-30b-parameters/">SiliconAngle</a>)</span></li>
+        <li><span class="tag policy">Provenance</span><span>Anthropic announced that Claude will now embed invisible watermarks into its text outputs globally — not just in the EU — and attach digitally signed provenance metadata to generated files such as SVGs, PNGs, and JPGs, following the C2PA open standard. A detected watermark indicates text may have passed through Claude at some point; it does not prove authorship, and a complete rewrite in a different model defeats the signal. (<a href="https://mlq.ai/news/anthropic-will-watermark-claude-text-worldwide-and-attach-c2pa-metadata-to-files/">MLQ News</a>)</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~550-850 words -->
+      <h2>Paper, explained: When a bigger AI writes the rules for a smaller one</h2>
+      <p class="kicker"><em>AI4AI at Test-Time: Strong-to-Weak Capability Transfer via Harnesses</em> &middot; Cheng Qian et al. (9 authors) &middot; <a href="https://arxiv.org/abs/2608.12307">arXiv:2608.12307</a> &middot; submitted August 12, 2026</p>
+
+      <p>Most of the effort in making AI smarter goes into changing the model itself — more training, more data, more fine-tuning. This paper asks a different question: what if you left the model completely alone and just rewrote the scaffolding around it?</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Researchers have been studying "weak-to-strong generalization" — the idea that a weaker model can, in principle, help train or guide a stronger one. But this paper reverses the direction: can a <em>stronger</em> model hand its capability <em>down</em> to a weaker one? The catch is that you can't retrain the target model; it has to improve without its weights changing at all. The method can only touch the wrapper around the model: the instructions it receives, how its sub-tasks are routed, what format its answers must follow.</p>
+
+      <p>To make this a real test, the researchers needed tasks where failure is clear-cut. They picked <em>Theory of Mind</em> benchmarks — four of them. Theory of Mind (ToM) tests whether an AI can reason about what other people <em>believe</em> rather than what's actually true. The classic puzzle: Sally hides a ball in a basket and leaves the room; Anne moves it while Sally is away; where will Sally look when she returns? Humans know to answer "the basket" because Sally doesn't know about the move. Many smaller AI models give the "wrong" answer — they report the actual location of the ball, because they can't model the gap between what Sally knows and what's really true. These tasks are a hard, structured stress-test: they require tracking nested beliefs, shifting perspectives, and resisting the urge to answer from reality rather than from another character's point of view.</p>
+
+      <h3>How it works</h3>
+      <p>The setup has two actors. The <em>builder</em> is a strong frontier model. The <em>target</em> is the weaker model you actually want to improve. The builder's job is to write a <em>harness</em> — a layer of code and structured instructions that wraps around the target model without changing any of its internal settings.</p>
+
+      <p>Think of it like a kitchen prep guide. A master chef can't be on the line every service, so she writes a set of detailed station notes: exact temperatures, a sequence for every dish, a checklist for the most common mistakes. The line cook doesn't get smarter overnight — but the guide stops them from improvising in ways that lead to errors, routes the harder tasks to the right part of the workflow, and enforces a format so the food leaves the kitchen looking consistent. The guide is the chef's intelligence, crystallized into a system the cook can follow.</p>
+
+      <p>In the paper, the builder's harness does three main things: it converts unstable natural-language reasoning steps into deterministic code (so the target can't wander off into vague hedging), it routes different question subtypes to different prompts (a "second-order belief" question gets different instructions than a "false belief" question), and it enforces strict output formats that prevent the model from equivocating or quietly changing its answer mid-response.</p>
+
+      <p>Crucially, the builder works iteratively. It takes 5% of the benchmark's data as a practice set, watches where the target model fails, rewrites the harness to patch those failures, and repeats the loop over multiple rounds. Once the harness stabilizes on the practice set, it's locked and tested on the full remaining data — with no further adjustment.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team tested combinations of builder models at different capability levels, paired with target models weaker than the builders. They ran the full protocol across four representative Theory-of-Mind benchmarks, measuring performance before and after the harness was applied.</p>
+
+      <!-- SVG diagram -->
+      <figure>
+        <svg viewBox="0 0 720 290" role="img" aria-label="Diagram showing how a builder model writes a harness that wraps a target model and boosts its performance" xmlns="http://www.w3.org/2000/svg">
+          <!-- Background -->
+          <rect width="720" height="290" fill="none"/>
+
+          <!-- LEFT: Target model ALONE -->
+          <rect x="30" y="70" width="150" height="80" rx="8" fill="#F5F4F0" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="105" y="100" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="600">Target model</text>
+          <text x="105" y="120" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">(alone)</text>
+
+          <!-- Score badge alone -->
+          <rect x="60" y="168" width="90" height="28" rx="6" fill="#D1CFC5"/>
+          <text x="105" y="186" font-family="ui-monospace,monospace" font-size="13" fill="#141413" text-anchor="middle" font-weight="700">score: 0.49</text>
+
+          <!-- Arrow down from target alone -->
+          <line x1="105" y1="150" x2="105" y2="165" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- MIDDLE: Builder creates harness -->
+          <!-- Builder box -->
+          <rect x="265" y="20" width="155" height="70" rx="8" fill="#D97757" fill-opacity="0.12" stroke="#D97757" stroke-width="1.5"/>
+          <text x="342" y="46" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="600">Builder model</text>
+          <text x="342" y="63" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">(strong; writes harness)</text>
+
+          <!-- Arrow from builder down to harness -->
+          <line x1="342" y1="90" x2="342" y2="118" stroke="#D97757" stroke-width="1.5" marker-end="url(#arrclay)"/>
+
+          <!-- Harness box -->
+          <rect x="265" y="120" width="155" height="70" rx="8" fill="#788C5D" fill-opacity="0.12" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="342" y="146" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="600">Harness</text>
+          <text x="342" y="163" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">routing · format · code</text>
+
+          <!-- Arrow from harness right -->
+          <line x1="420" y1="155" x2="478" y2="155" stroke="#788C5D" stroke-width="1.5" marker-end="url(#arroli)"/>
+
+          <!-- RIGHT: Target model + harness -->
+          <rect x="480" y="95" width="210" height="120" rx="10" fill="#788C5D" fill-opacity="0.08" stroke="#788C5D" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="585" y="118" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D" text-anchor="middle" font-weight="600" letter-spacing="1">HARNESS</text>
+
+          <rect x="500" y="125" width="150" height="55" rx="8" fill="#6A8CAF" fill-opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="575" y="149" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="600">Target model</text>
+          <text x="575" y="167" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">(same weights)</text>
+
+          <!-- Score badge right -->
+          <rect x="530" y="228" width="90" height="28" rx="6" fill="#6A8CAF" fill-opacity="0.8"/>
+          <text x="575" y="246" font-family="ui-monospace,monospace" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">score: 0.91</text>
+
+          <!-- Arrow from harnessed target to score -->
+          <line x1="575" y1="215" x2="575" y2="225" stroke="#6A8CAF" stroke-width="1.5" marker-end="url(#arrsky)"/>
+
+          <!-- Improvement label -->
+          <text x="575" y="272" font-family="system-ui,sans-serif" font-size="11" fill="#788C5D" text-anchor="middle" font-weight="600">↑ nearly doubled</text>
+
+          <!-- Arrow markers -->
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M0,0 L0,8 L8,4 Z" fill="#87867F"/>
+            </marker>
+            <marker id="arrclay" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M0,0 L0,8 L8,4 Z" fill="#D97757"/>
+            </marker>
+            <marker id="arroli" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M0,0 L0,8 L8,4 Z" fill="#788C5D"/>
+            </marker>
+            <marker id="arrsky" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M0,0 L0,8 L8,4 Z" fill="#6A8CAF"/>
+            </marker>
+          </defs>
+
+          <!-- "vs" label between columns -->
+          <text x="215" y="155" font-family="system-ui,sans-serif" font-size="14" fill="#87867F" text-anchor="middle" font-weight="600">vs.</text>
+        </svg>
+        <figcaption>A builder (strong) model writes a harness — structured routing, format rules, and deterministic code — that wraps the target (weaker) model at inference time. The same target model, unchanged, jumps from an average score of 0.49 to 0.91 across four Theory-of-Mind benchmarks.</figcaption>
+      </figure>
+
+      <h3>What they found</h3>
+      <p>The average target-model score nearly doubled — from 0.49 to 0.91 — once the right harness was in place. The gains were not evenly distributed: the weakest target models benefited the most, and the strongest builder models produced the best harnesses. Notably, the quality of the harness improved monotonically as the builder became more capable, which means this approach scales naturally: the better the frontier model you use to write the harness, the larger the lift for the smaller model below it. The improvements came not from the target thinking harder or sampling more — they came from structure: the harness held the model to a procedure it might have abandoned on its own.</p>
+
+      <h3>The catch</h3>
+      <p>The paper tests on four Theory-of-Mind benchmarks, and ToM tasks have a property that many real-world problems lack: there is an unambiguous right answer, and the task is structured enough that deterministic code can stand in for some of the messy reasoning. It's much less obvious that harnesses would work as well on open-ended tasks — long-document summarization, creative drafting, nuanced judgment calls — where the answer space is wide and no routing table can carve it cleanly. The harnesses are also benchmark-specific; a harness tuned for one ToM task type doesn't automatically transfer to another, let alone to a different domain. And the approach still requires a capable (and expensive) builder model to write the harness in the first place.</p>
+
+      <p><strong>If you remember one thing:</strong> The gap between a weak AI and a strong one may be smaller than it looks — if someone takes the trouble to write the right wrapper around the smaller one.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy's nanoGPT and nanochat repositories both received updates in early August — nanochat, which reproduces a GPT-2-class conversational model for roughly $73 on one H100 node, remains one of the most useful tutorials in frontier AI. His "Software 3.0" essay from June, arguing that prompts and context windows have become the new programming interface, continues to circulate as a clean framework for how to think about what's changed. <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">Essay summary</a></span></li>
+        <li><span class="tag tech">Dwarkesh</span><span>Dwarkesh Patel released "8 Predictions for the Era of Continual Learning" on August 7 — a sharp-eared episode arguing that AI systems that accumulate experience over time (rather than resetting each session) will look more like people learning a skill than a calculator answering a query. Worth a listen if you've been following the "persistent memory" thread in this magazine. <a href="https://www.dwarkesh.com/podcast">dwarkesh.com/podcast</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The AI4AI paper, the Muse Glimmer release, and the California vote are each answering a version of the same question: what happens when powerful AI capability is no longer concentrated in a single expensive system, but spread across a stack of cheaper, faster, local pieces? Meta's Glimmer is a capable agent that runs on a laptop. The harness paper shows a way to make that laptop model significantly smarter without retraining it — by having a cloud-scale model write its scaffolding once and hand it down. California's thirty bills are trying to figure out who is responsible when something goes wrong inside that stack. These aren't separate stories. The shift from "one big model in the cloud" to "a web of smaller models with shared scaffolding" is the move that makes everything else harder to regulate, cheaper to deploy, and more powerful for individual users. The next few years are going to be spent figuring out the implications of that shift — in courts, in legislatures, and in papers like this one.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2608.12307">AI4AI at Test-Time (arXiv)</a> ·
+        <a href="https://www.techtimes.com/articles/324338/20260813/california-ai-bills-face-final-vote-today-chatbot-safety-copyright-us-first-commission.htm">California AI bills (TechTimes)</a> ·
+        <a href="https://www.technology.org/2026/08/14/deepseek-v4-pro-official-release-agent-benchmarks/">DeepSeek V4 Pro GA (Technology.org)</a> ·
+        <a href="https://www.forbes.com/sites/antoniopequenoiv/2026/08/11/gemini-becomes-googles-fastest-growing-product-ever-after-hitting-1-billion-monthly-users/">Gemini 1B users (Forbes)</a> ·
+        <a href="https://siliconangle.com/2026/08/10/meta-releases-open-source-muse-glimmer-model-30b-parameters/">Meta Muse Glimmer (SiliconAngle)</a> ·
+        <a href="https://mlq.ai/news/anthropic-will-watermark-claude-text-worldwide-and-attach-c2pa-metadata-to-files/">Anthropic watermarks (MLQ News)</a> ·
+        <a href="https://finance.yahoo.com/technology/ai/articles/openai-backed-thrive-holdings-raises-174129787.html">Thrive Holdings $2B (Yahoo Finance)</a> ·
+        <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">Karpathy Software 3.0</a> ·
+        <a href="https://www.dwarkesh.com/podcast">Dwarkesh Podcast</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Harness</div>
+        <div>A layer of code or structured instructions that wraps around an AI model without changing the model itself. The harness controls how questions reach the model, how its outputs are formatted, and which type of prompt to use for which kind of task. Think of it as a jig in a woodworking shop: the jig doesn't make the saw sharper, but it makes sure every cut follows the right line.</div>
+      </div>
+      <dl>
+        <dt>Builder model</dt><dd>In the AI4AI paper: the strong frontier model whose job is to write the harness. It does the design work so the target model doesn't have to improvise.</dd>
+        <dt>Target model</dt><dd>The weaker model that actually runs under the harness. Its weights are never changed — all the improvement comes from the structure around it.</dd>
+        <dt>Theory of Mind (ToM)</dt><dd>The ability to reason about what other people believe, rather than what's actually true. "Where will Sally look?" requires ToM — Sally's belief, not the ball's location. It's a useful benchmark because it has a clear right answer and requires deliberate perspective-switching.</dd>
+        <dt>Inference-time compute</dt><dd>Processing that happens when a model is answering a question, as opposed to training-time compute (which shapes the model before it's ever used). Harnesses work at inference time — no training required.</dd>
+        <dt>C2PA</dt><dd>Coalition for Content Provenance and Authenticity — an open technical standard for attaching a digitally signed "chain of custody" record to a file, showing what software created or edited it. Anthropic is using it to mark files generated by Claude.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
