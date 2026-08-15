@@ -1,5 +1,12 @@
 [
   {
+    "num": 78,
+    "date": "2026-08-15",
+    "slug": "issues/2026-08-15.html",
+    "title": "The Thought Before the Word",
+    "blurb": "Qwen3.8-27B arrived as the most capable local model under 30B parameters, and an ICML 2026 spotlight paper found that AI agents work 3–7× faster when they ditch language and share raw thought-vectors directly."
+  },
+  {
     "num": 77,
     "date": "2026-08-14",
     "slug": "issues/2026-08-14.html",
