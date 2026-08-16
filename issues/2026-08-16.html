@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №79 — What Two Trillion Buys · Infinite Reach</title>
+  <meta name="description" content="Anthropic is targeting a $2 trillion October IPO — the largest in history — while in talks to spend $6 billion on a startup that makes AI cheaper to run. Meanwhile a new paper maps the ceiling on deep machine reasoning." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №79 &middot; Sunday, August 16, 2026</p>
+      <h1>What Two Trillion Buys</h1>
+      <p>In the same week, Anthropic revealed it is in talks to pay $6 billion for a startup that makes AI cheaper to run — and disclosed that its investors expect it to go public in October at a valuation of $2 trillion, which would be the largest stock-market debut in history. The purchases and the price tag tell the same story from different angles: the AI business has outrun the calendar.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic is reportedly in early talks to acquire Decart, an Israeli startup, for around $6 billion. Decart makes software that helps AI chips work more efficiently — reducing the cost of running inference (generating responses) and building world models (AI systems that simulate physical environments). The rationale, according to people familiar with the deal, is straightforward: Anthropic is seeing demand for Claude grow faster than its infrastructure can absorb it, and Decart's team would join the inference and performance group to help. The acquisition would be Anthropic's largest by far. It comes as the company separately targets a $2 trillion IPO in October — supported by investors who say annualised revenue is heading toward $100–120 billion by year-end, more than ten times the rate at the start of 2026. Both deals are unconfirmed and could still fall through. But even as rumours, they mark a shift: Anthropic, a research lab founded just four years ago, is now operating at the scale of a major industrial company.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Milestone</span><span>Google's Gemini app crossed one billion monthly active users on August 11 — the company's fastest-growing product in 28 years, and the second AI assistant to reach that level (ChatGPT crossed it in June). <a href="https://9to5google.com/2026/08/11/gemini-app-1-billion/">9to5Google</a></span></li>
+        <li><span class="tag tech">Models</span><span>GPT-5.6 Luna became the free ChatGPT default on August 15, following an 80% cut in inference pricing — OpenAI now charges $0.20 per million tokens for its standard tier, making frontier-quality responses effectively free for casual users. <a href="https://aitoolsrecap.com/Blog/AINewsAugust2026.aspx">AIToolsRecap</a></span></li>
+        <li><span class="tag policy">Federal spending</span><span>The White House committed $5 billion across more than fifteen federal agencies to embed AI into national scientific research, in the most concentrated single-week federal AI spending announcement to date. <a href="https://www.mintz.com/insights-center/viewpoints/54941/2026-08-07-ai-washington-report-august-2026-edition">Mintz</a></span></li>
+        <li><span class="tag tech">Security</span><span>OpenAI's GPT-5.6-Cyber found two previously unknown vulnerabilities in Chrome's JavaScript engine before its own public launch; both were patched by Google as CVE-2026-15903, a high-severity flaw with a CVSS score of 8.8. <a href="https://www.securityweek.com/openai-unveils-new-cybersecurity-model-gpt-5-6-cyber/">SecurityWeek</a></span></li>
+        <li><span class="tag money">IPO watch</span><span>Anthropic backers told Reuters they expect annualised revenue to hit $100–120 billion by year-end, ten times the start-of-year rate, underpinning the $2 trillion IPO target that would eclipse SpaceX's $1.77 trillion debut in June. <a href="https://qz.com/anthropic-ipo-2-trillion-valuation-october-081326">QZ</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~600-800 words -->
+      <h2>Paper, explained: the ceiling on machine reasoning</h2>
+      <p class="kicker">Beyond Memorization: Extending Reasoning Depth with Recurrence, Memory and Test-Time Compute Scaling &middot; Rodkin, Orel, Smirnov et al. &middot; <a href="https://arxiv.org/abs/2508.16745">arXiv 2508.16745</a></p>
+      <p>A team of researchers decided to ask a deceptively simple question: when an AI model appears to reason, is it actually chaining rules step by step — or is it pattern-matching from things it memorised during training? The answer they found is unsettling, and it applies to every model you've heard of.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>AI benchmarks are famously gameable. A model trained on the internet has seen so many examples of so many problems that it is nearly impossible to know whether it is genuinely reasoning or has simply seen a version of this test before. What we want to know is this: can a model take a rule it has never seen, understand it, and then apply it repeatedly? That turns out to be surprisingly hard to test, because real tasks are full of patterns that leak into training data.</p>
+      <p>To sidestep this, the researchers reached for something unusual: <em>one-dimensional cellular automata</em>. A cellular automaton is a row of cells, each either on or off (1 or 0), that updates over time according to a simple local rule — each cell's next state depends only on its own current state and the states of its immediate neighbours. There are exactly 256 possible local rules of this kind, and they produce wildly different patterns. The famous "Game of Life" is a two-dimensional version of the same idea. Crucially, the researchers split these 256 rules into a training set and a test set, so the model could never have "memorised" the test rules. It had to genuinely infer them from scratch.</p>
+
+      <h3>How it works</h3>
+      <p>Think of the task like a logic puzzle that comes in two stages. In stage one, you watch a short film — say, three frames of a billiard table — and you try to work out the physics of that particular table: how fast balls roll, whether spin decays, how the bumpers behave. That is <em>rule inference</em>. In stage two, you are asked to predict where every ball will be twenty bounces later, without being allowed to actually simulate the table — just using the mental model you built in stage one. That is <em>rule chaining</em>.</p>
+      <p>It turns out that stage one is quite manageable. Most neural architectures — transformers (the kind of engine inside every large language model), recurrent networks (older architectures that loop their own output back as input), and memory-augmented models (ones given an external note-taking scratchpad) — can all infer the rule from a short observed sequence and correctly predict the very next step. The first bounce is fine.</p>
+      <p>Stage two is where things fall apart. As you ask for predictions further and further ahead — five steps, ten steps, twenty steps — performance drops sharply across all architectures. The researchers tested several strategies to extend the ceiling: <strong>increasing model depth</strong> (adding more layers), <strong>recurrence</strong> (letting the model re-run its own hidden states across segments, essentially giving it an internal re-reading pass), <strong>external memory</strong> (an explicit scratchpad), and <strong>test-time compute</strong> (letting the model take more processing steps per token during inference, a technique used in current reasoning models). All of these help. None of them fix the problem. The improvement is real but bounded — there is a wall, and none of the tricks push through it.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team trained models from scratch on a large set of rule-inference problems drawn from the 256-rule space. The training and test rule sets were strictly disjoint, eliminating any shortcut from memorisation. They evaluated how well each architecture generalised to unseen rules and how accuracy scaled with the number of required reasoning steps. They also ran a natural-language version of the same puzzle — presenting the cellular automaton as a textual description of cells and asking contemporary large language models (like the models behind current chatbots) to reason through it. The natural-language variant is described in the paper as a "<em>proxy game</em>" that allows off-the-shelf LLMs to be benchmarked on the same reasoning depth question without retraining.</p>
+
+      <h3>What they found</h3>
+      <p>The core finding is clean: rule inference is learnable; rule chaining is bounded. Every architecture can learn the first; no architecture fully conquers the second. The drop-off is not gradual — it is sharp. There is a particular depth of required steps beyond which accuracy collapses, and the threshold varies by architecture but exists for all of them. The natural-language proxy game produced the starkest result: contemporary large language models largely fail on the multi-step versions, despite being trained on far more data and compute than the small from-scratch models in the study. Bigger is not obviously better here.</p>
+      <p>The failure modes are revealing. Models tend to lose track of the intermediate state — they know the rule but cannot hold a long enough chain of its applications in their working process to reach the correct answer. This is different from not knowing the rule. It is closer to knowing how to count but losing your place somewhere around thirty.</p>
+
+      <h3>The catch</h3>
+      <p>Cellular automata are highly structured and artificial. Real reasoning tasks — writing code, planning a project, solving a proof — involve far more ambiguity, richer rules, and higher-dimensional state. The controlled setting is a strength (it guarantees clean measurement) but it is also a limitation: we cannot say from this study exactly how the ceiling maps onto the messy problems AI is actually used for. It is also worth noting that the paper studies architectures trained from scratch on small tasks, not the result of pretraining on massive datasets followed by fine-tuning — which is how deployed models actually work, and which might change the picture.</p>
+
+      <p><strong>If you remember one thing:</strong> models can learn rules, but chaining rules many steps in sequence hits a ceiling that more depth, more memory, and more compute all push back — without ever removing.</p>
+
+      <!-- SVG diagram: Cellular automata reasoning task -->
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Diagram showing the two-stage reasoning task: rule inference then rule chaining with declining accuracy">
+
+          <!-- Background panels -->
+          <rect x="10" y="10" width="210" height="290" rx="8" fill="#F7F5F1" stroke="#D1CFC5" stroke-width="1"/>
+          <rect x="235" y="10" width="210" height="290" rx="8" fill="#F7F5F1" stroke="#D1CFC5" stroke-width="1"/>
+          <rect x="460" y="10" width="250" height="290" rx="8" fill="#F7F5F1" stroke="#D1CFC5" stroke-width="1"/>
+
+          <!-- Panel 1: Observed sequence -->
+          <text x="115" y="36" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413" font-weight="bold">Stage 1: Observe</text>
+          <text x="115" y="52" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">Model watches a few steps</text>
+
+          <!-- Time step labels -->
+          <text x="22" y="80" font-family="ui-monospace" font-size="10" fill="#87867F">t=0</text>
+          <text x="22" y="110" font-family="ui-monospace" font-size="10" fill="#87867F">t=1</text>
+          <text x="22" y="140" font-family="ui-monospace" font-size="10" fill="#87867F">t=2</text>
+
+          <!-- Grid of cells - row t=0 -->
+          <!-- 9 cells, each 16px wide, starting at x=44 -->
+          <!-- Pattern: 0 1 1 0 1 0 0 1 1 -->
+          <rect x="44" y="66" width="15" height="15" fill="#D1CFC5"/>
+          <rect x="61" y="66" width="15" height="15" fill="#D97757"/>
+          <rect x="78" y="66" width="15" height="15" fill="#D97757"/>
+          <rect x="95" y="66" width="15" height="15" fill="#D1CFC5"/>
+          <rect x="112" y="66" width="15" height="15" fill="#D97757"/>
+          <rect x="129" y="66" width="15" height="15" fill="#D1CFC5"/>
+          <rect x="146" y="66" width="15" height="15" fill="#D1CFC5"/>
+          <rect x="163" y="66" width="15" height="15" fill="#D97757"/>
+          <rect x="180" y="66" width="15" height="15" fill="#D97757"/>
+
+          <!-- Grid of cells - row t=1 -->
+          <!-- Pattern: 1 0 1 1 0 0 1 0 1 (result of some rule) -->
+          <rect x="44" y="96" width="15" height="15" fill="#D97757"/>
+          <rect x="61" y="96" width="15" height="15" fill="#D1CFC5"/>
+          <rect x="78" y="96" width="15" height="15" fill="#D97757"/>
+          <rect x="95" y="96" width="15" height="15" fill="#D97757"/>
+          <rect x="112" y="96" width="15" height="15" fill="#D1CFC5"/>
+          <rect x="129" y="96" width="15" height="15" fill="#D1CFC5"/>
+          <rect x="146" y="96" width="15" height="15" fill="#D97757"/>
+          <rect x="163" y="96" width="15" height="15" fill="#D1CFC5"/>
+          <rect x="180" y="96" width="15" height="15" fill="#D97757"/>
+
+          <!-- Grid of cells - row t=2 -->
+          <!-- Pattern: 0 1 0 1 0 1 0 1 0 -->
+          <rect x="44" y="126" width="15" height="15" fill="#D1CFC5"/>
+          <rect x="61" y="126" width="15" height="15" fill="#D97757"/>
+          <rect x="78" y="126" width="15" height="15" fill="#D1CFC5"/>
+          <rect x="95" y="126" width="15" height="15" fill="#D97757"/>
+          <rect x="112" y="126" width="15" height="15" fill="#D1CFC5"/>
+          <rect x="129" y="126" width="15" height="15" fill="#D97757"/>
+          <rect x="146" y="126" width="15" height="15" fill="#D1CFC5"/>
+          <rect x="163" y="126" width="15" height="15" fill="#D97757"/>
+          <rect x="180" y="126" width="15" height="15" fill="#D1CFC5"/>
+
+          <!-- Rule inference box -->
+          <rect x="30" y="175" width="170" height="44" rx="6" fill="#6A8CAF" opacity="0.18" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="115" y="195" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#141413" font-weight="bold">Infer the rule</text>
+          <text x="115" y="210" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">"if neighbours match X → next is Y"</text>
+
+          <!-- Panel 1 caption -->
+          <text x="115" y="270" text-anchor="middle" font-family="system-ui" font-size="10" fill="#788C5D">✓ Models handle this well</text>
+
+          <!-- Arrow between panels 1 and 2 -->
+          <line x1="222" y1="155" x2="233" y2="155" stroke="#D1CFC5" stroke-width="2" marker-end="url(#arr)"/>
+
+          <!-- Panel 2: Chain the rule -->
+          <text x="340" y="36" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413" font-weight="bold">Stage 2: Chain</text>
+          <text x="340" y="52" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">Apply rule repeatedly</text>
+
+          <text x="247" y="80" font-family="ui-monospace" font-size="10" fill="#87867F">t=3</text>
+          <text x="247" y="110" font-family="ui-monospace" font-size="10" fill="#87867F">t=4</text>
+          <text x="247" y="140" font-family="ui-monospace" font-size="10" fill="#87867F">t=5</text>
+          <text x="247" y="170" font-family="ui-monospace" font-size="10" fill="#87867F">t=6</text>
+
+          <!-- t=3 cells — clear pattern -->
+          <rect x="269" y="66" width="15" height="15" fill="#D97757"/>
+          <rect x="286" y="66" width="15" height="15" fill="#D97757"/>
+          <rect x="303" y="66" width="15" height="15" fill="#D1CFC5"/>
+          <rect x="320" y="66" width="15" height="15" fill="#D1CFC5"/>
+          <rect x="337" y="66" width="15" height="15" fill="#D97757"/>
+          <rect x="354" y="66" width="15" height="15" fill="#D97757"/>
+          <rect x="371" y="66" width="15" height="15" fill="#D1CFC5"/>
+          <rect x="388" y="66" width="15" height="15" fill="#D1CFC5"/>
+          <rect x="405" y="66" width="15" height="15" fill="#D97757"/>
+
+          <!-- t=4 cells — slightly uncertain (muted) -->
+          <rect x="269" y="96" width="15" height="15" fill="#D97757" opacity="0.7"/>
+          <rect x="286" y="96" width="15" height="15" fill="#D1CFC5" opacity="0.7"/>
+          <rect x="303" y="96" width="15" height="15" fill="#D97757" opacity="0.7"/>
+          <rect x="320" y="96" width="15" height="15" fill="#D97757" opacity="0.7"/>
+          <rect x="337" y="96" width="15" height="15" fill="#D1CFC5" opacity="0.7"/>
+          <rect x="354" y="96" width="15" height="15" fill="#D97757" opacity="0.7"/>
+          <rect x="371" y="96" width="15" height="15" fill="#D97757" opacity="0.7"/>
+          <rect x="388" y="96" width="15" height="15" fill="#D1CFC5" opacity="0.7"/>
+          <rect x="405" y="96" width="15" height="15" fill="#D1CFC5" opacity="0.7"/>
+
+          <!-- t=5 cells — more uncertain -->
+          <rect x="269" y="126" width="15" height="15" fill="#D97757" opacity="0.4"/>
+          <rect x="286" y="126" width="15" height="15" fill="#D97757" opacity="0.4"/>
+          <rect x="303" y="126" width="15" height="15" fill="#D1CFC5" opacity="0.4"/>
+          <rect x="320" y="126" width="15" height="15" fill="#D97757" opacity="0.4"/>
+          <rect x="337" y="126" width="15" height="15" fill="#D97757" opacity="0.4"/>
+          <rect x="354" y="126" width="15" height="15" fill="#D1CFC5" opacity="0.4"/>
+          <rect x="371" y="126" width="15" height="15" fill="#D97757" opacity="0.4"/>
+          <rect x="388" y="126" width="15" height="15" fill="#D1CFC5" opacity="0.4"/>
+          <rect x="405" y="126" width="15" height="15" fill="#D97757" opacity="0.4"/>
+
+          <!-- t=6 cells — very uncertain (very faded) -->
+          <rect x="269" y="156" width="15" height="15" fill="#87867F" opacity="0.3"/>
+          <rect x="286" y="156" width="15" height="15" fill="#87867F" opacity="0.3"/>
+          <rect x="303" y="156" width="15" height="15" fill="#87867F" opacity="0.3"/>
+          <rect x="320" y="156" width="15" height="15" fill="#87867F" opacity="0.3"/>
+          <rect x="337" y="156" width="15" height="15" fill="#87867F" opacity="0.3"/>
+          <rect x="354" y="156" width="15" height="15" fill="#87867F" opacity="0.3"/>
+          <rect x="371" y="156" width="15" height="15" fill="#87867F" opacity="0.3"/>
+          <rect x="388" y="156" width="15" height="15" fill="#87867F" opacity="0.3"/>
+          <rect x="405" y="156" width="15" height="15" fill="#87867F" opacity="0.3"/>
+
+          <!-- Fading label -->
+          <text x="340" y="205" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">Confidence fades with each step</text>
+          <text x="340" y="270" text-anchor="middle" font-family="system-ui" font-size="10" fill="#D97757">✗ All architectures struggle here</text>
+
+          <!-- Panel 3: What helps (and what doesn't) -->
+          <text x="585" y="36" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413" font-weight="bold">Tricks that help…</text>
+          <text x="585" y="52" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">…but none remove the ceiling</text>
+
+          <!-- Bar chart of "improvement" for each trick -->
+          <!-- Bars starting from y=250 downward -->
+          <!-- Base accuracy line -->
+          <line x1="490" y1="240" x2="700" y2="240" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="476" y="244" text-anchor="end" font-family="system-ui" font-size="9" fill="#87867F">baseline</text>
+          <line x1="490" y1="195" x2="700" y2="195" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="476" y="199" text-anchor="end" font-family="system-ui" font-size="9" fill="#87867F">ceiling</text>
+
+          <!-- Trick 1: More depth -->
+          <rect x="502" y="210" width="28" height="30" rx="3" fill="#6A8CAF"/>
+          <text x="516" y="256" text-anchor="middle" font-family="system-ui" font-size="9" fill="#87867F">Depth</text>
+
+          <!-- Trick 2: Recurrence -->
+          <rect x="546" y="203" width="28" height="37" rx="3" fill="#6A8CAF"/>
+          <text x="560" y="256" text-anchor="middle" font-family="system-ui" font-size="9" fill="#87867F">Recur&shy;rence</text>
+
+          <!-- Trick 3: Memory -->
+          <rect x="590" y="206" width="28" height="34" rx="3" fill="#6A8CAF"/>
+          <text x="604" y="256" text-anchor="middle" font-family="system-ui" font-size="9" fill="#87867F">Memory</text>
+
+          <!-- Trick 4: Test-time compute -->
+          <rect x="634" y="200" width="28" height="40" rx="3" fill="#6A8CAF"/>
+          <text x="648" y="256" text-anchor="middle" font-family="system-ui" font-size="9" fill="#87867F">More compute</text>
+
+          <!-- Ceiling note -->
+          <text x="585" y="185" text-anchor="middle" font-family="system-ui" font-size="9" fill="#D97757">all fall short of ceiling</text>
+
+          <!-- Y-axis label -->
+          <text x="480" y="145" font-family="system-ui" font-size="9" fill="#87867F" transform="rotate(-90,480,145)">accuracy at N steps</text>
+
+          <!-- Arrow markers definition -->
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#D1CFC5"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>Left: the model observes a few rows of a 1D cellular automaton and infers the rule. Middle: it must then predict future rows by chaining the rule — accuracy fades rapidly with each step. Right: deeper models, recurrence, memory, and more inference compute all raise the bar, but none eliminate the drop-off.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>Published "8 Predictions for the Era of Continual Learning" on August 7 — a sharp solo essay arguing that AI can't hold real jobs until it accumulates genuine experience between sessions, not just handoff notes. Uses a saxophone analogy that's worth the five minutes. <a href="https://www.dwarkesh.com/p/era-of-continual-learning">dwarkesh.com</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>Y Combinator published his Startup School 2026 talk this week: how Claude Code was built, how Opus 5 changed the product (it now runs for days without stopping and appears prompt-injection-resistant), and what it means to ship tools when the underlying model keeps outrunning the product. <a href="https://www.ycombinator.com/library/UN-boris-cherny-building-claude-code">YC Library</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things are happening at once this week, and they point at the same underlying question. On the business side, Anthropic is preparing to become a public company at the largest valuation in history, while simultaneously buying the technology to make its own operations more efficient — a sign that the gap between AI demand and AI capacity is genuinely the company's biggest operational problem, not capabilities or competition. On the science side, the cellular-automata paper is a quiet reminder that the models heading for that IPO are still doing something subtler and more limited than we often assume. They are extraordinarily good at pattern recognition and rule inference; they are genuinely constrained when it comes to chaining those rules across many steps. These facts coexist: the business is enormous and growing, and the underlying technology still has structural limits that are not close to being solved. That tension — trillion-dollar valuations built on tools with known ceilings — is the defining feature of this particular moment.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.bloomberg.com/news/articles/2026-08-13/anthropic-said-in-talks-to-buy-ai-startup-decart-for-6-billion">Bloomberg — Anthropic/Decart</a> ·
+        <a href="https://qz.com/anthropic-ipo-2-trillion-valuation-october-081326">QZ — Anthropic IPO</a> ·
+        <a href="https://www.benzinga.com/markets/private-markets/26/08/61195901/anthropic-weighs-its-largest-ever-acquisition-a-6-billion-deal-for-decart">Benzinga — Decart deal</a> ·
+        <a href="https://9to5google.com/2026/08/11/gemini-app-1-billion/">9to5Google — Gemini 1B users</a> ·
+        <a href="https://aitoolsrecap.com/Blog/AINewsAugust2026.aspx">AIToolsRecap — Luna default</a> ·
+        <a href="https://www.mintz.com/insights-center/viewpoints/54941/2026-08-07-ai-washington-report-august-2026-edition">Mintz — Federal $5B</a> ·
+        <a href="https://www.securityweek.com/openai-unveils-new-cybersecurity-model-gpt-5-6-cyber/">SecurityWeek — GPT-5.6-Cyber</a> ·
+        <a href="https://openai.com/index/expanding-daybreak-as-the-cyber-defense-window-narrows/">OpenAI — Daybreak</a> ·
+        <a href="https://arxiv.org/abs/2508.16745">arXiv 2508.16745 — Beyond Memorization</a> ·
+        <a href="https://www.dwarkesh.com/p/era-of-continual-learning">Dwarkesh Patel — Continual Learning</a> ·
+        <a href="https://www.ycombinator.com/library/UN-boris-cherny-building-claude-code">YC — Boris Cherny talk</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Inference</div>
+        <div>In everyday English, "inference" means drawing a conclusion. In AI, it has a specific technical meaning: <em>running a trained model to get an output</em>. Training is the expensive, slow process of teaching a model from data; inference is the moment you ask it a question and it answers. When Decart promises to reduce "inference costs," it means making that answering step cheaper — the cost you pay every time someone sends a message to Claude.</div>
+      </div>
+      <dl>
+        <dt>Cellular automaton</dt><dd>A grid of simple cells that update according to a fixed local rule — each cell's next state depends only on itself and its immediate neighbours. The famous "Game of Life" is one. Used in this paper as a clean test bed because the rules are perfectly known and completely controllable.</dd>
+        <dt>Rule chaining</dt><dd>Applying the same rule many times in sequence, where each output feeds into the next step as input. The paper finds this is much harder for AI models than applying the rule once — errors compound and the model loses track of where it is in the chain.</dd>
+        <dt>Test-time compute</dt><dd>Extra computation done <em>during</em> inference — after training is finished — to let the model "think longer" before answering. Reasoning models like o1 and Opus 5 use this. The paper finds it helps with rule chaining but does not remove the ceiling.</dd>
+        <dt>Continual learning</dt><dd>The idea that a model should keep learning from new experiences after its initial training, the way a person keeps learning from their job. Currently most models are static after training; Dwarkesh Patel's essay argues that real usefulness requires genuine continual learning, not just session-to-session notes.</dd>
+        <dt>World model</dt><dd>An AI system trained to predict how an environment will behave — what the next frame of a video will look like, or how a physical object will move. Decart builds world models alongside its inference-efficiency software; these are distinct but complementary bets on what makes AI more useful.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
