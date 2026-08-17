@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №80 — Maps of the Interior · Infinite Reach</title>
+  <meta name="description" content="Anthropic revealed a model it won't ship and a year-long gap in its own safety monitoring. Researchers at Tsinghua found a faster way to read a model's interior — by looking at its geometry instead of its behavior." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №80 &middot; Monday, 17 August 2026</p>
+      <h1>Maps of the Interior</h1>
+      <p>Anthropic published its second risk report this week and found, on its own audit, a gap in its own safety monitoring — 133 million conversations that ran without the relevant classifier active. The same day, a team at Tsinghua posted a paper with a faster method for reading what's actually happening inside a language model. Two stories that, taken together, are really one: the race to know what you've built.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic's August 14 risk report disclosed an internal model — call it Model 2 — that outperforms its already-released Mythos 5 on most tasks. Anthropic has no plans to release it yet, because the full set of safety tests isn't finished. More striking than the shelved model is the reason the company raised its misalignment risk rating from "very low" to "low": not because it observed a new frightening behavior, but because its confidence in its own testing fell. Auditors discovered that roughly 133 million contractor conversations — a year of feedback from 50,000 workers — had run without the bioweapons classifier active. No customer was affected and the gap is now fixed, but finding it prompted the company to ask: what else might be missing? That is an unusually honest question for a lab to put in a public document.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Gemini</span><span>Google released Gemini 3.7 Flash on August 13 — its strongest performance on coding and agent benchmarks yet, hitting 65.3% on DeepSWE v1.1 (up from 49%) and beating Claude Sonnet 5 on Google's comparison table. Introductory price: $0.75 input / $3.75 output per million tokens, half of the previous generation. <a href="https://datanorth.ai/news/google-releases-gemini-3-7-flash">source</a></span></li>
+        <li><span class="tag money">OpenAI</span><span>OpenAI's annualized revenue run rate topped $40 billion — roughly double where it stood at the end of 2025 — as the company prepares for its IPO. The milestone was reported by Bloomberg on August 13. <a href="https://www.bloomberg.com/news/articles/2026-08-13/openai-s-revenue-run-rate-tops-40-billion-ahead-of-ipo">source</a></span></li>
+        <li><span class="tag tech">Ultrafast</span><span>OpenAI opened a limited API preview of "Ultrafast" — a new tier that runs GPT-5.6 Sol on Cerebras hardware at up to 14× standard throughput, around 750 tokens per second. Useful for real-time voice and agentic workflows that stall at normal speeds.</span></li>
+        <li><span class="tag tech">Open models</span><span>The University of Southern Denmark released DFM Mimir v1, a 1-billion-parameter model that matches 4-billion-parameter rivals across 20 benchmarks — trained exclusively on legally cleared, permissible data. Available on Hugging Face. <a href="https://arxiv.org/abs/2608.13517">arxiv 2608.13517</a></span></li>
+        <li><span class="tag money">YC data</span><span>Y Combinator's Garry Tan reported that at least one in four companies in the current YC batch have codebases that are 95% or more AI-generated — a figure that was essentially zero three years ago. <a href="https://www.forbes.com/sites/joemckendrick/2026/08/09/go-all-ai-y-combinator-head-urges/">source</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: reading a model's vocabulary from its geometry</h2>
+      <p class="kicker">"SAEVerbalizer: Generating Explanations for Sparse Autoencoder Features via Representation Verbalization" &middot; Weihan Meng et al., Tsinghua University &middot; <a href="https://arxiv.org/abs/2608.13538">arxiv 2608.13538</a> &middot; posted 13 August 2026</p>
+      <p>Researchers trying to understand what a language model has learned can now install a kind of anatomy layer that breaks the model's signals into millions of small, specialized detectors. The bottleneck has always been the same: somebody has to label each detector. This paper finds a shortcut, and the shortcut is to stop watching the detectors and start reading their shape.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>A <em>sparse autoencoder</em> (SAE) is a tool that interprets what's happening inside a language model. Imagine the model's hidden representation at any moment as a single point in a vast, high-dimensional space. The SAE learns to translate that point into a long list of small signals — most of them zero — where each non-zero signal corresponds to one narrow concept. One signal fires for "legal terminology." Another fires for "smells like citrus." Another for "mentions a specific person." At large scale, an SAE might have a million such signals, called features. Researchers call this decomposing the model's dense, inscrutable activity into an interpretable vocabulary.</p>
+      <p>The catch is that the vocabulary has no words. Every feature is mathematically defined — it exists as a direction in the model's vector space — but it has no English label. To label one feature, the standard approach collects a few hundred text passages that make that feature activate, hands them to another large model, and asks it to summarize what they share. Run this for a million features and the cost in time and compute is enormous. Worse, this behavioral approach can be shallow: it describes <em>when</em> a feature fires, not <em>what it encodes</em> in geometric terms. A feature might activate on "lavender" in English, "lavande" in French, and "lavendel" in German — and the behavioral summary might say "mentions purple flowers" while missing that the feature is, at its root, about a specific olfactory quality across languages.</p>
+
+      <h3>How it works</h3>
+      <p>SAEVerbalizer's insight is that every feature already has its definition: the <em>decoder direction</em>, a specific vector that represents what the feature encodes in the model's geometry. Instead of collecting behavioral evidence, the method injects that vector directly into the model's own representations and asks the model to translate it into words.</p>
+      <p>Here is the analogy to carry through. Imagine you are a wine sommelier and someone needs to know what a particular grape tastes like. The old method: pour a hundred glasses of wine that contain this grape, have a taster describe each one, then summarize the descriptions. The new method: extract the molecule that gives this grape its flavor, put it directly on the taster's tongue, and ask them to name it. You skip all the intermediate steps. The taster's palate is already trained — you just feed it the thing itself.</p>
+      <p>In the paper's framework, the "taster" is the language model itself. The "molecule" is the decoder direction. The researchers fine-tuned the model's downstream layers (the parts that turn internal states into text) on a dataset of (decoder direction, correct label) pairs. After training, you can take <em>any</em> decoder direction — even one the model has never seen — inject it at a middle layer, and let the fine-tuned downstream layers produce a description. The geometry of the injected direction guides the output just as the actual flavour molecule would guide the sommelier's tongue.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team used Gemma 2 9B as their base model and the GemmaScope SAE dictionary — a set of sparse autoencoders Anthropic and Google previously released for interpretability research. They injected features at layer 20 of the 42-layer model, which sits in the middle depth where representations are rich but not yet fully committed to output tokens. They trained the downstream verbalization head and evaluated it on two standard interpretability benchmarks: <em>detection score</em> (does the generated label correctly predict which texts activate the feature?) and a human preference study comparing verbalization-generated labels against the slow example-based baseline. They also ran transfer experiments, asking whether the verbalization head trained on one SAE dictionary could label a completely different SAE dictionary — and whether it could, with a lightweight adapter, label features from a different model entirely.</p>
+
+      <h3>What they found</h3>
+      <p>On detection score, SAEVerbalizer matched or exceeded the example-based approach — meaning its labels were at least as useful for predicting when a feature activates. Human evaluators preferred the verbalization-based descriptions for specificity and accuracy. The cross-dictionary transfer worked: the method generalized to unseen SAE features without retraining. With the adapter, it extended to a second model architecture. The speed gain is substantial: the geometry is right there in the weights; you don't need thousands of forward passes to collect examples. The main failure mode is at the tail — rare features, those that activate on highly specific or unusual concepts, sometimes receive labels that are grammatically fine but oddly precise or weirdly worded, because the training data had few examples of how to translate that particular geometric region into natural language.</p>
+
+      <h3>The catch</h3>
+      <p>Everything here was tested on Gemma 2 9B. It is not yet known whether layer-20 injection is the right depth for larger models, or whether the approach holds at the scale of the models labs actually care about most — those with hundreds of billions of parameters. There is also a circularity in the evaluation: "does the label predict activation?" tests the label by the same behavioral criterion the old method optimizes for. If the old method's labels are systematically wrong about what a feature <em>geometrically</em> represents, the evaluation metric wouldn't catch that, and neither would SAEVerbalizer.</p>
+
+      <p><strong>If you remember one thing:</strong> Instead of watching a feature to describe it, SAEVerbalizer reads its geometric shape — and that shape turns out to be a better description than the behavior.</p>
+
+      <!-- SVG: the two approaches side by side -->
+      <figure>
+        <svg viewBox="0 0 720 280" role="img" aria-label="Two approaches to labeling sparse autoencoder features: old behavior-based method vs. new geometry-based method" style="width:100%;max-width:720px;display:block;">
+          <!-- Background -->
+          <rect x="0" y="0" width="720" height="280" fill="none"/>
+
+          <!-- Column headers -->
+          <text x="180" y="28" text-anchor="middle" font-family="ui-serif,serif" font-size="14" fill="#141413" font-weight="bold">Old method: watch the behavior</text>
+          <text x="540" y="28" text-anchor="middle" font-family="ui-serif,serif" font-size="14" fill="#141413" font-weight="bold">New method: read the geometry</text>
+
+          <!-- Divider -->
+          <line x1="360" y1="10" x2="360" y2="270" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="5,4"/>
+
+          <!-- OLD METHOD: collect examples → summarize → label -->
+          <!-- Box 1: Feature fires on examples -->
+          <rect x="30" y="45" width="200" height="48" rx="6" fill="#F5F3EF" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="130" y="64" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Collect 500 texts where</text>
+          <text x="130" y="81" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">feature activates</text>
+
+          <!-- Arrow -->
+          <line x1="130" y1="93" x2="130" y2="112" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Box 2: Run through LLM -->
+          <rect x="30" y="112" width="200" height="48" rx="6" fill="#F5F3EF" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="130" y="131" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Feed all 500 texts to</text>
+          <text x="130" y="148" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">a summarizing LLM</text>
+
+          <!-- Arrow -->
+          <line x1="130" y1="160" x2="130" y2="179" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Box 3: Label -->
+          <rect x="55" y="179" width="150" height="38" rx="6" fill="#D97757" stroke="none"/>
+          <text x="130" y="202" text-anchor="middle" font-family="ui-serif,serif" font-size="13" fill="#fff" font-weight="bold">"lavender-related"</text>
+
+          <!-- Cost note -->
+          <text x="130" y="242" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Slow &amp; expensive per feature</text>
+
+          <!-- NEW METHOD: decoder direction → inject → label -->
+          <!-- Box 1: Decoder direction -->
+          <rect x="390" y="45" width="200" height="48" rx="6" fill="#F5F3EF" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="490" y="62" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Take the feature's decoder</text>
+          <text x="490" y="79" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#6A8CAF">direction vector [0.12, −0.44 …]</text>
+
+          <!-- Arrow -->
+          <line x1="490" y1="93" x2="490" y2="112" stroke="#788C5D" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+          <!-- Box 2: Inject into representation -->
+          <rect x="390" y="112" width="200" height="48" rx="6" fill="#F5F3EF" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="490" y="131" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Inject into model's layer 20</text>
+          <text x="490" y="148" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">representation at inference</text>
+
+          <!-- Arrow -->
+          <line x1="490" y1="160" x2="490" y2="179" stroke="#788C5D" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+          <!-- Box 3: Label -->
+          <rect x="415" y="179" width="150" height="38" rx="6" fill="#788C5D" stroke="none"/>
+          <text x="490" y="202" text-anchor="middle" font-family="ui-serif,serif" font-size="13" fill="#fff" font-weight="bold">"lavender-related"</text>
+
+          <!-- Cost note -->
+          <text x="490" y="242" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#787">One forward pass per feature</text>
+
+          <!-- Arrow markers -->
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#87867F"/>
+            </marker>
+            <marker id="arr2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#788C5D"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>The old method watches what activates a feature (collecting hundreds of example texts and summarizing them). SAEVerbalizer skips all that and injects the feature's geometric "shape" — its decoder direction — directly into the model, letting fine-tuned downstream layers translate geometry into a label.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag money">Garry Tan</span><span>In a Wall Street Journal interview published August 10, Tan shared YC's internal count: at least one in four companies in the current batch have codebases that are 95% or more AI-written. He framed this as the beginning of "personal AGI" for founders — not a product, but a way of working. <a href="https://www.forbes.com/sites/joemckendrick/2026/08/09/go-all-ai-y-combinator-head-urges/">source</a></span></li>
+        <li><span class="tag tech">Dwarkesh Patel</span><span>Posted "8 Predictions for the Era of Continual Learning" on August 7 — an essay-episode arguing that the next generation of AI progress will come from models that accumulate experience between sessions, rather than starting fresh each time. <a href="https://www.dwarkesh.com/podcast">dwarkesh.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Anthropic's risk report is careful to distinguish between two things: a bad outcome and reduced confidence that you'd catch one. The company didn't find a misaligned model. It found a monitoring gap — a year of contractor conversations that were never checked by the relevant classifier. What changed wasn't the underlying risk; what changed was the lab's honest accounting of how much it can see. That is a meaningful distinction, and it takes unusual intellectual honesty to raise a risk rating on that basis alone. The race now is to build the tools that let labs see more. SAEVerbalizer is one small piece of that: a faster way to label the learned vocabulary inside a model. A million features with accurate labels is a map. A million unlabeled detectors is still a fog.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.axios.com/2026/08/14/anthropic-model-2-ai-risk">Axios — Anthropic Model 2 and risk report</a> ·
+        <a href="https://www.unite.ai/anthropic-raises-misalignment-risk-to-low-and-shelves-internal-model-2/">Unite.AI — Anthropic shelves Model 2</a> ·
+        <a href="https://siliconangle.com/2026/08/14/anthropic-details-unreleased-model-2-new-alignment-concerns-latest-ai-risk-report/">SiliconAngle — Anthropic risk report detail</a> ·
+        <a href="https://www.techtimes.com/articles/324573/20260815/anthropic-upgrades-misalignment-risk-key-safety-benchmarks-saturate.htm">TechTimes — Anthropic risk upgrade</a> ·
+        <a href="https://datanorth.ai/news/google-releases-gemini-3-7-flash">DataNorth — Gemini 3.7 Flash</a> ·
+        <a href="https://apidog.com/blog/whats-new-in-gemini-3-7-flash/">APIdog — Gemini 3.7 Flash benchmarks</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-08-13/openai-s-revenue-run-rate-tops-40-billion-ahead-of-ipo">Bloomberg — OpenAI $40B revenue</a> ·
+        <a href="https://arxiv.org/abs/2608.13517">arxiv 2608.13517 — DFM Mimir v1</a> ·
+        <a href="https://www.forbes.com/sites/joemckendrick/2026/08/09/go-all-ai-y-combinator-head-urges/">Forbes — Garry Tan / YC AI-native</a> ·
+        <a href="https://arxiv.org/abs/2608.13538">arxiv 2608.13538 — SAEVerbalizer</a> ·
+        <a href="https://www.techtimes.com/articles/324510/20260814/ai-feature-labels-geometry-not-text-tsinghua-posts-saeverbalizer-preprint.htm">TechTimes — SAEVerbalizer coverage</a> ·
+        <a href="https://www.dwarkesh.com/podcast">Dwarkesh Podcast — continual learning episode</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Decoder direction</div>
+        <div>The geometric fingerprint of a single learned concept inside a neural network — a specific direction in the model's multi-dimensional space that defines what a feature represents. Like a fingerprint that uniquely identifies one smell in a perfumer's vocabulary, before anyone has written the name for it.</div>
+      </div>
+      <dl>
+        <dt>Sparse autoencoder (SAE)</dt>
+        <dd>A tool installed over a language model's internals that decomposes its dense, mixed-up activations into thousands of narrow, single-concept detectors — most of them zero at any given moment. Interpretability researchers use SAEs to find what a model has learned.</dd>
+
+        <dt>Misalignment</dt>
+        <dd>When an AI system pursues goals that differ from what its makers intended. Anthropic now rates the risk of catastrophic harm from misalignment as "low" — up from "very low" in February. The change reflects reduced confidence in testing, not a new observed failure.</dd>
+
+        <dt>Responsible Scaling Policy (RSP)</dt>
+        <dd>Anthropic's self-imposed set of rules that defines capability thresholds at which the company must pause, run safety checks, and get approval before training or releasing a more powerful model. The August risk report covers progress against RSP commitments.</dd>
+
+        <dt>HRM (Hierarchical Reasoning Model)</dt>
+        <dd>An architecture for language models that structures reasoning in layers — roughly like outlining before writing. The design lets smaller models punch above their weight; DFM Mimir v1, this week's 1B-parameter standout, is built on this architecture.</dd>
+
+        <dt>GemmaScope</dt>
+        <dd>A set of pre-trained sparse autoencoders released by Google and Anthropic's researchers specifically for Gemma models — a kind of interpretability toolkit the SAEVerbalizer paper used as its test bed.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

@@ -1,5 +1,12 @@
 [
   {
+    "num": 80,
+    "date": "2026-08-17",
+    "slug": "issues/2026-08-17.html",
+    "title": "Maps of the Interior",
+    "blurb": "Anthropic revealed an internal model it won't release and a year-long safety monitoring gap — while Tsinghua researchers found a faster way to read what's inside a language model by looking at its geometry instead of its behavior."
+  },
+  {
     "num": 79,
     "date": "2026-08-16",
     "slug": "issues/2026-08-16.html",
