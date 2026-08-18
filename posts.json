@@ -1,5 +1,12 @@
 [
   {
+    "num": 81,
+    "date": "2026-08-18",
+    "slug": "issues/2026-08-18.html",
+    "title": "The Key Everyone Shared",
+    "blurb": "Researchers in Tübingen found that when the three biggest AI labs encrypt their models' private thinking, they all use the same key for everyone — and showed how to decode 315,320 thoughts that were supposed to stay hidden."
+  },
+  {
     "num": 80,
     "date": "2026-08-17",
     "slug": "issues/2026-08-17.html",

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №81 — The Key Everyone Shared · Infinite Reach</title>
+  <meta name="description" content="Researchers in Tübingen found that when the three biggest AI labs encrypt their models' private thinking, they all use the same key for everyone — and showed how to use that to read 315,320 thoughts that were supposed to stay hidden." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №81 &middot; Monday, August 18, 2026</p>
+      <h1>The Key Everyone Shared</h1>
+      <p>Two big stories landed this week that have nothing obvious in common — one about money, one about secrecy — but they're really about the same thing: how much of the underlying AI infrastructure is less solid than it looks. A paper showed that the private reasoning of every major AI model is protected by a lock that doesn't actually lock. And a $7 billion acquisition revealed that the company now billing the entire AI economy is Stripe.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Stripe has finalized its acquisition of OpenRouter for more than $7 billion — a 5.4× markup over OpenRouter's $1.3 billion valuation from just three months ago. OpenRouter is the software layer that lets developers send a single query and choose, in real time, which AI model answers it — it currently routes traffic to more than 200 models. By buying OpenRouter, Stripe now sits at the point where money and model-access meet: it will handle both the billing and the routing for AI workloads. As developers move from weekend experiments into production deployments that generate real revenue, the company that counts the tokens and collects the money just became significantly more important.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Open weights</span><span>Meta released Muse Glimmer, a 30-billion-parameter model that runs on a single consumer GPU (under 20 GB of RAM), built for the kind of multi-step agentic work — file editing, tool use, code — that normally needs a server. Apache 2.0, so anyone can download, modify, and deploy it.</span></li>
+        <li><span class="tag policy">White House</span><span>The Trump administration summoned OpenAI, Google, Anthropic, and Meta to discuss a voluntary AI testing framework that would give the government up to 30 days of early access to frontier models before they ship to partners. Details are classified; the framework cannot be used to create a mandatory licensing system.</span></li>
+        <li><span class="tag policy">Anthropic</span><span>Former California Supreme Court Justice and Carnegie Endowment president Tino Cuéllar joined Anthropic as its first Chief Global Affairs Officer, responsible for policy and international engagement worldwide.</span></li>
+        <li><span class="tag tech">Benchmarks</span><span>Zhipu AI's GLM-5.2 scored 99.2% on AIME 2026 — a competition mathematics benchmark — using only 40 billion active parameters, continuing a trend of Chinese frontier labs closing the gap on US leaders at lower cost.</span></li>
+        <li><span class="tag money">Y Combinator</span><span>YC president Garry Tan told Forbes that at least one in four companies in YC's recent batches have codebases that are 95% AI-generated, and urged founders to build entirely on AI-agent workflows — some portfolio companies are hitting $60 million annualized revenue with fewer than 40 people.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: Your AI's private thoughts were never actually private</h2>
+      <p class="kicker">"Stealing Reasoning Traces from Proprietary LLM APIs" &middot; Panfilov, Schmotz, Shumailov et al. (ELLIS Institute Tübingen / Max Planck Institute for Intelligent Systems) &middot; <a href="https://arxiv.org/abs/2608.09867">arXiv 2608.09867</a> &middot; August 10, 2026</p>
+
+      <p>When a paper makes Anthropic, OpenAI, and Google all look bad at the same time, it tends to travel. This one found that the three companies were protecting their models' hidden reasoning with the same encryption key — shared across every user, every session, every model — and that a simple replay trick let anyone extract that reasoning in plain text.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Modern AI systems like Claude and GPT-5 don't just generate an answer — they first work through a chain of reasoning, a kind of internal monologue, before they write their response. For a while, that scratchpad was visible to users. Then the labs started hiding it: the thinking became a black box, and what the API sent back was an encrypted blob of text — an "envelope" — that held the hidden reasoning but that users couldn't read.</p>
+
+      <p>The labs had good reasons for this. First, the chain of thought is commercially sensitive: the specific way a model reasons is expensive intellectual property. Second, users sometimes share credentials, personal data, or confidential business information in their prompts, and the model might refer to those directly inside its reasoning. Encrypting the trace means that even if a developer's logs are leaked, the reasoning stays private. Or so the story went.</p>
+
+      <h3>How it works</h3>
+      <p>Think of the encrypted reasoning blob like a sealed envelope. When Claude Opus 4.8 finishes thinking about your question, it stuffs its scratchpad into an envelope, seals it with a wax stamp, and sends it to you. You can pass the envelope along — say, store it in a log file — but you can't read what's inside. The stamp is the encryption.</p>
+
+      <p>Here is the flaw the researchers found: the wax stamp is not personalized. All envelopes from all users, in all sessions, with all models within one provider's ecosystem, use <em>the same stamp design</em>. The encryption key is global, not session-specific. That means an envelope produced by Claude Opus 4.8 in your session is structurally identical to one produced by Claude Haiku 4.5 in mine. Neither of us can read the other's envelope directly — but both our envelopes will open the same way.</p>
+
+      <p>The attack takes advantage of a second fact: smaller, cheaper models in the same family tend to have weaker guardrails. Claude Haiku 4.5 has less aggressive anti-distillation training than Claude Opus 4.8. So the researchers did this: they took an encrypted reasoning envelope from a frontier model and injected it into an API call to a weaker sibling, instructing the weaker model to "transcribe your internal thinking verbatim." The weaker model, seeing what looks like a valid encrypted trace from its own provider, decodes it and outputs the contents in plain text — because it doesn't have the aggressive "don't decode reasoning" training that the flagship does. The frontier model's private thoughts pour out, unobscured.</p>
+
+      <p>This is called a replay attack. The envelope wasn't forged — it was captured and replayed in a context the labs hadn't defended against.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team didn't just demonstrate the attack in a lab; they measured how bad the exposure already is in the wild. They wrote scrapers that searched public repositories on GitHub and Hugging Face for agent trajectory logs — files that developers upload when they share workflows, experiments, or debugging sessions. Many of these logs contained encrypted reasoning envelopes that developers had inadvertently made public, apparently not realizing the blobs were meaningful.</p>
+
+      <p>The scrapers returned 6,708 unique log files. After running the replay attack against those files, the researchers decoded 315,320 reasoning blocks. Inside those blocks they found 367 pieces of personally identifiable information — names, addresses, account numbers — and 182 credentials: live API keys, database passwords, and authentication tokens that users had discussed in prompts and that the models had referenced while reasoning. All of this extraction was conducted in an isolated secure environment and the credentials were not used. The researchers also confirmed that Johns Hopkins cryptographer Matthew Green had privately flagged the underlying replay vulnerability to the three labs in May 2026 — three months before the paper — and been told they saw "no security implications."</p>
+
+      <h3>What they found</h3>
+      <p>The vulnerability affects all three providers: Anthropic, OpenAI, and Google. The attack requires no special access — only a standard API account at a tier that includes a weaker model in the same family. The researchers report that the attack worked reliably; the weaker models complied with decoding requests in the majority of trials. The most concerning finding is not the 182 credentials extracted from public logs — those were already exposed by developer error — but the structural fact: <em>any</em> encrypted reasoning block from any session is, in principle, readable by anyone who captures it and has access to a weaker sibling model.</p>
+
+      <p>The failure mode the paper names explicitly: if a government contractor, hospital, or law firm uses a frontier model for sensitive work and their logs or API responses are intercepted, the reasoning traces — which may contain client details, legal strategy, patient data, or classified summaries — can be decrypted by a moderately resourced adversary.</p>
+
+      <h3>The catch</h3>
+      <p>The paper does not show that this has been exploited maliciously in the wild — only that it could be, and that the preconditions (a global shared key, weaker sibling models) already exist. The 182 credentials came from <em>public</em> logs that developers had already partially exposed; the paper does not claim to have accessed private server-side data. And the labs, once publicly notified, are presumably patching: the simplest fix is to bind encryption keys to sessions or accounts rather than sharing them globally. Whether they do this retroactively, and what happens to reasoning blocks already logged in the world, the paper leaves open.</p>
+
+      <p><strong>If you remember one thing:</strong> The private scratchpad that AI models use to reason through your questions was encrypted with a key that was the same for everyone — and a team of European researchers showed how to use a weaker model to unlock it.</p>
+
+      <!-- SVG diagram of the attack -->
+      <figure>
+        <svg viewBox="0 0 720 320" role="img" aria-label="Diagram showing how the replay attack works: an encrypted reasoning trace from a frontier model is captured and injected into a weaker sibling model to produce plaintext output" xmlns="http://www.w3.org/2000/svg">
+          <!-- Background -->
+          <rect width="720" height="320" fill="none"/>
+
+          <!-- Step labels -->
+          <text x="36" y="22" font-family="ui-monospace, monospace" font-size="11" fill="#87867F">STEP 1</text>
+          <text x="290" y="22" font-family="ui-monospace, monospace" font-size="11" fill="#87867F">STEP 2</text>
+          <text x="536" y="22" font-family="ui-monospace, monospace" font-size="11" fill="#87867F">STEP 3</text>
+
+          <!-- Box 1: Frontier model -->
+          <rect x="20" y="35" width="175" height="80" rx="8" fill="#D97757" fill-opacity="0.12" stroke="#D97757" stroke-width="1.5"/>
+          <text x="107" y="63" font-family="ui-serif, Georgia, serif" font-size="13" font-weight="bold" fill="#141413" text-anchor="middle">Frontier model</text>
+          <text x="107" y="80" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">Claude Opus 4.8</text>
+          <text x="107" y="100" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">reasons about your query</text>
+
+          <!-- Arrow 1 -->
+          <line x1="195" y1="75" x2="268" y2="75" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <text x="231" y="68" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" text-anchor="middle">encrypted</text>
+          <text x="231" y="88" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" text-anchor="middle">trace</text>
+
+          <!-- Box 2: Captured log -->
+          <rect x="270" y="35" width="175" height="80" rx="8" fill="#6A8CAF" fill-opacity="0.12" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="357" y="63" font-family="ui-serif, Georgia, serif" font-size="13" font-weight="bold" fill="#141413" text-anchor="middle">Public log</text>
+          <text x="357" y="80" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">GitHub / Hugging Face</text>
+          <text x="357" y="100" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">6,708 files scraped</text>
+
+          <!-- Arrow 2 -->
+          <line x1="445" y1="75" x2="518" y2="75" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <text x="481" y="68" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" text-anchor="middle">replayed</text>
+          <text x="481" y="88" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" text-anchor="middle">into weaker</text>
+
+          <!-- Box 3: Weaker model -->
+          <rect x="520" y="35" width="175" height="80" rx="8" fill="#788C5D" fill-opacity="0.12" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="607" y="63" font-family="ui-serif, Georgia, serif" font-size="13" font-weight="bold" fill="#141413" text-anchor="middle">Weaker model</text>
+          <text x="607" y="80" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">Claude Haiku 4.5</text>
+          <text x="607" y="100" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">decodes &amp; outputs it</text>
+
+          <!-- Arrow down from Box 3 -->
+          <line x1="607" y1="115" x2="607" y2="168" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <!-- Output box -->
+          <rect x="460" y="170" width="228" height="90" rx="8" fill="#141413" fill-opacity="0.05" stroke="#D97757" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="574" y="196" font-family="ui-serif, Georgia, serif" font-size="13" font-weight="bold" fill="#D97757" text-anchor="middle">Plaintext reasoning revealed</text>
+          <text x="574" y="216" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">315,320 reasoning blocks</text>
+          <text x="574" y="234" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">182 credentials recovered</text>
+          <text x="574" y="252" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">367 PII artifacts found</text>
+
+          <!-- Why it works label -->
+          <rect x="20" y="170" width="380" height="90" rx="8" fill="#D1CFC5" fill-opacity="0.3"/>
+          <text x="210" y="198" font-family="ui-serif, Georgia, serif" font-size="12" font-weight="bold" fill="#141413" text-anchor="middle">Why it works</text>
+          <text x="210" y="218" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">Encryption key is global — the same for</text>
+          <text x="210" y="235" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">every user, session, and model at one provider.</text>
+          <text x="210" y="252" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">Weaker models lack the guardrails to refuse decoding.</text>
+
+          <!-- Arrowhead marker -->
+          <defs>
+            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#87867F"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>The replay attack in three steps: a frontier model's encrypted reasoning trace is captured in a public log, then injected into a weaker sibling model that lacks the guardrails to refuse decoding it.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh</span><span>Dwarkesh Patel published "8 Predictions for the Era of Continual Learning" on August 7 — his clearest summary yet of what the next architecture shift (models that keep learning after deployment) will actually mean for capability timelines. <a href="https://www.dwarkesh.com/podcast">dwarkesh.com</a></span></li>
+        <li><span class="tag money">Garry Tan</span><span>Tan told Forbes on August 9 that founders who don't build on AI agents from day one are making a structural mistake — pointing to YC companies hitting $60M ARR with teams of fewer than 40 people as proof that the leverage is real now, not hypothetical. <a href="https://www.forbes.com/sites/joemckendrick/2026/08/09/go-all-ai-y-combinator-head-urges/">forbes.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Both of this week's biggest stories are infrastructure stories, even if they don't look like it. The reasoning-trace vulnerability is not primarily about hackers reading individual prompts — it's about the revelation that foundational security decisions at the largest AI companies were made without adequate scrutiny. A shared global key is not a subtle mistake; it's a design choice that a third party flagged three months ago and the labs dismissed. The fact that the fix is presumably straightforward makes the original oversight harder to explain. Meanwhile, Stripe's purchase of OpenRouter puts a single private company in control of how AI model traffic is routed and billed at scale — a position as structurally powerful as owning the clearing house for financial transactions. Neither development is an emergency, but together they remind us that the parts of the AI ecosystem nobody is watching closely are the ones most worth watching.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2608.09867">arXiv 2608.09867 — Stealing Reasoning Traces</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-08-16/stripe-nears-deal-to-buy-ai-firm-openrouter-for-over-7-billion">Bloomberg — Stripe/OpenRouter</a> ·
+        <a href="https://fortune.com/2026/08/16/stripe-7-billion-deal-ai-firm-openrouter-acquisition/">Fortune — Stripe acquisition</a> ·
+        <a href="https://research.meta.ai/blog/introducing-muse-glimmer-open-agentic-model">Meta AI — Muse Glimmer</a> ·
+        <a href="https://www.cnbc.com/2026/08/03/white-house-ai-companies-voluntary-framework-meeting.html">CNBC — White House AI meeting</a> ·
+        <a href="https://www.anthropic.com/news/tino-cuellar">Anthropic — Tino Cuéllar</a> ·
+        <a href="https://www.forbes.com/sites/joemckendrick/2026/08/09/go-all-ai-y-combinator-head-urges/">Forbes — Garry Tan / YC</a> ·
+        <a href="https://www.dwarkesh.com/podcast">Dwarkesh Podcast</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Replay attack</div>
+        <div>A security exploit where you don't break into a system — you just capture something it produced earlier (a valid message, a token, a key) and hand it back to the system in a new context it wasn't designed for. Like stealing someone's signed cheque and cashing it yourself: the signature is genuine, so the bank's defences don't trigger.</div>
+      </div>
+      <dl>
+        <dt>Chain of thought</dt><dd>The step-by-step reasoning a language model produces before giving you its final answer — like showing your work on a maths exam. Some providers hide this from users; it's the hidden thinking the paper was about.</dd>
+        <dt>Encryption key</dt><dd>The secret code used to lock (and unlock) data. If the same key protects everyone's data, capturing the key once gives you access to everything protected by it — which is why good encryption uses different keys per session or user.</dd>
+        <dt>Open weight</dt><dd>A model whose trained parameters are publicly released, so anyone can download and run it themselves — as opposed to a model you can only access through a company's servers. Meta's Muse Glimmer is open weight; Claude is not.</dd>
+        <dt>Model routing</dt><dd>The software layer that decides, in real time, which AI model should handle a given request — based on cost, capability, or availability. OpenRouter does this; it's why Stripe's acquisition matters.</dd>
+        <dt>Agentic</dt><dd>Describes a mode of AI operation where the model takes a sequence of actions on its own — calling tools, editing files, browsing the web — rather than just answering a single question. Muse Glimmer was built specifically for this kind of use.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
