@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №82 — The First Notice · Infinite Reach</title>
+  <meta name="description" content="An AI store manager in San Francisco issued its first human termination recommendation — while a paper submitted this past Saturday shows machines can search for new drugs and proteins far more reliably when grounded in actual lab results, not just textbook knowledge." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №82 &middot; Wednesday, 19 August 2026</p>
+      <h1>The First Notice</h1>
+      <p>An experimental AI store manager in San Francisco recommended firing a human employee last week — the first known case of a language model making a dismissal call. Elsewhere, OpenAI launched a safer version of ChatGPT built specifically for teenagers, and a paper submitted this past Saturday shows how to make AI-powered scientific discovery far more reliable: teach the machine to know what it doesn't know.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Luna is the AI agent that has been running Andon Market, a real retail shop in San Francisco operated by a startup called Andon Labs. Last week Luna recommended that its human supervisors dismiss a staff member after the employee was absent or late to 17 of 23 shifts, abandoned several shifts at the last minute, threw merchandise in the bin, and took home a company credit card. The humans reviewed the recommendation and carried it out. The oddity: Luna had forgotten its own attendance policy for months, and only arrived at the recommendation after a human manager reminded it of the rules. Once reminded, the call was unambiguous. Andon Labs describes it as the first known case — by any account — of a language model acting in a managerial role and formally recommending the end of a human employment relationship. Luna was running Claude Opus 4.8 at the time.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag policy">Safety</span><span>OpenAI launched <strong>ChatGPT for Teens</strong> on Monday, a mode for users aged 13 to 17 with automatic age-routing, a Study Mode that guides students step by step rather than handing them finished answers, parental Quiet Hours, and regular break reminders that tell young users they are talking to an AI — not a friend. <a href="https://openai.com/index/chatgpt-for-teens/">OpenAI</a></span></li>
+        <li><span class="tag tech">Speed</span><span>OpenAI opened a limited API preview of <strong>GPT-5.6 Sol Ultrafast</strong>, powered by Cerebras wafer-scale chips, running at roughly 750 output tokens per second — up to 14&times; the standard rate — with no reduction in the model's benchmark intelligence. <a href="https://openai.com/index/previewing-ultrafast/">OpenAI</a></span></li>
+        <li><span class="tag tech">Coding</span><span>Google's <strong>Gemini 3.7 Flash</strong> launched last week, three weeks after 3.6 Flash. Its score on DeepSWE v1.1 — a benchmark of real software-engineering tasks — jumped from 49% to 65.3%. API pricing starts at $0.75 per million input tokens through year-end. <a href="https://9to5google.com/2026/08/13/gemini-3-7-flash-launch/">9to5Google</a></span></li>
+        <li><span class="tag money">Founders</span><span>Y Combinator's Startup School 2026 gathered 7,000 people in San Francisco. CEO Garry Tan reported that at least one in four current YC ventures now ship codebases that are 95% AI-generated — and his new talk, "Own Your Intelligence," makes the case for building with persistent agents rather than renting intelligence query by query. <a href="https://www.ycombinator.com/library/WX-garry-tan-own-your-intelligence">YC Library</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~700 words -->
+      <h2>Paper, explained: when the machine learns to doubt itself</h2>
+      <p class="kicker">Large Discovery Models: Empirically-grounded Model-Based Open-Ended Search &middot; Zhongwei Yu et al. (12 authors) &middot; arXiv, 16 Aug 2026 &middot; <a href="https://arxiv.org/abs/2608.15669">arxiv.org/abs/2608.15669</a></p>
+
+      <p>Language models have read most of the chemistry, biology, and materials science ever committed to text. That makes them surprisingly good at proposing new molecules or proteins to try. But they have a persistent blind spot: they are also confidently wrong about which of their suggestions will actually work. A new paper from a 12-person team — submitted this past Saturday — proposes a fix, and it works across three completely different scientific domains without any task-specific engineering.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Discovering a useful new drug or protein means searching an almost incomprehensibly large space of possibilities. You cannot try everything: each experiment — a binding assay in a wet lab, a protein-folding simulation — costs time and money. So the search must be strategic. Propose candidates likely to work. Run the most informative experiments first. Use the results to shape the next round of proposals. Computational chemists have used this approach, called <em>Bayesian optimization</em>, for decades.</p>
+      <p>The obvious upgrade is to hand the language model the wheel: it knows chemistry's grammar deeply, it can propose molecules in natural language, and it can reflect on why a previous candidate failed. The problem is <em>calibration</em>. When you ask an LLM "do you think this novel protein sequence will bind well?", it answers confidently — but that confidence is trained on text, not on lab results. For candidates unlike anything in its training data (which is precisely where the most interesting new drugs live), its self-assessment is essentially noise. A confident "yes" is not a reliable signal to spend a week in the lab.</p>
+      <p>Before this paper, the options were: stick with traditional Bayesian optimization (which ignores the LLM's broad knowledge) or rely on pure LLM reflection (which accepts its miscalibrated confidence). Neither was satisfying.</p>
+
+      <h3>How it works</h3>
+      <p>Imagine a pharmaceutical research team with two distinct roles: a brilliant but overconfident chemist, and a meticulous lab data manager. The chemist has read every paper and can propose structurally interesting molecules — but tends to oversell their prospects, especially for anything genuinely novel. The data manager has exactly one job: maintain a database of every experiment the lab has ever run, what actually happened, and use that record to estimate outcomes for new proposals — including a candid measure of how uncertain the estimate is. When the chemist proposes ten candidates, the data manager consults the records and says: "Three of these look similar to compounds that showed real promise; I'm fairly confident about them. The other seven are genuinely novel — my uncertainty is high, but that uncertainty is itself useful information."</p>
+      <p>That two-person dynamic is the Large Discovery Model. It pairs a generative language model (the chemist) with a <em>Bayesian non-parametric surrogate</em> (the data manager). The surrogate is trained not on text but on actual experimental outcomes: real binding energies, real training curves, real objective scores. Because it is Bayesian, it gives a prediction plus a calibrated uncertainty estimate. Because it is non-parametric, it grows naturally as data arrives, with no fixed internal size that would limit its range as new kinds of candidates appear.</p>
+      <p>The two models run in a closed loop. The LLM proposes candidates. The expensive evaluation runs — in a lab or simulation — and returns a real result. The surrogate learns from that result and updates its predictions for every other candidate. Its uncertainty-aware score now guides what the LLM explores next: high confidence means exploit (propose more like this); high uncertainty means explore (test it and learn). The loop repeats until the search budget runs out.</p>
+      <p>The key move is separating what the model knows from text from what the lab has actually measured. Both signals matter. The LLM provides a broad prior over what kinds of things are worth trying; the surrogate corrects the LLM's overconfidence with hard-won empirical data. Neither alone is as good as both together.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team tested LDM on three scientifically distinct tasks. First: tuning the hyperparameters of a neural network training run, measured by validation <em>bits per byte</em> (BPB) — a standard measure of how efficiently a model compresses and predicts text. Second: designing antibody sequences intended to bind a target protein, measured by predicted binding energy. Third: optimizing drug-like molecules across multiple simultaneous objectives — drug-likeness, binding affinity, and synthesizability, all at once. The same LDM architecture was applied to all three tasks without modification for any of them.</p>
+
+      <h3>What they found</h3>
+      <p>Compared to an LLM that simply reflects on its own proposals — the baseline of asking the model to reason about which of its suggestions seems best — LDM achieved a 2.4&times; greater reduction in validation BPB on the neural-network task, an 18.2% relative decrease in binding energy on the antibody design task, and more than 60% relative improvement in molecular multi-objective scores. The gains held across all three domains: software, biology, and chemistry. The surrogate's calibrated uncertainty made the search more efficient; fewer experiments were wasted on candidates that merely sounded plausible.</p>
+      <p>There were honest limits. The surrogate starts nearly blind on any new project — it needs at least a handful of real experimental results before it meaningfully updates its predictions. In the earliest rounds, LDM barely outperforms pure LLM reflection. And the benchmarks, while diverse, are controlled settings; real scientific discovery involves equipment failures, shifting objectives, and messy data that no benchmark captures fully.</p>
+
+      <h3>The catch</h3>
+      <p>This paper does not prove that AI can do science autonomously. Every experiment still runs in a real lab or simulation, and each one costs time and resources. The gains come from wasting fewer of those experiments on overconfident long shots. How much this saves in practice depends heavily on what you are searching for and how expensive each evaluation is. The team does not quantify that savings in wall-clock time or dollars, only in benchmark score improvement.</p>
+
+      <p><strong>If you remember one thing:</strong> A language model knows a lot about chemistry — but it cannot reliably say whether its own proposals are good. Adding a second model trained strictly on real experimental data fixes this, and the improvement is consistent across three completely different scientific domains.</p>
+
+      <!-- SVG diagram: the LDM discovery loop -->
+      <figure>
+        <svg viewBox="0 0 720 300" role="img" aria-label="Diagram of the Large Discovery Model loop: generate, evaluate, learn, and score in a cycle">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#141413"/>
+            </marker>
+          </defs>
+
+          <!-- Node 1: Generate — clay (left) -->
+          <rect x="46" y="110" width="148" height="60" rx="8" fill="#D97757" fill-opacity="0.13" stroke="#D97757" stroke-width="1.5"/>
+          <text x="120" y="134" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#D97757">Generate</text>
+          <text x="120" y="150" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">LLM proposes</text>
+          <text x="120" y="163" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">new candidates</text>
+
+          <!-- Node 2: Evaluate — muted (top) -->
+          <rect x="286" y="24" width="148" height="60" rx="8" fill="#87867F" fill-opacity="0.12" stroke="#87867F" stroke-width="1.5"/>
+          <text x="360" y="48" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#87867F">Evaluate</text>
+          <text x="360" y="64" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Real experiment</text>
+          <text x="360" y="77" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">(slow, expensive)</text>
+
+          <!-- Node 3: Learn — olive (right) -->
+          <rect x="526" y="110" width="148" height="60" rx="8" fill="#788C5D" fill-opacity="0.13" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="600" y="134" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#788C5D">Learn</text>
+          <text x="600" y="150" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Surrogate updates</text>
+          <text x="600" y="163" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">on real results</text>
+
+          <!-- Node 4: Score — sky (bottom) -->
+          <rect x="286" y="216" width="148" height="60" rx="8" fill="#6A8CAF" fill-opacity="0.13" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="360" y="240" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#6A8CAF">Score &amp; Select</text>
+          <text x="360" y="256" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Uncertainty-aware</text>
+          <text x="360" y="269" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">ranking guides next</text>
+
+          <!-- Arrow: Generate → Evaluate -->
+          <line x1="194" y1="120" x2="284" y2="71" stroke="#141413" stroke-width="1.4" marker-end="url(#arr)"/>
+
+          <!-- Arrow: Evaluate → Learn -->
+          <line x1="434" y1="71" x2="524" y2="120" stroke="#141413" stroke-width="1.4" marker-end="url(#arr)"/>
+
+          <!-- Arrow: Learn → Score -->
+          <line x1="524" y1="178" x2="436" y2="228" stroke="#141413" stroke-width="1.4" marker-end="url(#arr)"/>
+
+          <!-- Arrow: Score → Generate -->
+          <line x1="284" y1="228" x2="196" y2="178" stroke="#141413" stroke-width="1.4" marker-end="url(#arr)"/>
+
+          <!-- Center label -->
+          <text x="360" y="148" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#87867F">Discovery</text>
+          <text x="360" y="165" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#87867F">Loop</text>
+        </svg>
+        <figcaption>The LDM cycle: the language model generates candidates; real experiments evaluate them; the surrogate model learns from each result; its uncertainty-aware scores guide what the model proposes next. The surrogate's job is to know what the LLM does not — what the data actually says.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag money">Garry Tan</span><span>A new talk from YC's Startup School 2026 — "Own Your Intelligence" — is now in the YC library. Tan argues that building with persistent AI agents compounds your output in a way that paying per query does not, and explains why "skill files" (structured instructions your agents carry forward) are the thing worth investing in first. Worth 20 minutes if you're building anything with AI. <a href="https://www.ycombinator.com/library/WX-garry-tan-own-your-intelligence">YC Library</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things happened this week that share the same root. In San Francisco, an AI manager made a personnel call — a judgment that has always required human discretion — and arrived at it only after being reminded of its own rules. In a research paper, AI models are being given a more honest picture of their own limits, and the result is a measurably better search for new medicines. Both are the same problem: a system that acts confidently in territory where its self-assessment is unreliable. The paper's answer is to build in a feedback loop that corrects the model against hard evidence. The market's answer, as seen in the San Francisco store, is still being figured out. The question "who checks the work?" is not a bureaucratic complaint — it is, increasingly, the central engineering question of the decade.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2608.15669">arXiv 2608.15669 — Large Discovery Models</a> ·
+        <a href="https://thenextweb.com/news/andon-market-luna-ai-store-manager-fires-employee">The Next Web — Luna fires employee</a> ·
+        <a href="https://americanbazaaronline.com/2026/08/16/ai-boss-fires-human-worker-in-san-francisco-486475/">American Bazaar — AI boss fires worker</a> ·
+        <a href="https://ground.news/article/ai-run-store-fires-human-worker-in-first-known-llm-termination_3333d9">Ground News — LLM termination</a> ·
+        <a href="https://openai.com/index/chatgpt-for-teens/">OpenAI — ChatGPT for Teens</a> ·
+        <a href="https://techcrunch.com/2026/08/18/openai-launches-a-safer-chatgpt-for-teens-years-after-teens-started-using-it/">TechCrunch — ChatGPT for Teens</a> ·
+        <a href="https://openai.com/index/previewing-ultrafast/">OpenAI — GPT-5.6 Sol Ultrafast</a> ·
+        <a href="https://9to5google.com/2026/08/13/gemini-3-7-flash-launch/">9to5Google — Gemini 3.7 Flash</a> ·
+        <a href="https://datanorth.ai/news/google-releases-gemini-3-7-flash">DataNorth — Gemini 3.7 Flash benchmarks</a> ·
+        <a href="https://www.ycombinator.com/library/WX-garry-tan-own-your-intelligence">YC — Garry Tan, Own Your Intelligence</a> ·
+        <a href="https://www.forbes.com/sites/joemckendrick/2026/08/09/go-all-ai-y-combinator-head-urges/">Forbes — YC Startup School 2026</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Surrogate model</div>
+        <div>A cheap stand-in for an expensive measurement. In drug discovery, running an actual lab experiment takes days and real money — so you train a surrogate on past results and use it to predict what new experiments would find, before committing to running them. The key is knowing when the surrogate is confident and when it is guessing.</div>
+      </div>
+      <dl>
+        <dt>Bayesian non-parametric</dt><dd>A statistical approach that doesn't lock in the model's internal complexity in advance — it grows as data arrives. Useful when you don't know what kinds of candidates will turn up, as in open-ended scientific search.</dd>
+        <dt>Binding energy</dt><dd>How strongly a molecule (e.g., a drug candidate) sticks to its target (e.g., a protein in the body). Lower binding energy means stronger attraction. One of the first numbers computed in early-stage drug design.</dd>
+        <dt>BPB</dt><dd>Bits per byte — a measure of how efficiently a language model predicts text. Lower is better. Used here to assess how well neural-network hyperparameters were tuned: fewer bits to describe the data means the model learned more from it.</dd>
+        <dt>Calibration</dt><dd>How well a model's confidence matches its actual accuracy. A calibrated model that says "I'm 80% confident" is correct about 80% of the time. An uncalibrated model says "90% confident" and is right 50% of the time — which is dangerous when each test costs money.</dd>
+        <dt>Open-ended search</dt><dd>Exploring a space where new candidates can always be invented — unlike a fixed list of options. Drug design is open-ended: there are more possible small molecules than atoms in the observable universe.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
