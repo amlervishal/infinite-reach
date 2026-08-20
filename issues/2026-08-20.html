@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №83 — The Price of Free · Infinite Reach</title>
+  <meta name="description" content="OpenAI confirmed advertising is coming to ChatGPT in 31 European countries — while a Berkeley paper showed that the largest models ever trained can now run on the hardware already under your desk, no subscription required." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №83 &middot; Wednesday, August 20, 2026</p>
+      <h1>The Price of Free</h1>
+      <p>OpenAI confirmed yesterday that advertising is coming to ChatGPT for free-tier users across 31 European countries starting August 24. A few days earlier, a team at UC Berkeley published a paper showing that the largest open-weight models ever trained can now run on the machine sitting on your desk — no subscription, no data center required. Two ways to make the frontier accessible, with very different trade-offs.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>OpenAI announced on August 19 that ChatGPT Ads will expand to 31 European countries on August 24 — its largest geographic rollout yet. Free and Go subscribers will see ads; Plus, Pro, and Enterprise subscribers won't. OpenAI's stated rationale: advertising funds the cost of giving people access to frontier AI without a monthly bill. This is the classic internet bargain applied to AI for the first time at this scale. The EU's AI Act is already in force, which makes the timing notable — OpenAI must label ChatGPT as an AI system and comply with transparency rules even as it builds a commercial media channel inside it. The ad format will use context from conversations (not stored personally) to serve relevant ads, a distinction OpenAI will need to defend to regulators who are paying close attention.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Local AI</span><span>A Berkeley paper called FreeToken shows how to run a 753-billion-parameter model on a single desktop workstation GPU — and a 35B model on an 8 GB laptop — by treating the full machine (RAM, CPU, GPU, disk) as a single elastic compute platform. More below.</span></li>
+        <li><span class="tag money">DeepMind</span><span>Demis Hassabis stepped back as Google DeepMind's CEO on August 5, becoming chairman and Alphabet's chief scientist; Koray Kavukcuoglu, previously the CTO, takes over day-to-day operations. Jeff Dean also left the company to start a new venture called Discovery Loop.</span></li>
+        <li><span class="tag policy">Science</span><span>The US White House committed over $5 billion across 15 federal agencies to embed AI in national scientific research — cancer diagnosis, pediatric drug discovery, energy infrastructure — under an initiative called the Genesis Mission.</span></li>
+        <li><span class="tag tech">Safety</span><span>Anthropic retuned Fable 5's biology safety classifier, cutting blocked queries by 85%. Doctors, students, and anyone with a medical question should see far fewer refusals. Virology, toxicology, and molecular design remain off-limits.</span></li>
+        <li><span class="tag money">Ads</span><span>ChatGPT now generates meaningful ad revenue in the US six months after launch; OpenAI says the format gives advertisers access to an audience actively researching and deciding — a different intent signal than social media scrolling.</span></li>
+      </ul>
+
+      <h2>Paper, explained: running a 753-billion-parameter model on your desk</h2>
+      <p class="kicker">FreeToken: Efficient Edge-Native MoE Serving with Bandwidth-Adaptive Execution &middot; UC Berkeley &middot; <a href="https://huggingface.co/papers/2608.16157">arXiv 2608.16157</a></p>
+
+      <p>For most of AI's recent history, "running locally" and "frontier-scale" were opposites. The best open-weight models had hundreds of billions of parameters, and parameters need memory — far more memory than any consumer machine could hold. FreeToken changes that arithmetic, not by shrinking the models but by rethinking how a personal machine loads and executes them.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Modern large models are almost all built on a design called Mixture-of-Experts, or MoE. The idea is elegant: instead of a single monolithic network that treats every input identically, an MoE model works more like a large company with many specialist departments. When a phrase arrives, a "router" layer decides which two or four departments to forward it to, and ignores the rest. This means a model can have 750 billion total parameters while activating only 30–40 billion of them for any given word — the majority of the network sits idle at any moment.</p>
+      <p>The catch is that those idle parameters still have to live somewhere. A high-end consumer GPU holds 24 GB of memory; 750 billion parameters, at 16-bit precision, require roughly 1.5 terabytes. Data centers solve this with banks of specialized 80 GB chips. Home users haven't had an answer.</p>
+      <p>Previous attempts used simple offloading: keep some layers on the GPU, keep the rest in system RAM, and ferry data back and forth across the PCIe bus. This works, slowly. The pipeline is fixed, so when RAM-to-GPU bandwidth fluctuates — as it does constantly on a real machine competing for resources — the GPU stalls and waits. It's like a factory assembly line where the conveyor belt randomly changes speed but the workers don't.</p>
+
+      <h3>How it works</h3>
+      <p>FreeToken's core insight is to treat the personal machine not as a small GPU with some spillover RAM, but as a <em>unified elastic warehouse</em> where every tier of storage plays a role. Think of it like a just-in-time supply system for a specialist restaurant. A traditional restaurant pre-buys every ingredient and fills the kitchen (GPU memory) to capacity. A just-in-time restaurant keeps a tiny kitchen, watches what diners actually order, monitors how fast deliveries can arrive from the walk-in cooler (system RAM) or the offsite warehouse (disk), and restocks only what's being consumed — adjusting the delivery frequency in real time based on traffic on the loading dock.</p>
+      <p>FreeToken does three specific things:</p>
+      <p><strong>Expert residency.</strong> It profiles which sub-networks (experts) your actual workloads activate most often. A coding agent tends to route through a consistent set of experts; a translation task routes through different ones. FreeToken learns this and permanently keeps your most-used experts in GPU memory, freeing headroom for the rest of the model to stream in on demand.</p>
+      <p><strong>Bandwidth-adaptive prefetching.</strong> The system continuously measures the transfer speed between system RAM and GPU, and adjusts how aggressively it fetches experts ahead of the current execution point. Fast PCIe connection? Prefetch multiple experts ahead. Slower connection? Fetch just in time. This is the "bandwidth-adaptive" in the title — the loading strategy is not static but tracks actual throughput in real time, so the GPU rarely idles waiting for parameters.</p>
+      <p><strong>Agentic state reuse.</strong> AI agents — the kind that loop through tool calls, browse documents, write and run code — follow repeating execution patterns. Each "browse a file" step activates similar experts as the previous "browse a file" step. FreeToken caches the "expert profile" of common agent sub-tasks and reuses those profiles across repetitions, skipping redundant loads and dramatically reducing the bandwidth demand over a long agent session.</p>
+
+      <h3>What they actually did</h3>
+      <p>The Berkeley team tested FreeToken across more than 20 open-weight MoE models on hardware ranging from an 8 GB laptop GPU to a single high-end workstation GPU. The headline numbers: a 35B-parameter model on an 8 GB laptop GPU; a 284B-parameter model on a gaming desktop; and GLM-5.2 — a 753-billion-parameter model, one of the largest open-weight systems ever released — on a single workstation GPU. The system is publicly available at flashml.ai and covers real agent workloads, not just simple text completion.</p>
+
+      <h3>What they found</h3>
+      <p>FreeToken matched or outperformed existing edge-inference tools at every hardware tier. The gains were most pronounced on agentic workloads — the multi-step, tool-using sessions that increasingly represent real AI use. The bandwidth-adaptive prefetcher reduced GPU stalls significantly compared to fixed prefetch policies, particularly on machines where background processes compete for the PCIe bus. The biggest qualitative finding: agent workloads, because of their repetitive structure, turned out to be especially well-suited to expert reuse — a case where real-world usage is actually easier for the system than synthetic benchmarks assumed.</p>
+      <p>The failure modes: highly unpredictable workloads — heavily mixed-language translation, or prompts that jump erratically between domains — showed more variance, because future expert demand was genuinely hard to forecast. The prefetcher is only as good as the predictability of what you're asking the model to do.</p>
+
+      <h3>The catch</h3>
+      <p>The 753B result requires a high-end workstation GPU — not a $500 gaming card. The paper's most accessible result is the laptop case (35B), which is a capable but not frontier-scale model. The gap between "runs on my laptop" and "runs the world's largest open model" still costs several thousand dollars in hardware. FreeToken closes an engineering gap, not a budget gap. It also requires open-weight models — any closed model (ChatGPT, Gemini, Fable) stays server-side regardless.</p>
+
+      <p><strong>If you remember one thing:</strong> FreeToken shows that "frontier-scale" and "locally owned" are no longer mutually exclusive — for the right hardware, they are the same thing today.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 280" role="img" aria-label="FreeToken memory hierarchy diagram: how experts move between disk, system RAM, and GPU memory based on bandwidth and usage frequency">
+          <!-- Background -->
+          <rect x="0" y="0" width="720" height="280" fill="none"/>
+
+          <!-- Title -->
+          <text x="360" y="24" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="bold">How FreeToken moves experts between storage tiers</text>
+
+          <!-- Disk box -->
+          <rect x="20" y="50" width="140" height="170" rx="6" fill="#f5f4f1" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="90" y="75" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">DISK</text>
+          <text x="90" y="93" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" text-anchor="middle">cold experts</text>
+          <rect x="35" y="105" width="110" height="14" rx="3" fill="#D1CFC5"/>
+          <rect x="35" y="124" width="110" height="14" rx="3" fill="#D1CFC5"/>
+          <rect x="35" y="143" width="110" height="14" rx="3" fill="#D1CFC5"/>
+          <rect x="35" y="162" width="110" height="14" rx="3" fill="#D1CFC5"/>
+          <rect x="35" y="181" width="110" height="14" rx="3" fill="#D1CFC5"/>
+          <text x="90" y="218" font-family="ui-monospace, monospace" font-size="9" fill="#87867F" text-anchor="middle">~1.5 TB total</text>
+
+          <!-- System RAM box -->
+          <rect x="200" y="50" width="160" height="170" rx="6" fill="#f0f4ee" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="280" y="75" font-family="system-ui, sans-serif" font-size="11" fill="#788C5D" text-anchor="middle">SYSTEM RAM</text>
+          <text x="280" y="93" font-family="system-ui, sans-serif" font-size="10" fill="#788C5D" text-anchor="middle">warm experts</text>
+          <rect x="215" y="105" width="130" height="14" rx="3" fill="#b8c9a8"/>
+          <rect x="215" y="124" width="130" height="14" rx="3" fill="#b8c9a8"/>
+          <rect x="215" y="143" width="130" height="14" rx="3" fill="#b8c9a8"/>
+          <rect x="215" y="162" width="130" height="14" rx="3" fill="#D1CFC5"/>
+          <rect x="215" y="181" width="130" height="14" rx="3" fill="#D1CFC5"/>
+          <text x="280" y="218" font-family="ui-monospace, monospace" font-size="9" fill="#788C5D" text-anchor="middle">64–256 GB typical</text>
+
+          <!-- GPU VRAM box -->
+          <rect x="400" y="50" width="160" height="170" rx="6" fill="#fdf0eb" stroke="#D97757" stroke-width="2"/>
+          <text x="480" y="75" font-family="system-ui, sans-serif" font-size="11" fill="#D97757" text-anchor="middle">GPU VRAM</text>
+          <text x="480" y="93" font-family="system-ui, sans-serif" font-size="10" fill="#D97757" text-anchor="middle">hot experts (resident)</text>
+          <rect x="415" y="105" width="130" height="14" rx="3" fill="#e89f87"/>
+          <rect x="415" y="124" width="130" height="14" rx="3" fill="#e89f87"/>
+          <rect x="415" y="143" width="130" height="14" rx="3" fill="#D1CFC5"/>
+          <rect x="415" y="162" width="130" height="14" rx="3" fill="#D1CFC5"/>
+          <text x="480" y="218" font-family="ui-monospace, monospace" font-size="9" fill="#D97757" text-anchor="middle">8–24 GB typical</text>
+
+          <!-- Bandwidth monitor box -->
+          <rect x="590" y="90" width="110" height="70" rx="6" fill="#edf2f7" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="645" y="112" font-family="system-ui, sans-serif" font-size="10" fill="#6A8CAF" text-anchor="middle">Bandwidth</text>
+          <text x="645" y="126" font-family="system-ui, sans-serif" font-size="10" fill="#6A8CAF" text-anchor="middle">monitor</text>
+          <text x="645" y="148" font-family="ui-monospace, monospace" font-size="9" fill="#6A8CAF" text-anchor="middle">adapts prefetch</text>
+
+          <!-- Arrow: disk → RAM -->
+          <defs>
+            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#87867F"/>
+            </marker>
+            <marker id="arrowhead-olive" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#788C5D"/>
+            </marker>
+            <marker id="arrowhead-clay" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#D97757"/>
+            </marker>
+            <marker id="arrowhead-sky" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#6A8CAF"/>
+            </marker>
+          </defs>
+          <line x1="162" y1="135" x2="196" y2="135" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowhead)" stroke-dasharray="4,3"/>
+          <text x="181" y="129" font-family="system-ui, sans-serif" font-size="8" fill="#87867F" text-anchor="middle">load</text>
+
+          <!-- Arrow: RAM → GPU -->
+          <line x1="362" y1="130" x2="396" y2="130" stroke="#788C5D" stroke-width="2" marker-end="url(#arrowhead-olive)"/>
+          <text x="380" y="124" font-family="system-ui, sans-serif" font-size="8" fill="#788C5D" text-anchor="middle">prefetch</text>
+
+          <!-- Arrow: bandwidth monitor → RAM–GPU arrow -->
+          <line x1="590" y1="140" x2="530" y2="140" stroke="#6A8CAF" stroke-width="1.5" marker-end="url(#arrowhead-sky)" stroke-dasharray="4,3"/>
+          <text x="558" y="134" font-family="system-ui, sans-serif" font-size="8" fill="#6A8CAF" text-anchor="middle">controls</text>
+
+          <!-- Execution label -->
+          <rect x="590" y="180" width="110" height="40" rx="6" fill="#fdf0eb" stroke="#D97757" stroke-width="1"/>
+          <text x="645" y="198" font-family="system-ui, sans-serif" font-size="9" fill="#D97757" text-anchor="middle">Execution</text>
+          <text x="645" y="212" font-family="system-ui, sans-serif" font-size="9" fill="#D97757" text-anchor="middle">(active experts only)</text>
+
+          <line x1="560" y1="195" x2="590" y2="195" stroke="#D97757" stroke-width="1.5" marker-end="url(#arrowhead-clay)"/>
+
+          <!-- Label at bottom -->
+          <text x="360" y="265" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" text-anchor="middle">Orange = actively used. Only 2–4 of hundreds of experts activate per token; the rest stay cool.</text>
+        </svg>
+        <figcaption>FreeToken's three-tier memory model. At any moment only a handful of "experts" (the orange sub-networks) are active in GPU memory. The bandwidth monitor continuously adjusts how aggressively warm experts are prefetched from system RAM — making the load proportional to available throughput rather than fixed in advance.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>New podcast episode: <a href="https://www.dwarkesh.com/podcast">"8 Predictions for the Era of Continual Learning"</a> (August 7). Dwarkesh lays out how the next phase of AI development shifts from pretraining on fixed datasets to models that keep learning in deployment — worth an hour if you want a map of where things go after scaling slows.</span></li>
+        <li><span class="tag money">Garry Tan</span><span>YC's CEO gave a talk called <a href="https://www.ycombinator.com/library/WX-garry-tan-own-your-intelligence">"Own Your Intelligence"</a> arguing that the defining startup advantage of this moment is building AI-native rather than merely AI-assisted — companies where the software stack is rebuilt around the assumption that AI does most of the execution. YC says many of its current batch run 95% AI-written codebases.</span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three of this week's stories point at the same shift from different angles. Advertising brings frontier AI to people who won't pay subscriptions. A federal $5 billion commitment funds AI-powered science that the market would underinvest in. And local serving (FreeToken) makes frontier capability available to anyone with decent hardware and a preference for privacy or offline access. Each is a different distribution mechanism for the same underlying technology.</p>
+      <p>The Hassabis transition at DeepMind is worth noting alongside these: the person who co-founded the field's most celebrated lab — the group behind AlphaFold, AlphaGo, and Gemini — is stepping back from operations to focus on science. That generational handover, at the lab and at others, marks the moment when AI research shifts from founder-driven to professionally managed — the same transition that happened to the internet in the early 2000s. What follows is usually more infrastructure, more consolidation, and slower headline breakthroughs. Which makes the FreeToken result feel timely: it's the kind of steady engineering progress that defines the infrastructure phase.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://openai.com/index/chatgpt-ads-expands-across-europe/">OpenAI — ChatGPT Ads Expands Across Europe</a> ·
+        <a href="https://nltimes.nl/2026/08/19/chatgpt-ads-coming-netherlands-next-week-openai-expands-across-europe">NL Times — ChatGPT Ads Coming to Netherlands</a> ·
+        <a href="https://huggingface.co/papers/2608.16157">Hugging Face Papers — FreeToken (arXiv 2608.16157)</a> ·
+        <a href="https://www.axios.com/2026/08/05/google-deepmind-demis-hassabis-ai">Axios — Demis Hassabis stepping aside</a> ·
+        <a href="https://dataconomy.com/2026/08/06/demis-hassabis-stepping-down-google-deepmind-ceo/">Dataconomy — DeepMind leadership change</a> ·
+        <a href="https://www.scientificamerican.com/article/u-s-pledges-5-billion-to-boost-ai-in-government-backed-scientific-research/">Scientific American — US Genesis Mission $5B</a> ·
+        <a href="https://www.unite.ai/anthropic-retunes-fable-5s-biology-safeguards-cutting-blocked-queries-85/">Unite.AI — Fable 5 biology safeguards update</a> ·
+        <a href="https://cybersecuritynews.com/claude-fable-5s-biology-safeguards-update/">Cybersecurity News — Fable 5 safeguards detail</a> ·
+        <a href="https://www.dwarkesh.com/podcast">Dwarkesh Podcast — August 2026 episodes</a> ·
+        <a href="https://www.ycombinator.com/library/WX-garry-tan-own-your-intelligence">YC Library — Garry Tan, Own Your Intelligence</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Bandwidth-adaptive</div>
+        <div>A system that continuously measures the speed of its own data connections and adjusts its behaviour based on what the connection can actually handle right now — rather than assuming a fixed speed and either under- or over-loading the pipe. FreeToken applies this to the link between system RAM and the GPU: if the channel is busy, it fetches less; if it's clear, it fetches more aggressively.</div>
+      </div>
+      <dl>
+        <dt>MoE (Mixture of Experts)</dt><dd>An architecture where a model has many specialist sub-networks ("experts"). A router decides which two or four to activate for each token; the rest stay dormant. Allows enormous total parameter counts while keeping per-token compute manageable.</dd>
+        <dt>Expert</dt><dd>One of the specialist sub-networks in an MoE model. Think of it as a department in a company — most departments sit idle for any given question, but the right ones get called in depending on what the router decides.</dd>
+        <dt>Token</dt><dd>The basic unit a language model processes — roughly a word or a word-fragment. A sentence of 10 words might be 12–15 tokens. Models see and generate one token at a time.</dd>
+        <dt>Prefetching</dt><dd>Loading data into a faster memory tier before it's needed, so execution doesn't have to stop and wait. The art is predicting which data you'll need next; FreeToken does this by watching expert usage patterns.</dd>
+        <dt>Open weights</dt><dd>A model whose trained parameters are publicly released for anyone to download and run. Opposite of a closed or hosted-only model like ChatGPT or Gemini, which live on the company's servers. FreeToken only helps with open-weight models.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

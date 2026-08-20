@@ -1,5 +1,12 @@
 [
   {
+    "num": 83,
+    "date": "2026-08-20",
+    "slug": "issues/2026-08-20.html",
+    "title": "The Price of Free",
+    "blurb": "OpenAI announced advertising for ChatGPT across 31 European countries — while a Berkeley paper showed that the largest open-weight models ever trained can now run on a single desktop workstation, no data center required."
+  },
+  {
     "num": 82,
     "date": "2026-08-19",
     "slug": "issues/2026-08-19.html",
