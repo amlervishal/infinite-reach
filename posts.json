@@ -1,5 +1,12 @@
 [
   {
+    "num": 84,
+    "date": "2026-08-21",
+    "slug": "issues/2026-08-21.html",
+    "title": "Exactly Hard Enough",
+    "blurb": "A new paper shows AI learns faster by writing its own training drills — calibrated to exactly its current ability — the week OpenAI launched a teen-specific ChatGPT."
+  },
+  {
     "num": 83,
     "date": "2026-08-20",
     "slug": "issues/2026-08-20.html",
