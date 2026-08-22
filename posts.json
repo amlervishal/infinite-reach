@@ -1,5 +1,12 @@
 [
   {
+    "num": 85,
+    "date": "2026-08-22",
+    "slug": "issues/2026-08-22.html",
+    "title": "Before It Goes Further",
+    "blurb": "OpenAI halted its biggest-ever training run when internal models approached a 'Critical' cybersecurity threshold — while a Berkeley paper shows smarter training environments can improve an agent by up to 9 points without touching the model."
+  },
+  {
     "num": 84,
     "date": "2026-08-21",
     "slug": "issues/2026-08-21.html",
