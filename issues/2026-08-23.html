@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №86 — Something That Sticks · Infinite Reach</title>
+  <meta name="description" content="An AI designed 354 working protein binders in 48 hours, validated by two external labs. A new benchmark reveals where the same models still hit a wall: the blank page before the science begins." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №86 &middot; Sunday, August 23, 2026</p>
+      <h1>Something That Sticks</h1>
+      <p>An AI ran a fully autonomous protein design campaign this week and returned results that two external labs confirmed in the wet lab. Separately, a new benchmark asked a deceptively simple question — can a model look at a bibliography and figure out what the paper was probably about? — and the answer illuminates where the limits actually are.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic announced this week that Claude had run an autonomous protein design campaign, no human scientific guidance during execution. A single agent, given a set of protein targets and a protocol, chose its own computational tools, evaluated and narrowed candidate sequences, and handed off ranked designs for synthesis. Two independent firms — Adaptyv Bio and Twist Bioscience — produced and tested the results. Of 1,320 designed sequences across 15 protein targets, 354 produced confirmed working binders. That is a hit rate of 22–35%, against the field norm of 10–15%. Fourteen of 15 targets yielded at least one binder; on some, Claude's designs bound their targets several times more tightly than the best previously published result. Anthropic notes that similar life-science capabilities remain restricted in its most capable model, and it is preparing a research-access program for scientists.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Benchmark</span><span>A new paper tested whether frontier AI can reconstruct a paper's research idea from its bibliography alone — 643 papers, six fields, seven models. The best single-model Match rate: roughly 15%. A multi-agent pipeline pushed that to 42% in the easiest domain, still failing on most papers. <a href="https://arxiv.org/abs/2608.16645">arXiv:2608.16645</a></span></li>
+        <li><span class="tag money">Palantir</span><span>Q2 2026 earnings showed revenue up 93% year-on-year to $1.94B — the fastest growth in the company's history — driven by enterprise demand for AI tools that let companies use frontier models without handing their data to frontier-model providers.</span></li>
+        <li><span class="tag money">India</span><span>Indian AI startups raised $1.07B in H1 2026, up 33% year-on-year; Sarvam AI led with a $234M round for models spanning all 22 of India's official languages.</span></li>
+        <li><span class="tag policy">US science</span><span>The federal government committed more than $5B across 15 agencies to embed AI into national scientific research — the largest coordinated AI-in-science investment the US government has announced.</span></li>
+        <li><span class="tag tech">Voice</span><span>xAI's Grok Voice Think Fast 2.0 became the default voice model in early August, cutting time to first audio from 1.25 s to 0.70 s and letting the model reason through questions while speaking rather than before speaking.</span></li>
+      </ul>
+
+      <h2>Paper, explained: Can a model reconstruct a paper from its reference list?</h2>
+      <p class="kicker">"Reconstruction: A Blind Benchmark for Recovering Research Ideas from Pre-Publication Bibliographies" &middot; Shaolong Chen, Yanlin Fei, Nazhou Liu, Xinmiao Yu, Lei Li, Rahul Thapa, Madalina Ciobanu, Qingqing Mao, Ritankar Das &middot; <a href="https://arxiv.org/abs/2608.16645">arXiv:2608.16645</a> &middot; August 19, 2026</p>
+
+      <p>If you want to know whether a language model is doing real scientific reasoning or just pattern-matching against things it has seen before, here is a clean test: hide the paper, give the model only its bibliography, and ask it what the paper was probably about. A team of researchers built exactly this benchmark, ran seven frontier models through it, and got results that tell a more nuanced story than the headline numbers.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Most AI science benchmarks test recall: can the model cite a result, verify a fact, or solve a problem that has a known answer? The Reconstruction benchmark tests something different — forward inference. A bibliography is a fingerprint of a scientist's intellectual life. It records what problems they were staring at, which methods they were borrowing, what gaps in the existing literature they were trying to fill. A trained scientist who reads a bibliography carefully can sometimes reconstruct the arc of the project it belongs to. The question is whether a language model can do the same — not by looking up the answer in its training data, but by reasoning about the shape of the problem from the evidence at hand.</p>
+
+      <p>The difficulty is deeper than it first appears. Models trained on the public internet have likely seen many of the papers in question. The benchmark designers needed to close that shortcut without making the task trivial. They did it with three interlocking rules: a strict temporal cutoff (only references published before the seed paper are allowed in the bibliography, so no future literature can bleed through); full anonymisation of every reference (no journal names, no author names, only opaque identifiers); and a held-out ground truth that is never given to the model, only to the LLM judge that scores the answer afterward. The result is a task where a model cannot retrieve its way to a right answer — it has to think its way there.</p>
+
+      <h3>How it works</h3>
+      <p>The everyday analogy: imagine being handed only the bibliography of a term paper — every source the author cited, with author names and journal titles stripped out — and being asked: what was this essay probably arguing? The references tell you what the author was reading; you have to infer what question they were trying to answer and what they probably concluded. The benchmark formalises this as a Match task: the model proposes one or more research hypotheses (what the paper was testing, and by what method), and a separate language model acting as judge decides whether the guess aligns with what the paper actually contains.</p>
+
+      <p>To push the ceiling, the team also built what they call a Swiss tournament pipeline — named after the competition format where players are matched against others of similar strength rather than everyone playing everyone. In this case, multiple language models each independently generate hypotheses about the same paper. Then they swap answers and critique each other in structured rounds: weak ideas are challenged and either refined or dropped; strong ideas gain support and rise. The best surviving hypothesis from each round advances. The effect is similar to how a panel of referees stress-tests a scientific claim before it is accepted — a single reviewer's blind spot tends to get caught when four reviewers look at the same thing independently.</p>
+
+      <h3>What they actually did</h3>
+      <p>The benchmark evaluated 643 papers across six scientific domains: computer science, biology, medicine, physics, chemistry, and economics. Seven frontier language models were run on the bibliography-only version of the task under the full anti-leakage protocol. The Swiss tournament pipeline ran additional rounds of multi-model critique and iterative hypothesis refinement, without giving any model access to external search or new literature during the task.</p>
+
+      <!-- SVG figure -->
+      <figure>
+        <svg viewBox="0 0 720 290" role="img" aria-label="Bar chart comparing single-model vs multi-agent match rates across five scientific domains on the Reconstruction benchmark">
+          <!-- Chart background -->
+          <rect width="720" height="290" fill="none"/>
+
+          <!-- Title -->
+          <text x="360" y="28" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="15" font-weight="bold" fill="#141413">Reconstruction Benchmark: Match Rates by Approach</text>
+          <text x="360" y="46" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">Share of papers where the AI recovered the correct research idea</text>
+
+          <!-- Legend -->
+          <rect x="188" y="56" width="13" height="13" fill="#D97757" rx="2"/>
+          <text x="206" y="67" font-family="system-ui, sans-serif" font-size="11" fill="#141413">Single frontier model (3–15%)</text>
+          <rect x="396" y="56" width="13" height="13" fill="#788C5D" rx="2"/>
+          <text x="414" y="67" font-family="system-ui, sans-serif" font-size="11" fill="#141413">Multi-agent pipeline (23–42%)</text>
+
+          <!-- Chart area: x 80–660, y 80–235; height 155px for 0–50% -->
+          <!-- 1% = 3.1 px; 10%=31px, 20%=62, 30%=93, 40%=124, 50%=155 -->
+
+          <!-- Grid lines and Y-axis labels -->
+          <line x1="80" y1="235" x2="660" y2="235" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="80" y1="204" x2="660" y2="204" stroke="#D1CFC5" stroke-width="0.6" stroke-dasharray="5,4"/>
+          <line x1="80" y1="173" x2="660" y2="173" stroke="#D1CFC5" stroke-width="0.6" stroke-dasharray="5,4"/>
+          <line x1="80" y1="142" x2="660" y2="142" stroke="#D1CFC5" stroke-width="0.6" stroke-dasharray="5,4"/>
+          <line x1="80" y1="111" x2="660" y2="111" stroke="#D1CFC5" stroke-width="0.6" stroke-dasharray="5,4"/>
+
+          <text x="74" y="238" text-anchor="end" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">0%</text>
+          <text x="74" y="207" text-anchor="end" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">10%</text>
+          <text x="74" y="176" text-anchor="end" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">20%</text>
+          <text x="74" y="145" text-anchor="end" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">30%</text>
+          <text x="74" y="114" text-anchor="end" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">40%</text>
+
+          <!-- Domain width = (660-80)/5 = 116px each -->
+          <!-- Two bars per domain: left=single(clay), right=multi(olive); bar width 34px, gap 8px, outer pad 20px -->
+
+          <!-- COMP. SCI — single 15%, multi 42% -->
+          <!-- domain x start: 80; bar1 x: 80+20=100; bar2 x: 100+34+8=142 -->
+          <rect x="100" y="188" width="34" height="47" fill="#D97757" opacity="0.88" rx="2"/>
+          <rect x="142" y="105" width="34" height="130" fill="#788C5D" opacity="0.88" rx="2"/>
+          <text x="138" y="255" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413">Comp. Sci.</text>
+
+          <!-- BIOLOGY — single 12%, multi 38% -->
+          <!-- domain x start: 196; bar1 x: 216; bar2 x: 258 -->
+          <rect x="216" y="198" width="34" height="37" fill="#D97757" opacity="0.88" rx="2"/>
+          <rect x="258" y="117" width="34" height="118" fill="#788C5D" opacity="0.88" rx="2"/>
+          <text x="254" y="255" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413">Biology</text>
+
+          <!-- MEDICINE — single 7%, multi 26% -->
+          <!-- domain x start: 312; bar1 x: 332; bar2 x: 374 -->
+          <rect x="332" y="214" width="34" height="21" fill="#D97757" opacity="0.88" rx="2"/>
+          <rect x="374" y="154" width="34" height="81" fill="#788C5D" opacity="0.88" rx="2"/>
+          <text x="370" y="255" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413">Medicine</text>
+
+          <!-- PHYSICS — single 10%, multi 33% -->
+          <!-- domain x start: 428; bar1 x: 448; bar2 x: 490 -->
+          <rect x="448" y="204" width="34" height="31" fill="#D97757" opacity="0.88" rx="2"/>
+          <rect x="490" y="133" width="34" height="102" fill="#788C5D" opacity="0.88" rx="2"/>
+          <text x="486" y="255" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413">Physics</text>
+
+          <!-- CHEMISTRY — single 5%, multi 28% -->
+          <!-- domain x start: 544; bar1 x: 564; bar2 x: 606 -->
+          <rect x="564" y="219" width="34" height="16" fill="#D97757" opacity="0.88" rx="2"/>
+          <rect x="606" y="148" width="34" height="87" fill="#788C5D" opacity="0.88" rx="2"/>
+          <text x="602" y="255" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413">Chemistry</text>
+        </svg>
+        <figcaption>Match rates on the Reconstruction benchmark across five scientific domains. Even the multi-agent pipeline (olive) fails on more papers than it gets right; single models (clay) rarely crack 15%. The gap between the two bars is where structured peer critique earns its keep.</figcaption>
+      </figure>
+
+      <h3>What they found</h3>
+      <p>Working alone, frontier models recovered the correct research idea at a Match rate of approximately 3–15%, depending on the domain and the model. The spread between the best and worst individual model was smaller than the researchers expected — the most capable models were not dramatically better at reasoning from bibliographies alone; they all clustered at the low end. The hardest domains were medicine and chemistry, where even the best single model rarely exceeded 7%.</p>
+
+      <p>The Swiss tournament multi-agent pipeline raised match rates to 23–42% across the six domains — an approximately 2.4× improvement over the best single-model baseline. The biggest gains came from the critique step: models whose hypotheses were challenged by peers, forced to justify themselves, and revised in light of counterarguments consistently outperformed models left to answer alone. Computer science was the easiest domain (more formalised problem statements in bibliographies); medicine and chemistry were hardest. Even in the best case, the pipeline failed on more papers than it got right.</p>
+
+      <h3>The catch</h3>
+      <p>This is a deliberately stripped-down version of the task. Real scientists do not work only from bibliographies — they read full papers, talk to colleagues, and draw on years of intuition about what the field needs next. In practice, AI models have access to abstracts, full texts, and web search, which would almost certainly raise the recovery rate substantially. The benchmark also uses an LLM as judge, which may miss hypotheses that are equivalent but differently framed. What the benchmark tests precisely is whether models can reason forward from minimal evidence into unknown territory, with retrieval shortcuts removed. On that narrow test, the answer is: barely, and only with structured multi-agent critique.</p>
+
+      <p><strong>If you remember one thing:</strong> Frontier models can execute scientific protocols at speed; when you strip away the breadcrumbs and ask them to reason forward from limited evidence, the ceiling is surprisingly low — and multi-agent critique is currently the most reliable way to push through it.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Published an LLM Wiki gist — a practical architectural pattern for building persistent, self-maintaining knowledge bases where a model incrementally updates structured summaries rather than re-reading raw documents on every query. It's the clearest writeup yet of a pattern many people are trying to build. <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f">gist</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The protein story and the Reconstruction paper pull in opposite directions, and together they sketch where AI actually stands in science right now. Claude can execute a well-defined computational protocol — select tools, evaluate candidate sequences, rank designs — faster and with more throughput than a human team, and the wet-lab results are real. What it still cannot reliably do is stare at a set of bibliographic clues and reconstruct a research breakthrough — the part of science that happens before the protocol exists, when someone is asking "what question should we even be asking?" The gap between execution and invention is large, and honest, measurable. Knowing how to measure it precisely — which is what the Reconstruction benchmark tries to do — is the prerequisite for closing it.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://aifront-page.com/anthropic-claude-protein-binders-de-novo-design-2026/">Claude Protein Binders — AI Front Page</a> ·
+        <a href="https://www.webpronews.com/claude-designs-real-protein-binders-that-stick-in-the-lab">WebProNews — Claude in the wet lab</a> ·
+        <a href="https://explainx.ai/blog/claude-protein-design-analytical-chemistry-august-2026">ExplainX — Claude protein design detail</a> ·
+        <a href="https://arxiv.org/abs/2608.16645">arXiv:2608.16645 — Reconstruction benchmark</a> ·
+        <a href="https://www.techtimes.com/articles/324932/20260819/blind-benchmark-catches-frontier-ai-just-three-percent-research-idea-recovery.htm">TechTimes — Reconstruction coverage</a> ·
+        <a href="https://fortune.com/2026/08/03/palantir-earnings-guidance-beat-revenue-profit-ai-demand/">Fortune — Palantir Q2 2026</a> ·
+        <a href="https://www.tice.news/tice-trending/global-ai-funding-india-startup-funding-august-22-2026-12412252">TICE News — India AI funding Aug 22</a> ·
+        <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f">Andrej Karpathy — LLM Wiki gist</a> ·
+        <a href="https://x.ai/news/grok-voice-think-fast-2">xAI — Grok Voice Think Fast 2.0</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Protein binder</div>
+        <div>A short chain of amino acids engineered to attach to a specific target molecule. Think of it as a custom-cut key designed for exactly one molecular lock — except both the key and the lock are three-dimensional shapes made of biological building blocks, and "binding" means the key fits tightly enough to stay put and do something useful.</div>
+      </div>
+      <dl>
+        <dt>Hit rate</dt><dd>In protein design, the fraction of designed sequences that actually work when synthesised and tested in a wet lab. The field baseline of 10–15% means roughly one in seven or eight designs succeeds. Doubling this rate is a significant practical advance.</dd>
+        <dt>Wet lab</dt><dd>A physical laboratory where experiments happen with real materials — liquids, proteins, cells. When AI designs a molecule, the wet lab is where you find out if it actually works. Contrast with "dry lab" (purely computational work).</dd>
+        <dt>Match rate</dt><dd>In the Reconstruction paper, the fraction of papers for which the AI proposed a hypothesis that an independent judge counted as equivalent to the real paper's core research idea.</dd>
+        <dt>Multi-agent pipeline</dt><dd>A setup where multiple AI models each take a crack at a problem independently, then critique and refine one another's answers — similar to how a panel of reviewers improves on any single reviewer's judgment.</dd>
+        <dt>Swiss tournament</dt><dd>A competition format where participants are matched against others of similar skill rather than playing every possible opponent. In AI research, it's used to efficiently surface the best hypothesis from a large pool by having models critique and challenge one another in rounds.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
