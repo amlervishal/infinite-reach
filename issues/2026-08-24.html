@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №87 — What You Build Around It · Infinite Reach</title>
+  <meta name="description" content="Anthropic posted its first quarterly profit on $11.5 billion in revenue, the same week a paper showed smarter scaffolding beats a smarter model by 12 points." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №87 &middot; Monday, August 24, 2026</p>
+      <h1>What You Build Around It</h1>
+      <p>Anthropic just became the first frontier AI lab to post a quarterly operating profit — two years ahead of its own schedule. At almost the same moment, a paper arrived showing that the biggest leap in AI agent performance this year didn't come from a better model. It came from better plumbing.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic's preliminary revenue for Q2 2026 came in at more than $11.5 billion — up from $787 million in the same quarter of last year, and from $4.73 billion in Q1 2026. The company also posted its first-ever positive adjusted operating income: roughly $559 million. Compute costs, as a share of revenue, fell from 71 cents per dollar to 56 cents in a single quarter, suggesting the efficiency curve is finally bending in Anthropic's favour. The company is now reportedly targeting a $2 trillion IPO valuation. Twelve months ago, that number would have seemed like science fiction.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Protocols</span><span>Google's A2A protocol formally joined the Linux Foundation's Agentic AI Foundation (AAIF) on August 20, placing it alongside Anthropic's Model Context Protocol (MCP) under neutral, vendor-independent governance. The AAIF has grown from 49 to over 250 member organizations in under a year; platinum members include AWS, Google, Microsoft, Anthropic, and OpenAI. <a href="https://aimagazine.com/news/why-did-googles-a2a-join-the-agentic-ai-foundation">AI Magazine</a></span></li>
+        <li><span class="tag tech">Tools</span><span>Claude Code 2.1.0 shipped with 1,096 commits — the biggest release yet. Key additions: true parallel background agents, hooks embedded in skill and agent frontmatter, hot-reloading skills, and custom agent support invocable with a slash command. <a href="https://x.com/bcherny/status/2009072293826453669">Boris Cherny on X</a></span></li>
+        <li><span class="tag money">Investment</span><span>Global AI investment has reached $344 billion in 2026 — more than double all of 2025's $136 billion — with US cloud hyperscalers (AWS, Azure, Google Cloud) accounting for nearly half. <a href="https://memeburn.com/ai-global-funding-statistics-2026/">Memeburn</a></span></li>
+        <li><span class="tag policy">Minors</span><span>OpenAI launched a teen-specific mode of ChatGPT for users aged 13–17, automatically blocking conversations about self-harm, suicide, and romantic content, with age-prediction to route younger users in automatically. <a href="https://aitoolsrecap.com/daily-ai-news.aspx">AIToolsRecap</a></span></li>
+        <li><span class="tag tech">Leadership</span><span>Google promoted Koray Kavukcuoglu to lead DeepMind, reporting directly to CEO Sundar Pichai — part of a push to close the gap with OpenAI and Anthropic in coding models, now the most contested frontier. <a href="https://www.cnbc.com/2026/08/12/google-deepmind-koray-kavukcuoglu.html">CNBC</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: the better cage</h2>
+      <p class="kicker">StateM: Reaching 95.3% Raw Accuracy, or a $15 Frontier Run, on Terminal-Bench 2.1 via Harness Scaling &middot; Ziheng Qin et al. &middot; <a href="https://arxiv.org/abs/2608.15089">arXiv 2608.15089</a></p>
+
+      <p>Almost every conversation about making AI agents smarter assumes you need a smarter model. This paper politely disagrees. It shows that wrapping an existing model in a better execution structure lifts it from 83% accuracy to 95% — outscoring a more expensive model — without changing a single parameter in the model itself.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>AI agents that do real computer work — writing code, running shell commands, fixing bugs — operate in long, sequential chains. A task might take dozens of steps. The fundamental problem is that language models have a limited attention window: they can only "see" so much text at once. As a session goes on, early decisions fall out of view. The agent forgets what it already tried, repeats mistakes, loses track of which step it's on. The usual answers are to give the model a bigger context window, or to write longer, more detailed prompts. Neither solves the real issue: the model's working memory is doing structural bookkeeping it was never designed to do.</p>
+
+      <h3>How it works</h3>
+      <p>Think of StateM like a surgeon's pre-op checklist. The checklist doesn't make the surgeon more talented — it makes the surgical team more reliable. It enforces a shared reality: everyone knows exactly where they are in the procedure, what has been verified, and what can't be skipped. StateM does the same thing for AI agents. It divides every task into five named phases — <strong>Plan, Run, Review, Repair, Done</strong> — and enforces a hard rule: you cannot leave a phase until a set of "gates" passes. A gate can be a shell command that has to succeed, an explicit checklist the agent must complete, or a sub-model that reviews the output before clearance to proceed.</p>
+      <p>Crucially, none of this state lives inside the model's context window. It lives in a durable file on disk — outside the model entirely. If the agent crashes, gets interrupted, or runs out of context mid-task, the runbook picks up from the last verified checkpoint, like a save point in a video game. The model at any given moment sees only the context relevant to its current phase. It doesn't have to hold the entire task history in memory because the harness holds it instead. And if the Review phase flags a problem, the agent transitions to Repair, fixes what went wrong, and loops back to Run — not to the beginning of the task.</p>
+
+      <!-- SVG: StateM state machine diagram -->
+      <figure>
+        <svg viewBox="0 0 720 210" role="img" aria-label="StateM's five execution phases: Plan, Run, Review, Repair, Done — with a loop from Review through Repair back to Run, and durable state persisted outside the model context window">
+          <defs>
+            <marker id="arr87" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#141413"/>
+            </marker>
+            <marker id="arr87-clay" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#D97757"/>
+            </marker>
+            <marker id="arr87-sky" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#6A8CAF"/>
+            </marker>
+          </defs>
+
+          <!-- Subtle background -->
+          <rect width="720" height="210" fill="#F9F7F4" rx="8"/>
+
+          <!-- ── TOP ROW: PLAN → RUN → REVIEW → DONE ── -->
+
+          <!-- PLAN -->
+          <rect x="20" y="55" width="90" height="46" rx="6" fill="#788C5D"/>
+          <text x="65" y="83" text-anchor="middle" fill="white" font-family="system-ui" font-size="13" font-weight="600">PLAN</text>
+
+          <!-- gate circle 1 -->
+          <circle cx="145" cy="78" r="8" fill="white" stroke="#6A8CAF" stroke-width="2"/>
+          <text x="145" y="82" text-anchor="middle" fill="#6A8CAF" font-family="system-ui" font-size="10" font-weight="700">✓</text>
+          <text x="145" y="47" text-anchor="middle" fill="#87867F" font-family="system-ui" font-size="10">gate</text>
+
+          <!-- Arrow PLAN→gate1 and gate1→RUN -->
+          <line x1="110" y1="78" x2="137" y2="78" stroke="#141413" stroke-width="1.5" marker-end="url(#arr87)"/>
+          <line x1="153" y1="78" x2="172" y2="78" stroke="#141413" stroke-width="1.5" marker-end="url(#arr87)"/>
+
+          <!-- RUN -->
+          <rect x="173" y="55" width="90" height="46" rx="6" fill="#D97757"/>
+          <text x="218" y="83" text-anchor="middle" fill="white" font-family="system-ui" font-size="13" font-weight="600">RUN</text>
+
+          <!-- gate circle 2 -->
+          <circle cx="298" cy="78" r="8" fill="white" stroke="#6A8CAF" stroke-width="2"/>
+          <text x="298" y="82" text-anchor="middle" fill="#6A8CAF" font-family="system-ui" font-size="10" font-weight="700">✓</text>
+          <text x="298" y="47" text-anchor="middle" fill="#87867F" font-family="system-ui" font-size="10">gate</text>
+
+          <line x1="263" y1="78" x2="290" y2="78" stroke="#141413" stroke-width="1.5" marker-end="url(#arr87)"/>
+          <line x1="306" y1="78" x2="325" y2="78" stroke="#141413" stroke-width="1.5" marker-end="url(#arr87)"/>
+
+          <!-- REVIEW -->
+          <rect x="326" y="55" width="90" height="46" rx="6" fill="#D97757"/>
+          <text x="371" y="83" text-anchor="middle" fill="white" font-family="system-ui" font-size="13" font-weight="600">REVIEW</text>
+
+          <!-- gate circle 3 -->
+          <circle cx="451" cy="78" r="8" fill="white" stroke="#6A8CAF" stroke-width="2"/>
+          <text x="451" y="82" text-anchor="middle" fill="#6A8CAF" font-family="system-ui" font-size="10" font-weight="700">✓</text>
+          <text x="451" y="47" text-anchor="middle" fill="#87867F" font-family="system-ui" font-size="10">gate</text>
+
+          <line x1="416" y1="78" x2="443" y2="78" stroke="#141413" stroke-width="1.5" marker-end="url(#arr87)"/>
+          <line x1="459" y1="78" x2="478" y2="78" stroke="#141413" stroke-width="1.5" marker-end="url(#arr87)"/>
+
+          <!-- DONE -->
+          <rect x="479" y="55" width="90" height="46" rx="6" fill="#788C5D"/>
+          <text x="524" y="83" text-anchor="middle" fill="white" font-family="system-ui" font-size="13" font-weight="600">DONE</text>
+          <text x="524" y="115" text-anchor="middle" fill="#788C5D" font-family="system-ui" font-size="11" font-weight="600">95.3%</text>
+
+          <!-- ── REPAIR LOOP ── -->
+
+          <!-- REPAIR box (below RUN/REVIEW gap) -->
+          <rect x="248" y="148" width="90" height="40" rx="6" fill="#87867F"/>
+          <text x="293" y="173" text-anchor="middle" fill="white" font-family="system-ui" font-size="13" font-weight="600">REPAIR</text>
+
+          <!-- Arrow from REVIEW down-left to REPAIR (fail branch) -->
+          <path d="M 371,101 L 371,130 L 293,130 L 293,148" stroke="#D97757" stroke-width="1.5" fill="none" marker-end="url(#arr87-clay)"/>
+          <text x="350" y="126" text-anchor="end" fill="#D97757" font-family="system-ui" font-size="10">fail</text>
+
+          <!-- Arrow from REPAIR left→up→into RUN (retry) -->
+          <path d="M 248,168 L 218,168 L 218,101" stroke="#6A8CAF" stroke-width="1.5" fill="none" marker-end="url(#arr87-sky)"/>
+          <text x="206" y="163" text-anchor="end" fill="#6A8CAF" font-family="system-ui" font-size="10">retry</text>
+
+          <!-- ── DURABLE STATE BAR ── -->
+          <rect x="20" y="196" width="549" height="9" rx="4" fill="#6A8CAF" opacity="0.2"/>
+          <text x="294" y="205" text-anchor="middle" fill="#6A8CAF" font-family="system-ui" font-size="10">Durable state — persisted to disk · survives context resets &amp; crashes</text>
+        </svg>
+        <figcaption>StateM's five execution phases. Gates (blue circles) block phase transitions until requirements pass. The durable state bar — stored outside the model — means the agent can resume from any checkpoint. A failed review loops back through Repair rather than restarting from scratch.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The authors tested two models — GPT-5.6 Sol and DeepSeek-V4-Flash — against Terminal-Bench 2.1, a benchmark of 89 practical computer-use tasks (coding, file system operations, shell work) run over 445 trials. They measured what happened when each model ran with and without the StateM harness, and compared both to the published reference baseline and to GPT-5.6 Sol Ultra — a larger, slower, more expensive model.</p>
+
+      <h3>What they found</h3>
+      <p>With StateM, GPT-5.6 Sol reached <strong>95.28% raw accuracy</strong> (424 of 445 trials). The reference baseline — the same model, standard prompting, no harness — scored 83.1%. GPT-5.6 Sol Ultra, the pricier model that was previously the top score, sat at 91.9%. In other words, StateM on a cheaper model outscored the more expensive one by more than three percentage points. DeepSeek-V4-Flash with StateM reached 88.76% — above the unassisted Ultra. The authors also claim that because StateM's gates prune redundant work, a full Terminal-Bench run costs approximately $15.</p>
+      <p>The failure modes were instructive. Most remaining failures occurred when the Review phase couldn't catch a subtle semantic error (as opposed to a command failure), and when tasks required long chains of interdependent shell operations that the current phase structure didn't fully decompose. The system is better at knowing it has failed than at knowing it is about to fail.</p>
+
+      <h3>The catch</h3>
+      <p>Terminal-Bench 2.1 tests a specific and relatively structured class of agent tasks — computer use in a terminal. Real-world tasks are messier. It's unclear how much of the gain survives when tasks don't decompose neatly into five phases, or when the task type changes entirely. The authors also tested a single harness design; how sensitive the 12-point improvement is to the specific gate definitions, phase boundaries, and runbook format is an open question. And the paper itself uses frontier models for its gates, so the $15 figure is only meaningful if your base model is already in that tier.</p>
+
+      <p><strong>If you remember one thing:</strong> A checklist that lives outside the model — with hard gates between steps — can be worth more than upgrading to a more expensive model.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>Claude Code 2.1.0 dropped last week — 1,096 commits in a single release, adding parallel background agents, hot-reloading skills, and hooks embedded directly in skill and agent frontmatter. The biggest single update to the tool yet. <a href="https://x.com/bcherny/status/2009072293826453669">Announcement on X</a></span></li>
+        <li><span class="tag tech">Andrej Karpathy</span><span>His <em>nanochat</em> repository was active this month. If you've never considered training a language model yourself, this is the friendliest entry point: ~8,000 lines of clean code, one script, about $100 on rented GPUs, and four hours later you're talking to a model you built from scratch. <a href="https://github.com/karpathy/nanochat">github.com/karpathy/nanochat</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three signals this week point the same direction. Anthropic's first profit shows that a frontier AI company can now sustain itself on real revenue — not just the next investment round. The A2A and MCP protocols uniting under neutral governance shows the agent communication layer is mature enough to need a standards body. And the StateM paper shows something more subtle: the biggest performance gains right now are hiding in the structure around a model, not inside it. We've spent years comparing model scores as if the model were the whole product. The lesson accumulating across these stories is that the environment — the harness, the protocol, the company — is increasingly where the competitive advantage lives. The model is necessary but no longer sufficient.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2608.15089">StateM paper, arXiv 2608.15089</a> ·
+        <a href="https://github.com/henryqin1997/statem">StateM GitHub</a> ·
+        <a href="https://www.cnbc.com/2026/08/15/anthropic-revenue-jumps-to-over-11point5-billion-in-q2-report.html">Anthropic Q2 revenue (CNBC)</a> ·
+        <a href="https://aitoolsrecap.com/Blog/anthropic-q2-2026-revenue-first-profit-10-9-billion">Anthropic profitability (AIToolsRecap)</a> ·
+        <a href="https://aimagazine.com/news/why-did-googles-a2a-join-the-agentic-ai-foundation">A2A joins AAIF (AI Magazine)</a> ·
+        <a href="https://x.com/bcherny/status/2009072293826453669">Claude Code 2.1.0 (Boris Cherny)</a> ·
+        <a href="https://memeburn.com/ai-global-funding-statistics-2026/">Global AI funding (Memeburn)</a> ·
+        <a href="https://www.cnbc.com/2026/08/12/google-deepmind-koray-kavukcuoglu.html">Google DeepMind leadership (CNBC)</a> ·
+        <a href="https://github.com/karpathy/nanochat">karpathy/nanochat</a> ·
+        <a href="https://aitoolsrecap.com/daily-ai-news.aspx">OpenAI teen ChatGPT (AIToolsRecap)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Harness</div>
+        <div>The code, structure, and rules built <em>around</em> a model that shape how it behaves. Think of the difference between a surgeon and a surgical system: the same skill produces different results depending on the checklists, protocols, and teamwork surrounding it. StateM is a harness. So is MCP. The model is the engine; the harness is the car.</div>
+      </div>
+      <dl>
+        <dt>Terminal-Bench</dt>
+        <dd>A benchmark that tests AI agents on real terminal tasks — writing code, managing files, running shell commands — to measure practical computer-use ability.</dd>
+
+        <dt>Durable state</dt>
+        <dd>Information about a task's progress saved <em>outside</em> the model (to a file or database) so it survives crashes, interruptions, or context resets. The agent resumes from the last checkpoint instead of starting over.</dd>
+
+        <dt>Operating profit</dt>
+        <dd>Revenue minus the direct costs of running a business (salaries, compute, offices), before accounting for debt interest or taxes. A positive number means the business earns more than it spends to operate — often the first milestone after years of investment-funded losses.</dd>
+
+        <dt>MCP / A2A</dt>
+        <dd>Two complementary agent protocols. MCP (Model Context Protocol, from Anthropic) defines how an agent connects to tools and data sources. A2A (Agent-to-Agent, from Google) defines how agents communicate with <em>each other</em>. Both are now governed by the Agentic AI Foundation.</dd>
+
+        <dt>AAIF</dt>
+        <dd>Agentic AI Foundation — a Linux Foundation body formed to provide neutral governance for the protocols that underpin multi-agent AI systems. MCP joined first; A2A joined on August 20, 2026.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
