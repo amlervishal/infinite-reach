@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №88 — Out of the Data Center · Infinite Reach</title>
+  <meta name="description" content="A Berkeley-MIT paper puts a 753-billion-parameter model on a single workstation GPU, as Alibaba turns a $10 billion fundraise into a video model that reads your spreadsheets." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №88 &middot; Tuesday, August 25, 2026</p>
+      <h1>Out of the Data Center</h1>
+      <p>The same week a Berkeley-MIT team showed how to run a 753-billion-parameter model on a single workstation GPU, Alibaba converted a $10 billion share-sale windfall into a video model that accepts your spreadsheets as input. The frontier is dispersing — moving from specialized infrastructure into the machines and file formats of ordinary working life.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Alibaba launched Wan3.0 on August 24, the day after closing a $10.2 billion share placement in Hong Kong — proceeds earmarked entirely for AI. The model is notable for two reasons. First, it generates clips of up to 30 seconds in a single pass, twice the maximum of its predecessor. Second, and more importantly, it accepts documents, spreadsheets, slides, PDFs, and webpages as inputs, not just text prompts. Hand it a quarterly report or a pitch deck and it builds a video from it. On the same day, XPeng announced that its humanoid robot unit closed what it described as the largest private equity round in China's physical AI sector: $900 million at a $6.3 billion valuation, with mass production of its IRON robot targeted for late 2026.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Investment</span><span>Nvidia is in talks to invest billions in Perplexity at a valuation above $30 billion — up from roughly $20 billion less than a year ago. Perplexity's annualized revenue has climbed to $750 million, partly on the back of Perplexity Computer, its agent for automating desktop tasks. <a href="https://finance.yahoo.com/technology/ai/articles/nvidia-reportedly-weighs-perplexity-investment-111111172.html">Yahoo Finance</a></span></li>
+        <li><span class="tag money">China</span><span>XPeng's $900 million robotics round was led by IDG Capital with strategic investment from Alibaba and Tencent — the largest single private equity round in China's embodied intelligence sector to date. <a href="https://www.roboticstomorrow.com/news/2026/08/24/xpeng-robotics-business-raises-over-us900-million-at-a-post-money-valuation-of-over-us63-billion-accelerating-physical-ai-deployment/26985/">Robotics Tomorrow</a></span></li>
+        <li><span class="tag tech">Video</span><span>Wan3.0 is live on Alibaba Cloud Model Studio and Qwen Cloud, priced per second of output: $0.05 at 480p, $0.10 at 720p, $0.20 at 1080p. Early real-world uses include short drama production, tourism promotion, and marketing videos. <a href="https://technode.com/2026/08/24/alibaba-launches-wan3-0-video-model-with-30-second-generation-and-document-input/">TechNode</a></span></li>
+        <li><span class="tag tech">Tools</span><span>Claude Code's August update shipped a /design skill that converts an idea or screenshot into editable interface artboards, a Concise output style that leads with the result, auto-mode as the new default, and permission rules you write in plain English sentences. <a href="https://origami.sa/en/blog/claude-code-august-2026/">Origami</a></span></li>
+        <li><span class="tag money">Infrastructure</span><span>Alibaba committed 100% of its $10.2 billion Hong Kong placement to AI — covering chips, infrastructure, and model development — as capital expenditure rose 75% year-over-year to 67.68 billion yuan in the most recent quarter. <a href="https://opendatascience.com/alibaba-launches-wan3-0-ai-video-model-after-10-billion-share-sale/">Open Data Science</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: the frontier on your workstation</h2>
+      <p class="kicker">FreeToken: Efficient Edge-Native MoE Serving with Bandwidth-Adaptive Execution &middot; Cai et al. (MIT, UC Berkeley, et al.) &middot; <a href="https://arxiv.org/abs/2608.16157">arXiv 2608.16157</a></p>
+
+      <p>The long-standing assumption in AI infrastructure is that the biggest models live in data centers. FreeToken, submitted on August 17, 2026, tests that assumption directly — and finds it bends more than most expected. The headline result: a 753-billion-parameter model running at 14.9 tokens per second on a single workstation GPU you can walk into a store and buy.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Most of today's largest open-weight models use an architecture called Mixture of Experts, or MoE. Rather than activating all of a model's parameters for every word it processes, a MoE model routes each word through a small selection of "expert" sub-networks — typically 8 out of 64 or more — leaving the rest idle. This makes each token cheaper to compute, which is why model builders can pack hundreds of billions of parameters into a model without making it impossibly slow. But it creates a curious opportunity at the edge of the network. If only a handful of experts are active at any moment, and you have a way to swap the rest in and out of fast GPU memory just in time, then maybe a model that would normally require a rack of expensive accelerators could run on a single consumer card. The difficulty is the bottleneck between GPU and CPU: a narrow pipe called the PCIe bus. Every time an expert has to cross that pipe, the GPU may be left waiting. And a waiting GPU is the most expensive piece of hardware in your machine producing nothing.</p>
+
+      <h3>How it works</h3>
+      <p>Imagine a short-order kitchen. The grill (GPU) has room for only so many dishes at once. Everything else sits in the walk-in fridge (CPU RAM). Old kitchen management said: before service, decide which dishes go on the grill and leave them there. That works well when you know exactly who's coming, but when the dinner rush is unpredictable — as real agent workloads always are — the grill fills up with ingredients nobody ordered while the one thing everyone wants is still in the fridge. The waiter (the PCIe bus) sprints back and forth, and the kitchen stalls. FreeToken replaces that static decision with a live one. It watches which experts each incoming batch of tokens actually needs and turns the bus's available bandwidth from a fixed ceiling into a real-time scheduling signal.</p>
+      <p>The core mechanism is double-buffering: while the GPU runs computation on the current layer, FreeToken simultaneously streams the next layer's experts across the PCIe bus. Computation and transfer overlap — neither waits for the other. For the slower token-by-token decode phase, FreeToken adds a policy it calls q*: at each moment, it measures how congested the bus is and decides whether each expert should run on the GPU or stay on the CPU and compute there instead. A global least-recently-used cache records which experts have been touched most recently, so frequently-needed experts stay in fast memory while idle ones sit in the fridge. The full result is a system that treats the entire personal machine — GPU, CPU, RAM, and the bus between them — as one unified inference platform rather than a fixed hierarchy with the GPU firmly at the top.</p>
+
+      <!-- SVG: FreeToken bandwidth-adaptive expert scheduling -->
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="FreeToken: GPU computes layer N while PCIe bus streams layer N+1 experts; LRU cache in CPU RAM holds idle experts">
+          <defs>
+            <marker id="arr88" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#87867F"/>
+            </marker>
+            <marker id="arr88-clay" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#D97757"/>
+            </marker>
+            <marker id="arr88-sky" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#6A8CAF"/>
+            </marker>
+            <marker id="arr88-olive" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#788C5D"/>
+            </marker>
+          </defs>
+
+          <rect width="720" height="310" fill="#F9F7F4" rx="8"/>
+
+          <!-- Title -->
+          <text x="360" y="30" font-family="ui-serif,Georgia,serif" font-size="14" fill="#141413" text-anchor="middle" font-weight="bold">FreeToken: computation and transfer run at the same time</text>
+          <text x="360" y="50" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">While GPU processes layer N's experts, the next layer's experts stream across PCIe in parallel</text>
+
+          <!-- GPU box -->
+          <rect x="30" y="70" width="200" height="140" rx="8" fill="#D97757" fill-opacity="0.12" stroke="#D97757" stroke-width="2"/>
+          <text x="130" y="95" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="bold">GPU (fast, small)</text>
+
+          <!-- Layer N experts active -->
+          <rect x="50" y="108" width="70" height="32" rx="5" fill="#D97757" fill-opacity="0.85"/>
+          <text x="85" y="128" font-family="ui-monospace,monospace" font-size="10" fill="#fff" text-anchor="middle">Expert 2</text>
+          <rect x="132" y="108" width="70" height="32" rx="5" fill="#D97757" fill-opacity="0.85"/>
+          <text x="167" y="128" font-family="ui-monospace,monospace" font-size="10" fill="#fff" text-anchor="middle">Expert 7</text>
+
+          <!-- Step 1 label -->
+          <text x="130" y="158" font-family="system-ui,sans-serif" font-size="10" fill="#D97757" text-anchor="middle" font-weight="600">① GPU computes layer N</text>
+          <text x="130" y="172" font-family="system-ui,sans-serif" font-size="10" fill="#D97757" text-anchor="middle">using active experts</text>
+
+          <!-- q* label -->
+          <rect x="48" y="185" width="164" height="18" rx="4" fill="#D97757" fill-opacity="0.12"/>
+          <text x="130" y="197" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">q* policy: GPU or CPU? (per bandwidth signal)</text>
+
+          <!-- PCIe bus -->
+          <rect x="265" y="115" width="190" height="60" rx="7" fill="#6A8CAF" fill-opacity="0.10" stroke="#6A8CAF" stroke-width="1.5" stroke-dasharray="6,4"/>
+          <text x="360" y="140" font-family="system-ui,sans-serif" font-size="12" fill="#6A8CAF" text-anchor="middle" font-weight="700">PCIe Bus</text>
+          <text x="360" y="157" font-family="system-ui,sans-serif" font-size="10" fill="#6A8CAF" text-anchor="middle">bandwidth = live scheduling signal</text>
+
+          <!-- Arrow GPU → PCIe (result flows right, not the direction of interest) -->
+          <line x1="230" y1="142" x2="265" y2="142" stroke="#D97757" stroke-width="2" marker-end="url(#arr88-clay)"/>
+
+          <!-- Arrow PCIe → GPU (next-layer experts stream in) -->
+          <line x1="455" y1="152" x2="230" y2="152" stroke="#6A8CAF" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arr88-sky)"/>
+
+          <!-- Step 2 label under bus -->
+          <text x="360" y="195" font-family="system-ui,sans-serif" font-size="10" fill="#6A8CAF" text-anchor="middle" font-weight="600">② layer N+1 experts stream in</text>
+          <text x="360" y="208" font-family="system-ui,sans-serif" font-size="10" fill="#6A8CAF" text-anchor="middle">while GPU is still on layer N (overlap)</text>
+
+          <!-- CPU/RAM box -->
+          <rect x="490" y="70" width="200" height="140" rx="8" fill="#788C5D" fill-opacity="0.10" stroke="#788C5D" stroke-width="2"/>
+          <text x="590" y="95" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="bold">CPU + RAM (slow, large)</text>
+
+          <!-- Many experts -->
+          <rect x="505" y="108" width="44" height="24" rx="4" fill="#788C5D" fill-opacity="0.65"/>
+          <text x="527" y="124" font-family="ui-monospace,monospace" font-size="9" fill="#fff" text-anchor="middle">E1</text>
+          <rect x="555" y="108" width="44" height="24" rx="4" fill="#788C5D" fill-opacity="0.65"/>
+          <text x="577" y="124" font-family="ui-monospace,monospace" font-size="9" fill="#fff" text-anchor="middle">E3</text>
+          <rect x="605" y="108" width="44" height="24" rx="4" fill="#788C5D" fill-opacity="0.5"/>
+          <text x="627" y="124" font-family="ui-monospace,monospace" font-size="9" fill="#fff" text-anchor="middle">E4…</text>
+
+          <!-- Next-layer experts queued -->
+          <rect x="505" y="138" width="160" height="22" rx="4" fill="#6A8CAF" fill-opacity="0.25" stroke="#6A8CAF" stroke-width="1"/>
+          <text x="585" y="153" font-family="system-ui,sans-serif" font-size="9" fill="#6A8CAF" text-anchor="middle">next-layer experts (queued for transfer)</text>
+
+          <!-- Step 3 label -->
+          <text x="590" y="188" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D" text-anchor="middle" font-weight="600">③ LRU cache: most-recently-used</text>
+          <text x="590" y="201" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D" text-anchor="middle">experts stay near the bus</text>
+
+          <!-- Bottom result bar -->
+          <rect x="30" y="235" width="660" height="50" rx="7" fill="#D1CFC5"/>
+          <text x="360" y="256" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle" font-weight="600">Results: 39.3 tok/s for a 35 B model on an 8 GB laptop GPU · 14.9 tok/s for 753 B on one RTX PRO 6000</text>
+          <text x="360" y="275" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">Up to 2.3× decode speedup vs static offloading · &lt;44 s worst-case first token · 20+ MoE models supported</text>
+        </svg>
+        <figcaption>FreeToken's insight: GPU computation and PCIe transfer don't have to take turns. Double-buffering runs them in parallel, while a live bandwidth signal decides which experts the GPU vs. CPU should handle on each step.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The team tested FreeToken on more than 20 open-weight MoE models, running real coding and tool-using agent workloads — not synthetic benchmarks — across three hardware tiers: an 8 GB laptop GPU, a gaming desktop, and a professional workstation with an RTX PRO 6000. They measured time to first token (how long before any output appears), decode throughput (tokens per second during generation), and compared against a strong baseline using static expert offloading. They also measured agent-specific patterns, where the same context is reused across multiple conversation turns — a common pattern for coding assistants and research agents.</p>
+
+      <h3>What they found</h3>
+      <p>On the laptop's 8 GB GPU, a 35-billion-parameter MoE ran at 39.3 tokens per second — fast enough for comfortable interactive use. On the workstation, the 753-billion-parameter GLM-5.2 model generated 14.9 tokens per second on a single GPU, with worst-case time-to-first-token under 44 seconds. Compared with static offloading, FreeToken's bandwidth-adaptive approach produced up to 2.3× faster decode on an RTX 5090. The agent-workload optimization made a notable difference: because agents re-use the same context across turns, frequently-needed experts stayed warm in the LRU cache, compressing effective latency further in practice than the raw benchmark numbers alone suggested.</p>
+
+      <h3>The catch</h3>
+      <p>FreeToken only works for MoE models — the specific architecture where each token routes through a small subset of experts. Dense models, where every parameter activates for every token, have no experts to selectively swap, and the same tricks don't apply. The 14.9 tokens/s figure for 753 billion parameters is also slower than what a cloud API returns; for applications where latency is critical — real-time voice, sub-second agents — a data center still wins. What FreeToken unlocks is something different: private, offline inference at frontier scale. Your model, on your hardware, not sending anything anywhere.</p>
+
+      <p><strong>If you remember one thing:</strong> frontier-scale AI can now run on a single consumer workstation — not by shrinking the model, but by treating limited hardware memory the way a well-run kitchen treats limited grill space: move only what's needed, exactly when it's needed.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Posted the write-up from his Sequoia Ascent 2026 fireside chat — a piece that names "agentic engineering" as the discipline that follows vibe coding: owning every diff, designing eval loops, holding security boundaries. He names December 2025 as the inflection point at which agentic coding became reliable. Worth reading as a framing for what serious AI-assisted development actually involves. <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">karpathy.ai</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>The August Claude Code bundle is the clearest sign yet that the tool has outgrown "a coding assistant in your terminal." The new /design skill (idea → editable artboards), Concise output mode, and plain-English permission rules point toward a general-purpose agentic workspace. <a href="https://origami.sa/en/blog/claude-code-august-2026/">Origami</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three things moved in the same direction this week. A frontier-scale model now runs on a workstation you can buy at a retail store. A video generator now reads the documents that already live on your desktop. A humanoid robot is twelve months from mass production. The common thread is distribution: things that were locked inside specialized infrastructure are leaving it. This is what the history of computing has always looked like at moments of expansion — the mainframe becoming the minicomputer, the minicomputer becoming the personal computer, the server farm becoming the cloud. Each transition widened access, multiplied use cases in ways nobody fully predicted, and shifted the centre of gravity from whoever controls the infrastructure toward whoever builds the best experience on top of it. Andrej Karpathy's framing — that the meaningful skill is now agentic engineering, not model building — lands differently if you're running frontier inference on your own machine. The question of what the model can do quietly becomes: what will you build around it?</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2608.16157">FreeToken paper (arXiv:2608.16157)</a> ·
+        <a href="https://aiweekly.co/editors-blog/found-first-song-han-zaharia-stoica-system-runs-753b-moe-on-one-workstation-gpu">AI Weekly — FreeToken coverage</a> ·
+        <a href="https://dataconomy.com/2026/08/24/freetoken-enables-753b-model-inference-on-a-single/">Dataconomy — FreeToken</a> ·
+        <a href="https://technode.com/2026/08/24/alibaba-launches-wan3-0-video-model-with-30-second-generation-and-document-input/">TechNode — Wan3.0</a> ·
+        <a href="https://opendatascience.com/alibaba-launches-wan3-0-ai-video-model-after-10-billion-share-sale/">Open Data Science — Wan3.0 / share sale</a> ·
+        <a href="https://www.roboticstomorrow.com/news/2026/08/24/xpeng-robotics-business-raises-over-us900-million-at-a-post-money-valuation-of-over-us63-billion-accelerating-physical-ai-deployment/26985/">Robotics Tomorrow — XPeng</a> ·
+        <a href="https://electrek.co/2026/08/24/xpeng-robotics-900m-iron-humanoid-robot-valuation/">Electrek — XPeng IRON</a> ·
+        <a href="https://finance.yahoo.com/technology/ai/articles/nvidia-reportedly-weighs-perplexity-investment-111111172.html">Yahoo Finance — Nvidia/Perplexity</a> ·
+        <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">Karpathy — Sequoia Ascent 2026</a> ·
+        <a href="https://origami.sa/en/blog/claude-code-august-2026/">Claude Code August 2026 update</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">MoE — Mixture of Experts</div>
+        <div>A model architecture where, instead of activating all parameters for every word, a router sends each word to just a handful of specialist sub-networks ("experts") and skips the rest. Like a hospital where not every doctor sees every patient — the building can hold hundreds of specialists while each appointment stays fast and cheap. The biggest models today almost all use MoE, which is why running them at the edge is newly tractable.</div>
+      </div>
+      <dl>
+        <dt>Edge inference</dt><dd>Running an AI model locally — on a laptop, a workstation, or a phone — rather than sending a request to a remote data center. Keeps data private, eliminates network latency, but requires fitting the model onto hardware that's far smaller than a server rack.</dd>
+        <dt>PCIe bus</dt><dd>The physical data highway inside a computer connecting the GPU to the CPU and main memory. Its bandwidth — how many gigabytes per second it can move — is the main bottleneck when loading experts from RAM into GPU memory.</dd>
+        <dt>Double-buffering</dt><dd>Running two operations at the same time: while the GPU computes on the current set of data, the next set is already streaming in from memory. Like a relay team where the baton is already moving before the previous runner stops.</dd>
+        <dt>LRU cache</dt><dd>Least Recently Used — a strategy for managing limited fast storage. When space runs out, evict the item that hasn't been touched for the longest time. FreeToken uses this to decide which experts stay in GPU memory between requests.</dd>
+        <dt>Agentic engineering</dt><dd>Andrej Karpathy's term for the discipline of building with AI agents at a professional level — spec design, eval loops, diff review, security boundaries — as opposed to vibe coding, which is casual and fast but lacks a quality floor.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

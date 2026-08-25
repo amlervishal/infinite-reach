@@ -1,5 +1,12 @@
 [
   {
+    "num": 88,
+    "date": "2026-08-25",
+    "slug": "issues/2026-08-25.html",
+    "title": "Out of the Data Center",
+    "blurb": "A Berkeley-MIT paper shows a 753-billion-parameter model running on a single workstation GPU — the same day Alibaba spent its entire $10 billion fundraise on a video model that reads your spreadsheets."
+  },
+  {
     "num": 87,
     "date": "2026-08-24",
     "slug": "issues/2026-08-24.html",
