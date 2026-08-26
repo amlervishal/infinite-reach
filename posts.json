@@ -1,5 +1,12 @@
 [
   {
+    "num": 89,
+    "date": "2026-08-26",
+    "slug": "issues/2026-08-26.html",
+    "title": "The Risk They Named",
+    "blurb": "Anthropic's public IPO filing is days away — and it will list 'AI backlash' as a structural risk. Meanwhile, a NVIDIA paper shows a 70-point benchmark leap achieved by changing the wrapper around a model, not the model itself."
+  },
+  {
     "num": 88,
     "date": "2026-08-25",
     "slug": "issues/2026-08-25.html",

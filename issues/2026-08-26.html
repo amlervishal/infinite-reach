@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №89 — The Risk They Named · Infinite Reach</title>
+  <meta name="description" content="Anthropic is days from publicly filing its IPO prospectus — at a near-trillion-dollar valuation — and will name 'AI backlash' as a structural risk. Meanwhile, NVIDIA shows that a smart wrapper can turn a 30% benchmark score into a perfect one." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №89 &middot; Wednesday, August 26, 2026</p>
+      <h1>The Risk They Named</h1>
+      <p>Anthropic is days away from publicly filing its stock prospectus — a document that will tell the world, in plain legal language, what the company is genuinely worried about. One of those risks, sources say, is you: or rather, the growing public unease about what companies like it are building. Across town, figuratively speaking, NVIDIA published a paper this week showing that the same underlying AI model can score 30% on a rigorous reasoning test or a perfect 100% — depending entirely on what you build around it.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic is preparing to file its public IPO prospectus as early as this week, targeting a Nasdaq listing in October at a valuation of roughly $965 billion — potentially crossing one trillion on secondary markets. Goldman Sachs, JPMorgan, and Morgan Stanley are running the offering, which aims to raise more than $60 billion. The filing will explicitly list "AI backlash" as a material risk to the business: public anxiety, regulatory headwinds, and a class-action lawsuit filed ahead of the listing. It's unusual for a company to name the cultural reaction to its own product as a structural danger in a legal document — and it suggests the company's leadership believes that public trust is not a given, but something that has to be earned and kept.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Open source</span><span>Meta released Muse Glimmer, a 30-billion-parameter model that runs on a single consumer graphics card — under 20 gigabytes of RAM after compression — under a fully open Apache 2.0 licence. It handles text and images, supports 100+ languages, and is designed specifically for use as a local coding agent. <a href="https://research.meta.ai/blog/introducing-muse-glimmer-open-agentic-model">Meta AI Research</a></span></li>
+        <li><span class="tag tech">Security</span><span>OpenAI launched GPT-5.6-Cyber through its restricted "Daybreak Red" programme: a hacking-specialist model that completes 95% of advanced cybersecurity tasks and has already found two previously unknown vulnerabilities in Chrome's JavaScript engine. Access is limited to vetted security firms under legal attestation — most people will never use it directly. <a href="https://www.securityweek.com/openai-unveils-new-cybersecurity-model-gpt-5-6-cyber/">SecurityWeek</a></span></li>
+        <li><span class="tag policy">Enforcement</span><span>The EU's AI Act is now fully in force: since August 2, chatbots must declare they are not human, deepfakes must carry labels, and non-compliant companies face fines up to €15 million or 3% of worldwide annual revenue. The European Commission adopted implementation guidelines on July 20. <a href="https://www.cooley.com/news/insight/2026/2026-08-03-eu-ai-act-transparency-obligations-take-effect-2-august-2026">Cooley</a></span></li>
+        <li><span class="tag tech">Tools</span><span>Anthropic updated its Claude Tag Slack integration so the agent now reads full channel conversation histories rather than judging each message in isolation — giving it the context to reply more coherently to ongoing discussions. <a href="https://aitoolsrecap.com/Blog/AINewsAugust2026.aspx">AIToolsRecap</a></span></li>
+        <li><span class="tag money">Chips</span><span>Japan's government is adding $944 million to Rapidus, its domestic chip-manufacturing effort, as part of a wider push to reduce reliance on foreign foundries. The move reflects growing concern across Asia and Europe about semiconductor supply-chain concentration in Taiwan. <a href="https://news.crunchbase.com/venture/biggest-funding-rounds-ai-defense-fintech-robotics/">Crunchbase</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~550-850 words -->
+      <h2>Paper, explained: the wrapper that got a perfect score</h2>
+      <p class="kicker">NVIDIA AVO: Frontier-Level General-Purpose Architecture for Long-Horizon Autonomous Agents &middot; NVIDIA Research &middot; <a href="https://developer.nvidia.com/blog/nvidia-avo-reaches-100-on-arc-agi-3-demonstrating-a-frontier-level-general-purpose-architecture-for-long-horizon-autonomous-agents/">NVIDIA Developer Blog, August 21, 2026</a></p>
+      <p>A system called AVO scored a perfect 100% on one of the hardest AI benchmarks around — without changing the underlying model at all. The model that scored 30% on its own hit 100% when wrapped in the right scaffolding. That is either a surprising discovery about what AI can do, or a quietly important lesson about what AI actually needs.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Since 2019, François Chollet's ARC (Abstraction and Reasoning Corpus) benchmark has served as a sort of "IQ test" for AI — specifically designed to resist the tricks that let large models ace most exams. Standard benchmarks can be gamed by memorisation: if a model has seen enough similar problems during training, it can pattern-match to the right answer without actually reasoning. ARC was engineered to prevent that, by requiring genuine generalisation to genuinely new situations.</p>
+
+      <p>ARC-AGI-3, launched in early 2026, takes this further by making the test interactive. Instead of seeing a static puzzle, an agent enters one of 25 hand-crafted game-like environments with no instructions, no rules, and no stated goal. It must explore the environment through trial and error, figure out what winning looks like, and then do it — across 183 progressively harder levels. Human beings score 100% on this benchmark. As of March 2026, frontier AI systems scored below 1%. That gap is the problem this paper addresses.</p>
+
+      <h3>How it works</h3>
+      <p>Imagine hiring a brilliant consultant and dropping them into an unfamiliar factory floor with no briefing. Left alone, they'd wander, try things, occasionally succeed — but lose track of what they'd already tried, repeat dead ends, and miss the bigger patterns. Now give that same consultant a dedicated notebook, a research assistant who tracks their progress from the outside, and a protocol for deciding when to change strategy. Suddenly, they can work for hours instead of minutes, build on their earlier discoveries, and adapt when they're stuck.</p>
+
+      <p>That is roughly what AVO does. It wraps Claude Opus 5 — Anthropic's most capable model — in three layers of architecture. First, <strong>persistent memory</strong>: a running record that carries forward everything the agent has tried, what worked, what the environment responded with, and what the profiler reported. Unlike a standard conversation, which evaporates at the end of a context window, AVO's memory is durable. The agent can resume where it left off rather than rebuilding its understanding each round.</p>
+
+      <p>Second, a <strong>supervisor module</strong>: a separate process that watches the broader trajectory of the search from the outside. When the main agent starts repeating the same dead ends or stagnates without progress, the supervisor detects it and redirects — essentially tapping the consultant on the shoulder and saying "you've been trying that approach for too long, try something else." The main agent decides what to do; the supervisor decides when the main agent needs a new direction.</p>
+
+      <p>Third, <strong>agentic variation</strong>: rather than mechanically trying every possible approach (the brute-force way), AVO lets the agent decide which variations to explore next based on what it has learned so far. It plans, implements, evaluates, and commits — iteratively, over many turns, accumulating insight rather than starting fresh each time. This is what distinguishes it from a simple "retry loop."</p>
+
+      <h3>What they actually did</h3>
+      <p>NVIDIA connected AVO to the full ARC-AGI-3 public set — all 25 environments, all 183 levels. They used Claude Opus 5 as the underlying model throughout. As a baseline, Claude Opus 5 running without AVO scored 30.2% on the same benchmark. With AVO, the same model cleared every level: a score of 100.00 RHAE (Relative Human Action Efficiency, a metric that compares the agent's action count to that of a human). AVO used 6,624 environment actions in total, compared to 7,542 for the previous top-scoring system — 12% more efficient.</p>
+
+      <h3>What they found</h3>
+      <p>The most striking finding is not the score itself but where the improvement came from. The model was identical. The 70-point gap between 30% and 100% came entirely from the harness — the memory, the supervisor, the strategy for variation. The benchmark, which was specifically designed to resist memorisation and require genuine reasoning, was not fooled by the model; it was solved by the system around the model. This generalises: NVIDIA built AVO originally for GPU kernel optimisation, a completely different task. They connected the same architecture to ARC-AGI-3 without redesigning it for the new domain. That portability is arguably the more consequential finding.</p>
+
+      <h3>The catch</h3>
+      <p>The 100% result covers only the <em>public</em> set — the 25 environments that are visible to everyone. ARC Prize maintains a semi-private and fully private held-out set, designed to catch systems that have inadvertently overfit to the public test cases. AVO has not been evaluated on those private environments, and NVIDIA explicitly flags this limitation. The company also notes that their run used different reasoning settings and infrastructure from ARC Prize's official scoring, so the gap between 30% and 100% is not a perfectly controlled comparison. AVO is a research demonstration with no commercial release timeline.</p>
+
+      <p><strong>If you remember one thing:</strong> A 70-point jump in performance with no change to the underlying model is not a story about the model. It is a story about what you build around it.</p>
+
+      <!-- SVG figure: bar chart + diagram showing bare model vs AVO-wrapped -->
+      <figure>
+        <svg viewBox="0 0 720 320" role="img" aria-label="Bar chart showing Claude Opus 5 scoring 30% on ARC-AGI-3 alone, versus 100% when wrapped in NVIDIA's AVO harness. Inset shows the three layers of AVO: persistent memory, supervisor, and agentic variation.">
+          <!-- Background -->
+          <rect width="720" height="320" fill="#FAFAF8"/>
+
+          <!-- Title -->
+          <text x="360" y="30" font-family="ui-serif, Georgia, serif" font-size="14" fill="#141413" text-anchor="middle" font-weight="600">Same model. Different wrapper. 70-point gap.</text>
+
+          <!-- Bar chart area -->
+          <!-- Bare model bar -->
+          <rect x="90" y="220" width="110" height="0" fill="none"/>
+          <!-- 30% of 160px = 48px bar height -->
+          <rect x="90" y="172" width="110" height="48" fill="#D1CFC5" rx="3"/>
+          <text x="145" y="168" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="#87867F" text-anchor="middle">30%</text>
+          <text x="145" y="236" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">Claude Opus 5</text>
+          <text x="145" y="250" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">alone</text>
+
+          <!-- AVO bar -->
+          <!-- 100% of 160px = 160px bar height -->
+          <rect x="250" y="60" width="110" height="160" fill="#D97757" rx="3"/>
+          <text x="305" y="54" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="#D97757" text-anchor="middle">100%</text>
+          <text x="305" y="236" font-family="system-ui, sans-serif" font-size="11" fill="#141413" text-anchor="middle">Claude Opus 5</text>
+          <text x="305" y="250" font-family="system-ui, sans-serif" font-size="11" fill="#141413" text-anchor="middle">+ AVO harness</text>
+
+          <!-- Y-axis line -->
+          <line x1="80" y1="220" x2="380" y2="220" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="72" y="224" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" text-anchor="end">0%</text>
+          <text x="72" y="124" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" text-anchor="end">50%</text>
+          <text x="72" y="64" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" text-anchor="end">100%</text>
+          <line x1="80" y1="120" x2="370" y2="120" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="3,3"/>
+          <line x1="80" y1="60" x2="370" y2="60" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="3,3"/>
+
+          <!-- AVO architecture diagram on the right -->
+          <text x="440" y="30" font-family="ui-serif, Georgia, serif" font-size="12" fill="#87867F" text-anchor="middle">Inside the AVO harness</text>
+
+          <!-- Supervisor box at top -->
+          <rect x="360" y="45" width="160" height="36" rx="4" fill="#6A8CAF" opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="440" y="66" font-family="system-ui, sans-serif" font-size="12" fill="#6A8CAF" text-anchor="middle" font-weight="600">Supervisor</text>
+
+          <!-- Arrow from supervisor down -->
+          <line x1="440" y1="81" x2="440" y2="105" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Main agent box -->
+          <rect x="360" y="106" width="160" height="36" rx="4" fill="#D97757" opacity="0.15" stroke="#D97757" stroke-width="1.5"/>
+          <text x="440" y="128" font-family="system-ui, sans-serif" font-size="12" fill="#D97757" text-anchor="middle" font-weight="600">Claude Opus 5</text>
+
+          <!-- Arrow from agent down -->
+          <line x1="440" y1="142" x2="440" y2="166" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Persistent memory box -->
+          <rect x="360" y="167" width="160" height="36" rx="4" fill="#788C5D" opacity="0.15" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="440" y="189" font-family="system-ui, sans-serif" font-size="12" fill="#788C5D" text-anchor="middle" font-weight="600">Persistent memory</text>
+
+          <!-- Arrow from memory back up (feedback) -->
+          <path d="M 520 185 C 550 185, 550 120, 520 120" stroke="#87867F" stroke-width="1.2" fill="none" stroke-dasharray="4,2" marker-end="url(#arr)"/>
+
+          <!-- Supervisor feedback arrow -->
+          <path d="M 520 125 C 555 125, 555 62, 520 62" stroke="#6A8CAF" stroke-width="1.2" fill="none" stroke-dasharray="4,2" marker-end="url(#arr2)"/>
+
+          <!-- Arrow marker -->
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#87867F"/>
+            </marker>
+            <marker id="arr2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#6A8CAF"/>
+            </marker>
+          </defs>
+
+          <!-- Environment box at bottom -->
+          <rect x="360" y="226" width="160" height="36" rx="4" fill="none" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="440" y="248" font-family="system-ui, sans-serif" font-size="12" fill="#87867F" text-anchor="middle">ARC-AGI-3 environment</text>
+
+          <!-- Arrow from environment up to memory -->
+          <line x1="440" y1="226" x2="440" y2="203" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Human benchmark line on bar chart -->
+          <text x="145" y="78" font-family="system-ui, sans-serif" font-size="10" fill="#788C5D" text-anchor="middle">human = 100%</text>
+
+          <!-- Y axis benchmark labels -->
+          <text x="50" y="270" font-family="ui-serif, Georgia, serif" font-size="10" fill="#87867F" text-anchor="start">ARC-AGI-3 score (public set, RHAE metric)</text>
+        </svg>
+        <figcaption>Left: Claude Opus 5's score on ARC-AGI-3, with and without the AVO harness. Right: how AVO works — a supervisor watches from outside, the model acts, and persistent memory carries the full history of what has been tried. The loop, not the model, is what changed.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>Patel published a short essay-episode titled "8 Predictions for the Era of Continual Learning" on August 7 — arguing that once models can accumulate real-world experience across sessions (rather than resetting each time), competitive moats, safety approaches, and the diversity of AI behaviour will all shift. The saxophone analogy he uses is good. <a href="https://www.dwarkesh.com/p/era-of-continual-learning">dwarkesh.com</a></span></li>
+        <li><span class="tag tech">Andrej Karpathy</span><span>Karpathy's April Sequoia Ascent essay — in which he named the current moment "Software 3.0" and argued that natural language is now the dominant programming interface — continues to circulate widely, with the YC community treating it as a founding document for the new era of developer tools. His February "microgpt" repo (GPT training in 200 lines of pure Python) is still picking up new forks. <a href="https://karpathy.bearblog.dev/">karpathy.bearblog.dev</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things happened this week that, held next to each other, say something about where value is going to accumulate. Anthropic, the lab behind one of the most capable AI models in the world, is preparing to go public at a valuation that would make it one of the most valuable companies in history — and it is naming public anxiety as a genuine risk, because public trust is not guaranteed. Meanwhile, NVIDIA showed that the same model can score 30% or 100% on a hard test depending entirely on what you build around it. The model is not enough. The model needs a supervisor, a memory, a strategy for variation, a system that knows when to try something different.</p>
+
+      <p>That has practical implications for anyone paying attention. The companies that will capture the most value from AI in the next few years may not be the ones training the largest models; they may be the ones building the best harnesses. The IPO market will shortly give us a number that tries to quantify what the lab behind the model is worth. But the AVO paper hints that there is a parallel market — still mostly uncaptured, largely unpriced — for the wrapper.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://developer.nvidia.com/blog/nvidia-avo-reaches-100-on-arc-agi-3-demonstrating-a-frontier-level-general-purpose-architecture-for-long-horizon-autonomous-agents/">NVIDIA Developer Blog (AVO)</a> ·
+        <a href="https://xenospectrum.com/en/nvidia-avo-harness-arc-agi-3/">XenoSpectrum (AVO detail)</a> ·
+        <a href="https://arcprize.org/blog/arc-agi-3-launch">ARC Prize (ARC-AGI-3 launch)</a> ·
+        <a href="https://www.cnbc.com/2026/08/21/-anthropic-ipo-filing-will-show-ai-backlash-as-risk-sources-say.html">CNBC (Anthropic IPO risk)</a> ·
+        <a href="https://finance.yahoo.com/technology/article/anthropic-could-publicly-file-ipo-paperwork-as-soon-as-this-month-192026244.html">Yahoo Finance (Anthropic IPO filing)</a> ·
+        <a href="https://smartasset.com/investing/anthropic-ipo">SmartAsset (Anthropic IPO details)</a> ·
+        <a href="https://research.meta.ai/blog/introducing-muse-glimmer-open-agentic-model">Meta AI Research (Muse Glimmer)</a> ·
+        <a href="https://www.securityweek.com/openai-unveils-new-cybersecurity-model-gpt-5-6-cyber/">SecurityWeek (GPT-5.6-Cyber)</a> ·
+        <a href="https://www.cooley.com/news/insight/2026/2026-08-03-eu-ai-act-transparency-obligations-take-effect-2-august-2026">Cooley (EU AI Act)</a> ·
+        <a href="https://www.dwarkesh.com/p/era-of-continual-learning">Dwarkesh Patel (Continual Learning)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Harness</div>
+        <div>The code and structure wrapped around an AI model to give it memory, tools, and a strategy. A model without a harness is like a brilliant employee in an empty room with no notebook, no brief, and no clock. The harness is the room, the notebook, the brief, and the clock — it doesn't change what the employee knows, but it changes what they can accomplish.</div>
+      </div>
+      <dl>
+        <dt>ARC-AGI-3</dt>
+        <dd>A benchmark made of 25 hand-crafted game environments. No instructions, no rules, no stated goals — an AI must figure out what winning looks like through exploration. Humans score 100%. Most frontier AI systems scored under 1% in March 2026.</dd>
+        <dt>RHAE</dt>
+        <dd>Relative Human Action Efficiency. Compares how many steps an AI takes to solve a level versus how many a human needs. 100 RHAE means the AI was exactly as efficient as a human.</dd>
+        <dt>Persistent memory</dt>
+        <dd>A record that survives across the agent's context window — so past attempts, results, and reasoning carry forward instead of being forgotten at the end of each "conversation."</dd>
+        <dt>S-1</dt>
+        <dd>The registration document a company files with the US Securities and Exchange Commission when it wants to offer shares to the public. It contains financial statements, business description, and a list of risk factors — the things that could go wrong.</dd>
+        <dt>Continual learning</dt>
+        <dd>AI that updates from real-world experience after deployment, rather than being trained once and then frozen. A model that learns continually is one that gets different — and potentially smarter — over time without anyone explicitly retraining it.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
