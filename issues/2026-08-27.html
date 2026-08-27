@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №90 — The Model That Was Hiding · Infinite Reach</title>
+  <meta name="description" content="China's most-watched mystery model turned out to be free and open-source. Meanwhile, a new paper shows how language models can read the equivalent of twenty full novels — and actually remember them." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №90 &middot; August 27, 2026</p>
+      <h1>The Model That Was Hiding</h1>
+      <p>For weeks, a mysterious model called OX Alpha was beating the world's best at coding benchmarks — identity unknown, no lab claiming it. Yesterday the curtain came down: it was GLM-5.3-Flash, a 320-billion-parameter model from China's Zhipu AI, and it's now free for anyone to download under an open-source licence. Elsewhere, a paper published three weeks ago quietly solved one of language-model research's most stubborn problems: how do you teach a machine to read the equivalent of twenty full novels and hold them all in mind at once?</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Since mid-August, an anonymous model called "OX Alpha" had been circulating on benchmark leaderboards and quietly outperforming GPT-5.6 on coding tests. Independent researchers had 99% certainty it was Chinese, but no lab was saying anything. Yesterday, Zhipu AI — the Beijing company behind the GLM family — revealed it: OX Alpha is GLM-5.3-Flash, now open-sourced under an MIT licence. The model has 320 billion total parameters but only 18 billion active at a time (a Mixture-of-Experts architecture), supports text, images, and video natively, and handles contexts up to one million tokens long. At launch pricing of $0.075 per million input tokens, it scores 57 on the Artificial Analysis Intelligence Index — well above the median for open-weight models of comparable size. That a stealth-tested Chinese model could sit near the frontier for three weeks without anyone catching it speaks loudly about how fast the field has spread.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">IPO</span><span>Anthropic's public S-1 filing is expected any day now — the roadshow has begun, banks are scheduling investor meetings, and October is the target for a Nasdaq debut. Secondary markets imply a valuation of $1.05–1.15 trillion.</span></li>
+        <li><span class="tag tech">Milestone</span><span>One year after launch, 4% of all public GitHub commits are now authored by Claude Code — Boris Cherny, who created it as a side project in 2024, noted the figure this week. Projections put it at 20% by end of year.</span></li>
+        <li><span class="tag money">Funding</span><span>Emerald AI raised $150 million in a Series A at a $1.05 billion valuation, backed by DCVC, Nvidia, and Samsung Ventures — one of the larger enterprise AI infrastructure rounds of the month.</span></li>
+        <li><span class="tag policy">Science</span><span>The US administration pledged more than $5 billion across 15 federal agencies to embed AI into national scientific research, under a programme called the Genesis Mission. The goal is to accelerate discovery in energy, life sciences, and semiconductors.</span></li>
+        <li><span class="tag tech">Podcast</span><span>Dwarkesh Patel released a new episode (Aug 25) with Dylan Patel: the argument is that smarter models may drive compute costs up rather than down, because cheaper intelligence unlocks more demand. Worth an hour.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: how to read twenty novels at once</h2>
+      <p class="kicker">PI-Mem: Pushing Long-Context Reasoning to 3.6M Tokens with Parallel-Iterative Memory &middot; Dawei Liu et al. (12 authors) &middot; <a href="https://arxiv.org/abs/2608.03048">arXiv 2608.03048</a></p>
+
+      <p>It is, on its face, an unsexy engineering paper. "We made a model handle longer documents." But the specific numbers — 3.6 million tokens, near-perfect accuracy, consistent performance where every previous approach collapses — make it worth slowing down for. And the method is genuinely elegant.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>A language model has what researchers call a "context window" — a limit on how much text it can hold in working memory at once. Early models could handle a few thousand words. Today's leading models can technically handle a million tokens (about 750,000 words, or three very long novels). But "technically handle" is doing a lot of work in that sentence: performance degrades sharply past a certain point, and for most tasks, even the best models go unreliable somewhere around a few hundred thousand tokens.</p>
+
+      <p>The blunt solution is to just feed a model shorter pieces — divide a long document into chunks, process them one at a time, carry a summary forward. This is called a recurrent or sequential approach, and it has two serious problems. First, information processed early can get overwritten by information processed later — if chapter 1 of a novel contains a critical clue and chapter 47 contains a lot of irrelevant filler, the model may have half-forgotten chapter 1 by the time you ask about it. Second, because each chunk depends on what came before, you cannot parallelize the work. Every chunk must wait for the previous one to finish. Latency grows linearly with document length. A three-million-token document becomes a queue.</p>
+
+      <h3>How it works</h3>
+
+      <p>PI-Mem's key insight is to break the dependency between chunks. Instead of reading the document like a single reader turning pages in order, it reads like a <em>research team</em> using a shared notebook.</p>
+
+      <p>Imagine a team of twelve researchers given a long legal brief to summarize. The old approach: one person reads from page 1, writes notes, hands them to the next person who reads from where the first left off, and so on around the room. By the time the last person is done, everyone has forgotten what the first person said. PI-Mem's approach: give every researcher a different section of the brief <em>simultaneously</em>, along with a shared blank notebook. Each person reads their section, writes down what's new or important into the shared notebook, and passes it to everyone else. Then the whole team reads the updated notebook along with their section again, and adds anything they missed. After a few rounds, the shared notebook contains everything that matters — and nobody waited for anyone else to start.</p>
+
+      <p>More precisely, PI-Mem works like this. The document is divided into chunks. In each "turn," every chunk is processed in parallel, conditioned on the current state of a compact shared memory store. Each chunk scan asks: what in this chunk is new or complementary to what's already in memory? Selected evidence is merged into the memory. Then the next turn begins — same chunks, same memory, but now the memory is richer. The number of turns is not fixed. The system is trained using reinforcement learning with an auxiliary "turn-efficiency" reward: if you do an extra turn and learn nothing new, you lose points. So the model learns to stop when it has enough information, rather than grinding through unnecessary iterations.</p>
+
+      <p>The result is a system where parallelism is preserved (all chunks process simultaneously in each turn), information from early sections stays available throughout, and the model adaptively decides how many passes it needs.</p>
+
+      <h3>What they actually did</h3>
+
+      <p>The researchers tested PI-Mem on two backbone models: Qwen3.5-35B-A3B (a strong 35-billion-parameter model) and the smaller Qwen2.5-7B. They benchmarked on RULER — a synthetic evaluation that tests retrieval, multi-hop tracing, aggregation, and question answering across documents of increasing length — and on LongBench v2, a collection of 503 challenging multiple-choice questions across six realistic categories (law, finance, science, and others). They pushed context lengths all the way to 3.6 million tokens, far beyond the training distribution.</p>
+
+      <h3>What they found</h3>
+
+      <p>On RULER, PI-Mem with Qwen3.5-35B-A3B achieved an average score of 98.04 — the best result reported, outperforming the previous leading method (MemAgent) by 6.76 points. The gap is especially stark at 1 million tokens: PI-Mem holds at 96.88 while MemAgent drops to 83.86. For the smaller Qwen2.5-7B, PI-Mem lifted overall performance from 84.68 to 91.09, and the 1M-token score from 74.83 to 88.39. On LongBench v2, PI-Mem scored 54.1, compared to MemAgent's 52.3 and a baseline of 50.7.</p>
+
+      <p>Particularly striking: the gains held up at 3.6M tokens — context lengths no previous method had reached reliably. The model wasn't just technically handling longer documents; it was staying accurate.</p>
+
+      <h3>The catch</h3>
+
+      <p>The training data for PI-Mem was built around "hot-pot QA" style tasks — finding specific facts buried in long texts. It is not yet established whether the same gains transfer to tasks that require synthesis, argumentation, or comparative judgment across very long documents (think: "compare the legal reasoning in chapters 3 and 29"). The paper is also honest that the computational cost of running multiple parallel passes is non-trivial — this is not something you'd deploy on a phone. And 3.6M tokens, while remarkable, is still a small fraction of what you'd need to reason over an entire knowledge base or code repository of any serious size.</p>
+
+      <p><strong>If you remember one thing:</strong> A language model can now hold the equivalent of twenty full novels in working memory and stay reliable — by treating the document like a research team with a shared notebook, not a single reader with a bad pencil.</p>
+
+      <!-- SVG: Sequential vs. Parallel-Iterative Memory -->
+      <figure>
+        <svg viewBox="0 0 720 320" role="img" aria-label="Diagram comparing sequential chunk processing (old) with PI-Mem's parallel-iterative approach (new)">
+          <!-- Background -->
+          <rect width="720" height="320" fill="none"/>
+
+          <!-- ---- Left side: Old sequential approach ---- -->
+          <text x="175" y="24" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="bold" fill="#141413" text-anchor="middle">Old approach: sequential</text>
+
+          <!-- Chunks stacked vertically, connected by arrows -->
+          <rect x="100" y="38" width="90" height="32" rx="5" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="145" y="59" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle">Chunk 1</text>
+
+          <line x1="145" y1="70" x2="145" y2="88" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="100" y="90" width="90" height="32" rx="5" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="145" y="111" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle">Chunk 2</text>
+
+          <line x1="145" y1="122" x2="145" y2="140" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="100" y="142" width="90" height="32" rx="5" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="145" y="163" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle">Chunk 3</text>
+
+          <line x1="145" y1="174" x2="145" y2="192" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Memory box (overwritten) -->
+          <rect x="80" y="194" width="130" height="38" rx="5" fill="#D97757" opacity="0.25" stroke="#D97757" stroke-width="1.5"/>
+          <text x="145" y="216" font-family="ui-serif,Georgia,serif" font-size="11" fill="#141413" text-anchor="middle">Memory</text>
+          <text x="145" y="228" font-family="system-ui,sans-serif" font-size="9.5" fill="#87867F" text-anchor="middle">(early facts lost)</text>
+
+          <!-- Latency label -->
+          <text x="145" y="258" font-family="system-ui,sans-serif" font-size="10" fill="#D97757" text-anchor="middle">⚠ Serial — no parallelism</text>
+          <text x="145" y="272" font-family="system-ui,sans-serif" font-size="10" fill="#D97757" text-anchor="middle">⚠ Latency grows with length</text>
+
+          <!-- Divider -->
+          <line x1="360" y1="15" x2="360" y2="305" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,4"/>
+
+          <!-- ---- Right side: PI-Mem ---- -->
+          <text x="543" y="24" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="bold" fill="#141413" text-anchor="middle">PI-Mem: parallel-iterative</text>
+
+          <!-- Turn 1 label -->
+          <text x="415" y="48" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">Turn 1 (parallel reads)</text>
+
+          <!-- Three chunks side by side -->
+          <rect x="398" y="55" width="70" height="28" rx="5" fill="#6A8CAF" opacity="0.25" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="433" y="74" font-family="system-ui,sans-serif" font-size="10" fill="#141413" text-anchor="middle">Chunk 1</text>
+
+          <rect x="478" y="55" width="70" height="28" rx="5" fill="#6A8CAF" opacity="0.25" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="513" y="74" font-family="system-ui,sans-serif" font-size="10" fill="#141413" text-anchor="middle">Chunk 2</text>
+
+          <rect x="558" y="55" width="70" height="28" rx="5" fill="#6A8CAF" opacity="0.25" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="593" y="74" font-family="system-ui,sans-serif" font-size="10" fill="#141413" text-anchor="middle">Chunk 3</text>
+
+          <!-- Arrows all pointing to shared memory -->
+          <line x1="433" y1="83" x2="490" y2="118" stroke="#6A8CAF" stroke-width="1.5" marker-end="url(#arr2)"/>
+          <line x1="513" y1="83" x2="513" y2="118" stroke="#6A8CAF" stroke-width="1.5" marker-end="url(#arr2)"/>
+          <line x1="593" y1="83" x2="535" y2="118" stroke="#6A8CAF" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+          <!-- Shared memory -->
+          <rect x="460" y="120" width="105" height="34" rx="5" fill="#788C5D" opacity="0.22" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="512" y="140" font-family="ui-serif,Georgia,serif" font-size="11" fill="#141413" text-anchor="middle">Shared memory</text>
+          <text x="512" y="150" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">(compact, cumulative)</text>
+
+          <!-- Feedback arrows for iteration -->
+          <path d="M 460 137 Q 410 137 410 90 Q 410 55 398 55" fill="none" stroke="#788C5D" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arr3)"/>
+          <text x="393" y="105" font-family="system-ui,sans-serif" font-size="9" fill="#788C5D">iterate</text>
+
+          <!-- RL stop signal -->
+          <rect x="450" y="170" width="125" height="28" rx="5" fill="#D97757" opacity="0.15" stroke="#D97757" stroke-width="1.2"/>
+          <text x="512" y="188" font-family="system-ui,sans-serif" font-size="10" fill="#141413" text-anchor="middle">RL: stop when ready</text>
+
+          <!-- Benefits -->
+          <text x="512" y="222" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D" text-anchor="middle">✓ All chunks in parallel</text>
+          <text x="512" y="237" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D" text-anchor="middle">✓ Early facts preserved</text>
+          <text x="512" y="252" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D" text-anchor="middle">✓ Adaptive iteration count</text>
+          <text x="512" y="267" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D" text-anchor="middle">✓ 3.6M tokens, stays sharp</text>
+
+          <!-- Arrow markers -->
+          <defs>
+            <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L6,3 z" fill="#87867F"/>
+            </marker>
+            <marker id="arr2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L6,3 z" fill="#6A8CAF"/>
+            </marker>
+            <marker id="arr3" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L6,3 z" fill="#788C5D"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>Left: old sequential approach — chunks processed one after another, early facts overwritten and no parallelism possible. Right: PI-Mem — all chunks scanned simultaneously each turn, evidence merged into a shared compact memory, with reinforcement learning teaching the model to stop iterating once it has enough.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh</span><span>New episode (Aug 25) with Dylan Patel: "Anthropic &amp; OpenAI Will Have Most of the Value." The core argument — smarter models drive compute demand <em>up</em>, not down, because cheaper intelligence opens up tasks nobody was running before — is the kind of counterintuitive economics the show does well. <a href="https://podcasts.apple.com/us/podcast/dylan-patel-anthropic-openai-will-have-most-of/id1516093381?i=1000785793715">Listen</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>A quiet milestone from the Claude Code creator: 4% of all public GitHub commits are now Claude-authored, one year after launch — a number comparable to contributions from entire regional developer communities. Boris noted the figure this week. <a href="https://www.ycrootaccess.com/p/boris-cherny-building-claude-code">More context</a></span></li>
+        <li><span class="tag tech">Garry Tan</span><span>Tan open-sourced GBrain — a personal AI toolkit built around the premise that individuals should own their intelligence layer rather than rent it from a platform. It's a compounding-systems approach for solo builders. <a href="https://x.com/garrytan/status/2053127683014271466">Thread</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things happened this week that, separately, might read as incremental. Together, they point somewhere important. GLM-5.3-Flash shows that frontier-grade capability is no longer scarce — a free, open-source model can hide in plain sight among the world's best for three weeks without anyone noticing. PI-Mem shows that a model can now read the entire context of an organisation's documents, contracts, and code and hold them coherently in mind. Put those two together: the capability to reason over vast archives of information is becoming cheap, open, and downloadable. What was expensive enough to gate behind an API subscription last year is today an MIT-licensed weight file. That changes who can build with this, and what they can build.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://siliconangle.com/2026/08/26/z-ai-open-sources-ox-alpha-model-as-glm-5-3-flash/">SiliconAngle — Z.ai open-sources Ox Alpha</a> ·
+        <a href="https://artificialanalysis.ai/models/glm-5-3-flash">Artificial Analysis — GLM-5.3-Flash</a> ·
+        <a href="https://llmgateway.io/timeline">LLM Gateway — August 2026 model tracker</a> ·
+        <a href="https://arxiv.org/abs/2608.03048">arXiv 2608.03048 — PI-Mem paper</a> ·
+        <a href="https://arxiv.org/html/2608.03048v1">PI-Mem full paper HTML</a> ·
+        <a href="https://benchlm.ai/benchmarks/longbench-v2">BenchLM — LongBench v2 scores</a> ·
+        <a href="https://unusualwhales.com/news/anthropic-public-s1-filing-august-2026">UnusualWhales — Anthropic S-1 timing</a> ·
+        <a href="https://www.cnbc.com/2026/08/21/-anthropic-ipo-filing-will-show-ai-backlash-as-risk-sources-say.html">CNBC — Anthropic IPO risk factors</a> ·
+        <a href="https://techstartups.com/2026/08/26/startup-funding-news-today-august-26-2026-emerald-ai-gatik-stellaria-more/">TechStartups — Emerald AI funding</a> ·
+        <a href="https://www.mintz.com/insights-center/viewpoints/54941/2026-08-07-ai-washington-report-august-2026-edition">Mintz — AI Washington Report Aug 2026</a> ·
+        <a href="https://podcasts.apple.com/us/podcast/dylan-patel-anthropic-openai-will-have-most-of/id1516093381?i=1000785793715">Apple Podcasts — Dwarkesh × Dylan Patel</a> ·
+        <a href="https://www.ycrootaccess.com/p/boris-cherny-building-claude-code">YC Root Access — Boris Cherny</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Context window</div>
+        <div>The maximum amount of text a model can hold in "working memory" at once — everything it can see and use to form a response. Beyond the window, the model effectively forgets. PI-Mem's contribution is extending what "working memory" can mean, without expanding the raw window.</div>
+      </div>
+      <dl>
+        <dt>Mixture of Experts (MoE)</dt>
+        <dd>An architecture where a large model is divided into many specialist sub-networks ("experts"), but only a few activate for any given input. GLM-5.3-Flash has 320 billion parameters total but only 18 billion active at once — the rest are dormant, which is why it runs fast and cheap.</dd>
+
+        <dt>MIT licence</dt>
+        <dd>One of the most permissive open-source licences. You can take the code (or model weights), use them commercially, modify them, and redistribute — without asking permission or paying royalties. "MIT licence" is shorthand for "genuinely free, no catches."</dd>
+
+        <dt>RULER benchmark</dt>
+        <dd>A synthetic test that evaluates how well a model retrieves, traces, and aggregates facts buried inside very long documents. "Synthetic" means the questions and documents are generated by researchers to test specific abilities, rather than pulled from real-world text.</dd>
+
+        <dt>Reinforcement learning (RL)</dt>
+        <dd>A training method where a model learns by receiving rewards and penalties for its actions, rather than being given right answers. PI-Mem uses RL to teach the model when to stop iterating — rewarding efficiency and penalising unnecessary extra passes.</dd>
+
+        <dt>Parallel processing</dt>
+        <dd>Running multiple computations simultaneously rather than one after another. The key advantage of PI-Mem over sequential recurrent approaches: all chunks of a long document are scanned at the same time each turn, so latency doesn't grow with document length.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
