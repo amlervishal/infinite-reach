@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №91 — The Chip They Built Themselves · Infinite Reach</title>
+  <meta name="description" content="OpenAI published the first benchmark results for its homemade inference chip — 1.7–3.6× lower latency than Nvidia's best racks — while a 21-year-old platform that built the human-labeling industry announced it won't survive September." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №91 &middot; Thursday, August 28, 2026</p>
+      <h1>The Chip They Built Themselves</h1>
+      <p>OpenAI published the first real numbers for Jalapeño, its homemade inference chip, this week — and they're sharp enough to make Nvidia nervous. Meanwhile, the platform Jeff Bezos once called "artificial artificial intelligence" quietly announced it won't survive September.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>OpenAI has been building its own silicon in secret for two years, and this week it finally showed the scoreboard. Jalapeño — a custom chip co-designed with Broadcom and fabbed on TSMC's most advanced process — delivered 1.5× to 1.9× more throughput per kilowatt than Nvidia's GB200 and GB300 rack systems, and 1.7× to 3.6× lower end-to-end response times. Each chip carries 216 gigabytes of the fastest memory available (HBM4) running at 15.4 terabytes per second — enough bandwidth that the chip almost never has to wait for data. The first Jalapeño servers go live by the end of 2026. OpenAI won't sell the chip; it runs only inside their own systems, making every conversation with ChatGPT faster and cheaper without anyone else getting the advantage.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">IPO</span><span>Anthropic's public S-1 filing is expected any day, targeting a Nasdaq listing in Q4 and a valuation near $2 trillion — which would make it the largest IPO in history. The filing will explicitly list "AI backlash" as a business risk factor.</span></li>
+        <li><span class="tag tech">Closure</span><span>Amazon will shut down Mechanical Turk on September 30 after 21 years. The crowdsourced human-labeling marketplace — which once paid 500,000 workers to do small digital tasks — is being wound down as specialized AI data firms and the models themselves take over the work it pioneered.</span></li>
+        <li><span class="tag tech">Science agent</span><span>London startup Inherent, founded by Google DeepMind alumni, launched Faraday: a 27-billion-parameter agent trained to replicate findings from published research papers. In Inherent's own Replica benchmark (310 tasks, 100 papers), Faraday outperformed Claude Opus 4.8 on 73% of tasks — with the biggest edge in structural biology and materials science.</span></li>
+        <li><span class="tag policy">Federal research</span><span>The US "Genesis Mission" committed over $5 billion across more than 15 federal agencies to embed AI into national scientific research, framing it as an acceleration of the discovery pipeline rather than a replacement of researchers.</span></li>
+        <li><span class="tag money">Infrastructure</span><span>The latest Dwarkesh Podcast (August 25) features SemiAnalysis founder Dylan Patel on how AI labs have quietly shifted their business model: the margin is increasingly in selling compute access, not model intelligence, and the labs that control their own silicon will own the most defensible position.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: when a broader aim beats a sharper shot</h2>
+      <p class="kicker">"Beyond the Best Guess: Improving LLM Solution Coverage with Evolution Strategies" &middot; Hayes, Meyerson, Schweighofer, Dailey, Hodjat, Miikkulainen, Qiu &middot; arXiv August 13, 2026 &middot; <a href="https://arxiv.org/abs/2608.12679">arXiv:2608.12679</a></p>
+
+      <p>This paper asks a question that sounds almost philosophical: is training a language model to give <em>the</em> right answer the same thing as training it to give <em>a</em> right answer? It turns out they are not — and the difference is more consequential than it sounds.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Most frontier models are trained using a technique called reinforcement learning from human feedback — or more recently, variants like GRPO that use automated reward signals instead of human raters. The basic idea is simple: reward the model when it gets an answer right, penalize it when it doesn't, and repeat until it's good at getting things right. This works very well if your goal is to ask a question once and get one good answer.</p>
+      <p>But in mathematics, scientific discovery, and coding, the typical goal is different. You often care whether the model can find <em>any</em> correct solution if given several tries — not whether its first attempt is right. Researchers measure this with a metric called <strong>pass@k</strong>: if you ask the model to try k times, does at least one attempt succeed? For a model helping a scientist brainstorm experiment designs, or exploring solutions to an unsolved proof, pass@5 or pass@20 matters far more than pass@1. The problem is that standard RL training tends to hurt pass@k even as it improves pass@1. As training rewards the model for getting things right, it converges — it learns to always say roughly the same thing. Its answer distribution narrows around the responses it has found to be highest-scoring, squeezing out the exploratory variation that pass@k depends on.</p>
+
+      <h3>How it works</h3>
+      <p>The paper's answer is to replace gradient-based reinforcement learning with something called <strong>Evolution Strategies</strong>, or ES. The analogy that carries through the whole paper is this: imagine you're trying to tune a thousand knobs on a complicated mixing board to produce the best sound. Standard RL is like an expert sound engineer who listens to the output and nudges each knob in a precisely calculated direction — efficient, but it tends to lock in on one sound. Evolution Strategies is more like running many experiments in parallel: you make hundreds of slightly randomized copies of your knob configuration, see which ones sound best, and then average the direction those winners moved relative to the original. You repeat this process, never computing an exact gradient — just nudging toward the center of the best random variations.</p>
+      <p>In practice, ES works directly in weight space — the millions of numbers that define what a language model knows. Each training step, it spawns a population of slightly perturbed versions of the model, evaluates each one, and updates the main model weights toward the average direction of the best-performing variants. Because you are averaging across a whole population of slightly different models rather than descending a single gradient, the approach naturally resists collapsing onto one answer. The diversity is built into the geometry of how the update works.</p>
+      <p>There's a meaningful practical advantage here too: ES does not require backpropagation, the computationally expensive step where a neural network traces the source of its errors backward through every layer. Backpropagation is what makes gradient-based training so memory-hungry. Without it, ES can, in principle, train full-size models on less memory — though the paper focuses on what this does for output quality rather than efficiency at scale.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team trained language models with both ES and RL (specifically GRPO, a widely used variant) on mathematical reasoning tasks drawn from established benchmarks, including MATH and variants from competitive mathematics olympiads. They evaluated the resulting models on pass@1 (accuracy on a single attempt) and pass@k for various k values — measuring not just whether the model can get the right answer, but how broadly its output is distributed across different correct solution paths. They also analyzed the diversity of the models' output distributions directly, measuring how often the model produces meaningfully different reasoning chains for the same problem.</p>
+
+      <h3>What they found</h3>
+      <p>ES-trained models matched RL-trained models on pass@1 — they are just as good at giving one right answer on the first try. But on pass@k, ES won consistently: the ES models produced a wider variety of solution approaches, and that variety translated into a meaningfully higher probability of finding at least one correct answer across multiple attempts. The RL models, by contrast, often looped through the same solution strategy even across ostensibly different attempts — a sign of that collapsed output distribution. In tasks where multiple correct solution paths exist (as is common in mathematics), RL sometimes got stuck finding only one.</p>
+      <p>The failure mode for ES is worth naming: it is slower to converge. Because it explores rather than descends, it takes more training steps to reach the same pass@1 as RL. The authors acknowledge this as a genuine trade-off: if you need one model that answers one type of question reliably, RL still wins. ES earns its keep when the downstream task rewards finding any solution in a broad space.</p>
+
+      <h3>The catch</h3>
+      <p>The experiments use medium-size models and established math benchmarks. The paper does not demonstrate that ES scales cleanly to the 100-billion-parameter range that matters for frontier applications, nor does it show how the approach interacts with instruction-following or safety training (both of which are also done with RL-style methods). It is a proof of concept for an idea, not a recipe for a production training pipeline. The claim is that ES is a viable and under-explored alternative; it does not claim ES should replace RL wholesale.</p>
+
+      <p><strong>If you remember one thing:</strong> Standard RL training teaches a model to be reliably right; Evolution Strategies teaches it to be reliably <em>broad</em> — and for scientific discovery, sometimes a wider net matters more than a sharper shot.</p>
+
+      <!-- SVG diagram: RL narrows output distribution, ES spreads it; pass@k comparison -->
+      <figure>
+        <svg viewBox="0 0 720 300" role="img" aria-label="Two bell curves showing RL's narrow output distribution vs ES's broader one, with pass@k illustrated">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#141413"/>
+            </marker>
+          </defs>
+
+          <!-- Left panel: RL distribution -->
+          <rect x="10" y="10" width="330" height="270" rx="8" fill="#F8F7F4" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="175" y="38" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="14" font-weight="600" fill="#141413">Reinforcement Learning (GRPO)</text>
+          <text x="175" y="56" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">output distribution after training</text>
+
+          <!-- RL bell curve — narrow -->
+          <path d="M60,230 Q90,228 110,210 Q130,185 145,140 Q158,95 175,78 Q192,95 205,140 Q220,185 235,210 Q255,228 280,230" stroke="#D97757" stroke-width="2.5" fill="none"/>
+          <!-- RL shaded area under curve -->
+          <path d="M60,230 Q90,228 110,210 Q130,185 145,140 Q158,95 175,78 Q192,95 205,140 Q220,185 235,210 Q255,228 280,230 Z" fill="#D97757" fill-opacity="0.12"/>
+
+          <!-- x-axis RL -->
+          <line x1="50" y1="230" x2="290" y2="230" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="170" y="250" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">solution space →</text>
+
+          <!-- pass@1 marker -->
+          <line x1="175" y1="78" x2="175" y2="230" stroke="#D97757" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="175" y="268" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#D97757">pass@1 ✓</text>
+
+          <!-- annotation -->
+          <text x="175" y="290" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">Narrows around one best answer</text>
+
+          <!-- Right panel: ES distribution -->
+          <rect x="360" y="10" width="350" height="270" rx="8" fill="#F8F7F4" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="535" y="38" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="14" font-weight="600" fill="#141413">Evolution Strategies (ES)</text>
+          <text x="535" y="56" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">output distribution after training</text>
+
+          <!-- ES bell curve — wide -->
+          <path d="M385,230 Q420,226 440,205 Q460,175 480,140 Q500,108 535,95 Q570,108 590,140 Q610,175 630,205 Q650,226 685,230" stroke="#6A8CAF" stroke-width="2.5" fill="none"/>
+          <!-- ES shaded area -->
+          <path d="M385,230 Q420,226 440,205 Q460,175 480,140 Q500,108 535,95 Q570,108 590,140 Q610,175 630,205 Q650,226 685,230 Z" fill="#6A8CAF" fill-opacity="0.12"/>
+
+          <!-- x-axis ES -->
+          <line x1="375" y1="230" x2="695" y2="230" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="535" y="250" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">solution space →</text>
+
+          <!-- pass@k window -->
+          <rect x="460" y="94" width="150" height="136" rx="3" fill="#788C5D" fill-opacity="0.10" stroke="#788C5D" stroke-width="1.2" stroke-dasharray="5,3"/>
+          <text x="535" y="88" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#788C5D">pass@k window</text>
+
+          <!-- annotation -->
+          <text x="535" y="290" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">Spreads across diverse correct paths</text>
+        </svg>
+        <figcaption>RL training (left) collapses the model's outputs toward one high-scoring answer — great for pass@1, bad for diversity. Evolution Strategies (right) keeps the output distribution broad, so a wider slice of solution space stays reachable — which is why ES wins on pass@k.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh</span><span>The August 25 episode of the Dwarkesh Podcast features SemiAnalysis's Dylan Patel making a case that's easy to miss: AI labs aren't primarily in the model business anymore — they're in the compute business. Worth hearing before the infrastructure consolidation gets further along. <a href="https://www.dwarkesh.com/podcast">Link</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three stories this week share a quiet theme: the infrastructure layer of AI is solidifying in ways that will be hard to undo. OpenAI now makes its own silicon, which means its costs are structurally lower than any competitor who still buys Nvidia at list price. Mechanical Turk is closing, ending an era when the cheapest intelligence in the world was a human labeling images for cents — the work that trained the first generation of large models. And a paper about training diversity reminds us that the decisions made during training have long consequences: train a model narrowly and it stays narrow, however smart it gets. The race for capability is still the headline, but the race for infrastructure is the one that sets the terms for everything that follows.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://openai.com/index/openai-broadcom-jalapeno-inference-chip/">OpenAI — Jalapeño announcement</a> ·
+        <a href="https://www.trendforce.com/news/2026/08/26/news-openai-debuts-jalapeno-ai-inference-chip-with-samsung-reportedly-supplying-hbm4/">TrendForce — Jalapeño specs</a> ·
+        <a href="https://unusualwhales.com/news/anthropic-public-s1-filing-august-2026">Unusual Whales — Anthropic S-1 timeline</a> ·
+        <a href="https://qz.com/amazon-mechanical-turk-shutting-down-082626">Quartz — Mechanical Turk shutdown</a> ·
+        <a href="https://techcrunch.com/2026/08/22/inherent-founded-by-deepmind-alumni-says-its-ai-teammate-just-outperformed-anthropic-and-openai-at-replicating-research/">TechCrunch — Inherent Faraday</a> ·
+        <a href="https://arxiv.org/abs/2608.12679">arXiv:2608.12679 — Beyond the Best Guess</a> ·
+        <a href="https://www.dwarkesh.com/podcast">Dwarkesh Podcast — Dylan Patel episode</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">ASIC</div>
+        <div>Short for Application-Specific Integrated Circuit — a chip built to do one job rather than everything. Your laptop's processor is a general-purpose chip; a Jalapeño is an ASIC. The trade-off: an ASIC is faster and more efficient at its one job, but useless for anything else. The same logic applies to every custom chip that labs are now racing to build.</div>
+      </div>
+      <dl>
+        <dt>Inference</dt><dd>Running a trained model to get answers — as opposed to training, which is the expensive process of teaching it. When you send a message to ChatGPT, you're doing inference. Most of the day-to-day cost of operating an AI company is inference, which is why chips optimized for it matter so much.</dd>
+        <dt>HBM4</dt><dd>High Bandwidth Memory, fourth generation. The type of extremely fast memory stacked on top of AI chips. Bandwidth — how fast data can flow in and out — is often the bottleneck in AI inference, which is why "15.4 terabytes per second" is the headline stat for Jalapeño rather than raw processing power.</dd>
+        <dt>pass@k</dt><dd>A way to measure how diverse a model's answers are. "pass@5" means: if the model tries five times, does at least one attempt solve the problem? A model with a broad output distribution scores high on pass@k even if its very first guess is only good, not perfect.</dd>
+        <dt>Evolution Strategies</dt><dd>A family of training algorithms that borrow from evolutionary biology: instead of computing a precise gradient and stepping in that direction, you run many slightly randomized versions of the model, keep the direction the best ones moved, and repeat. Slower to converge than gradient descent, but naturally maintains diversity.</dd>
+        <dt>GRPO</dt><dd>Group Relative Policy Optimization — a popular reinforcement learning recipe for training language models to reason better. Gives the model a reward when it gets an answer right and a penalty when it doesn't, then adjusts the model's weights accordingly. The paper above is partly a critique of what GRPO does to output diversity.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

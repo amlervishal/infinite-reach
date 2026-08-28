@@ -1,5 +1,12 @@
 [
   {
+    "num": 91,
+    "date": "2026-08-28",
+    "slug": "issues/2026-08-28.html",
+    "title": "The Chip They Built Themselves",
+    "blurb": "OpenAI published benchmark results for its first homemade inference chip — 1.7–3.6× lower latency than Nvidia's best racks — the same week Amazon closed Mechanical Turk after 21 years, and a paper found that training for diversity beats training for accuracy when science needs more than one right answer."
+  },
+  {
     "num": 90,
     "date": "2026-08-27",
     "slug": "issues/2026-08-27.html",
