@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №92 — The Line That Held · Infinite Reach</title>
+  <meta name="description" content="A federal court ruled the Pentagon cannot punish a company for maintaining AI safety limits. Separately, a new benchmark shows that even the best AI agents get about half of real biology research tasks right." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №92 &middot; Saturday, August 29, 2026</p>
+      <h1>The Line That Held</h1>
+      <p>A federal court ruled yesterday that the Pentagon cannot punish an AI company for refusing to strip safety limits from its software. That's one kind of boundary. Elsewhere, a new benchmark quietly tested another: how much of real scientific work can AI agents actually do on their own? The answer is roughly half — which is both more than most people expected and less than the marketing suggests.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>US District Judge Rita Lin ruled on Thursday that the Defense Department acted illegally when it labelled Anthropic a "supply chain risk" — effectively barring federal agencies from using Claude. The dispute began in late 2025, when the Pentagon asked Anthropic to remove a clause in its usage policy that prevents Claude from being used to build autonomous weapons or conduct mass surveillance of American citizens. Anthropic refused. The government retaliated by banning its own agencies from using the company's models. Judge Lin found that the retaliation violated the First Amendment and was "arbitrary and capricious." She dismissed both of the Defense Department's core arguments — including its allegation that Anthropic has "backdoor access" to its deployed models, a claim US officials acknowledged in court was false. The ruling is the first to give AI developers meaningful legal backing when they refuse government demands that cross their published safety lines.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Chips</span><span>OpenAI published its first benchmarks for Jalapeño, its custom inference chip co-designed with Broadcom: 1.7–3.6× lower latency and 1.5–1.9× more output per watt than Nvidia's GB200 and GB300 rack systems, tested across GPT-OSS, DeepSeek R1, and Kimi K2.5. Small-volume deployment is on track for late 2026.</span></li>
+        <li><span class="tag money">Hardware</span><span>Andreessen Horowitz launched a $1.1 billion "Machine Age Fund" — its first dedicated hardware infrastructure fund — targeting chips, memory, networking, robotics, and data centres. The firm says mid-stage hardware companies can't get funded through normal venture channels because demand for AI compute has outpaced supply.</span></li>
+        <li><span class="tag money">IPO</span><span>Anthropic's public S-1 is expected to land by end of August, with Goldman Sachs, JPMorgan, and Morgan Stanley leading the offering. Reports place a potential IPO valuation at $2 trillion — which would make it the largest in history — with a Nasdaq listing targeting October.</span></li>
+        <li><span class="tag money">Capex</span><span>Alibaba reported quarterly profit down 75% year-on-year as its AI capital spending approaches $10 billion per quarter. The company is betting that being behind on model quality can be solved by spending harder on infrastructure.</span></li>
+        <li><span class="tag tech">Autonomy</span><span>Waymo unveiled its first purpose-built chip — a 5-nanometre ASIC developed with AMD, Micron, Samsung, and TSMC — to be installed in every new Waymo Ojai vehicle. Purpose-built silicon for autonomy is following the same path as purpose-built inference chips for AI.</span></li>
+      </ul>
+
+      <h2>Paper, explained: can AI actually do a biologist's job?</h2>
+      <p class="kicker">BixBench3: Benchmarking AI agents on research-study-scale computational biology tasks &middot; Koch, Zane et al., EdisonScientific &middot; <a href="https://arxiv.org/abs/2608.25286">arXiv:2608.25286</a></p>
+
+      <p>AI companies regularly claim their models can accelerate scientific research. BixBench3, submitted to arXiv this past Tuesday, asks what that means in practice: give an agent a real pile of raw biological data, the methods from a published study, and see whether it can reproduce what the scientists actually found.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>The usual way to test an AI model is to give it questions with clean answers: a multiple-choice biology exam, a coding puzzle with a single correct solution. Real lab work isn't like that. A researcher might hand an assistant a folder of raw RNA sequencing reads and say: "Run the analysis described in the Methods section of this paper; produce the results table from Section 3." The assistant must make dozens of sequential decisions — which software package to use, how to handle missing values, what statistical threshold to apply. A mistake at step three means everything downstream is wrong. Whether AI can do this kind of chained, multi-step scientific analysis — with real data, real ambiguity, and real consequences for error — had never been rigorously measured before. People assumed it either worked (AI boosters) or didn't (sceptics), but nobody had looked.</p>
+
+      <h3>How it works</h3>
+      <p>Think of BixBench3 as a set of sealed envelopes, each containing a biology research task. The AI agent opens an envelope and finds three things: (1) a research objective — for example, "identify the genes whose expression changes significantly between these two cell populations"; (2) methodological guidance — the specific analytical steps to follow, written the way a scientist writes a Methods section; and (3) the raw data the original research team used: spreadsheets of RNA counts, protein sequences, microscopy images. The agent's job is to execute the analysis on a real computer, writing and running code, choosing tools, and eventually producing specific output files the authors call <em>artifacts</em> — a ranked gene table, a correlation matrix, a predicted molecular structure. Those artifacts are then compared against the ones from the published paper using deterministic metrics: do the numbers agree? Do the top-ranked items match? This isn't a creativity test. There is a right answer, and either the agent found it or it didn't. The comparison is automated and objective — the way you'd check a lab assistant's pipetting results against the expected concentrations.</p>
+
+      <h3>What they actually did</h3>
+      <p>The benchmark comprises 20 tasks drawn from 17 types of biological assay across 9 scientific domains — from genomics and proteomics to structural biology and drug discovery. Producing correct results requires generating 138 distinct graded artifacts in total. Thirteen frontier models were evaluated: GPT 5.6 Sol, Kimi K3, GLM 5.2, Claude Opus 4.8, Claude Opus 5, Grok 4.5, and several Gemini variants including Gemini 3.1 Flash Lite. Each model ran inside a Google Cloud virtual machine with full internet access and a code-execution environment. The researchers tracked not just accuracy but cost: on average, each task attempt consumed 102 million tokens, ran for 6.8 hours, and required 695 model-turns — individual exchanges between the model and its tools.</p>
+
+      <h3>What they found</h3>
+      <p>No model scored above 0.50. The best performer — GPT 5.6 Sol — scored 0.48, meaning 48% of the artifacts it produced had biological meaning equivalent to the ones in the original paper. Kimi K3 followed at 0.47; GLM 5.2 and Claude Opus 4.8 tied at 0.46. Claude Opus 5 scored highest on most individual tasks but produced incorrectly formatted outputs on tasks 5, 19, and 20, pulling its overall score down to 0.41 — a reminder that formatting errors are not cosmetic when a downstream analysis has to read the file. At the other extreme, Gemini 3.1 Flash Lite scored exactly 0.00: not because it refused to try, but because none of its 138 artifacts matched the published ground truth. The pattern across models suggests the gap between good and poor performance lies less in scientific knowledge than in precision: small errors in code, slightly wrong thresholds, or mishandled edge cases cascade into wrong results the same way a measurement error at the start of a chemistry calculation poisons every step that follows.</p>
+
+      <!-- SVG bar chart: BixBench3 scores -->
+      <figure>
+        <svg viewBox="0 0 720 300" role="img" aria-label="Horizontal bar chart of BixBench3 artifact-accuracy scores for six frontier AI models. GPT 5.6 Sol leads at 0.48; Gemini 3.1 Flash Lite scores 0.00.">
+          <!-- Chart title -->
+          <text x="360" y="20" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413">BixBench3 — fraction of artifacts matching published ground truth</text>
+
+          <!-- Model name labels and bars -->
+          <!-- Scale: x=170 → 0.00, x=629 → 0.50 (459px per 0.50 unit → 918px/unit) -->
+
+          <!-- GPT 5.6 Sol  0.48 → 441px -->
+          <text x="163" y="57" text-anchor="end" font-family="system-ui" font-size="11" fill="#141413">GPT 5.6 Sol</text>
+          <rect x="170" y="40" width="441" height="22" rx="2" fill="#D97757"/>
+          <text x="618" y="57" font-family="ui-monospace" font-size="11" fill="#87867F">0.48</text>
+
+          <!-- Kimi K3  0.47 → 432px -->
+          <text x="163" y="97" text-anchor="end" font-family="system-ui" font-size="11" fill="#141413">Kimi K3</text>
+          <rect x="170" y="80" width="432" height="22" rx="2" fill="#D97757" fill-opacity="0.82"/>
+          <text x="609" y="97" font-family="ui-monospace" font-size="11" fill="#87867F">0.47</text>
+
+          <!-- GLM 5.2  0.46 → 423px -->
+          <text x="163" y="137" text-anchor="end" font-family="system-ui" font-size="11" fill="#141413">GLM 5.2</text>
+          <rect x="170" y="120" width="423" height="22" rx="2" fill="#D97757" fill-opacity="0.70"/>
+          <text x="600" y="137" font-family="ui-monospace" font-size="11" fill="#87867F">0.46</text>
+
+          <!-- Claude Opus 4.8  0.46 → 423px -->
+          <text x="163" y="177" text-anchor="end" font-family="system-ui" font-size="11" fill="#141413">Claude Opus 4.8</text>
+          <rect x="170" y="160" width="423" height="22" rx="2" fill="#6A8CAF" fill-opacity="0.80"/>
+          <text x="600" y="177" font-family="ui-monospace" font-size="11" fill="#87867F">0.46</text>
+
+          <!-- Claude Opus 5  0.41 → 377px -->
+          <text x="163" y="217" text-anchor="end" font-family="system-ui" font-size="11" fill="#141413">Claude Opus 5</text>
+          <rect x="170" y="200" width="377" height="22" rx="2" fill="#6A8CAF" fill-opacity="0.55"/>
+          <text x="554" y="217" font-family="ui-monospace" font-size="11" fill="#87867F">0.41 *</text>
+
+          <!-- Gemini 3.1 Flash Lite  0.00 → stub -->
+          <text x="163" y="257" text-anchor="end" font-family="system-ui" font-size="11" fill="#141413">Gemini 3.1 Flash Lite</text>
+          <rect x="170" y="240" width="4" height="22" rx="1" fill="#87867F"/>
+          <text x="180" y="257" font-family="ui-monospace" font-size="11" fill="#87867F">0.00</text>
+
+          <!-- X-axis line -->
+          <line x1="170" y1="270" x2="670" y2="270" stroke="#D1CFC5" stroke-width="1"/>
+
+          <!-- X-axis ticks and labels -->
+          <line x1="170" y1="270" x2="170" y2="275" stroke="#87867F" stroke-width="1"/>
+          <text x="170" y="286" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#87867F">0</text>
+
+          <line x1="262" y1="270" x2="262" y2="275" stroke="#87867F" stroke-width="1"/>
+          <text x="262" y="286" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#87867F">0.10</text>
+
+          <line x1="354" y1="270" x2="354" y2="275" stroke="#87867F" stroke-width="1"/>
+          <text x="354" y="286" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#87867F">0.20</text>
+
+          <line x1="446" y1="270" x2="446" y2="275" stroke="#87867F" stroke-width="1"/>
+          <text x="446" y="286" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#87867F">0.30</text>
+
+          <line x1="538" y1="270" x2="538" y2="275" stroke="#87867F" stroke-width="1"/>
+          <text x="538" y="286" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#87867F">0.40</text>
+
+          <line x1="629" y1="270" x2="629" y2="275" stroke="#87867F" stroke-width="1"/>
+          <text x="629" y="286" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#87867F">0.50</text>
+
+          <!-- footnote -->
+          <text x="170" y="300" font-family="system-ui" font-size="10" fill="#87867F">* Claude Opus 5 scored highest on most tasks; formatting errors on 3 tasks pulled its overall score to 0.41.</text>
+        </svg>
+        <figcaption>BixBench3 scores for six of the thirteen models tested (top five and lowest). A score of 0.48 means 48% of that model's output artifacts matched the published ground truth. Each attempt cost ~102 million tokens and 6.8 hours.</figcaption>
+      </figure>
+
+      <h3>The catch</h3>
+      <p>BixBench3 tests only analyses where there is a definitive right answer derived from a published study — the most structured, well-defined category of scientific computation. It does not test whether an agent could design the experiment, generate the hypothesis, interpret genuinely ambiguous data, or review its own work critically. The tasks assume the "what to do" has been decided; the benchmark only tests "can you execute it." There is also no human baseline: the paper does not compare model performance against research assistants doing the same tasks, so it is impossible to say whether 0.48 is impressive or disappointing relative to what a careful graduate student would score.</p>
+
+      <p><strong>If you remember one thing:</strong> The best AI agent today, given real biological raw data, a methods section, and clear instructions, correctly reproduces just under half of the expected outputs — good enough to be a useful first-pass assistant, not good enough to run a computational biology pipeline unsupervised.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>A new episode of the Dwarkesh Podcast, published Monday, features Dylan Patel on which AI labs will command the most compute capacity and why infrastructure trajectories matter as much as benchmark scores. One of the most data-dense conversations on lab economics this year. <a href="https://podcasts.apple.com/us/podcast/dylan-patel-anthropic-openai-will-have-most-of/id1516093381?i=1000785793715">Listen on Apple Podcasts</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three lines were drawn this week. A court drew one that says AI companies can refuse government demands that cross their safety policies — a legal backstop that didn't exist 48 hours ago, and one that matters not just for Anthropic but for any company that has published limits it actually intends to keep. A benchmark drew one at roughly 50%, showing where the best agents sit when they attempt real scientific work without a human co-pilot. And Andreessen Horowitz drew one in the physical economy, betting $1.1 billion that the next bottleneck in AI isn't code or model quality but chips, robots, and power lines. What connects all three is a shared recognition that the interesting questions about AI are no longer purely technological. They are legal, scientific, and infrastructural — and they are starting to have real, measurable answers.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://siliconangle.com/2026/08/28/court-rules-pentagon-cant-ban-anthropics-ai-models/">SiliconANGLE (Pentagon ruling)</a> &middot;
+        <a href="https://www.aljazeera.com/economy/2026/3/25/anthropics-case-against-the-pentagon-could-open-space-for-ai-regulation">Al Jazeera (Anthropic-Pentagon background)</a> &middot;
+        <a href="https://qz.com/openai-jalapeno-chip-nvidia-benchmark-results-082626">Quartz (Jalapeño benchmarks)</a> &middot;
+        <a href="https://www.trendforce.com/news/2026/08/26/news-openai-debuts-jalapeno-ai-inference-chip-with-samsung-reportedly-supplying-hbm4/">TrendForce (Jalapeño)</a> &middot;
+        <a href="https://www.bloomberg.com/news/articles/2026-08-28/andreessen-horowitz-raises-1-1-billion-for-ai-infrastructure-fund">Bloomberg (a16z Machine Age Fund)</a> &middot;
+        <a href="https://techcrunch.com/2026/08/28/a16z-creates-a-1-1b-machine-age-fund-to-accelerate-the-physical-buildout-of-ai/">TechCrunch (a16z fund)</a> &middot;
+        <a href="https://www.startuphub.ai/ai-news/ipo-watch/2026/anthropic-ipo-roadshow-investor-meetings-2026-07-21">StartupHub (Anthropic IPO)</a> &middot;
+        <a href="https://aibusiness.com/generative-ai/alibaba-sells-more-shares-raise-10-2b-spend-on-ai">AI Business (Alibaba capex)</a> &middot;
+        <a href="https://mtslive.substack.com/p/820-waymos-chip">MTS (Waymo chip)</a> &middot;
+        <a href="https://arxiv.org/abs/2608.25286">arXiv:2608.25286 (BixBench3)</a> &middot;
+        <a href="https://github.com/EdisonScientific/BixBench3">GitHub (BixBench3 harness)</a> &middot;
+        <a href="https://podcasts.apple.com/us/podcast/dylan-patel-anthropic-openai-will-have-most-of/id1516093381?i=1000785793715">Dwarkesh Podcast (Dylan Patel episode)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Inference</div>
+        <div>Running a trained AI model to get an answer. Training is like spending years reading every book in a library; inference is like finally answering someone's question using what you learned. OpenAI's Jalapeño chip is designed specifically to make inference faster and cheaper — not to help with training at all.</div>
+      </div>
+      <dl>
+        <dt>Artifact</dt>
+        <dd>In BixBench3, a specific output file an agent must produce — a ranked gene table, a matrix, a predicted structure — graded against the original paper's version. If the numbers don't match, the artifact fails.</dd>
+        <dt>Assay</dt>
+        <dd>A standardised biological test or measurement — like checking how many cells in a sample expressed a particular protein under certain conditions. BixBench3 covers 17 different assay types across 9 scientific domains.</dd>
+        <dt>Supply chain risk</dt>
+        <dd>A formal US defence-procurement label that can bar a company from government contracts. The Pentagon applied it to Anthropic after the company refused to remove safety limits from Claude. Judge Lin ruled the label was unlawful retaliation.</dd>
+        <dt>Capex</dt>
+        <dd>Capital expenditure — money spent building long-lived physical assets like chips, servers, and data centres, as opposed to day-to-day operating costs. Alibaba's AI capex is now nearly $10 billion per quarter.</dd>
+        <dt>Throughput per watt</dt>
+        <dd>How much useful work a chip produces for every watt of power it consumes — the key efficiency metric for AI inference hardware. Higher is better and cheaper. OpenAI's Jalapeño claims 1.5–1.9× better throughput per watt than Nvidia's current best.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
