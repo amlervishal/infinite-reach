@@ -1,5 +1,12 @@
 [
   {
+    "num": 93,
+    "date": "2026-08-30",
+    "slug": "issues/2026-08-30.html",
+    "title": "After the Abstract",
+    "blurb": "A London lab trained a 27-billion-parameter agent to reproduce published scientific figures — and it beat Claude Opus 4.8 and GPT-5.5 at the job. Also: Anthropic's S-1 is expected to land this weekend, the first public look at the company's books."
+  },
+  {
     "num": 92,
     "date": "2026-08-29",
     "slug": "issues/2026-08-29.html",

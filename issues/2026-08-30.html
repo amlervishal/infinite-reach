@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №93 — After the Abstract · Infinite Reach</title>
+  <meta name="description" content="Scientific papers show you the result. A London lab has built a system that reconstructs everything the paper left out — and beat the biggest models in the world doing it." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №93 &middot; Sunday, August 30, 2026</p>
+      <h1>After the Abstract</h1>
+      <p>Scientific papers show you the discovery. A small London lab has built a system that reconstructs everything the paper left out — and it beat the biggest models in the world doing it. Also this weekend: Anthropic's S-1 is expected to land, becoming the first public look at the company's books.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Sources have had Anthropic's public S-1 registration statement pencilled in for "the end of August." If it arrives this weekend, it will be the first time the company's revenue, growth rates, and risk factors become part of the public record — in Anthropic's own words, not a leak. The rumoured headline numbers: a $60 billion raise, a $2 trillion target valuation, Goldman Sachs and JPMorgan leading the deal. What's already confirmed: the filing will list "AI backlash" as a structural risk, which is an unusual thing for a company to say about the technology that is its entire business. A tech company going public while naming its own product's public reception as a threat is not nothing.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag policy">Policy</span><span>Anthropic announced it will watermark all Claude-generated text globally — an invisible signal, adapted from Google DeepMind's SynthID-Text — that survives copying and pasting. The EU's transparency rules prompted the move, but Anthropic applied it worldwide from August 2.</span></li>
+        <li><span class="tag tech">Launch</span><span>Gemini 3.7 Flash reached stable general availability on August 13, completing a bumper month of model releases from Google. Multimodal input — text, images, audio — is now a baseline feature across all major frontier models, not a premium add-on.</span></li>
+        <li><span class="tag money">Money</span><span>Inherent, the London lab behind the Faraday science agent (this week's paper, below), emerged from stealth with a $50 million seed round led by Index Ventures, with Radical Ventures also participating.</span></li>
+        <li><span class="tag tech">Idea</span><span>Andrej Karpathy coined "agentic engineering" at Sequoia's Ascent 2026 event this month — a label for the disciplined practice of directing multiple AI agents on complex tasks, as distinct from the more casual "vibe coding" of delegating without scrutiny. The write-up is on his blog.</span></li>
+        <li><span class="tag tech">Podcast</span><span>Dwarkesh Patel's August 25 episode with Dylan Patel of SemiAnalysis traced why AI labs may control the majority of the world's new compute capacity by 2027–28, and what the debt implications of scaling to 100-plus gigawatts look like.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: the Faraday / paper replication paper -->
+      <h2>Paper, explained: Training a machine to redo the experiment</h2>
+      <p class="kicker">"Training AI Scientists to Replicate Research" &middot; Damon Falck, Samer Sabri, Anja Surina, Louis Kirsch, Edward Hughes, and colleagues at Inherent Labs &middot; <a href="https://arxiv.org/abs/2608.13331">arXiv 2608.13331</a> (August 13, 2026)</p>
+
+      <p>A 27-billion-parameter model built by a London startup — founded by researchers from Google DeepMind — just outperformed Claude Opus 4.8 and GPT-5.5 at the least glamorous job in science: checking whether published results hold up. That's the paper. Here's why it matters.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When a research paper says "we trained a model with these hyperparameters and achieved this score," it sounds easy to verify: follow the steps, run the code, get the same graph. In practice, it almost never works that way. Papers are compressed. The methods section is a highlight reel. It leaves out which version of the library caused the crash on day three; the random seed that actually worked; the twelve other approaches that produced garbage; the six weeks spent figuring out why the training curve looked weird. Reproducing a published result requires the same exploratory, hypothesis-driven thinking as the original research. You are not re-running a recipe — you are reverse-engineering a journey from a postcard of the destination.</p>
+
+      <p>This matters more than it might seem. Science accumulates by building on what came before. If published results are wrong, or impossible to reproduce, everything downstream is built on sand. Replication crises in psychology, nutrition, and other fields have shown this is not a hypothetical concern. But replication is expensive: it can take a skilled researcher weeks to reproduce a single figure. Most papers are never checked at all. The Inherent team asked a simple question: could you train an AI specifically to do this job?</p>
+
+      <h3>How it works</h3>
+      <p>Imagine the challenge like a detective working from a crime-scene photograph rather than a witness account. The paper is the photo — you can see the result, but you have to infer everything that led to it. The detective's job is to reconstruct the scene through disciplined reasoning and trial, not by asking anyone what happened.</p>
+
+      <p>Faraday — named after the 19th-century physicist who kept meticulous lab notebooks — is trained with a technique called long-horizon reinforcement learning. To understand this, it helps to know what "long-horizon" means. Standard reinforcement learning grades an AI after each move, like scoring a chess player after every piece they touch. Long-horizon RL grades them on the final outcome — the quality of the completed experiment — across a whole sequence of decisions that might span dozens of steps: reading the paper, forming a hypothesis, writing code, running it, interpreting the results, revising the approach, trying again. The AI gets no credit for good individual moves; only the quality of the finished replication counts.</p>
+
+      <p>The reward signal — the "grade" — comes from an auto-generated rubric-based judge. For each task, Inherent's system automatically generates a scoring rubric by extracting what the original figure is actually measuring, then checks the reproduced figure against those criteria numerically. The judge is designed to produce low-noise scores that agree with what a human expert would say. This matters because training on noisy feedback is how models learn bad habits.</p>
+
+      <p>Faraday also delegates. It doesn't write all the code itself — it calls GPT-5.5 Codex as a tool for the actual programming subtasks, while doing the high-level scientific reasoning itself. The split is deliberate: code-writing is a well-solved problem; scientific intuition over a long, uncertain horizon is not. Faraday is trained for the latter.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team built a benchmark called Replica — 310 tasks drawn from 100 published papers spanning three domains: natural-language processing, materials science, and weather forecasting. Each task gives the agent a paper and asks it to reproduce a specific figure without ever seeing the original. The tasks were divided into an in-distribution set (where the style of paper resembled what Faraday saw during training) and a held-out AI-for-science set (genuinely unfamiliar territory, to test whether the agent learned to do science or just memorised patterns). Faraday was compared on these tasks against Claude Opus 4.8 and GPT-5.5 — both significantly larger models running the same tasks without special scientific training.</p>
+
+      <h3>What they found</h3>
+      <p>Faraday produced more faithful replications than either rival across every category. On in-distribution tasks — papers similar to those seen during training — it beat both Claude Opus 4.8 and GPT-5.5 73 percent of the time. On held-out AI-for-science tasks, the advantage held at 60 percent. The gap was widest in meta-learning, structural biology, and materials science, where scientific intuition matters most and code-writing alone isn't enough.</p>
+
+      <p>Qualitative analysis of individual runs was equally interesting. Faraday adopted a more scientifically principled approach than the general-purpose models: it tended to form an explicit hypothesis before writing a single line of code, then diagnose failures systematically rather than trying random fixes. The large frontier models, by contrast, tended to start coding immediately and revise reactively. The researchers describe this as Faraday embedding "scientific intuition" in its weights — not just knowing how to code, but knowing how to think through an experiment.</p>
+
+      <h3>The catch</h3>
+      <p>Reproducing a figure from a paper is not the same as doing research. Faraday has not been shown to propose a novel hypothesis, design an original experiment, or find a result that wasn't already published somewhere. It is a specialist in verification, not discovery. The benchmark also covers 100 papers — a real and carefully chosen set, but still narrow: it isn't yet clear how performance holds across wet-lab biology (where "running the experiment" involves physical equipment, not code), or across the full breadth of scientific disciplines. And Faraday's scientific reasoning advantage depends on delegating coding to an external model that itself costs compute; the total resource footprint of a full Faraday replication hasn't been broken out separately. Finally, like all RL-trained systems, it's possible the model has learned patterns specific to the Replica benchmark that don't generalise to arbitrary new papers.</p>
+
+      <p><strong>If you remember one thing:</strong> A small, task-specific model trained specifically to replicate research papers can beat much larger general-purpose models at that task — which means the economics of scientific verification may be about to change dramatically.</p>
+
+      <!-- SVG: How Faraday works -->
+      <figure>
+        <svg viewBox="0 0 720 260" role="img" aria-label="How Faraday works: from published paper to replicated figure via scientific reasoning, coding agent, and RL feedback" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arr-g" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#87867F"/>
+            </marker>
+            <marker id="arr-r" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#D97757"/>
+            </marker>
+          </defs>
+
+          <!-- Step labels row at bottom -->
+          <text x="75" y="238" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">Input</text>
+          <text x="235" y="238" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">Scientific reasoning</text>
+          <text x="405" y="238" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">Code &amp; run</text>
+          <text x="575" y="238" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">Score</text>
+
+          <!-- Box 1: Paper -->
+          <rect x="20" y="100" width="110" height="60" rx="6" fill="#F5F3EE" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="75" y="126" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413">Published</text>
+          <text x="75" y="144" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413">paper</text>
+
+          <!-- Arrow 1 -->
+          <line x1="130" y1="130" x2="168" y2="130" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+          <!-- Box 2: Faraday -->
+          <rect x="170" y="88" width="130" height="84" rx="6" fill="#D97757" fill-opacity="0.12" stroke="#D97757" stroke-width="1.5"/>
+          <text x="235" y="115" text-anchor="middle" font-family="ui-serif" font-size="14" fill="#141413" font-weight="600">Faraday</text>
+          <text x="235" y="133" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">forms hypothesis</text>
+          <text x="235" y="150" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">plans experiment</text>
+          <text x="235" y="165" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">directs coding</text>
+
+          <!-- Arrow 2 -->
+          <line x1="300" y1="130" x2="338" y2="130" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+          <!-- Box 3: Code agent -->
+          <rect x="340" y="88" width="130" height="84" rx="6" fill="#788C5D" fill-opacity="0.12" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="405" y="115" text-anchor="middle" font-family="ui-serif" font-size="14" fill="#141413" font-weight="600">Code agent</text>
+          <text x="405" y="133" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">writes &amp; runs</text>
+          <text x="405" y="150" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">the experiment</text>
+          <text x="405" y="165" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">produces figure</text>
+
+          <!-- Arrow 3 -->
+          <line x1="470" y1="130" x2="508" y2="130" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+          <!-- Box 4: Rubric judge -->
+          <rect x="510" y="88" width="130" height="84" rx="6" fill="#6A8CAF" fill-opacity="0.12" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="575" y="115" text-anchor="middle" font-family="ui-serif" font-size="14" fill="#141413" font-weight="600">Rubric judge</text>
+          <text x="575" y="133" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">compares output</text>
+          <text x="575" y="150" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">to original figure</text>
+          <text x="575" y="165" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">gives score</text>
+
+          <!-- RL reward signal: curved arrow back to Faraday -->
+          <path d="M 575 88 Q 575 38 235 38 Q 200 38 200 88" fill="none" stroke="#D97757" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-r)"/>
+          <text x="405" y="28" text-anchor="middle" font-family="system-ui" font-size="11" fill="#D97757">RL reward signal (long-horizon training)</text>
+        </svg>
+        <figcaption>Faraday's loop: given a paper, it forms a hypothesis and directs a coding agent to run the experiment. An auto-generated rubric judge scores the output against the original figure. That score feeds back as a training signal, gradually teaching Faraday to reason like a scientist rather than a coder.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy posted his write-up from Sequoia's Ascent 2026 talk to his blog. The central thesis — "traditional software automates what you can <em>specify</em>; AI automates what you can <em>verify</em>" — is the cleanest one-line frame for what's changed. He also names the discipline gap: "vibe coding" (casually delegating to AI) vs "agentic engineering" (directing agents rigorously). Worth ten minutes. <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">Link</a></span></li>
+        <li><span class="tag money">Garry Tan</span><span>YC's Startup School 2026 talk "Own Your Intelligence" is on the YC library. The headline stat: Tan says he's at roughly 400× his 2013 personal output, and credits a personal knowledge wiki of 220,000 markdown pages that his AI agents run on. The argument — your context is the moat, not the model — is one of the more practical framings of personal AI leverage we've seen from a practitioner. <a href="https://www.ycombinator.com/library/WX-garry-tan-own-your-intelligence">Link</a></span></li>
+        <li><span class="tag tech">Dwarkesh</span><span>The August 25 episode of the Dwarkesh Podcast features Dylan Patel of SemiAnalysis on compute supply chains — why AI labs may capture most incremental GPU capacity by 2027–28, and the staggering debt implications of scaling to 100+ gigawatt data centres. The compute episode of the year. <a href="https://www.dwarkesh.com/podcast">Link</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The Faraday result points at something larger than one benchmark. Science advances by building on what came before — which only works if what came before is actually correct. Replication is how we check. It is also one of the most underfunded, undervalued activities in academia: unglamorous, time-consuming, unlikely to produce a novel result. If a small, task-specific model can reliably verify published figures, the economics of scientific checking change entirely. We could imagine a future where every submitted paper gets a Faraday pass before it enters the literature — a layer of automated scrutiny that would have caught some of the most consequential replication failures of the past decade.</p>
+
+      <p>There is a wider pattern here too. The week's news — a science replication agent, an AI lab going public, a new framing of how to work with AI — reflects how thoroughly these tools have moved from curiosity to infrastructure. Anthropic filing an S-1 is not a technology story; it's a finance story that happens to be about AI. Karpathy coining "agentic engineering" is not a research story; it's a craft story about how to use tools well. The frontier has moved so fast that the news is no longer about whether these things work. It's about what kind of institution, habit, or incentive structure we build around them.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2608.13331">arXiv 2608.13331 — Training AI Scientists to Replicate Research</a> ·
+        <a href="https://x.com/inherent_labs/status/2088290794092298655">Inherent Labs on X</a> ·
+        <a href="https://app.dealroom.co/news/note/inherent-releases-faraday-ai-scientist-for-research-replication">Dealroom — Faraday launch</a> ·
+        <a href="https://unusualwhales.com/news/anthropic-public-s1-filing-august-2026">Unusual Whales — Anthropic S-1 timing</a> ·
+        <a href="https://cryptobriefing.com/anthropic-preparing-ipo-filing-as-soon-as-the-end-of-august-sources-say/">Crypto Briefing — Anthropic IPO</a> ·
+        <a href="https://the-decoder.com/anthropic-watermarks-all-claude-outputs-globally-with-marks-that-may-persist-through-some-editing/">The Decoder — Claude watermarking</a> ·
+        <a href="https://www.euronews.com/next/2026/08/11/eu-compliance-delivered-globally-anthropic-to-watermark-claudes-output-worldwide">Euronews — watermark policy</a> ·
+        <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">Karpathy blog — Sequoia Ascent 2026</a> ·
+        <a href="https://www.ycombinator.com/library/WX-garry-tan-own-your-intelligence">YC Library — Garry Tan talk</a> ·
+        <a href="https://www.dwarkesh.com/podcast">Dwarkesh Podcast — Dylan Patel (Aug 25)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Replication</div>
+        <div>In science, replication means reproducing someone else's published experiment from scratch — same method, same type of data — and getting the same result. It's the mechanism by which scientific claims get verified. Think of it as the peer-review step that happens <em>after</em> a paper is published, when someone else runs the experiment independently.</div>
+      </div>
+      <dl>
+        <dt>Long-horizon RL</dt>
+        <dd>Reinforcement learning where the AI is graded on the quality of a completed task — not on each individual step. Like evaluating a student on the finished essay, not each keystroke. Harder to train but teaches more robust behaviour across long, uncertain sequences.</dd>
+
+        <dt>Rubric-based judge</dt>
+        <dd>An automated scoring system that evaluates an AI's output against a structured checklist of criteria. In Faraday's case, it compares the reproduced figure to the original numerically, rather than a human deciding if they look the same.</dd>
+
+        <dt>Foundation model</dt>
+        <dd>A large model trained on huge amounts of general data that can then be adapted for specific tasks. Faraday starts from Qwen weights and is then trained further — "post-trained" — specifically for scientific replication.</dd>
+
+        <dt>In-distribution / held-out</dt>
+        <dd>"In-distribution" means the test examples resemble what the model saw during training — an easier test. "Held-out" means genuinely new examples the model hasn't encountered — a tougher test of whether it actually learned the skill or just the surface patterns.</dd>
+
+        <dt>SynthID-Text</dt>
+        <dd>Google DeepMind's system for embedding an invisible watermark into AI-generated text by making subtle statistical changes to word choice. The signal is undetectable by reading but findable by software — and, unlike image watermarks, it can survive light editing.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
