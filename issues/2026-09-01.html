@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №95 — Reporting for Duty · Infinite Reach</title>
+  <meta name="description" content="The Pentagon added ChatGPT and Grok to its secure AI platform yesterday, putting frontier tools in every service member's browser. Anthropic files its IPO prospectus after the holiday weekend. Two very different kinds of accountability, arriving at once." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №95 &middot; Tuesday, September 1, 2026</p>
+      <h1>Reporting for Duty</h1>
+      <p>The Pentagon added ChatGPT and Grok to its secure AI platform yesterday, officially enrolling frontier AI in military life. This week Anthropic files the public paperwork for the biggest tech stock offering in years. Both events are saying the same thing: AI is no longer on trial — it has been given official assignments.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>The US Department of Defense quietly launched ChatGPT Mil and Grok for Government on its GenAI.mil portal on August 31, joining Google Gemini already available there. The result: three million people across the Joint Force now have official access to three competing frontier AI systems, all certified at Impact Level 5 — the government's security tier for sensitive but unclassified military information. The platform opened nine months ago and has already onboarded 1.7 million unique users. Yesterday's move doubled the number of available tools in a single announcement and is the clearest signal yet that the US military considers frontier AI a standard-issue capability, not an experiment.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">IPO watch</span><span>Anthropic plans to release its public S-1 prospectus after Labor Day (September 7), targeting a listing valuing the company at $1.5–2 trillion. Banks including Goldman Sachs, JPMorgan, and Morgan Stanley are preparing an ~$86 billion raise. Annualized revenue hit $65 billion in July, up from about $9 billion at the start of the year.</span></li>
+        <li><span class="tag tech">Models</span><span>DeepSeek V4-Pro graduated from preview to full production on August 12 after a four-month preview period. No changes to API pricing or integrations for existing users — a sign of confidence that the preview adequately stress-tested the system.</span></li>
+        <li><span class="tag tech">Coding agents</span><span>Meta's Muse Code Beta launched August 5 — a terminal-native coding agent designed to plan, execute, debug, and complete whole software projects with minimal human intervention. Still in beta but available to developers now.</span></li>
+        <li><span class="tag policy">Europe</span><span>The EU Council gave final approval to a package that streamlines parts of its AI Act, moving the compliance deadline for high-risk AI systems embedded in products to August 2028 — extending the runway for regulated industries adapting to the law.</span></li>
+        <li><span class="tag money">Defense tech</span><span>Venture capital funds poured $12.3 billion into defense tech startups in the first half of 2026, nearly double the same period in 2025 — much of it tied to autonomous systems and AI-enabled logistics.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: Paper, explained -->
+      <h2>Paper, explained: how to shrink AI's reasoning without losing the answer</h2>
+      <p class="kicker">Memory Augmentation Unlocks Efficient Chain-of-Thought Reasoning &middot; Simeng Zhang, Yilong Chen, Wenyuan Zhang, Zhenyu Zhang, Yao Chen, Junyuan Shang &amp; Tingwen Liu &middot; <a href="https://arxiv.org/abs/2608.21265">arXiv:2608.21265</a> (August 21, 2026; revised August 26)</p>
+
+      <p>When a language model works through a hard problem — maths, logic, science — it usually writes out every step of its reasoning before giving you an answer. That's the thing helping it. It's also costing a fortune. This paper found a way to shrink those reasoning steps by 13× without losing the accuracy that makes them worth having.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>The technique that makes modern language models good at hard problems is called Chain-of-Thought, or CoT: instead of jumping straight to an answer, the model first writes out its logic step by step. "Let x be the number of apples. Subtracting gives… therefore…" It's slower and costs more (you're paying per token), but it genuinely works — accuracy on hard benchmarks rises substantially compared to models that just guess directly.</p>
+
+      <p>A technique called Chain of Draft (CoD), developed in 2025, offers a tempting shortcut: instead of full-sentence reasoning steps, the model is asked to keep each step to about five words. The results are striking — CoD uses as little as 7.6% as many tokens as standard CoT, a 92% reduction. On simple arithmetic tasks, it barely loses any accuracy at all. But scale up to genuinely hard reasoning — competition-level maths, multi-step logic puzzles, science questions — and CoD starts to struggle. Something important gets lost in the aggressive compression, and the answers get worse.</p>
+
+      <p>The challenge the paper sets out to solve: can you keep the 13× token savings from CoD without the accuracy hit on hard problems? And can you do it without retraining the model?</p>
+
+      <h3>How it works</h3>
+      <p>The paper's framework, called Memory-Augmented Compression (MAC), works from a simple insight about how LLM serving actually costs money. When a model processes your prompt, that work is called <em>prefill</em> — it reads everything you've sent all at once, in parallel, and it's relatively cheap. When a model generates its answer, that's called <em>decode</em> — it produces one token at a time, sequentially, and it's the expensive part. Every token of reasoning an AI writes is a decode token, so long reasoning chains are costly.</p>
+
+      <p>The authors formalize this as the <em>Context-Generation Substitution Law</em>: there is a trade-off, and it's remarkably consistent across models and tasks. For every bit of reasoning a model would have generated on its own (decode), you can substitute an equivalent amount of retrieved context sent in the prompt (prefill) — and the final answer quality stays roughly the same. Prefill is cheap. Decode is expensive. You want to push as much work as possible from the right column to the left.</p>
+
+      <p>The memory itself is built from the model's past work. Think of it like this: a student does a thousand practice problems. For each one, instead of keeping the full fifteen-step solution, they note three things — the key pattern the problem uses, the critical constraint to watch out for, and the operation that unlocks it. That compressed summary is the "memory." When a new problem arrives, the student doesn't start from scratch. They scan their mental cheat sheet, pull the relevant pattern, and sketch just the brief steps from there.</p>
+
+      <p>MAC does the same thing computationally. After a model solves a problem using full CoT, the framework compresses that reasoning trace into a compact "memory entry" — a structured summary of the reusable reasoning pattern, the constraints, and the key operations. These entries are stored in a memory bank. When a new problem arrives, the most relevant entries are retrieved and prepended to the model's prompt as a scaffold. The model then uses CoD — the five-word-per-step compressed format — but does it from a position of already knowing the shape of the problem. The memory provides the context that CoD normally discards.</p>
+
+      <!-- SVG: the three-path diagram -->
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Three approaches to language model reasoning: standard chain-of-thought, chain of draft, and memory-augmented compression">
+          <!-- Background -->
+          <rect width="720" height="310" fill="none"/>
+
+          <!-- Row labels -->
+          <text x="12" y="76" font-family="ui-serif,Georgia,serif" font-size="12" fill="#87867F">Standard CoT</text>
+          <text x="12" y="156" font-family="ui-serif,Georgia,serif" font-size="12" fill="#87867F">Chain of Draft</text>
+          <text x="12" y="236" font-family="ui-serif,Georgia,serif" font-size="12" fill="#87867F">MAC + CoD</text>
+
+          <!-- === ROW 1: Standard CoT === -->
+          <!-- Prompt box -->
+          <rect x="110" y="52" width="80" height="36" rx="5" fill="#D1CFC5"/>
+          <text x="150" y="74" font-family="system-ui,sans-serif" font-size="11" text-anchor="middle" fill="#141413">Prompt</text>
+          <!-- Arrow -->
+          <line x1="190" y1="70" x2="220" y2="70" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Long reasoning chain (many blocks) -->
+          <rect x="222" y="52" width="30" height="36" rx="3" fill="#D97757" opacity="0.85"/>
+          <rect x="255" y="52" width="30" height="36" rx="3" fill="#D97757" opacity="0.85"/>
+          <rect x="288" y="52" width="30" height="36" rx="3" fill="#D97757" opacity="0.85"/>
+          <rect x="321" y="52" width="30" height="36" rx="3" fill="#D97757" opacity="0.85"/>
+          <rect x="354" y="52" width="30" height="36" rx="3" fill="#D97757" opacity="0.85"/>
+          <rect x="387" y="52" width="30" height="36" rx="3" fill="#D97757" opacity="0.85"/>
+          <text x="305" y="74" font-family="system-ui,sans-serif" font-size="10" text-anchor="middle" fill="#fff">long reasoning steps (many tokens)</text>
+          <!-- Arrow to answer -->
+          <line x1="417" y1="70" x2="447" y2="70" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Answer box -->
+          <rect x="449" y="52" width="80" height="36" rx="5" fill="#788C5D" opacity="0.9"/>
+          <text x="489" y="70" font-family="system-ui,sans-serif" font-size="11" text-anchor="middle" fill="#fff">Answer</text>
+          <text x="489" y="83" font-family="system-ui,sans-serif" font-size="10" text-anchor="middle" fill="#fff">✓ accurate</text>
+          <!-- Cost label -->
+          <text x="615" y="66" font-family="system-ui,sans-serif" font-size="11" fill="#D97757">slow · expensive</text>
+
+          <!-- === ROW 2: Chain of Draft === -->
+          <rect x="110" y="132" width="80" height="36" rx="5" fill="#D1CFC5"/>
+          <text x="150" y="154" font-family="system-ui,sans-serif" font-size="11" text-anchor="middle" fill="#141413">Prompt</text>
+          <line x1="190" y1="150" x2="220" y2="150" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Short draft steps (fewer blocks) -->
+          <rect x="222" y="132" width="20" height="36" rx="3" fill="#D97757" opacity="0.55"/>
+          <rect x="245" y="132" width="20" height="36" rx="3" fill="#D97757" opacity="0.55"/>
+          <rect x="268" y="132" width="20" height="36" rx="3" fill="#D97757" opacity="0.55"/>
+          <text x="262" y="154" font-family="system-ui,sans-serif" font-size="10" text-anchor="middle" fill="#141413">~5-word steps</text>
+          <line x1="292" y1="150" x2="322" y2="150" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <rect x="324" y="132" width="80" height="36" rx="5" fill="#788C5D" opacity="0.5"/>
+          <text x="364" y="150" font-family="system-ui,sans-serif" font-size="11" text-anchor="middle" fill="#141413">Answer</text>
+          <text x="364" y="163" font-family="system-ui,sans-serif" font-size="10" text-anchor="middle" fill="#D97757">✗ drops on hard</text>
+          <text x="615" y="146" font-family="system-ui,sans-serif" font-size="11" fill="#788C5D">fast · 7.6% tokens</text>
+          <text x="615" y="161" font-family="system-ui,sans-serif" font-size="11" fill="#D97757">but less accurate</text>
+
+          <!-- === ROW 3: MAC + CoD === -->
+          <!-- Memory bank -->
+          <rect x="110" y="210" width="58" height="36" rx="5" fill="#6A8CAF" opacity="0.9"/>
+          <text x="139" y="228" font-family="system-ui,sans-serif" font-size="10" text-anchor="middle" fill="#fff">Memory</text>
+          <text x="139" y="241" font-family="system-ui,sans-serif" font-size="9" text-anchor="middle" fill="#fff">bank</text>
+          <!-- Arrow from memory to prompt -->
+          <line x1="168" y1="228" x2="185" y2="228" stroke="#6A8CAF" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr-blue)"/>
+          <!-- Prompt + scaffold -->
+          <rect x="188" y="210" width="80" height="36" rx="5" fill="#D1CFC5"/>
+          <text x="228" y="226" font-family="system-ui,sans-serif" font-size="10" text-anchor="middle" fill="#141413">Prompt +</text>
+          <text x="228" y="239" font-family="system-ui,sans-serif" font-size="10" text-anchor="middle" fill="#141413">scaffold</text>
+          <line x1="268" y1="228" x2="288" y2="228" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Short draft steps -->
+          <rect x="290" y="210" width="20" height="36" rx="3" fill="#D97757" opacity="0.55"/>
+          <rect x="313" y="210" width="20" height="36" rx="3" fill="#D97757" opacity="0.55"/>
+          <rect x="336" y="210" width="20" height="36" rx="3" fill="#D97757" opacity="0.55"/>
+          <line x1="360" y1="228" x2="390" y2="228" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <rect x="392" y="210" width="80" height="36" rx="5" fill="#788C5D" opacity="0.9"/>
+          <text x="432" y="228" font-family="system-ui,sans-serif" font-size="11" text-anchor="middle" fill="#fff">Answer</text>
+          <text x="432" y="241" font-family="system-ui,sans-serif" font-size="10" text-anchor="middle" fill="#fff">✓ accurate</text>
+          <text x="615" y="222" font-family="system-ui,sans-serif" font-size="11" fill="#788C5D">fast · 7.6% tokens</text>
+          <text x="615" y="237" font-family="system-ui,sans-serif" font-size="11" fill="#788C5D">and accurate</text>
+
+          <!-- Legend label -->
+          <rect x="110" y="285" width="12" height="12" rx="2" fill="#D97757"/>
+          <text x="126" y="295" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">decode tokens (expensive)</text>
+          <rect x="280" y="285" width="12" height="12" rx="2" fill="#6A8CAF"/>
+          <text x="296" y="295" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">prefill (cheap)</text>
+          <rect x="390" y="285" width="12" height="12" rx="2" fill="#788C5D"/>
+          <text x="406" y="295" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">accurate answer</text>
+
+          <!-- Arrowhead markers -->
+          <defs>
+            <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#87867F"/>
+            </marker>
+            <marker id="arr-blue" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#6A8CAF"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>Three approaches to reasoning in large language models. Standard Chain-of-Thought (top) is accurate but produces many expensive decode tokens. Chain of Draft alone (middle) is fast — 7.6% the token count — but loses accuracy on hard tasks. Memory-Augmented Compression (bottom) adds retrieved "memory" as cheap prefill context, letting the model use short draft steps without losing accuracy.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The researchers tested MAC across five benchmark types: GSM8K (grade-school arithmetic), MATH-500 (competition-level mathematics), BBH (Big-Bench Hard, a suite of complex multi-step logic tasks), MMLU Science (university-level science questions), and AIME 2024 (top-tier maths competition problems). They built the memory bank from a portion of each benchmark's training examples, using full CoT to solve them and then compressing those solutions into memory entries. At test time, the model received a CoD prompt plus the retrieved memory scaffold — but was otherwise unchanged. No fine-tuning.</p>
+
+      <h3>What they found</h3>
+      <p>Adding memory on top of CoD improved accuracy substantially across every benchmark. Compared to CoD alone, MAC raised scores by 21.4 percentage points on GSM8K, 28.0 points on MATH, 29.5 points on BBH, and 6.61 points on MMLU Science. The pattern is telling: the harder the task, the bigger the gain. On simple arithmetic (GSM8K), CoD loses relatively little by itself, so memory adds less. On multi-step logic and competition maths — where CoD's five-word steps lose the most — the memory's scaffolding does the most work. The model isn't smarter; it's better supported.</p>
+
+      <p>One surprise: the gains on MATH (28.0 points) and BBH (29.5 points) push MAC+CoD close to or past what standard CoT achieves at full length — meaning you can get the accuracy of the slow method using a fraction of the tokens, as long as you have the right memory.</p>
+
+      <h3>The catch</h3>
+      <p>MAC requires that you have a usable memory bank to begin with — solved examples from similar problems. For benchmark tasks with training sets, this is straightforward. For truly novel, one-of-a-kind problems where no historical traces exist, there's nothing to retrieve. The framework also doesn't address how to handle cases where retrieved memories are misleading rather than helpful — an analogy that sounds right but points in the wrong direction. The authors acknowledge the system hasn't been tested on open-ended real-world tasks where the right "pattern" is unclear.</p>
+
+      <p>It's also worth noting that the memory bank introduces a retrieval step that adds latency at inference time — small, but not zero. On tasks where the token savings aren't large enough to justify the retrieval overhead, the economics may not work out.</p>
+
+      <p><strong>If you remember one thing:</strong> You can get most of the accuracy of slow, expensive AI reasoning at 7.6% of the cost — as long as you give the model a structured reminder of how it solved similar problems before.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>His August 25 episode with Dylan Patel (founder of SemiAnalysis) goes deep on lab economics — why frontier AI training runs cost what they do, how chip supply and power costs set the real ceiling on AI progress, and what the next two years of capex actually buys. Clear, numerical, useful. <a href="https://www.dwarkesh.com/podcast">Dwarkesh Podcast</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>Claude Code shipped Plugins — shareable bundles of agents, slash commands, MCP servers, and hooks that let teams package and distribute entire custom workflows in one install. Small release, big quality-of-life improvement for anyone running Claude Code in a team. <a href="https://www.anthropic.com/news">Anthropic news</a></span></li>
+        <li><span class="tag tech">Andrej Karpathy</span><span>His public GitHub has been quiet since late April — one commit in May, nothing after. His last public project was "autoresearch," an agent that autonomously improves its own training code. The silence that follows a project like that usually means the next thing is bigger. <a href="https://github.com/karpathy">github.com/karpathy</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three threads run through today's issue, and they're all variations on the same one: AI moving from possibility to institution. The Pentagon enrolling ChatGPT and Grok into formal military operations is not a headline about gadgets — it's a record in the procurement ledger. Anthropic filing its public prospectus after Labor Day is not just a financial event — it means an AI lab will have public shareholders, earnings calls, and quarterly disclosures for the first time. And the MAC paper is a reminder that efficiency isn't a footnote in AI development; it's what determines who can actually use these tools and at what scale.</p>
+
+      <p>Labs have been racing to make models smarter. The bigger near-term prize may be making the models we already have cheap enough that every military base, every hospital, every school district can afford to run them on real work. The paper this week is one piece of that infrastructure — invisible, unglamorous, and essential.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://techcrunch.com/2026/08/31/the-pentagon-now-has-its-own-version-of-chatgpt-and-grok/">TechCrunch — Pentagon GenAI.mil</a> ·
+        <a href="https://defensescoop.com/2026/08/31/grok-chatgpt-added-to-genai-mil/">DefenseScoop — Grok and ChatGPT join Gemini</a> ·
+        <a href="https://www.militarytimes.com/industry/techwatch/2026/08/31/the-militarys-chatgpt-is-now-live-via-the-pentagons-genai-platform/">Military Times — ChatGPT Mil live</a> ·
+        <a href="https://www.tradingkey.com/analysis/stocks/us-stocks/262138104-anthropic-plans-file-ipo-prospectus-after-labor-day-tradingkey">Trading Key — Anthropic S-1 after Labor Day</a> ·
+        <a href="https://www.cnbc.com/2026/06/01/anthropic-ipo-s1-prospectus.html">CNBC — Anthropic S-1 filing</a> ·
+        <a href="https://unusualwhales.com/news/anthropic-public-s1-filing-august-2026">UnusualWhales — Anthropic public S-1</a> ·
+        <a href="https://arxiv.org/abs/2608.21265">arXiv:2608.21265 — Memory Augmentation paper</a> ·
+        <a href="https://www.podchaser.com/podcasts/dwarkesh-podcast-2331045">Dwarkesh Podcast</a> ·
+        <a href="https://medium.com/@kanishks772/andrej-karpathys-github-suddenly-went-quiet-that-might-be-the-story-53ee3f759de2">Medium — Karpathy GitHub quiet</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Inference</div>
+        <div>Running a trained AI model to get an output — the live, moment-to-moment part of using AI. Training is how a model learns (done once, at great expense). Inference is how it answers your question (done millions of times per day). When people talk about the cost of AI, they usually mean inference cost — and it's why efficiency research like the paper this week matters so much.</div>
+      </div>
+      <dl>
+        <dt>Chain-of-Thought (CoT)</dt><dd>A prompting technique where the model writes out its reasoning step by step before giving the answer. Slower and more expensive (more tokens), but substantially more accurate on hard problems.</dd>
+        <dt>Chain of Draft (CoD)</dt><dd>A compressed form of CoT where each reasoning step is capped at about five words. Uses as little as 7.6% as many tokens as full CoT — but can lose accuracy on difficult reasoning tasks where those cut words carried important logic.</dd>
+        <dt>Prefill vs. decode</dt><dd>Two phases of LLM serving. Prefill processes your input all at once, in parallel — cheap. Decode generates the output one token at a time, sequentially — expensive. MAC shifts work from decode into prefill by front-loading memory context.</dd>
+        <dt>Impact Level 5 (IL5)</dt><dd>A US government security accreditation for cloud systems handling Controlled Unclassified Information (CUI) — sensitive but not classified data. The tier required for most DoD software, including GenAI.mil.</dd>
+        <dt>S-1 / Prospectus</dt><dd>The document a company must file with the SEC (the US markets regulator) before selling shares to the public. It discloses financials, risks, business model, and executive pay. Anthropic's public S-1 will be the first time the company's detailed books are visible to anyone.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
