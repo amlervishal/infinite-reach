@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №96 — Without a Map · Infinite Reach</title>
+  <meta name="description" content="Europe's regulators just called ChatGPT a search engine — the only legal map they had that fit. Meanwhile, a benchmark from Tsinghua found that the best AI agents today score only 27 out of 100 when researchers hand them a problem but not a method." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №96 &middot; Tuesday, September 2, 2026</p>
+      <h1>Without a Map</h1>
+      <p>Europe's regulators just called ChatGPT a search engine — the only legal map they had that fit. And a benchmark from Tsinghua University found that today's best AI research agents score only 27 out of 100 when researchers hand them a problem but don't tell them how to solve it.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On August 31, the European Commission formally designated ChatGPT as a "Very Large Online Search Engine" under its Digital Services Act — the first time any AI assistant has been slotted into this regulatory category. ChatGPT had about 159 million monthly EU users, well over the 45-million threshold that triggers the designation. It's not that the EU thinks ChatGPT is literally Google; it's that ChatGPT's live web-search function makes it functionally equivalent under the law. OpenAI now has until late November to comply with a suite of transparency and risk-assessment obligations — including annual audits on everything from illegal content to effects on elections. Non-compliance can cost up to 6% of global annual revenue. Reddit and Roblox were added to a related category the same day. This is the first real test of whether the DSA can adapt to technology it was never designed for.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Infrastructure</span><span>Anthropic signed a $35 billion computing deal with Lambda Labs, an Nvidia-backed cloud provider. The agreement covers about 350 megawatts of capacity at a data center in Nueces County, Texas — enough to run a significant fraction of Anthropic's future training runs. Nvidia holds three roles in the deal: chip supplier, Lambda investor, and lease anchor on the Texas campus. <a href="https://www.bloomberg.com/news/articles/2026-08-31/anthropic-seals-35-billion-cloud-deal-with-nvidia-backed-lambda">Bloomberg</a></span></li>
+        <li><span class="tag money">Funding</span><span>Clay, an AI-powered sales-data platform from New York, agreed to raise a new round led by Wellington Management at a $7 billion pre-money valuation — up from $3.1 billion just a year ago. The company helps sales teams enrich and automate their outreach. <a href="https://www.axios.com/pro/all-deals/2026/08/31/clay-7-billion-pre-money-valuation">Axios</a></span></li>
+        <li><span class="tag tech">Open models</span><span>Z.ai released the open weights for GLM-5.3, a 743-billion-parameter mixture-of-experts coding and software-engineering model, on Hugging Face after a two-week safety review. The new version claims a 50% improvement on its own code benchmark over GLM-5.2. The Flash variant, released separately, is a leaner 320B-total / 18B-active model with native multimodal support. <a href="https://www.eigent.ai/blog/glm-5-3-coding-cyber-model">Eigent</a></span></li>
+        <li><span class="tag policy">Enterprise</span><span>A McKinsey "State of AI in 2026" survey found that 32% of companies have skipped purchasing at least one software product or feature because they could build it themselves using AI coding agents. The share of large enterprises running agents in production rose from 27% to 40% in a year; smaller firms stayed flat. <a href="https://aiagentstore.ai/ai-agent-news/this-week">AI Agent Store</a></span></li>
+        <li><span class="tag tech">Pentagon</span><span>GenAI.mil, the US Defense Department's secure AI portal, now bundles custom versions of ChatGPT and Grok alongside Google Gemini for its 3 million personnel — more than 1.7 million have already logged in. ChatGPT Mil is approved for unclassified document work; it cannot access classified networks. <a href="https://fortune.com/2026/09/01/pentagon-chatgpt-grok-government-military-ai-members-pete-hegseth-defense-department/">Fortune</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: Can AI do science without being told how?</h2>
+      <p class="kicker">ASI-Bench: At the Dawn of Artificial Superintelligence &middot; Junwei Zhou, Zhen Sun, Binyu Li et al. (Tsinghua University) &middot; <a href="https://arxiv.org/abs/2608.17271">arXiv:2608.17271</a></p>
+      <p>Here is a question that sounds obvious until you sit with it: if an AI system is genuinely good at science, should it need to be told how to do the science? A new benchmark from Tsinghua University put that question to 18 of the world's best AI agent configurations. The answer — 27 out of 100 when researchers withhold the method — is harder to spin than any benchmark chart you've seen recently.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>There is a widespread belief, not just in the press but among researchers, that AI is approaching the point where it can accelerate scientific discovery on its own. The evidence for this is real: AI systems have predicted protein structures, proposed new drug candidates, helped design materials, and written passable review articles. But almost all of these demonstrations share a hidden feature — a human expert decided what question to ask and, crucially, <em>what method to apply</em>. The question nobody had answered systematically was: what happens when you take that guidance away?</p>
+
+      <p>The challenge of answering this rigorously is that most existing benchmarks test narrow knowledge — a question with a right answer, a coding problem with a known solution. Real scientific research is different. It's a multi-step project that requires choosing among plausible methods, executing experiments that may fail, interpreting ambiguous results, and delivering something that wasn't there before. Measuring that kind of work demands tasks that look like actual research, not multiple-choice problems.</p>
+
+      <h3>How it works</h3>
+      <p>Think of ASI-Bench as a series of graduate-level research projects. Each project has a scientific objective — say, train a model that predicts a biological property from molecular structure, or run a simulation of a physical system and analyze what you find. The benchmark's key innovation is that each project comes in four versions, identical in objective but different in how much methodological guidance is provided. The authors call these guidance levels B1 through B4.</p>
+
+      <p>Imagine you've just started a PhD and your supervisor gives you a research problem. In the B1 version, they've handed you the full recipe: background reading, the specific method you should use, the equations, and the exact experimental procedure. You still have to execute it, but the path is clear. In the B2 version, they've told you the method's name and some constraints, but not how to carry it out. In the B3 version, they hand you only the objective, the dataset, and the required output — you have to figure out what method makes sense entirely on your own. In the B4 version, they add a twist: some of the context they provide is factually correct but irrelevant, designed to throw you off. The scientific goal and the evaluation criteria are exactly the same across all four versions. Only the map changes.</p>
+
+      <p>The benchmark covers 60 such projects across 11 scientific domains, including machine learning, biology, chemistry, mathematics, and robotics. Building it required more than 40 domain experts, over 31,000 hours of human effort, and more than 1,500 sandbox test runs to validate that the tasks were well-posed. The evaluation itself tracked not just whether the AI got the right answer, but how many steps it took, how many tools it called, and how far through the research pipeline it got.</p>
+
+      <h3>What they actually did</h3>
+      <p>The researchers ran 18 different combinations of agentic frameworks and underlying models through all four guidance levels. The configurations included leading closed-source models paired with research-grade agent harnesses designed for scientific tasks — systems set up to browse papers, write code, run experiments in a sandbox, and interpret their own results. Each task run involved hundreds of interaction turns and execution steps; the full evaluation consumed more than 35 hours of agent runtime in total.</p>
+
+      <h3>What they found</h3>
+      <p>With full guidance (B1), the best systems averaged 50.91 out of 100. That's a respectable graduate-student performance — not perfect, but genuinely useful. The cliff comes immediately. When guidance was reduced to just the method name (B2), the average score fell to 29.10. When only the objective was given (B3), it dropped further to 26.62. Every single B3 and B4 configuration scored below 40. The drop from "here's the method" to "figure out the method yourself" was the decisive moment — roughly 25 percentage points in average performance, not from one level to the next but from the first step to the second.</p>
+
+      <p>What the numbers obscure is the nature of the failures. The systems didn't just underperform; they often made confident-sounding wrong choices. When left to choose their own methods, agents frequently defaulted to whatever approach appeared most in their training data — not necessarily the most appropriate one for the specific task. They also struggled with the chain of decisions required over a multi-step project: an early wrong choice tended to compound rather than self-correct.</p>
+
+      <!-- SVG figure: ASI-Bench guidance level scores -->
+      <figure>
+        <svg viewBox="0 0 720 300" role="img" aria-label="Bar chart showing ASI-Bench average scores at three guidance levels">
+          <!-- Background -->
+          <rect width="720" height="300" fill="none"/>
+
+          <!-- Title -->
+          <text x="360" y="28" font-family="ui-serif, Georgia, serif" font-size="15" fill="#141413" text-anchor="middle" font-weight="bold">ASI-Bench: Average Scores by Guidance Level</text>
+          <text x="360" y="46" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">18 agent–model configurations across 60 research tasks</text>
+
+          <!-- Y-axis label -->
+          <text x="24" y="175" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle" transform="rotate(-90, 24, 175)">Score out of 100</text>
+
+          <!-- Y-axis gridlines and labels -->
+          <line x1="80" y1="70" x2="680" y2="70" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="70" y="74" font-family="ui-monospace, monospace" font-size="10" fill="#87867F" text-anchor="end">60</text>
+
+          <line x1="80" y1="112" x2="680" y2="112" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="70" y="116" font-family="ui-monospace, monospace" font-size="10" fill="#87867F" text-anchor="end">40</text>
+
+          <line x1="80" y1="154" x2="680" y2="154" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="70" y="158" font-family="ui-monospace, monospace" font-size="10" fill="#87867F" text-anchor="end">20</text>
+
+          <line x1="80" y1="196" x2="680" y2="196" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="70" y="200" font-family="ui-monospace, monospace" font-size="10" fill="#87867F" text-anchor="end">0</text>
+
+          <!-- Zero baseline -->
+          <line x1="80" y1="196" x2="680" y2="196" stroke="#87867F" stroke-width="1"/>
+
+          <!-- Bar 1: B1 Full guidance, score 50.91 -->
+          <!-- 50.91 / 60 * (196 - 70) = 50.91/60 * 126 = ~107px tall, so top = 196-107 = 89 -->
+          <rect x="140" y="89" width="120" height="107" fill="#D97757" rx="3"/>
+          <text x="200" y="84" font-family="ui-monospace, monospace" font-size="13" fill="#D97757" text-anchor="middle" font-weight="bold">50.9</text>
+          <text x="200" y="216" font-family="system-ui, sans-serif" font-size="12" fill="#141413" text-anchor="middle">B1</text>
+          <text x="200" y="231" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" text-anchor="middle">Full recipe</text>
+
+          <!-- Bar 2: B2 Method name, score 29.10 -->
+          <!-- 29.10 / 60 * 126 = ~61px tall, top = 196-61 = 135 -->
+          <rect x="300" y="135" width="120" height="61" fill="#788C5D" rx="3"/>
+          <text x="360" y="130" font-family="ui-monospace, monospace" font-size="13" fill="#788C5D" text-anchor="middle" font-weight="bold">29.1</text>
+          <text x="360" y="216" font-family="system-ui, sans-serif" font-size="12" fill="#141413" text-anchor="middle">B2</text>
+          <text x="360" y="231" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" text-anchor="middle">Method name only</text>
+
+          <!-- Bar 3: B3 Objectives only, score 26.62 -->
+          <!-- 26.62 / 60 * 126 = ~56px tall, top = 196-56 = 140 -->
+          <rect x="460" y="140" width="120" height="56" fill="#6A8CAF" rx="3"/>
+          <text x="520" y="135" font-family="ui-monospace, monospace" font-size="13" fill="#6A8CAF" text-anchor="middle" font-weight="bold">26.6</text>
+          <text x="520" y="216" font-family="system-ui, sans-serif" font-size="12" fill="#141413" text-anchor="middle">B3</text>
+          <text x="520" y="231" font-family="system-ui, sans-serif" font-size="10" fill="#87867F" text-anchor="middle">Goal only</text>
+
+          <!-- Dotted "human thesis" line for reference (hypothetical ~75) - removed since I don't have the data -->
+
+          <!-- Annotation arrow pointing to the gap -->
+          <line x1="260" y1="112" x2="300" y2="112" stroke="#D97757" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <text x="257" y="109" font-family="system-ui, sans-serif" font-size="10" fill="#D97757" text-anchor="end">–42%</text>
+          <text x="257" y="120" font-family="system-ui, sans-serif" font-size="10" fill="#D97757" text-anchor="end">when method</text>
+          <text x="257" y="131" font-family="system-ui, sans-serif" font-size="10" fill="#D97757" text-anchor="end">is hidden</text>
+        </svg>
+        <figcaption>Average scores across all 18 agent–model configurations on ASI-Bench. Removing the specified method (B1→B2) cuts performance nearly in half; further removing it entirely (B3) adds only marginally more difficulty, suggesting method selection is the main bottleneck.</figcaption>
+      </figure>
+
+      <h3>The catch</h3>
+      <p>ASI-Bench is a powerful stress test, but it measures one specific dimension of scientific competence: the ability to execute a project-level task autonomously from scratch. It does not measure creativity in posing new research questions — arguably an equally important part of science. Nor does it capture collaborative research, where humans and AI trade off on different steps. The 60 tasks, though diverse, were constructed to be well-defined enough for automated evaluation; the messiest real science, where even the evaluation criteria are contested, is not in scope. And a B3 score of 26.62 may still represent genuine value: there are plenty of tasks where partial progress or approximate results matter.</p>
+
+      <p><strong>If you remember one thing:</strong> Today's AI research agents perform about as well as a graduate student following a detailed recipe — and less than half as well when the recipe is taken away.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy posted a write-up of his talk at Sequoia's AI Ascent 2026, where he described "Software 3.0" — the idea that the era of building apps is giving way to programming models through context and prompts. His demo: MenuGen, a traditional web app he built to show restaurant-menu photos with AI-generated dish images. The punchline: by the time he presented it, Gemini could just take the photo and do the whole job natively, making the app obsolete. The essay is worth twenty minutes. <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">karpathy.bearblog.dev</a></span></li>
+        <li><span class="tag tech">Claude Code</span><span>Boris Cherny shipped Claude Code 2.1.0 with skills hot-reload (agents and skills can now update without restarting), Shift+Enter for newlines that works out of the box, and hooks configurable directly in agent and skill frontmatter — making it easier to build custom workflows without touching global settings. <a href="https://x.com/bcherny/status/2009072293826453669">X thread</a></span></li>
+        <li><span class="tag tech">Dwarkesh Patel</span><span>A LessWrong post analyzes the Dwarkesh Podcast episode with Dario Amodei in depth — the interview touched on continual learning, how Claude Code is changing the economics of research, and what Anthropic expects from the next two years of scaling. Worth reading the post if you missed the episode. <a href="https://www.lesswrong.com/posts/jWCy6owAmqLv5BB8q/on-dwarkesh-patels-2026-podcast-with-dario-amodei">LessWrong</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two stories this week share a hidden theme: what it looks like when the world is still figuring out how to name something. Europe's regulators needed a legal category for ChatGPT, and the closest thing they had was "search engine" — not wrong, but not really right either. The technology moved faster than the taxonomy. The ASI-Bench paper reveals the same gap inside the models themselves: AI systems can follow a method expertly, but choosing the right method on an open-ended scientific problem — the thing that actually makes a scientist a scientist — remains elusive. The scores don't say AI is useless at science; they say it's at its best when someone has already done the hardest intellectual work. Getting from 27 to 50 without the map is probably the central research problem of the next few years.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.euronews.com/next/2026/08/31/eu-places-chatgpt-reddit-and-roblox-under-strictest-digital-safety-rules">Euronews — EU DSA ChatGPT</a> ·
+        <a href="https://gizmodo.com/the-eu-has-officially-decided-chatgpt-is-a-search-engine-2000805030">Gizmodo</a> ·
+        <a href="https://winbuzzer.com/2026/09/01/eu-designates-chatgpt-tougher-dsa-search-engine-scrutiny-xcxwbn/">Winbuzzer</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-08-31/anthropic-seals-35-billion-cloud-deal-with-nvidia-backed-lambda">Bloomberg — Anthropic Lambda</a> ·
+        <a href="https://betanews.com/article/anthropic-35-billion-lambda-nvidia-texas-deal/">BetaNews</a> ·
+        <a href="https://www.axios.com/pro/all-deals/2026/08/31/clay-7-billion-pre-money-valuation">Axios — Clay funding</a> ·
+        <a href="https://www.eigent.ai/blog/glm-5-3-coding-cyber-model">Eigent — GLM-5.3</a> ·
+        <a href="https://aiagentstore.ai/ai-agent-news/this-week">AI Agent Store — McKinsey</a> ·
+        <a href="https://fortune.com/2026/09/01/pentagon-chatgpt-grok-government-military-ai-members-pete-hegseth-defense-department/">Fortune — GenAI.mil</a> ·
+        <a href="https://arxiv.org/abs/2608.17271">arXiv — ASI-Bench</a> ·
+        <a href="https://github.com/apexin-ai/ASI-Bench">GitHub — ASI-Bench</a> ·
+        <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">Karpathy — Software 3.0</a> ·
+        <a href="https://x.com/bcherny/status/2009072293826453669">Boris Cherny — Claude Code 2.1.0</a> ·
+        <a href="https://www.lesswrong.com/posts/jWCy6owAmqLv5BB8q/on-dwarkesh-patels-2026-podcast-with-dario-amodei">LessWrong — Dwarkesh/Dario</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">VLOSE</div>
+        <div>Very Large Online Search Engine — the EU's DSA category for platforms with over 45 million monthly EU users that function like search engines. ChatGPT just became one. Think of it as the tier that gets the most homework: annual audits, algorithmic transparency reports, and access for vetted researchers.</div>
+      </div>
+      <dl>
+        <dt>DSA</dt><dd>Digital Services Act — the EU law that governs what large online platforms must do to stay legal. Different from the AI Act; this one is about content, search, and how platforms interact with their users.</dd>
+        <dt>Mixture of Experts (MoE)</dt><dd>A model architecture that splits a very large neural network into specialised "expert" sub-networks and routes each token to only a few of them. GLM-5.3's 743 billion parameters sound enormous, but only 18 billion are active on any given input — which is why these models can be fast and relatively cheap to run despite their headline size.</dd>
+        <dt>Agentic</dt><dd>Describes AI systems that take multi-step actions on their own — browsing the web, writing and running code, calling tools — rather than just answering one question and stopping. ASI-Bench's agents are agentic; they plan and execute entire research pipelines.</dd>
+        <dt>Benchmark</dt><dd>A standardised test used to compare AI models. Good benchmarks are hard to "game" and measure something that actually matters in the real world. ASI-Bench's design — same objective, four guidance levels — is specifically meant to prevent models from memorising the right answer rather than demonstrating genuine competence.</dd>
+        <dt>Guidance level</dt><dd>ASI-Bench's term for how much methodological detail a research agent is given. B1 = full recipe. B2 = method name only. B3 = just the goal. B4 = goal plus red herrings. Same objective, four different maps.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
