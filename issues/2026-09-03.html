@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №97 — The Half They Couldn't Read · Infinite Reach</title>
+  <meta name="description" content="Anthropic cut cache costs 75% and launched two new models this week — while a fresh arXiv paper tackles the half of every research paper that AI still can't make sense of: the figures." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №97 &middot; Thursday, September 3, 2026</p>
+      <h1>The Half They Couldn't Read</h1>
+      <p>Anthropic dropped the price of running its most powerful model by 75% overnight and unveiled two new releases as its IPO roadshow quietly begins. Across town on arXiv, a group of researchers put their finger on something everyone had been overlooking: the best AI systems in the world can read every word of a scientific paper, but often have no idea what the diagrams mean.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On Monday, Anthropic launched Claude Fable 5.1 in general availability alongside a restricted sibling, Claude Mythos 5.1, aimed at vetted cybersecurity and life-sciences teams. The headline number: cached context — text the model has already seen and stored — now costs $0.25 per million tokens, down from $1.00. That is a 75% cut, and it matters most to the enterprise customers who run long-running agents against large, unchanging codebases or document archives. Fable 5.1 also added zero-data-retention privacy and reduced false positives from safety filters, a common complaint among developers. This comes as Anthropic's annualized revenue run-rate has surpassed $65 billion and its October IPO is being priced by investors at roughly $2 trillion — which would make it the largest public debut in history, topping SpaceX's $1.77 trillion offering from June.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Google</span><span>Gemini 3.8 Flash arrived on Tuesday — Google's third Flash model in six weeks — scoring 89.4% on Terminal-Bench 2.1 for agentic coding tasks, edging ahead of both Claude Opus 5 and GPT-5.6 Sol. It holds the same price as its predecessor ($0.75 in / $3.75 out per million tokens) but deliberately uses more thinking tokens on complex tasks, which makes it run about 40% more expensive in practice.</span></li>
+        <li><span class="tag tech">Security</span><span>CrowdStrike and NVIDIA unveiled SafeMind at the Fal.Con security conference in Las Vegas: a dual-model system where Red Tempest plays the role of attacker and Blue Solano plays defender, running in a closed loop on a digital twin of your environment. Trained on 15 years of incident-response data, Blue Solano reportedly beat leading frontier models on detection accuracy at 99% lower cost.</span></li>
+        <li><span class="tag money">Funding</span><span>Huskeys, a Tel Aviv startup, raised $27 million from Blackstone Innovations to build security for "agentic traffic" — the wave of web requests now coming from AI agents rather than humans. The company processes over a trillion requests daily; its backers expect non-human traffic to hit 70% of all web activity by 2027.</span></li>
+        <li><span class="tag tech">OpenAI</span><span>OpenAI confirmed that its unreleased Astra model scored a perfect mark on ExploitBench and autonomously found and chained two zero-day vulnerabilities in modified tests — the first model to formally exceed the Preparedness Framework's "Critical" cybersecurity threshold. Astra remains restricted to vetted defenders under the Fairwind Program.</span></li>
+        <li><span class="tag tech">Claude Code</span><span>Boris Cherny announced the latest Claude Code update: managed MCP servers (organizations can now push tool configurations to every user centrally), GitLab merge-request recognition, and a headless permission mode for fully automated pipelines. Claude Code engineering throughput at Anthropic is reportedly up 200% year-on-year.</span></li>
+      </ul>
+
+      <h2>Paper, explained: Teaching machines to read the diagrams</h2>
+      <p class="kicker">SCAFFOLD: A Large-Scale Structured Dataset of Computer Science Research Figures with Diagram QA and Chain-of-Thought Reasoning Traces &middot; Raut, Subedi, Rai &amp; Jha &middot; <a href="https://arxiv.org/abs/2609.00018">arXiv:2609.00018</a></p>
+
+      <p>Most AI models can read a research paper. Very few can tell you what the figures in it actually mean. A new dataset paper from this week sets out to fix that gap — and in doing so, makes visible a problem that has been quietly limiting how useful AI is for science.</p>
+
+      <h3>The problem, and why it's hard</h3>
+
+      <p>When a computer-science researcher publishes a paper, the most important ideas often live not in the sentences but in the diagrams: the architecture drawing that shows how a new model is structured, the pipeline schematic that explains what data flows where, the chart that makes the benchmark results legible at a glance. A human reader skips back and forth between text and figures instinctively. An AI model, even a very good one, tends to read the words and treat the images as a secondary concern.</p>
+
+      <p>This is partly a training-data problem. The vision-language models — those that can handle both text and images — have mostly been trained on natural photographs and general web content: product shots, social-media images, Wikipedia diagrams. They have seen relatively few of the specialized schematics that fill academic papers. More importantly, no large dataset has ever paired those schematics with the kind of careful, grounded questions and step-by-step reasoning a researcher uses when interpreting them. Without such training data, even the best multimodal model tends to produce plausible-sounding but vague answers when asked what a complex pipeline diagram actually shows.</p>
+
+      <h3>How it works</h3>
+
+      <p>Think of the problem like teaching someone to read sheet music. It is not enough to show them scores and say "this is sheet music." You need exercises: here is a passage, here is what each symbol means, here is how to read the rhythm, here is a question about what this measure does, here is the step-by-step answer. SCAFFOLD is an attempt to build that exercise book — for research figures rather than musical notation.</p>
+
+      <p>The pipeline has three stages. First, the team processed arXiv papers in computer science using PDF layout-detection tools, automatically extracting each figure along with its caption and the surrounding paragraph or two of text that discusses it. This gives the model the same local context a reader would use: you see the figure, the label below it, and the sentence or two on either side that explains why the authors put it there.</p>
+
+      <p>Second, a frontier model (one of the current generation of large language models) was given each (figure, caption, context) tuple and asked to generate a question about the figure along with a detailed chain-of-thought answer — a written-out, step-by-step explanation of how a reader would reason through the diagram to arrive at the answer. This is the critical step: instead of just labeling what is in the image, the dataset teaches the reasoning process for interpreting it.</p>
+
+      <p>Third, the resulting tuples were filtered and organized into three dataset tiers: SCAFFOLD-12K for quick experiments, SCAFFOLD-37K for medium-scale training, and the full SCAFFOLD-157K, covering 3,058 papers, 29,887 extracted figures, and 157,387 (image, caption, context, question, answer, chain-of-thought) training pairs.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 260" role="img" aria-label="Diagram showing the SCAFFOLD pipeline: PDF extraction, AI-assisted QA generation, and model fine-tuning stages">
+          <!-- Stage boxes -->
+          <rect x="20" y="80" width="160" height="100" rx="8" fill="#F5F0EB" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="100" y="122" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413">arXiv CS Paper</text>
+          <text x="100" y="142" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">PDF layout detection</text>
+          <text x="100" y="158" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">extracts figure + context</text>
+
+          <!-- Arrow 1 -->
+          <line x1="180" y1="130" x2="270" y2="130" stroke="#D97757" stroke-width="2"/>
+          <polygon points="270,125 282,130 270,135" fill="#D97757"/>
+
+          <rect x="282" y="80" width="160" height="100" rx="8" fill="#F5F0EB" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="362" y="114" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413">Frontier Model</text>
+          <text x="362" y="134" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">generates question +</text>
+          <text x="362" y="150" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">chain-of-thought answer</text>
+          <text x="362" y="166" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9.5" fill="#788C5D">157K tuples</text>
+
+          <!-- Arrow 2 -->
+          <line x1="442" y1="130" x2="530" y2="130" stroke="#D97757" stroke-width="2"/>
+          <polygon points="530,125 542,130 530,135" fill="#D97757"/>
+
+          <rect x="542" y="80" width="160" height="100" rx="8" fill="#6A8CAF" stroke="#5a7a9f" stroke-width="1.5"/>
+          <text x="622" y="114" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#fff">Fine-tuned VLM</text>
+          <text x="622" y="134" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#dde5ef">trained on SCAFFOLD-12K</text>
+          <text x="622" y="150" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#dde5ef">Qwen2.5-VL-3B</text>
+          <text x="622" y="170" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#c8d8ea">reads figures + reasons</text>
+
+          <!-- Labels -->
+          <text x="100" y="60" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#D97757" font-weight="600">STAGE 1 — EXTRACT</text>
+          <text x="362" y="60" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#D97757" font-weight="600">STAGE 2 — LABEL</text>
+          <text x="622" y="60" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#D97757" font-weight="600">STAGE 3 — TRAIN</text>
+
+          <!-- Bottom note -->
+          <text x="360" y="220" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" fill="#87867F">3,058 papers → 29,887 figures → 157,387 (image, caption, context, Q, A, reasoning) training pairs</text>
+        </svg>
+        <figcaption>The SCAFFOLD pipeline: extract figures from real arXiv papers, use a frontier model to generate grounded questions and chain-of-thought answers, then fine-tune a smaller vision-language model on the result. The goal is a model that can reason through a diagram the way a researcher would.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+
+      <p>The team ran their baseline experiment using SCAFFOLD-12K — the smallest, most carefully verified tier of the dataset — to fine-tune Qwen2.5-VL-3B-Instruct, a compact 3-billion-parameter vision-language model. This is a deliberately modest choice: rather than claim their dataset improves the largest frontier models (which would require enormous compute), they demonstrate the concept at a scale any research group with a single GPU can replicate. The full SCAFFOLD-157K dataset is released for the community to use for larger experiments.</p>
+
+      <h3>What they found</h3>
+
+      <p>The baseline fine-tuned on SCAFFOLD-12K shows measurable improvement in answering questions about research figures compared to the same model without the specialized training. The chain-of-thought format in particular seems to matter: models trained with step-by-step reasoning explanations give more accurate and more interpretable answers than those trained only on final answers. The dataset is also self-reinforcing in an interesting way — because the figures come from real computer-science papers, the model ends up being exposed to the exact kind of architectural diagrams it will encounter if deployed as a research assistant.</p>
+
+      <h3>The catch</h3>
+
+      <p>SCAFFOLD covers computer science papers only; the pipeline would need to be rebuilt for other fields with their own visual conventions (cell-biology microscopy images, physics Feynman diagrams, chemistry structural formulas). The question-answer pairs were generated by a frontier model, which means any systematic errors in that model's understanding of figures will propagate into the training data. The baseline results are promising but limited — the paper tests one small model, not the frontier systems researchers actually want to improve. And like all dataset papers, the real proof will come when others build on it.</p>
+
+      <p><strong>If you remember one thing:</strong> AI can already read every word of a scientific paper — this dataset is an attempt to give it the second half, the part written in diagrams.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>Episode 139 of the Dwarkesh Podcast dropped Monday: a 96-minute conversation with Ajeya Cotra, a researcher at METR who works specifically on what she calls "loss-of-control" risk — the scenario where advanced AI systems pursue goals humans didn't sanction. Cotra is one of the clearest thinkers on this topic and the episode is worth the time. <a href="https://www.dwarkesh.com/podcast">dwarkesh.com/podcast</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>The Claude Code team shipped managed MCP server support this week — organizations can now centrally configure which tools every developer on the team has access to, rather than each user setting it up individually. Small change; large implications for teams using AI at scale. <a href="https://x.com/bcherny">@bcherny on X</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three things that look unrelated today are pointing at the same thing. Anthropic cut cache prices by 75%, Google shipped its third Flash model in six weeks, and a paper came out about teaching AI to read scientific diagrams. All three are about the same underlying shift: the question of which AI system is "smartest" is fading, replaced by the question of which is most useful across the specific places where knowledge actually lives — codebases, long documents, specialized visual formats. The companies that figure out how to make frontier capability cheap and domain-fluent will define the next phase of this. The SCAFFOLD paper is a small example of the work that has to happen for AI to be genuinely useful in science, not just impressive at demos. And Anthropic's pricing move is a signal that the economics are beginning to bend in that direction.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://venturebeat.com/technology/anthropics-claude-fable-5-1-and-mythos-5-1-arrive-with-a-75-cost-reduction-for-fable-cache-reads">VentureBeat — Fable 5.1 launch</a> ·
+        <a href="https://techcrunch.com/2026/09/01/anthropics-new-fable-release-is-cheaper-less-restrictive/">TechCrunch — Fable 5.1 restrictions</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-09-01/anthropic-says-new-fable-5-1-ai-model-is-cheaper-better-at-coding">Bloomberg — Fable 5.1 pricing</a> ·
+        <a href="https://www.forbes.com/sites/jonmarkman/2026/08/13/anthropic-eyes-2-trillion-in-october-ipo-a-record-breaking-debut/">Forbes — Anthropic $2T IPO target</a> ·
+        <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/">Google Blog — Gemini 3.8 Flash</a> ·
+        <a href="https://www.theregister.com/ai-and-ml/2026/09/02/with-gemini-38-flash-google-reminds-everyone-its-still-in-the-race/5294049">The Register — Gemini 3.8 Flash review</a> ·
+        <a href="https://www.crowdstrike.com/en-us/press-releases/crowdstrike-launches-frontier-models-for-cybersecurity-with-nvidia/">CrowdStrike — SafeMind press release</a> ·
+        <a href="https://thenextweb.com/news/huskeys-raises-27m-series-a-led-by-blackstone">The Next Web — Huskeys Series A</a> ·
+        <a href="https://arxiv.org/abs/2609.00018">arXiv — SCAFFOLD paper</a> ·
+        <a href="https://www.dwarkesh.com/podcast">Dwarkesh Podcast — Ep. 139 with Ajeya Cotra</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Cached context</div>
+        <div>When you send a very long document to an AI model repeatedly, caching means the model stores its "understanding" of that document so you don't have to pay full price to re-read it every time. Like leaving a bookmark and a summary in the margin — you only pay to read the new parts. Anthropic cut the price of this by 75% this week.</div>
+      </div>
+      <dl>
+        <dt>Flash model</dt><dd>A smaller, faster, cheaper version of a company's flagship model — built for speed and cost, not maximum capability. Google's Gemini 3.8 Flash sits below Gemini Ultra in the lineup but often scores well on specific coding tasks.</dd>
+        <dt>Vision-language model (VLM)</dt><dd>An AI that can handle both images and text — it can look at a photograph or diagram and answer questions about it. Most of the big models now have this ability, though the quality varies.</dd>
+        <dt>Chain-of-thought</dt><dd>A training technique where the model is shown worked examples — "here is the problem, here is the step-by-step reasoning, here is the answer" — rather than just the problem and answer. It consistently improves accuracy on hard tasks.</dd>
+        <dt>Preparedness Framework</dt><dd>OpenAI's internal system for rating how dangerous a new model is before releasing it. The levels run from Low to Critical. A Critical rating on cybersecurity means the model can autonomously find and exploit real vulnerabilities — which is exactly what Astra achieved in tests.</dd>
+        <dt>Agentic traffic</dt><dd>Web requests made by AI software agents running automatically, rather than by a human sitting at a browser. Huskeys raised money this week to help companies tell the difference — and defend against the malicious kind.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
