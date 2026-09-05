@@ -1,5 +1,12 @@
 [
   {
+    "num": 99,
+    "date": "2026-09-05",
+    "slug": "issues/2026-09-05.html",
+    "title": "Above the Podium",
+    "blurb": "An Nvidia system entered the International Olympiad in Informatics under competition rules and beat every human contestant — while a paper from Alibaba and Tsinghua shows how to turn old AI work logs into new training environments, no extra data collection required."
+  },
+  {
     "num": 98,
     "date": "2026-09-04",
     "slug": "issues/2026-09-04.html",

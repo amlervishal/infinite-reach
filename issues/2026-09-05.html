@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №99 — Above the Podium · Infinite Reach</title>
+  <meta name="description" content="An Nvidia system entered the world's most prestigious programming competition, played by the same rules as every human, and finished first. Plus: a paper from Alibaba and Tsinghua that turns old AI work logs into new training gyms." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №99 &middot; Saturday, September 5, 2026</p>
+      <h1>Above the Podium</h1>
+      <p>An Nvidia system entered the world's most prestigious programming competition this summer, followed every rule the human contestants followed, and came out first. It arrived the same week as a paper showing how the training data for the next generation of coding agents is already being written by the current one.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Nvidia's Nemotron-3-Ultra-CC scored 535.4 out of 600 at the International Olympiad in Informatics (IOI) 2026 — ahead of the top human contestant's 498.27 — running under the same time limits, submission rules, and internet restrictions as the students in the room. The system is a competition-specific build: a 550-billion-parameter mixture-of-experts model, with 55 billion parameters active on any given response, tuned specifically for contest programming. Nvidia published the result in a new arXiv preprint this week; it hasn't been independently replicated, and the team hasn't claimed the system would do as well on general-purpose coding. But the margin is real, and it is the first time a machine has beaten every human at IOI under actual competition conditions.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Weather</span><span>Google DeepMind launched WeatherNext 3 on September 3: the first global AI weather model to generate forecasts every hour, at a 5-kilometre grid (versus 25 km and six-hour intervals in its predecessor). Rain and snow forecasts are up to 50% more accurate for lead times of a day or more. The model draws directly from raw satellite imagery and will be built into Google Search, Maps, and Gemini.</span></li>
+        <li><span class="tag tech">Open weights</span><span>Tencent open-sourced Hy4 preview this week: 770 billion total parameters, 49 billion active, over 1 million tokens of context, Apache 2.0 licence. In an internal blind evaluation of 203 engineering tasks judged by 163 Tencent experts, Hy4 edged out GLM-5.3 and Kimi K3 on average score.</span></li>
+        <li><span class="tag tech">Benchmark</span><span>OpenAI's GPT-6 Astra scored 63% on ARC-AGI-3, the general reasoning benchmark, and topped the human baseline on action efficiency — using fewer moves than the median human contestant on 96% of levels.</span></li>
+        <li><span class="tag tech">Models</span><span>The Institute of Foundation Models released K2 Horizon, a six-model family from 0.9 billion to 375 billion parameters, each claiming the top score in its size class on standard evaluations.</span></li>
+        <li><span class="tag tech">Tooling</span><span>Boris Cherny (Head of Claude Code at Anthropic) announced Plugins for Claude Code — bundles of agents, slash commands, MCP servers, and hooks installable in a single step. About 4% of all public GitHub commits are now attributed to Claude Code; Cherny predicts that will reach 20% by year end.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: Paper, explained -->
+      <h2>Paper, explained: Turning old AI work logs into new training gyms</h2>
+      <p class="kicker">Terminal-Universe: Turning Agent Trajectories into Scalable Terminal Environments &middot; Jie Wu, Zhenru Zhang, Beichen Zhang, et al. (Alibaba Qwen Team / Tsinghua University) &middot; <a href="https://arxiv.org/abs/2609.04148">arXiv 2609.04148</a></p>
+
+      <p>Every time an AI coding agent solves a problem — navigating files, running commands, editing code — it leaves behind a detailed log: every step, every command, every tool call. These logs are called <em>trajectories</em>. Most teams treat them as read-only history. This paper, from Alibaba's Qwen group and Tsinghua University, asks what happens if you treat them as blueprints for a live training gym instead.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>To improve a coding agent through what researchers call post-training, you need <em>verifiable environments</em>: real programming setups where the agent can attempt something, receive genuine feedback (does the code run? does the test pass?), and try a different approach. Building those environments by hand is expensive and slow — you need repositories, tasks, and ground-truth solutions that are clean enough for systematic training. Meanwhile, AI coding agents are being deployed everywhere and leaving behind millions of trajectory logs. Those logs contain implicit information about real programming environments — the file structures, the commands that worked, the errors that didn't — but a trajectory on its own is frozen. It is a recording of someone else working, not a workspace you can practice in.</p>
+      <p>Before this paper, the standard use of a trajectory was to extract a single training example from it: here is the task, here is how the agent solved it, now learn to imitate that. One trajectory, one example, one use. The mismatch is significant: environments are the scarce resource, and trajectories are abundant. The question is how to bridge them.</p>
+
+      <h3>How it works</h3>
+      <p>Terminal-Universe's central insight is that every trajectory carries enough information to <em>reconstruct</em> the environment it came from. Think of each trajectory as a detailed film of a chef cooking in a particular kitchen: every tool they reached for, every ingredient they used, every correction they made. The traditional approach uses that film as a lesson — watch and imitate. Terminal-Universe uses the film to rebuild the kitchen, so that new AI systems can walk in, practice the same recipe or try different ones, and receive genuine feedback about whether the dish turned out.</p>
+      <p>In practice, the framework does three things. First, it parses each trajectory to recover the state of the file system and command environment at each step — effectively reverse-engineering the workspace behind the recording. Second, it wraps that recovered state in a live, sandboxed Docker container: a self-contained environment that can be started, queried, and discarded at will. Third, it "probes" that environment with a range of new questions: <em>What if the task had been to fix this bug instead of add that feature? What if the directory structure were slightly different? What if the target file were renamed?</em> Each probe that yields a verifiable answer — one where you can run code and check the result — becomes a new training task, with ground truth built in. One trajectory can spawn dozens of tasks. A library of trajectories can produce tens of thousands of environments.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team applied Terminal-Universe to publicly available terminal agent trajectory datasets — sessions where AI agents had worked through real programming tasks on the command line. From that raw material, the framework produced <strong>37,300 task-sufficient environments</strong>: environments where at least one new verifiable task could be extracted. They then used this corpus to fine-tune <strong>Qwen3.5-27B</strong>, a 27-billion-parameter language model from Alibaba's own Qwen family. Crucially, the fine-tuning was standard supervised fine-tuning rather than the more complex and compute-intensive reinforcement learning — a deliberate choice to isolate the effect of better training data rather than a fancier training algorithm.</p>
+
+      <h3>What they found</h3>
+      <p>The fine-tuned model improved single-round performance on Terminal-Bench 2.1 by <strong>11.9 points</strong> and multi-round performance on EvoCode-Bench v2 (a benchmark that tests agents across several back-and-forth steps on the same problem) by <strong>13.8 points</strong>. Both benchmarks test agents on realistic terminal-based programming tasks — the kind of work a developer does at the command line, not the kind of tidy puzzle that appears in coding contests. The gains are meaningful: on crowded leaderboards where frontier models typically separate by two to five points, an 11–14 point jump from data alone is notable. The team also found that multi-round performance improved more than single-round — suggesting that the environments are teaching the model to recover from mistakes and course-correct, not just to execute correctly on the first attempt.</p>
+
+      <h3>The catch</h3>
+      <p>The quality of the generated environments depends entirely on the quality of the source trajectories. The paper uses publicly available data, which skews toward the kinds of tasks developers demonstrate publicly — tidy, well-defined, successful sessions. Real production software is messier, more ambiguous, and often fails in ways that aren't well-represented in public trajectory datasets. Additionally, the "task-sufficient" threshold means only that at least one new task could be extracted; it says nothing about how challenging or diverse those tasks are. An environment that generates ten variants of "add a unit test to this function" is adding less than an environment that explores genuinely different programming scenarios. The paper doesn't yet address how to filter or diversify the probe-generated tasks.</p>
+
+      <p><strong>If you remember one thing:</strong> Recycling AI coding sessions into live training environments — rather than frozen examples — can add 11–14 benchmark points to a model with no new human-curated data, just better use of the logs already piling up.</p>
+
+      <!-- SVG diagram: Traditional vs. Terminal-Universe pipeline -->
+      <figure>
+        <svg viewBox="0 0 720 252" role="img" aria-label="Diagram comparing the traditional approach of treating a trajectory as one frozen training example versus Terminal-Universe, which reconstructs a live environment from the trajectory and generates 37,300 verifiable tasks">
+          <defs>
+            <marker id="arr-muted" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#87867F"/>
+            </marker>
+            <marker id="arr-clay" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#D97757"/>
+            </marker>
+            <marker id="arr-sky" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#6A8CAF"/>
+            </marker>
+          </defs>
+
+          <!-- LEFT: Traditional approach -->
+          <text x="175" y="22" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="600">Traditional approach</text>
+
+          <rect x="80" y="32" width="190" height="50" rx="6" fill="#D1CFC5" stroke="#87867F" stroke-width="1.5"/>
+          <text x="175" y="54" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413">Agent trajectory</text>
+          <text x="175" y="72" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">one session log</text>
+
+          <line x1="175" y1="82" x2="175" y2="118" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr-muted)"/>
+
+          <rect x="80" y="120" width="190" height="50" rx="6" fill="none" stroke="#87867F" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="175" y="142" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413">1 training example</text>
+          <text x="175" y="159" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">frozen · single use</text>
+
+          <!-- Divider -->
+          <line x1="360" y1="10" x2="360" y2="242" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+          <!-- RIGHT: Terminal-Universe -->
+          <text x="545" y="22" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="600">Terminal-Universe</text>
+
+          <rect x="450" y="32" width="190" height="50" rx="6" fill="#D1CFC5" stroke="#87867F" stroke-width="1.5"/>
+          <text x="545" y="54" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413">Agent trajectory</text>
+          <text x="545" y="72" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">one session log</text>
+
+          <line x1="545" y1="82" x2="545" y2="110" stroke="#D97757" stroke-width="1.5" marker-end="url(#arr-clay)"/>
+
+          <rect x="450" y="112" width="190" height="46" rx="6" fill="#D9775714" stroke="#D97757" stroke-width="1.5"/>
+          <text x="545" y="132" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413">Live Docker environment</text>
+          <text x="545" y="150" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">runnable · re-queryable</text>
+
+          <line x1="545" y1="158" x2="545" y2="182" stroke="#6A8CAF" stroke-width="1.5" marker-end="url(#arr-sky)"/>
+
+          <rect x="450" y="184" width="190" height="50" rx="6" fill="#6A8CAF18" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="545" y="206" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413">Many verifiable tasks</text>
+          <text x="545" y="224" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#6A8CAF">37,300 environments produced</text>
+        </svg>
+        <figcaption>Left: each trajectory yields one frozen training example. Right: Terminal-Universe reconstructs the live environment behind the trajectory, then probes it for new verifiable tasks — turning one session into dozens of practice scenarios.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy's move to Anthropic in May is now in full swing: he is building and leading a team dedicated to using Claude to help accelerate Anthropic's own pre-training research — the current model helping design the next one. On X he added that he remains passionate about education and plans to return to it "in time." <a href="https://techcrunch.com/2026/05/19/openai-co-founder-andrej-karpathy-joins-anthropics-pre-training-team/">TechCrunch</a></span></li>
+        <li><span class="tag tech">Dwarkesh</span><span>Dwarkesh Patel's September 1 episode with Ajeya Cotra — a researcher at METR — is one of the most careful public conversations yet about what "loss-of-control" risk from advanced AI actually means as a concrete threat model, not a thought experiment. Worth an hour of your time. <a href="https://www.dwarkesh.com/">dwarkesh.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The IOI result and the Terminal-Universe paper arrived in the same week, and they are telling the same underlying story from two different angles. At the frontier, AI coding systems have reached and passed the human ceiling on one of the most structured and demanding programming tests that exists — under actual competition conditions, not selected benchmarks. Meanwhile, researchers are demonstrating that the logs those systems generate can become the training material for the next generation, at almost no marginal cost. These two things together suggest that coding-agent capability may now be self-reinforcing in a meaningful way: every deployment generates trajectory data, and that data can compound into better models without requiring human labelers or new task designs. Whether the IOI win translates to everyday software engineering is genuinely uncertain — the system was purpose-built for contests, not for the underspecified, dependency-tangled work most professional coding involves. But the direction of travel is clear, and the pace appears to be accelerating rather than levelling off.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://kenashe.ai/blog/2026-09-03-an-ai-just-outscored-the-top-human-at-ioi-2026-heres-what-that-actually-means">Ken Ashe / IOI 2026</a> ·
+        <a href="https://alphasignal.ai/news/nvidia-s-nemotron-beats-the-best-human-at-the-coding-olympics">AlphaSignal / Nemotron</a> ·
+        <a href="https://arxiv.org/abs/2609.04148">arXiv 2609.04148 (Terminal-Universe)</a> ·
+        <a href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/introducing-weathernext-3/">Google DeepMind / WeatherNext 3</a> ·
+        <a href="https://technode.global/2026/09/04/tencent-hy4-preview-open-source-model/">TechNode / Tencent Hy4</a> ·
+        <a href="https://techcrunch.com/2026/09/03/googles-latest-ai-weather-model-gives-you-no-excuse-to-forget-your-umbrella/">TechCrunch / WeatherNext 3</a> ·
+        <a href="https://aiweekly.co/ai-news-today/edition/2026-09-04">AI Weekly / September 4</a> ·
+        <a href="https://hackernoon.com/nvidia-just-proved-the-next-ai-race-isnt-about-bigger-models">HackerNoon / Nemotron</a> ·
+        <a href="https://techcrunch.com/2026/05/19/openai-co-founder-andrej-karpathy-joins-anthropics-pre-training-team/">TechCrunch / Karpathy</a> ·
+        <a href="https://www.dwarkesh.com/">Dwarkesh Podcast</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Trajectory</div>
+        <div>In machine learning, a trajectory is a step-by-step record of everything an AI agent did during a task — every command typed, every file opened, every error hit and recovered from. Think of it as a detailed receipt for an entire work session. Abundant and cheap to collect; the hard part is knowing what to do with it afterwards.</div>
+      </div>
+      <dl>
+        <dt>Mixture of Experts (MoE)</dt><dd>An architecture where a large model is divided into specialist sub-networks. For any given input, only a fraction of those sub-networks activates — so a "770B-parameter" model might actually do its work with 49B active parameters, keeping costs manageable.</dd>
+        <dt>Post-training</dt><dd>Adjustments made to a model after the main large-scale training phase — fine-tuning it on specific tasks, incorporating feedback, or reinforcing desired behaviours. The difference between going to school and then doing an internship to specialise.</dd>
+        <dt>Supervised fine-tuning (SFT)</dt><dd>A type of post-training where you show the model many labeled examples (question → ideal answer) and train it to match them. Simpler and cheaper than reinforcement learning, but it requires a curated dataset. Terminal-Universe is valuable partly because it provides that dataset automatically.</dd>
+        <dt>Benchmark</dt><dd>A standardised test for AI models designed to allow fair comparison across systems. Like a standardised exam for schools — useful for tracking progress, but never a complete picture of real-world performance.</dd>
+        <dt>Inference</dt><dd>The act of a trained model generating an output — when it runs to answer a question or write code, as opposed to when it is being trained. "Inference costs" are what you pay every time the model is actually used by someone.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
