@@ -1,5 +1,12 @@
 [
   {
+    "num": 101,
+    "date": "2026-09-07",
+    "slug": "issues/2026-09-07.html",
+    "title": "Critical",
+    "blurb": "OpenAI shipped the first model ever rated 'Critical' for cybersecurity — scoring 100% on exploit tests, discovering two zero-days in testing — while a new benchmark shows AI reasoning chains are more predictable than anyone expected."
+  },
+  {
     "num": 100,
     "date": "2026-09-06",
     "slug": "issues/2026-09-06.html",

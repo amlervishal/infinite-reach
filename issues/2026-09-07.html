@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №101 — Critical · Infinite Reach</title>
+  <meta name="description" content="OpenAI shipped the first model ever rated 'Critical' for cybersecurity — 100% on exploit tests — while a new benchmark reveals that AI reasoning chains are more predictable than anyone expected." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №101 &middot; Monday, September 7, 2026</p>
+      <h1>Critical</h1>
+      <p>OpenAI shipped a model this week that scored perfectly on the industry's hardest exploit benchmark — then gated the capability behind a special access programme. All three of the leading labs did something like this in the same seven days. The shape of that constraint is the most important thing to understand.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>GPT-6 Astra, released Wednesday, is the first model in history to earn a "Critical" rating under OpenAI's own Preparedness Framework — the level at which a model can independently find and exploit security vulnerabilities in hardened systems, without a human guiding each step. During internal testing, it discovered two previously unknown zero-day vulnerabilities. On ExploitBench, the field's leading exploit-writing evaluation, it scored 100%, against 78.5% for its predecessor GPT-5.6 Sol. OpenAI shipped it anyway, because the deployed version refuses offensive tasks and carries new monitoring — encrypted chain-of-thought logs and an external misalignment detector — watching constantly. The same week, Google released Gemini 3.8 Flash Cyber (gated through its new Fairwind Program), which found a Chrome security flaw that had sat unnoticed for 13 years. And Anthropic's Claude Mythos 5.1, released September 1st, is the same model as Fable 5.1 but with looser restrictions for vetted cybersecurity teams. Three labs, the same pattern: one model, two faces.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Benchmarks</span><span>GPT-6 Astra scored 100% on ExploitBench — the first model to do so; its predecessor GPT-5.6 Sol scored 78.5%. OpenAI says the deployed version blocks those offensive capabilities entirely. <a href="https://www.cnbc.com/2026/09/03/open-ai-astra-gpt-6-cyber.html">CNBC</a></span></li>
+        <li><span class="tag tech">Chrome</span><span>Gemini 3.8 Flash Cyber found a vulnerability in Chrome that had sat undetected for 13 years; in Google's testing, the Cyber variant patched at a rate 2.6× higher than competing commercial models. <a href="https://venturebeat.com/security/googles-gemini-3-8-flash-is-built-for-agents-while-its-cyber-twin-hunts-vulnerabilities">VentureBeat</a></span></li>
+        <li><span class="tag tech">Claude Code</span><span>Claude Code 2.1.0 shipped with Shift+Enter for multi-line input, hooks wired directly into agent frontmatter, and hot-reload for skills — small features, but they make the tool much easier to extend without restarting. <a href="https://code.claude.com/docs/en/changelog">Changelog</a></span></li>
+        <li><span class="tag policy">Monitoring</span><span>As a condition of Astra's release, OpenAI added encrypted chain-of-thought checkpoints and a continuous external misalignment monitor — the first time the company has published model-specific monitoring requirements tied to a capability threshold. <a href="https://www.bloomberg.com/news/articles/2026-09-03/openai-rolls-out-gpt-6-astra-model-with-added-cyber-guardrails">Bloomberg</a></span></li>
+        <li><span class="tag money">Nvidia / HF</span><span>Nvidia's $12.9 billion acquisition of Hugging Face cleared its SEC filing this week; the deal is expected to close in the first half of 2027, at which point the world's largest chip maker will own the world's largest model repository. <a href="https://techcrunch.com/2026/09/03/nvidia-confirms-it-will-buy-hugging-face-for-12-9-billion/">TechCrunch</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~700 words -->
+      <h2>Paper, explained: how to make a thinking machine think faster</h2>
+      <p class="kicker">Scaling Up, Speeding Up: A Benchmark of Speculative Decoding for Efficient LLM Test-Time Scaling &middot; Sun, Li, et al. (ICLR 2026) &middot; <a href="https://arxiv.org/abs/2509.04474">arXiv:2509.04474</a></p>
+
+      <p>Today's most capable AI models earn their accuracy by writing out their reasoning — sometimes tens of thousands of words of internal work before giving an answer. That practice is called <em>test-time scaling</em>, and it works well. It is also slow and expensive. A new benchmark from ICLR 2026 asks whether an old trick from computer science can fix that — and finds an answer that, frankly, nobody expected.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Language models generate text one token at a time. Each token requires a full pass through the model's billions of parameters before the next one can begin. For a short conversational reply, that is fine. For a reasoning model that generates 15,000 tokens of step-by-step working before it answers your question, the cost adds up fast — in both time and compute. The field has been looking for ways to speed up that generation without degrading the quality of the thinking.</p>
+
+      <p>One candidate is <em>speculative decoding</em>, a technique that was originally developed for short conversational outputs. The idea: bring in a small, cheap "draft" model to guess what the big model would say next — not one token at a time, but a batch of five or ten. Then the big model checks the whole batch in a single pass, because its attention mechanism can process an existing sequence in roughly the same time it takes to generate one new token. If it agrees with the draft, you keep all five tokens for the cost of one big-model step. If the draft gets one wrong, you discard everything from that point, use the big model's correct choice, and the draft starts again. The output is mathematically identical to what the big model would have produced alone — just faster, on average.</p>
+
+      <p>The missing piece: all the research on speculative decoding was done on short, stylistically varied text. Nobody had systematically asked whether it helped for the long, often repetitive chains that test-time scaling produces. That is the gap this paper fills.</p>
+
+      <h3>How it works</h3>
+      <p>Sun et al. built <strong>SpecTTS-Bench</strong>, the first benchmark designed specifically to answer that question. They picked three categories of draft strategy: <em>model-based</em> (a smaller neural network tries to imitate the big model's style), <em>training-based</em> (a smaller network explicitly trained to draft for the big model), and <em>n-gram</em> (no neural network at all — just a lookup table that says "if the last three tokens were X–Y–Z, guess that Z+1 is whatever usually follows X–Y–Z in this context"). They ran all three across two standard test-time scaling scenarios: Best-of-N (generate many answer candidates and pick the best) and multi-round thinking (give the model its previous answer and ask it to revise).</p>
+
+      <p>Here is the analogy that makes this intuitive. Imagine a lawyer dictating a brief. You could hire a junior associate who has studied this lawyer's writing for years and tries to predict each next sentence (model-based), or one who went through a special clerkship designed to shadow this lawyer closely (training-based), or you could give the transcriptionist a stack of old briefs and say: whenever you hear "pursuant to," go ahead and type "the provisions of Section" — because that is what always follows. For creative, case-specific arguments, the first two approaches win. For stock phrases — "as noted above," "the court held that," "this raises three distinct issues" — the lookup table is often faster and just as accurate.</p>
+
+      <p>Reasoning models turn out to be full of stock phrases. They recycle transition words, mathematical preambles, self-correction phrases like "wait, let me reconsider," and conclusion markers at very high rates. The researchers hypothesised that n-gram methods might be surprisingly competitive in this setting.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team ran all three draft strategies through SpecTTS-Bench against multiple frontier reasoning models, across both test-time scaling scenarios. They measured two things: generation speedup and output quality. The benchmark covered standard reasoning tasks — mathematics, coding, multi-step logic — and explicitly included both repetitive stretches (where the model grinds through similar calculations) and creative transitions (where it pivots to a new line of attack).</p>
+
+      <h3>What they found</h3>
+      <p>The n-gram strategy matched or outperformed both neural approaches on the most common patterns in reasoning chains. The repetitive structure of chain-of-thought — "let me first note," "this implies," "step 3 is therefore" — is ideal territory for a lookup table. The neural draft models spent capacity trying to be creative where no creativity was needed. The best overall approach was a hybrid: n-gram drafts handle the repetitive stretches; a model-based draft kicks in for the creative transitions. That combination produced the highest speedups without any measurable loss in answer accuracy. The failure mode for pure n-gram drafting was the creative transition — when a model abandons one approach and starts fresh, the lookup table has nothing to match and falls back to single-token generation, which is no faster than the baseline. The hybrid covers the gap.</p>
+
+      <p>Across the test conditions, the research showed that the simple n-gram lookup — a method with no trainable parameters whatsoever — could independently accelerate a majority of the tokens in a typical reasoning chain. The neural draft added the most value exactly where the n-gram struggled: unpredictable pivot points.</p>
+
+      <h3>The catch</h3>
+      <p>The benchmark covers standard academic reasoning tasks, not highly specialised domains like medical literature or formal mathematical proof, which have different phrase distributions. The finding also depends on the reasoning style of current models; as training evolves, models may produce more varied chains less amenable to pattern lookup. And the paper benchmarks a fixed set of frontier systems — whether the hybrid approach transfers cleanly to every architecture is not yet confirmed.</p>
+
+      <p><strong>If you remember one thing:</strong> The most sophisticated reasoning engines in the world spend a remarkable share of their "thinking" on phrases a simple pattern-matcher from 1990 could have predicted — and exploiting that can make them meaningfully faster.</p>
+
+      <!-- SVG: Speculative decoding illustrated -->
+      <figure>
+        <svg viewBox="0 0 720 320" role="img" aria-label="Diagram comparing standard autoregressive decoding with speculative decoding">
+          <defs>
+            <marker id="arr-h" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+              <polygon points="0 0, 7 3.5, 0 7" fill="#87867F" />
+            </marker>
+            <marker id="arr-d" markerWidth="7" markerHeight="7" refX="3.5" refY="6" orient="auto">
+              <polygon points="0 0, 7 0, 3.5 7" fill="#87867F" />
+            </marker>
+          </defs>
+
+          <!-- Divider -->
+          <line x1="360" y1="10" x2="360" y2="308" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="5 4" />
+
+          <!-- === LEFT: Standard decoding === -->
+          <text x="160" y="26" text-anchor="middle" font-family="ui-serif" font-size="13" font-weight="600" fill="#141413">Standard decoding</text>
+          <text x="36" y="50" font-family="system-ui" font-size="10" fill="#87867F">BIG MODEL generates one token at a time</text>
+
+          <!-- T1 -->
+          <rect x="36" y="60" width="50" height="32" rx="5" fill="#6A8CAF" fill-opacity="0.18" stroke="#6A8CAF" stroke-width="1.3"/>
+          <text x="61" y="80" text-anchor="middle" font-family="ui-monospace" font-size="12" fill="#141413">T₁</text>
+          <line x1="88" y1="76" x2="104" y2="76" stroke="#87867F" stroke-width="1.2" marker-end="url(#arr-h)"/>
+
+          <!-- T2 -->
+          <rect x="106" y="60" width="50" height="32" rx="5" fill="#6A8CAF" fill-opacity="0.18" stroke="#6A8CAF" stroke-width="1.3"/>
+          <text x="131" y="80" text-anchor="middle" font-family="ui-monospace" font-size="12" fill="#141413">T₂</text>
+          <line x1="158" y1="76" x2="174" y2="76" stroke="#87867F" stroke-width="1.2" marker-end="url(#arr-h)"/>
+
+          <!-- T3 -->
+          <rect x="176" y="60" width="50" height="32" rx="5" fill="#6A8CAF" fill-opacity="0.18" stroke="#6A8CAF" stroke-width="1.3"/>
+          <text x="201" y="80" text-anchor="middle" font-family="ui-monospace" font-size="12" fill="#141413">T₃</text>
+          <line x1="228" y1="76" x2="244" y2="76" stroke="#87867F" stroke-width="1.2" marker-end="url(#arr-h)"/>
+
+          <!-- T4 -->
+          <rect x="246" y="60" width="50" height="32" rx="5" fill="#6A8CAF" fill-opacity="0.18" stroke="#6A8CAF" stroke-width="1.3"/>
+          <text x="271" y="80" text-anchor="middle" font-family="ui-monospace" font-size="12" fill="#141413">T₄</text>
+
+          <!-- Cost label -->
+          <text x="36" y="116" font-family="system-ui" font-size="10" fill="#87867F">4 passes through the big model = 4 tokens</text>
+
+          <!-- "slow" bracket -->
+          <line x1="36" y1="126" x2="296" y2="126" stroke="#D97757" stroke-width="1.2"/>
+          <line x1="36" y1="122" x2="36" y2="130" stroke="#D97757" stroke-width="1.2"/>
+          <line x1="296" y1="122" x2="296" y2="130" stroke="#D97757" stroke-width="1.2"/>
+          <text x="166" y="142" text-anchor="middle" font-family="system-ui" font-size="10" font-style="italic" fill="#D97757">slow — each token blocks the next</text>
+
+          <!-- === RIGHT: Speculative decoding === -->
+          <text x="540" y="26" text-anchor="middle" font-family="ui-serif" font-size="13" font-weight="600" fill="#141413">Speculative decoding</text>
+
+          <!-- Step 1: Draft model -->
+          <text x="376" y="50" font-family="system-ui" font-size="10" fill="#87867F">① DRAFT MODEL generates a batch quickly</text>
+
+          <!-- Draft tokens D1–D5 -->
+          <rect x="376" y="60" width="38" height="32" rx="5" fill="#788C5D" fill-opacity="0.2" stroke="#788C5D" stroke-width="1.3"/>
+          <text x="395" y="80" text-anchor="middle" font-family="ui-monospace" font-size="12" fill="#141413">D₁</text>
+          <rect x="418" y="60" width="38" height="32" rx="5" fill="#788C5D" fill-opacity="0.2" stroke="#788C5D" stroke-width="1.3"/>
+          <text x="437" y="80" text-anchor="middle" font-family="ui-monospace" font-size="12" fill="#141413">D₂</text>
+          <rect x="460" y="60" width="38" height="32" rx="5" fill="#788C5D" fill-opacity="0.2" stroke="#788C5D" stroke-width="1.3"/>
+          <text x="479" y="80" text-anchor="middle" font-family="ui-monospace" font-size="12" fill="#141413">D₃</text>
+          <rect x="502" y="60" width="38" height="32" rx="5" fill="#788C5D" fill-opacity="0.2" stroke="#788C5D" stroke-width="1.3"/>
+          <text x="521" y="80" text-anchor="middle" font-family="ui-monospace" font-size="12" fill="#141413">D₄</text>
+          <!-- D5 rejected — shown in clay -->
+          <rect x="544" y="60" width="38" height="32" rx="5" fill="#D97757" fill-opacity="0.2" stroke="#D97757" stroke-width="1.3"/>
+          <text x="563" y="80" text-anchor="middle" font-family="ui-monospace" font-size="12" fill="#141413">D₅</text>
+
+          <!-- Arrow down to verify -->
+          <line x1="476" y1="94" x2="476" y2="126" stroke="#87867F" stroke-width="1.2" marker-end="url(#arr-d)"/>
+          <text x="490" y="114" font-family="system-ui" font-size="9" fill="#87867F">1 fast pass</text>
+
+          <!-- Step 2: Big model verifies -->
+          <text x="376" y="146" font-family="system-ui" font-size="10" fill="#87867F">② BIG MODEL verifies entire batch in one pass</text>
+
+          <!-- Verified tokens -->
+          <rect x="376" y="154" width="38" height="32" rx="5" fill="#788C5D" fill-opacity="0.6" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="395" y="174" text-anchor="middle" font-family="ui-monospace" font-size="12" fill="#fff">T₁</text>
+          <rect x="418" y="154" width="38" height="32" rx="5" fill="#788C5D" fill-opacity="0.6" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="437" y="174" text-anchor="middle" font-family="ui-monospace" font-size="12" fill="#fff">T₂</text>
+          <rect x="460" y="154" width="38" height="32" rx="5" fill="#788C5D" fill-opacity="0.6" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="479" y="174" text-anchor="middle" font-family="ui-monospace" font-size="12" fill="#fff">T₃</text>
+          <rect x="502" y="154" width="38" height="32" rx="5" fill="#788C5D" fill-opacity="0.6" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="521" y="174" text-anchor="middle" font-family="ui-monospace" font-size="12" fill="#fff">T₄</text>
+          <!-- T5: rejected, big model substitutes -->
+          <rect x="544" y="154" width="38" height="32" rx="5" fill="#D97757" fill-opacity="0.55" stroke="#D97757" stroke-width="1.5"/>
+          <text x="563" y="174" text-anchor="middle" font-family="ui-monospace" font-size="12" fill="#fff">✗</text>
+          <text x="563" y="204" text-anchor="middle" font-family="system-ui" font-size="9" fill="#D97757">rejected; big model generates T₅</text>
+
+          <!-- "fast" bracket for accepted tokens -->
+          <line x1="376" y1="218" x2="540" y2="218" stroke="#788C5D" stroke-width="1.2"/>
+          <line x1="376" y1="214" x2="376" y2="222" stroke="#788C5D" stroke-width="1.2"/>
+          <line x1="540" y1="214" x2="540" y2="222" stroke="#788C5D" stroke-width="1.2"/>
+          <text x="458" y="234" text-anchor="middle" font-family="system-ui" font-size="10" font-style="italic" fill="#788C5D">4 tokens kept for ~1 big-model pass</text>
+
+          <!-- Legend -->
+          <rect x="376" y="256" width="11" height="11" rx="2" fill="#788C5D" fill-opacity="0.65"/>
+          <text x="393" y="266" font-family="system-ui" font-size="10" fill="#87867F">draft accepted</text>
+          <rect x="464" y="256" width="11" height="11" rx="2" fill="#D97757" fill-opacity="0.65"/>
+          <text x="481" y="266" font-family="system-ui" font-size="10" fill="#87867F">draft rejected</text>
+          <text x="376" y="290" font-family="system-ui" font-size="9.5" fill="#87867F" font-style="italic">For repetitive reasoning text, simple n-gram lookups can draft most accepted tokens.</text>
+        </svg>
+        <figcaption>Left: standard decoding makes the big model generate one token per pass. Right: speculative decoding uses a cheap draft model to batch-guess tokens, then the big model checks the whole batch in a single pass — keeping a correct prefix and discarding from the first disagreement. For the long, repetitive chains of reasoning models, even a simple n-gram lookup can draft a surprising proportion of the tokens the big model will accept.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>Claude Code 2.1.0 shipped this week with several extensions to composability: hooks can now be declared in agent and skill frontmatter, skills hot-reload without restarting the session, and Shift+Enter works out of the box for multi-line input. <a href="https://code.claude.com/docs/en/changelog">Changelog</a></span></li>
+        <li><span class="tag tech">Dwarkesh Patel</span><span>Episode 139 (September 1) features Ajeya Cotra of METR, one of the most precise thinkers on what AI loss of control actually looks like as a causal chain — not an abstract possibility, but a described mechanism. Worth going back for. <a href="https://www.dwarkesh.com/">Dwarkesh Podcast</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The security story is not: these models are dangerous and you should be scared. It is: the people building them have now openly confirmed that they've crossed a threshold they defined themselves, published their definition, measured their model against it, and shipped it anyway — because they believe the locks they've added are sufficient. That is the most transparent risk-benefit statement any major lab has ever committed to in writing about a model they actually released. Whether the locks are good enough is a question only time and adversaries will answer. But for now, all three major labs have converged on the same architecture: one model, public and gated, with the boundary between them decided by access policy rather than capability.</p>
+
+      <p>The reasoning-speed story has a similar structure. The field built reasoning models to think longer, and longer thinking works. But nobody went back and asked whether the thinking itself was efficient. It wasn't — a meaningful share of it was rote. The SpecTTS paper is a quiet reminder that the most useful improvements are not always where the most exciting research is being done, and that sometimes a rule simple enough to explain to a child outperforms a neural network because the problem is simpler than it looks.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.bloomberg.com/news/articles/2026-09-03/openai-rolls-out-gpt-6-astra-model-with-added-cyber-guardrails">Bloomberg</a> ·
+        <a href="https://www.cnbc.com/2026/09/03/open-ai-astra-gpt-6-cyber.html">CNBC</a> ·
+        <a href="https://venturebeat.com/security/googles-gemini-3-8-flash-is-built-for-agents-while-its-cyber-twin-hunts-vulnerabilities">VentureBeat</a> ·
+        <a href="https://9to5google.com/2026/09/02/gemini-3-8-flash-launch/">9to5Google</a> ·
+        <a href="https://www.macrumors.com/2026/09/01/anthropic-claude-fable-5-1/">MacRumors</a> ·
+        <a href="https://techcrunch.com/2026/09/03/nvidia-confirms-it-will-buy-hugging-face-for-12-9-billion/">TechCrunch</a> ·
+        <a href="https://arxiv.org/abs/2509.04474">arXiv:2509.04474</a> ·
+        <a href="https://github.com/sunshy-1/SpecTTS-Bench">SpecTTS-Bench (GitHub)</a> ·
+        <a href="https://code.claude.com/docs/en/changelog">Claude Code changelog</a> ·
+        <a href="https://www.dwarkesh.com/">Dwarkesh Podcast</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Preparedness Framework</div>
+        <div>A published document in which an AI lab defines risk thresholds — low, medium, high, critical — and commits to specific policies for each level. Think of it as a rulebook the lab has written for itself: if we build something this capable, here is what we will do before we ship it. GPT-6 Astra is the first model any major lab has released while rating it "Critical" under its own framework.</div>
+      </div>
+      <dl>
+        <dt>Speculative decoding</dt>
+        <dd>A technique to speed up language model generation: a small, cheap draft model guesses several tokens ahead, then the large model verifies the batch in a single pass. Lossless — the output is statistically identical to what the large model would have produced alone, just faster on average.</dd>
+
+        <dt>Test-time scaling</dt>
+        <dd>Giving a model more computation at the moment you ask it a question (inference time), rather than making the model itself larger. Models that "reason" by writing out long chains of steps use test-time scaling to earn higher accuracy — at the cost of speed and compute.</dd>
+
+        <dt>N-gram</dt>
+        <dd>A pattern-lookup technique from the pre-deep-learning era: record which sequences of N tokens tend to follow which other sequences, then predict the next token by matching recent context to that history. No neural network involved. The SpecTTS paper found it surprisingly effective for the repetitive stretches of AI reasoning chains.</dd>
+
+        <dt>ExploitBench</dt>
+        <dd>An evaluation that asks a model to find and write working software exploits for a set of vulnerabilities. It measures offensive cybersecurity capability. GPT-6 Astra is the first model to score 100% — meaning it succeeded on every challenge in the benchmark.</dd>
+
+        <dt>Zero-day</dt>
+        <dd>A previously unknown software vulnerability — "zero days" of public warning before it can be exploited. Finding one requires deep technical knowledge of the system under examination. GPT-6 Astra discovered two during internal testing before its release.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
