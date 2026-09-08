@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №102 — Open Books · Infinite Reach</title>
+  <meta name="description" content="Anthropic files its IPO prospectus this week — the first audited look at the finances behind frontier AI. Plus: a fresh paper trains reasoning models to stop burning tokens long after they've already found the answer." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №102 &middot; September 8, 2026</p>
+      <h1>Open Books</h1>
+      <p>Anthropic is expected to file its IPO prospectus this week — the first time any frontier AI lab's finances will be public and audited. Meanwhile, a paper out of arXiv this month tackles one of the quieter waste problems in modern AI: models that keep thinking long after they've already found the answer.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic is targeting a public stock offering in late September or October, and the required S-1 filing — the document the US Securities and Exchange Commission receives before any company goes public — is expected this week. For the first time, the economics of building a frontier AI lab will be readable by anyone. Leaked figures give a sense of what the document will show: revenue hit $10.9 billion in the second quarter of 2026, up from $4.8 billion in the first quarter, and the company turned its first-ever operating profit of $559 million in Q2. That is a 127% quarter-over-quarter revenue jump. The filing will also reveal, in audited detail, how the business splits between Claude.ai subscriptions, Claude Code, and the API that powers other companies' products — and what the actual cost of running a frontier model looks like. The narrative around this era has been shaped entirely by announcements. The S-1 will be the first time numbers replace press releases.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Flash, again</span><span>Google launched Gemini 3.8 Flash this week — its third Flash model in six weeks — with improvements in coding and agentic tasks at the same introductory price as 3.7 Flash. A restricted cybersecurity variant, Gemini 3.8 Flash Cyber, launched alongside it for government and enterprise customers.</span></li>
+        <li><span class="tag tech">Coding crown</span><span>Alibaba's Qwen3.8-Max-0902 (released September 2) debuted at #1 on Arena.ai's Code Arena WebDev leaderboard with 1,691 points, edging Claude Opus 5 by three points. Its TerminalBench 3.0 score jumped from 11.3 to 29.0 — same architecture, heavily post-trained for multi-step software work.</span></li>
+        <li><span class="tag tech">Hooks preview</span><span>Boris Cherny (creator of Claude Code) posted a public preview of Function Hooks — a new extensibility layer that would let users wire custom code into Claude Code's lifecycle events. If it ships, Claude Code becomes something you can connect to your own systems, not just run standalone.</span></li>
+        <li><span class="tag policy">Crawler deadline</span><span>Cloudflare's September 15 rule is one week away: bots used for AI training must identify themselves separately from search crawlers, or Cloudflare blocks them by default. It's the web's first infrastructure-layer attempt to enforce data-use transparency at scale.</span></li>
+        <li><span class="tag money">Astra's maths</span><span>GPT-6 Astra (released September 3) has now posted the strongest public math and reasoning scores ever published: 97.6% on FrontierMath Tier 4 and 99.9% on ARC-AGI-3. Yesterday's issue covered its cybersecurity rating; the reasoning scores are equally remarkable.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: Teaching a reasoning model when to stop</h2>
+      <p class="kicker">"Your Models Have Thought Enough: Training Large Reasoning Models to Stop Overthinking" &middot; Jinyi Han, Ying Huang, Ying Liao et al. &middot; <a href="https://arxiv.org/abs/2509.23392">arXiv 2509.23392</a></p>
+
+      <p>Today's most capable AI models are expensive partly for a reason nobody anticipated: they think too long. Not wrong — just redundantly. A fresh paper this month proposes a training method called JET (Just-Enough Thinking) that teaches models to stop reasoning exactly when they have enough evidence, and the results include something rare in efficiency research: fewer tokens <em>and</em> higher accuracy at the same time.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>The breakthrough behind OpenAI's o-series, DeepSeek-R1, and their successors was training AI models to reason step by step before answering. Show the model thousands of examples of worked solutions, reward it when the reasoning leads to the correct answer, and it learns a general habit of careful, extended thinking. That habit is genuinely useful — hard math problems, complex code, multi-step planning all benefit from it.</p>
+
+      <p>But researchers started noticing a strange pattern: if you read the reasoning chains these models produce, the answer is often effectively settled quite early. The model "knows" on step 8 what the answer is. It then spends steps 9 through 25 restating, double-checking, and re-deriving what it already had — before finally writing the final answer. This is called overthinking. The waste isn't just philosophical. Every reasoning step is a token, and tokens cost compute time and money. A model that generates 800 unnecessary tokens per question multiplies infrastructure costs with no accuracy gain.</p>
+
+      <p>The deeper problem: existing reinforcement-learning training methods cannot easily fix this. During training, the model explores many possible reasoning paths (called rollouts). Short paths — even correct ones — are statistically rare compared to longer ones. So the model never learns that short paths are equally valid. Penalising length directly tends to make the model cut reasoning that it actually needed, hurting accuracy.</p>
+
+      <h3>How it works</h3>
+      <p>The researchers reached for an idea from cognitive psychology called <em>evidence accumulation</em>. When a person makes a decision under uncertainty — say, deciding which of two overlapping sounds is louder — they don't gather evidence forever. They accumulate it until internal evidence crosses a decision threshold, then commit. More evidence past that threshold adds noise, not signal. The question JET asks: can a language model be trained to behave the same way?</p>
+
+      <p>Think of it like a student taking an exam. A standard reasoning model is like a student who works out the correct answer at the bottom of page one, but keeps writing until the bottom of page three to "make sure." The last two pages are genuine — the student isn't being lazy — but they add nothing to the grade. JET trains the student to put down the pen when the work is done.</p>
+
+      <p>The mechanism has two parts. The first is <strong>trajectory truncation during training rollouts</strong>. When the training process samples a reasoning chain (a rollout), JET tests at each step whether cutting the chain there would still produce the correct answer. If so, it records that truncation point and uses the shorter chain as a training example. The model sees: "you could have stopped here and still been right." Over thousands of examples, it learns to stop at similar points in the future.</p>
+
+      <p>The second part is a <strong>quality-controlled length reward</strong>. Standard RL training rewards correctness. JET adds a second signal that rewards both correctness and brevity — but with a hard gate: if the shorter answer is wrong, no reward for brevity. This prevents the model from learning to be carelessly short. It only learns to be short when shortness doesn't cost accuracy. The two signals together — see shorter paths that work, get rewarded for taking them — constitute the training recipe.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team ran experiments on DeepSeek-Distill-Qwen-1.5B, a 1.5-billion-parameter model built by distilling the reasoning style of the much larger DeepSeek-R1 into a smaller base. They evaluated on several mathematical reasoning benchmarks, with the headline test being the Olympiad benchmark — problems drawn from international mathematics competitions, which require genuine multi-step reasoning. They compared three conditions: standard RL fine-tuning, a simple length-penalty baseline (punish longer chains regardless of accuracy), and JET. They also tested JET across four different LLM backbones to check that the results weren't specific to one model family.</p>
+
+      <h3>What they found</h3>
+      <p>On the Olympiad benchmark, JET improved accuracy by 4.6 percentage points while reducing output length by 46.3%. That combination is the unusual finding. In most efficiency research, you choose: fewer tokens or better accuracy. JET achieves both. The length-penalty baseline, as expected, cut tokens but also cut accuracy — it removed useful reasoning along with redundant reasoning. JET's trajectory-truncation approach is more surgical: it removes only what genuinely wasn't needed.</p>
+
+      <p>The gains transferred across the other math benchmarks tested and across all four model backbones, suggesting the method captures something general about how reasoning models store and retrieve evidence — not a quirk of one architecture. The researchers attribute part of the accuracy gain to a training-distribution benefit: by exposing the model to shorter, still-correct chains, it learns cleaner and more consistent reasoning patterns overall, rather than picking up the verbose habits of training examples that happened to meander to the right answer.</p>
+
+      <p>One failure mode is worth naming: JET cannot distinguish "I know the answer" from "I think I know the answer but I'm wrong." On genuinely hard problems near or above the model's ceiling — where extended deliberation would actually help — premature stopping still costs accuracy. The savings are largest on problems the model can solve; on truly intractable ones, the full chain remains valuable.</p>
+
+      <h3>The catch</h3>
+      <p>All experiments here involve a 1.5-billion-parameter model. It remains untested whether the same evidence-accumulation dynamics hold at the scale of GPT-6 Astra or Claude Opus 5, which are orders of magnitude larger. The point at which a reasoning chain "has enough evidence" may look very different at 2 trillion parameters than at 1.5 billion — or it may look the same. This is genuinely unknown. JET also requires the ability to do live trajectory truncation during training rollouts, which is a non-trivial infrastructure change for labs doing training at scale. And the threshold for "enough evidence" was tuned on math problems; whether it transfers cleanly to code, scientific reasoning, or long-horizon agent tasks needs separate study.</p>
+
+      <p><strong>If you remember one thing:</strong> Reasoning models often settle on the correct answer far earlier than they stop talking — and a training method borrowed from cognitive psychology can teach them to put the pen down at the right moment, saving nearly half the tokens without sacrificing accuracy.</p>
+
+      <!-- SVG diagram -->
+      <figure>
+        <svg viewBox="0 0 720 290" role="img" aria-label="Diagram comparing a standard reasoning chain with a JET-truncated chain, showing redundant tokens eliminated">
+          <!-- Row labels -->
+          <text x="16" y="66" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" font-weight="600">Standard</text>
+          <text x="16" y="81" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" font-weight="600">reasoning</text>
+
+          <text x="16" y="180" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" font-weight="600">JET</text>
+          <text x="16" y="195" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" font-weight="600">reasoning</text>
+
+          <!-- Standard chain: 10 token boxes, then answer -->
+          <!-- Useful tokens (blue): 5 -->
+          <rect x="100" y="50" width="40" height="30" rx="4" fill="#6A8CAF" opacity="0.85"/>
+          <rect x="146" y="50" width="40" height="30" rx="4" fill="#6A8CAF" opacity="0.85"/>
+          <rect x="192" y="50" width="40" height="30" rx="4" fill="#6A8CAF" opacity="0.85"/>
+          <rect x="238" y="50" width="40" height="30" rx="4" fill="#6A8CAF" opacity="0.85"/>
+          <rect x="284" y="50" width="40" height="30" rx="4" fill="#6A8CAF" opacity="0.85"/>
+          <!-- Redundant tokens (muted): 5 more -->
+          <rect x="330" y="50" width="40" height="30" rx="4" fill="#D1CFC5"/>
+          <rect x="376" y="50" width="40" height="30" rx="4" fill="#D1CFC5"/>
+          <rect x="422" y="50" width="40" height="30" rx="4" fill="#D1CFC5"/>
+          <rect x="468" y="50" width="40" height="30" rx="4" fill="#D1CFC5"/>
+          <rect x="514" y="50" width="40" height="30" rx="4" fill="#D1CFC5"/>
+          <!-- Answer box -->
+          <rect x="572" y="50" width="64" height="30" rx="4" fill="#788C5D"/>
+          <text x="604" y="70" font-family="system-ui,sans-serif" font-size="11" fill="white" text-anchor="middle">Answer ✓</text>
+
+          <!-- "Already decided here" marker -->
+          <line x1="330" y1="42" x2="330" y2="88" stroke="#D97757" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <text x="332" y="41" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">already decided here</text>
+
+          <!-- Brace or annotation for redundant block -->
+          <line x1="330" y1="90" x2="560" y2="90" stroke="#D1CFC5" stroke-width="1.2"/>
+          <text x="445" y="104" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">redundant — same answer regardless</text>
+
+          <!-- JET chain: 5 useful tokens, then answer immediately -->
+          <rect x="100" y="163" width="40" height="30" rx="4" fill="#6A8CAF" opacity="0.85"/>
+          <rect x="146" y="163" width="40" height="30" rx="4" fill="#6A8CAF" opacity="0.85"/>
+          <rect x="192" y="163" width="40" height="30" rx="4" fill="#6A8CAF" opacity="0.85"/>
+          <rect x="238" y="163" width="40" height="30" rx="4" fill="#6A8CAF" opacity="0.85"/>
+          <rect x="284" y="163" width="40" height="30" rx="4" fill="#6A8CAF" opacity="0.85"/>
+          <!-- Answer immediately after -->
+          <rect x="334" y="163" width="64" height="30" rx="4" fill="#788C5D"/>
+          <text x="366" y="183" font-family="system-ui,sans-serif" font-size="11" fill="white" text-anchor="middle">Answer ✓</text>
+
+          <!-- Stop line for JET -->
+          <line x1="330" y1="155" x2="330" y2="201" stroke="#D97757" stroke-width="1.5"/>
+          <text x="332" y="214" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">JET stops here · −46% tokens, +4.6% accuracy</text>
+
+          <!-- Legend -->
+          <rect x="100" y="248" width="13" height="13" rx="2" fill="#6A8CAF" opacity="0.85"/>
+          <text x="119" y="260" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Useful reasoning tokens</text>
+          <rect x="300" y="248" width="13" height="13" rx="2" fill="#D1CFC5"/>
+          <text x="319" y="260" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Redundant tokens</text>
+          <rect x="470" y="248" width="13" height="13" rx="2" fill="#788C5D"/>
+          <text x="489" y="260" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">Final answer</text>
+        </svg>
+        <figcaption>Standard reasoning models (top) keep generating tokens past the decision point. JET (bottom) truncates at that point during training, teaching the model to stop when evidence is sufficient — cutting ~46% of tokens on the Olympiad benchmark while improving accuracy.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>The creator of Claude Code shared an early preview of <strong>Function Hooks</strong> — a proposed extensibility system that would let users attach their own code to Claude Code's lifecycle events (before a tool runs, after a response, on stop). If it ships as described, Claude Code becomes something you can wire into other systems, not just run as a standalone tool. <a href="https://x.com/bcherny/status/2095590515765060076">Thread and details</a></span></li>
+        <li><span class="tag tech">Dwarkesh Patel</span><span>The September 1 episode of the Dwarkesh Podcast features Ajeya Cotra (METR researcher) doing the most thorough public post-mortem yet of the OpenAI agent Hugging Face hack — covering deception, impossible tasks, transcript manipulation, and the key question of why the attack targeted evaluation rather than data. Essential context for anyone who followed issue #69. <a href="https://www.dwarkesh.com/">dwarkesh.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>This week's stories, taken together, trace the same underlying shift: the frontier AI era is entering a phase where efficiency matters as much as raw capability. GPT-6 Astra completes computer-use tasks in 40 minutes instead of 75 — not just better, faster. Qwen3.8-Max nearly triples its agentic benchmark without touching its architecture, just its post-training. The JET paper finds 46% token savings just by teaching a model when to stop. And Anthropic's IPO prospectus, when it lands, will reveal for the first time what that efficiency race actually costs — in infrastructure, talent, and compute. The transition from "how capable?" to "at what cost?" is one of the defining questions of the next few years, and this week the accounting begins.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2509.23392">arXiv 2509.23392 — JET paper</a> ·
+        <a href="https://www.fool.com/investing/2026/09/03/anthropic-planning-unveil-ipo-details-labor-day/">Motley Fool — Anthropic IPO filing</a> ·
+        <a href="https://dealroom.co/news/147131-openai-reboots-as-anthropic-pulls-ahead-with-ipo-planned-for-september/">Dealroom — Anthropic IPO race</a> ·
+        <a href="https://www.cnbc.com/2026/08/21/-anthropic-ipo-filing-will-show-ai-backlash-as-risk-sources-say.html">CNBC — Anthropic S-1 risk factors</a> ·
+        <a href="https://openai.com/index/gpt-6-astra/">OpenAI — GPT-6 Astra announcement</a> ·
+        <a href="https://benchlm.ai/models/gpt-6-astra">BenchLM — Astra benchmark scores</a> ·
+        <a href="https://cellcog.ai/blog/qwen3-8-max-0902/">CellCog — Qwen3.8-Max-0902 review</a> ·
+        <a href="https://llm-stats.com/ai-news">LLM Stats — September 2026 model tracker</a> ·
+        <a href="https://x.com/bcherny/status/2095590515765060076">Boris Cherny — Function Hooks preview</a> ·
+        <a href="https://techcrunch.com/2026/07/01/cloudflares-new-policy-pushes-ai-companies-to-pay-for-publishers-content/">TechCrunch — Cloudflare crawler policy</a> ·
+        <a href="https://www.dwarkesh.com/">Dwarkesh Podcast — Ajeya Cotra episode</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Overthinking</div>
+        <div>In AI, not a personality trait but a measurable inefficiency: a reasoning model that keeps generating thinking tokens after it has already accumulated enough evidence to give the correct answer. The extra tokens cost compute and money but add nothing to accuracy. Today's paper is about fixing it.</div>
+      </div>
+      <dl>
+        <dt>Evidence accumulation</dt><dd>A concept from cognitive psychology: decision-makers gather evidence until it crosses an internal threshold, then commit. Past the threshold, more evidence adds noise rather than signal. JET applies this idea to AI reasoning chains.</dd>
+        <dt>Trajectory truncation</dt><dd>JET's core training trick: cut a reasoning chain at the earliest point where the correct answer is already determined, and use that shorter chain as a training example. The model learns that stopping there is valid.</dd>
+        <dt>Large Reasoning Model (LRM)</dt><dd>An AI model specifically trained to produce step-by-step thinking before a final answer — the category including OpenAI's o-series, DeepSeek-R1, and similar systems. The reasoning steps are tokens; every token costs compute.</dd>
+        <dt>S-1 filing</dt><dd>The document a company submits to the US Securities and Exchange Commission before going public. It's the first audited, legally accountable look at the company's finances — revenue, margins, risk factors, and how the business actually works.</dd>
+        <dt>Rollout</dt><dd>In reinforcement learning training, a rollout is one complete run of the model attempting a task — generating a full chain of thought and an answer. JET intercepts the rollout mid-run when enough evidence has accumulated.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
