@@ -1,5 +1,12 @@
 [
   {
+    "num": 103,
+    "date": "2026-09-09",
+    "slug": "issues/2026-09-09.html",
+    "title": "After Ninety Years",
+    "blurb": "Two teams published competing proofs of a ninety-year-old question about fluid dynamics — one machine-verified using Anthropic's Claude, one claimed but unverified by OpenAI — within 24 hours of each other."
+  },
+  {
     "num": 102,
     "date": "2026-09-08",
     "slug": "issues/2026-09-08.html",
