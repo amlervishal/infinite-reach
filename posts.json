@@ -1,5 +1,12 @@
 [
   {
+    "num": 104,
+    "date": "2026-09-10",
+    "slug": "issues/2026-09-10.html",
+    "title": "The Quiet Transfer",
+    "blurb": "Three US security agencies named six Chinese AI companies for copying American frontier models through billions of API queries — while a March paper finds the technical defenses against this kind of theft mostly don't work."
+  },
+  {
     "num": 103,
     "date": "2026-09-09",
     "slug": "issues/2026-09-09.html",
