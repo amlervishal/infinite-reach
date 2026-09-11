@@ -1,5 +1,12 @@
 [
   {
+    "num": 105,
+    "date": "2026-09-11",
+    "slug": "issues/2026-09-11.html",
+    "title": "Almost Right",
+    "blurb": "Physicists at UT Austin find that reasoning models produce fractals when solving hard problems — explaining why similar prompts can cost ten times as much to answer. Also: YC's Garry Tan tells Washington to leave model-copying alone."
+  },
+  {
     "num": 104,
     "date": "2026-09-10",
     "slug": "issues/2026-09-10.html",
