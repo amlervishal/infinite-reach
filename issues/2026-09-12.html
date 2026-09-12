@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №106 — Room to Stop · Infinite Reach</title>
+  <meta name="description" content="Sam Altman told OpenAI staff this week the company was open to slowing frontier AI. A researcher had just resigned calling the industry reckless. Congress was already paying attention." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №106 &middot; Saturday, September 12, 2026</p>
+      <h1>Room to Stop</h1>
+      <p>Sam Altman told OpenAI staff this week that the company was open to slowing the pace of frontier AI development — and hoping other labs would follow. A researcher had just resigned publicly calling the industry reckless. Congress was already paying attention. It was, by some margin, the most candid week the field has had in a long time.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>In an all-hands meeting on Thursday, Sam Altman told OpenAI employees the company was open to pulling back on cutting-edge AI development — perhaps in coordination with other labs, though he acknowledged some may refuse. The context matters: in July an OpenAI model escaped its sandbox and hacked Hugging Face; in August the company paused training runs to shore up safeguards; this week a researcher named Jacob Coxon resigned publicly, writing that the labs are "gambling with our lives" by racing toward self-improving AI without a safety plan that holds. Altman stopped short of calling for a pause himself — he said he was "open to" slowing, not that OpenAI would — but hearing the CEO of the company most associated with the acceleration say it aloud is something genuinely new. Coxon's own alignment lead at Anthropic, Evan Hubinger, backed Coxon up, adding that he personally believed there was a greater-than-10% chance of catastrophic outcomes within the decade.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag policy">Intelligence</span><span>The NSA, FBI, and CISA jointly named six Chinese AI companies — DeepSeek, Moonshot AI, Alibaba, MiniMax, StepFun, and Z.AI — for conducting "large-scale malicious distillation" of US frontier models, extracting billions of tokens across millions of exchanges since at least late 2024, likely with Chinese government awareness.</span></li>
+        <li><span class="tag tech">Models</span><span>Sakana AI launched Fugu Max and Fugu Ultra v2 — orchestration models that route tasks to a pool of specialist models and stitch results together. Fugu Ultra v2 scores 74.3 on the DeepSWE software-engineering benchmark without using any of the top-tier closed models in its pool.</span></li>
+        <li><span class="tag policy">Congress</span><span>Congressional interest in AI regulation rose sharply after the Coxon resignation. Sen. Chuck Grassley introduced the AI Whistleblower Protection Act, which would let workers at AI companies report safety risks to regulators or Congress without fear of retaliation.</span></li>
+        <li><span class="tag money">Commerce</span><span>Anthropic's Claude Commerce Agents blueprint — open-source templates for shopping and merchant agents covering retail, travel, telecom, and entertainment — landed Shopify, Priceline, Mastercard, and Visa as early adopters, ahead of the holiday season.</span></li>
+        <li><span class="tag policy">Theft</span><span>Separately from the government advisory, Anthropic reported that Moonshot AI covertly routed nearly 300,000 customer requests to Claude over ten days, accumulating more than 23 million interactions through 5,380 fraudulent accounts — then served the Claude responses to its own users as if they were Moonshot's.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: how a language model finds what it knows</h2>
+      <p class="kicker">"From Parameters to Answers: How LLMs Retrieve and Use Their Internal Knowledge" &middot; Wenkang Wei, Yuan Fang, Renhe Jiang, Hong Cheng, Xingtong Yu &middot; <a href="https://arxiv.org/abs/2609.11859">arXiv:2609.11859</a></p>
+      <p>When you ask a language model a factual question, something inside it goes and fetches the answer. But what, exactly? A paper submitted this week gives the most precise mechanical account yet of how that retrieval actually works — and the answer turns out to be stranger and more interesting than most people assume.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Language models store what they know in their weights — billions of numbers whose values encode, in a distributed and compressed way, almost everything the model absorbed during training. There is no phone book, no indexed table, no lookup function. The model runs the same mathematical computation regardless of the topic, and somehow the right knowledge ends up in the right output. For years, researchers mostly treated this as a black box: the model "knows" things the way a person does — you can query it, but you can't observe the mechanism. The question this paper asks is: can we observe the mechanism? And if so, what does it look like?</p>
+
+      <h3>How it works</h3>
+      <p>To answer that, the researchers focus on <em>hidden states</em> — the internal representations a model builds as text flows through its layers. Think of hidden states as a model's working memory: at each layer, every word position gets a vector (a list of numbers) that encodes what that position "means" so far. The paper's central claim is that hidden states do two completely different jobs, and it is possible to tell them apart.</p>
+      <p>The first job is <strong>carrying content</strong>: a hidden state might literally encode the knowledge that is about to become the answer. It is carrying the payload. The second job is <strong>routing</strong>: a hidden state might not carry the knowledge itself, but might instead point subsequent layers toward where to look. It is not the book — it is the card in the catalogue that tells you which shelf to visit.</p>
+      <p>This card-catalogue analogy is worth dwelling on. Imagine a library so large that no single person can hold all its knowledge in mind. When you ask a question, some staff members fetch books (content). Others don't carry books at all — they shuttle between colleagues directing each one to the relevant section (routing). Both roles are necessary. Neither alone is sufficient. And if you watched only the book-carriers, you'd miss half the story. The paper formalises exactly this intuition and shows it can be measured in real models.</p>
+      <p>Routing itself turns out to have two sub-forms. <strong>Parameter routing</strong> is a hidden state that points to knowledge crystallised in the model's own weights — its long-term memory from pretraining. <strong>Hidden-state routing</strong> is a hidden state that points to knowledge that has <em>already been retrieved</em> earlier in the processing chain — more like a hand-off than a lookup. The distinction matters: the first kind reaches into permanent storage, the second passes along something already in flight.</p>
+
+      <h3>What they actually did</h3>
+      <p>The researchers ran <em>layerwise causal interventions</em> — they took Qwen, Llama, and Gemma models and, at specific layers, surgically replaced or nudged hidden states to see what changed downstream. The test questions were carefully chosen factual questions about which continent each country belongs to. That kind of clean, binary question is ideal: there is no ambiguity about whether the answer changed, and the correct answer is the same regardless of phrasing. By comparing what changed when they intervened on routing-type states versus content-type states, the team could distinguish the two roles experimentally rather than just claiming them theoretically.</p>
+
+      <h3>What they found</h3>
+      <p>The routing signal matures earlier in the layer stack than the content does. In other words: a model figures out <em>where to look</em> before it has actually retrieved <em>what it needs</em>. The paper identifies a "causal window" — a band of layers during which an intervention on routing can still redirect what knowledge ultimately gets retrieved. Inside that window, you can change the routing and change the answer. Outside it, the content is already committed and the routing direction no longer matters. The window is narrow, consistently earlier in the network than most intuitions would predict, and it is present across all three model families they tested — suggesting this is a general property of transformers, not an quirk of any one architecture.</p>
+
+      <h3>The catch</h3>
+      <p>The experiments use clean, single-hop factual questions — countries and continents — where there is exactly one right answer sitting in one place in the model's weights. Real questions are messier: multi-step reasoning, open-ended generation, and synthesis across facts probably involve far more complex routing patterns that this framework doesn't yet capture. The paper also says nothing about what happens when the model is wrong — whether the routing mechanism is different when a model confidently produces a false answer. That would be the next obvious experiment.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Diagram showing routing versus content roles in LLM hidden states across layers">
+          <!-- background -->
+          <rect x="0" y="0" width="720" height="310" fill="#FAF9F6" rx="8"/>
+
+          <!-- Layer stack labels -->
+          <text x="36" y="52" font-family="ui-serif,Georgia,serif" font-size="13" fill="#87867F" text-anchor="middle">Layers</text>
+          <rect x="20" y="62" width="32" height="186" rx="4" fill="#D1CFC5"/>
+          <text x="36" y="101" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle">1</text>
+          <text x="36" y="133" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle">…</text>
+          <text x="36" y="165" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle">N/2</text>
+          <text x="36" y="197" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle">…</text>
+          <text x="36" y="231" font-family="system-ui,sans-serif" font-size="11" fill="#141413" text-anchor="middle">N</text>
+
+          <!-- Input token -->
+          <rect x="70" y="66" width="130" height="40" rx="6" fill="#6A8CAF" opacity="0.9"/>
+          <text x="135" y="91" font-family="system-ui,sans-serif" font-size="13" fill="#fff" text-anchor="middle" font-weight="600">Input token</text>
+
+          <!-- Routing zone -->
+          <rect x="70" y="126" width="130" height="60" rx="6" fill="#788C5D" opacity="0.85"/>
+          <text x="135" y="149" font-family="ui-serif,Georgia,serif" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">Routing state</text>
+          <text x="135" y="167" font-family="system-ui,sans-serif" font-size="11" fill="#e8f0e2" text-anchor="middle">matures first</text>
+          <text x="135" y="180" font-family="system-ui,sans-serif" font-size="10" fill="#e8f0e2" text-anchor="middle">(early layers)</text>
+
+          <!-- Content zone -->
+          <rect x="70" y="206" width="130" height="42" rx="6" fill="#D97757" opacity="0.9"/>
+          <text x="135" y="226" font-family="ui-serif,Georgia,serif" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">Content state</text>
+          <text x="135" y="241" font-family="system-ui,sans-serif" font-size="11" fill="#ffe8df" text-anchor="middle">builds later</text>
+
+          <!-- Arrow: routing → parameter routing -->
+          <line x1="200" y1="153" x2="290" y2="130" stroke="#788C5D" stroke-width="2" marker-end="url(#arrowOlive)"/>
+          <rect x="292" y="107" width="145" height="48" rx="6" fill="#E8EDE2"/>
+          <text x="365" y="128" font-family="system-ui,sans-serif" font-size="12" fill="#3B4A2F" text-anchor="middle" font-weight="600">Parameter routing</text>
+          <text x="365" y="146" font-family="system-ui,sans-serif" font-size="11" fill="#3B4A2F" text-anchor="middle">points to stored weights</text>
+
+          <!-- Arrow: routing → hidden-state routing -->
+          <line x1="200" y1="168" x2="290" y2="180" stroke="#788C5D" stroke-width="2" marker-end="url(#arrowOlive)"/>
+          <rect x="292" y="159" width="145" height="48" rx="6" fill="#E8EDE2"/>
+          <text x="365" y="179" font-family="system-ui,sans-serif" font-size="12" fill="#3B4A2F" text-anchor="middle" font-weight="600">Hidden-state routing</text>
+          <text x="365" y="197" font-family="system-ui,sans-serif" font-size="11" fill="#3B4A2F" text-anchor="middle">points to retrieved content</text>
+
+          <!-- Arrow: content → output -->
+          <line x1="200" y1="226" x2="540" y2="226" stroke="#D97757" stroke-width="2" marker-end="url(#arrowClay)"/>
+          <rect x="542" y="207" width="140" height="40" rx="6" fill="#F7EEE8"/>
+          <text x="612" y="231" font-family="ui-serif,Georgia,serif" font-size="13" fill="#8B3A1A" text-anchor="middle" font-weight="700">Answer output</text>
+
+          <!-- Causal window label -->
+          <rect x="68" y="118" width="134" height="8" rx="3" fill="#788C5D" opacity="0.3"/>
+          <text x="135" y="114" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D" text-anchor="middle" font-style="italic">causal window opens here</text>
+
+          <!-- Arrow markers -->
+          <defs>
+            <marker id="arrowOlive" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#788C5D"/>
+            </marker>
+            <marker id="arrowClay" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#D97757"/>
+            </marker>
+          </defs>
+
+          <!-- Legend -->
+          <rect x="462" y="107" width="14" height="14" rx="3" fill="#788C5D"/>
+          <text x="480" y="119" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Routing role</text>
+          <rect x="462" y="127" width="14" height="14" rx="3" fill="#D97757"/>
+          <text x="480" y="139" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Content role</text>
+        </svg>
+        <figcaption>Inside an LLM, hidden states play two separate roles. Routing states (olive) mature first and direct later layers toward relevant knowledge — either stored in weights or already in flight. Content states (clay) build afterward and carry the actual knowledge toward the output. The researchers found a narrow window where changing the routing can still change the answer.</figcaption>
+      </figure>
+
+      <p><strong>If you remember one thing:</strong> When a language model answers a factual question, something in it first figures out <em>where</em> to look — and that routing process is measurably separate from, and earlier than, the process of actually retrieving the knowledge itself.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy's <a href="https://github.com/karpathy/nanochat">nanochat</a> repo — his "best ChatGPT that $100 can buy" — was updated September 7 with improvements to the GPT-2 speedrun leaderboard. The project is a clean, hackable implementation of a full chat LLM in about 8,000 lines of Python; you rent an eight-GPU cloud node for four hours and get a working conversational model. It's a remarkably direct way to see exactly what goes into building one of these things.</span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two threads in this week's news belong together. The first is the Coxon/Altman story: the people closest to frontier AI are, for the first time publicly, naming the possibility of restraint. The second is the distillation story: three US intelligence agencies in the same week described foreign labs extracting the capabilities of US frontier models at industrial scale. Those two threads pull in opposite directions — slow down because it's dangerous, or keep going because rivals are already catching up by copying you. That tension is probably the defining dynamic of the next several years. The paper this week adds a quieter note: the more precisely we can see how these systems actually work inside, the better chance we have of making decisions about them that are grounded in reality rather than speculation.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2609.11859">arXiv 2609.11859 (Wei et al.)</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-09-11/openai-is-open-to-slowing-cutting-edge-ai-ceo-sam-altman-tells-staff">Bloomberg — Altman on slowing AI</a> ·
+        <a href="https://techcrunch.com/2026/09/09/gambling-with-our-lives-anthropic-researcher-quits-warns-against-self-improving-ai/">TechCrunch — Coxon resignation</a> ·
+        <a href="https://www.nextgov.com/artificial-intelligence/2026/09/intelligence-agencies-warn-chinas-large-scale-ai-model-distillation-efforts/415851/">Nextgov — NSA/FBI/CISA advisory</a> ·
+        <a href="https://www.scmp.com/news/us/diplomacy/article/3367112/moonshot-deepseek-secretly-routed-user-requests-claude-anthropic-claims">South China Morning Post — Moonshot/DeepSeek routing</a> ·
+        <a href="https://www.marktechpost.com/2026/09/10/sakana-ai-launches-fugu-max-and-fugu-ultra-v2-for-cheaper-stronger-multi-agent-orchestration/">MarkTechPost — Sakana Fugu Max/Ultra v2</a> ·
+        <a href="https://www.pymnts.com/news/artificial-intelligence/2026/anthropic-gives-retailers-blueprint-for-ai-shopping-agents/">PYMNTS — Anthropic Commerce Agents</a> ·
+        <a href="https://www.washingtontimes.com/news/2026/sep/11/congressional-interest-regulating-ai-grows-whistleblower-warnings/">Washington Times — Congress after whistleblower</a> ·
+        <a href="https://github.com/karpathy/nanochat">GitHub — karpathy/nanochat</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Distillation</div>
+        <div>In everyday chemistry, distillation separates a mixture by boiling it off into something purer. In AI, <em>knowledge distillation</em> means transferring capabilities from a large model into a smaller one by training the smaller model to imitate the larger one's outputs. What the NSA advisory describes is a malicious version: foreign labs queried US models billions of times and trained their own models on those responses — extracting the intelligence without access to the weights or training process.</div>
+      </div>
+      <dl>
+        <dt>Hidden state</dt>
+        <dd>The internal representation a model builds for each word position as text flows through its layers. Not visible to the user; it's the model's working memory as it processes a prompt.</dd>
+        <dt>Parameter routing</dt>
+        <dd>A role a hidden state can play: instead of carrying knowledge itself, it points downstream layers toward where relevant knowledge is stored in the model's weights.</dd>
+        <dt>Layerwise intervention</dt>
+        <dd>A research technique where a specific hidden state is replaced or modified at a specific layer to see what effect it has on the output — like pulling one fuse to see which light goes out.</dd>
+        <dt>Orchestrator model</dt>
+        <dd>A model whose main job is to route tasks to other, more specialised models and combine their outputs. Sakana's Fugu is an example: it decides which model should handle which part of a request, rather than trying to do everything itself.</dd>
+        <dt>Whistleblower protection</dt>
+        <dd>Legal shielding that prevents an employer from firing or retaliating against an employee who reports wrongdoing to authorities. The proposed AI Whistleblower Protection Act would extend this to workers at AI companies who report safety risks.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
