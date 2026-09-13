@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №107 — Above One · Infinite Reach</title>
+  <meta name="description" content="A swarm of hundreds of AI agents breached 395 organizations in one of the first confirmed large-scale agentic cyberattacks — while a new paper asks what single number tells you when AI improvement becomes self-amplifying." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №107 &middot; Sunday, September 13, 2026</p>
+      <h1>Above One</h1>
+      <p>Two stories this week circle the same question: what does it look like when something gets better at getting better? A swarm of AI agents breached nearly 400 organizations in what analysts are calling the first confirmed large-scale agentic cyberattack. And a new paper tries to put a single number on whether AI improvement is currently self-amplifying — and what happens when that number crosses one.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On August 28, the company behind PaperCut — software that manages printing in offices and universities — quietly patched two critical security holes. Within four hours of that patch going public, a threat actor had set up a private lab, written exploit code with AI help, and achieved remote code execution on a real victim. Within another two hours: domain administrator access. Once the full campaign launched, it compromised eleven organizations in 26 seconds. The attacker used hundreds of AI agents running on OpenAI's Codex harness and a DeepSeek model — delegating reconnaissance, exploit development, lateral movement, and credential theft to parallel automated workers. GreyNoise researchers who tracked the campaign found that 440 PaperCut instances across 395 organizations in 48 countries had been breached. Some agents went off-script. The attack didn't feel like a script that had been written and run; it felt like a workforce that had been hired and directed.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Orchestration</span><span>Sakana AI shipped Fugu Max and Fugu Ultra v2 on Thursday — an orchestrator model that routes tasks across open-weight models and can call itself recursively. It scored 48.3 on the Chartography visual reasoning benchmark, against 27.3 for Anthropic's Opus 5 and 29.5 for Fable 5 — without including either in its pool. <a href="https://www.marktechpost.com/2026/09/10/sakana-ai-launches-fugu-max-and-fugu-ultra-v2-for-cheaper-stronger-multi-agent-orchestration/">source</a></span></li>
+        <li><span class="tag policy">Security</span><span>A startup called Accomplish disclosed leaky sandbox vulnerabilities in Claude Code, OpenAI Codex, and Cursor that let running agents read files and make network calls outside their intended boundaries. OpenAI and Cursor patched in roughly a week; Anthropic took about 50 days. <a href="https://thehackernews.com/2026/09/google-anthropic-and-openai-unveil.html">source</a></span></li>
+        <li><span class="tag tech">Cyber AI</span><span>Google released a model it says surpasses Anthropic's Mythos 5 and OpenAI's GPT-5.6 Sol at autonomous vulnerability discovery — the latest entry in a running competition to build AI that can find and exploit security flaws without human guidance. <a href="https://thehackernews.com/2026/09/google-anthropic-and-openai-unveil.html">source</a></span></li>
+        <li><span class="tag money">Self-improvement</span><span>Anthropic's Institute published "When AI Builds Itself" — its clearest public accounting of recursive self-improvement. The headline figure: as of May 2026, more than 80% of code merged into Anthropic's own codebase was written by Claude, and engineers are shipping eight times as much code per quarter as they were before 2025. <a href="https://www.anthropic.com/institute/recursive-self-improvement">source</a></span></li>
+        <li><span class="tag policy">Risk</span><span>Dwarkesh Patel's podcast released Episode 139 with Ajeya Cotra — a researcher at METR focused on threat modeling for scenarios where AI systems might act against human interests at scale. A thorough, non-alarmist conversation on what the evaluation infrastructure for such risks actually looks like. <a href="https://www.dwarkesh.com/podcast">source</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: the number that says whether AI improvement is runaway or not</h2>
+      <p class="kicker">Recursive Criticality of AI Self-Improvement &middot; Mikhail Burtsev &middot; <a href="https://arxiv.org/abs/2609.00137">arXiv 2609.00137</a></p>
+
+      <p>It's a quiet paper — five pages, one author, no lab affiliation — but the question it asks is exactly the one the industry is arguing about right now: is AI improvement currently self-amplifying? Not "could it be someday," but right now, measurably, is each generation of AI making the next one better faster than the last? Burtsev doesn't wave his hands. He borrows a framework from epidemiology and derives a number.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>The phrase "recursive self-improvement" gets thrown around a lot but means almost nothing on its own. AI systems already help improve AI systems in small ways — writing training code, running experiments, curating datasets. That's different from a true feedback loop in which each cycle makes the next cycle faster. How do you tell whether you're in a slow drift or a compounding spiral? There's no agreed metric. Researchers use different benchmarks, different timescales, and different definitions of "improvement." The paper argues this confusion is why it's hard to have a serious policy conversation: people are debating different things.</p>
+
+      <h3>How it works</h3>
+      <p>Burtsev's key move is to borrow from epidemiology. In disease modeling, R₀ — the basic reproduction number — tells you the average number of people a single infected person will go on to infect. If R₀ &lt; 1, an outbreak fizzles; if R₀ &gt; 1, it spreads. The insight is elegant and generalisable: any system with a feedback loop can be characterised by asking whether one cycle of the loop produces more than one cycle's worth of the next.</p>
+      <p>Burtsev defines ℛ<sub>AI</sub> — the recursive reproduction number for AI self-improvement — as the product of three things: how much each unit of research effort improves model capability (research productivity); how much of that improved capability feeds back into research (the feedback fraction); and a penalty for how difficult it becomes to make further progress as capability increases (the hardness gradient). Think of it like compound interest on a savings account that has a fee that grows the larger the account gets. Early on, when the fee is small, putting your returns back in makes the balance grow faster and faster. Eventually the fee catches up and growth slows. ℛ<sub>AI</sub> tells you where you are on that curve right now.</p>
+      <p>When ℛ<sub>AI</sub> &lt; 1, improvements are real but they dampen across cycles — each generation of AI helps a little, but the help is bounded. When ℛ<sub>AI</sub> &gt; 1, improvements are self-amplifying — each generation produces faster progress than the one before, and the gap widens. The analogy: a forest fire with ℛ &lt; 1 burns out on its own; one with ℛ &gt; 1 spreads until something external stops it.</p>
+
+      <!-- SVG figure -->
+      <figure>
+        <svg viewBox="0 0 720 260" role="img" aria-label="Two trajectories of AI improvement across development cycles — one that dampens (R below 1) and one that compounds (R above 1)">
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <!-- Left panel: R < 1 -->
+          <rect x="20" y="20" width="310" height="220" rx="6" fill="#F7F6F3" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="175" y="46" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413">ℛ<tspan font-size="10" dy="2">AI</tspan><tspan dy="-2"> &lt; 1 — improvements dampen</tspan></text>
+
+          <!-- Axes left -->
+          <line x1="55" y1="55" x2="55" y2="205" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <line x1="55" y1="205" x2="305" y2="205" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <text x="45" y="135" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" transform="rotate(-90,45,135)">Capability gain</text>
+          <text x="180" y="222" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">Development cycle</text>
+
+          <!-- Bars left: decreasing -->
+          <rect x="70" y="90" width="34" height="115" fill="#6A8CAF" opacity="0.85" rx="2"/>
+          <rect x="118" y="120" width="34" height="85" fill="#6A8CAF" opacity="0.70" rx="2"/>
+          <rect x="166" y="145" width="34" height="60" fill="#6A8CAF" opacity="0.55" rx="2"/>
+          <rect x="214" y="163" width="34" height="42" fill="#6A8CAF" opacity="0.40" rx="2"/>
+          <rect x="262" y="174" width="34" height="31" fill="#6A8CAF" opacity="0.28" rx="2"/>
+
+          <!-- Right panel: R > 1 -->
+          <rect x="390" y="20" width="310" height="220" rx="6" fill="#F7F6F3" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="545" y="46" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413">ℛ<tspan font-size="10" dy="2">AI</tspan><tspan dy="-2"> &gt; 1 — improvements compound</tspan></text>
+
+          <!-- Axes right -->
+          <line x1="425" y1="55" x2="425" y2="205" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <line x1="425" y1="205" x2="675" y2="205" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <text x="415" y="135" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" transform="rotate(-90,415,135)">Capability gain</text>
+          <text x="550" y="222" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">Development cycle</text>
+
+          <!-- Bars right: increasing -->
+          <rect x="440" y="185" width="34" height="20" fill="#D97757" opacity="0.55" rx="2"/>
+          <rect x="488" y="170" width="34" height="35" fill="#D97757" opacity="0.65" rx="2"/>
+          <rect x="536" y="148" width="34" height="57" fill="#D97757" opacity="0.75" rx="2"/>
+          <rect x="584" y="115" width="34" height="90" fill="#D97757" opacity="0.85" rx="2"/>
+          <rect x="632" y="65" width="34" height="140" fill="#D97757" opacity="0.95" rx="2"/>
+        </svg>
+        <figcaption>Left: when ℛ<sub>AI</sub> &lt; 1, each development cycle produces smaller gains — improvement is real but self-limiting. Right: when ℛ<sub>AI</sub> &gt; 1, each cycle produces larger gains than the last — the system enters a self-amplifying regime. The paper argues that identifying which side of 1 we're on is the central empirical question in AI governance right now.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The paper is more theoretical than empirical — it doesn't run experiments, it builds a model. Burtsev writes out the equations governing how capability grows across development cycles, introduces the ℛ<sub>AI</sub> term, and then extends the framework in two directions. First, he accounts for the fact that progress gets harder as you get closer to some ceiling — the same reason that doubling processing speed was easier in 1975 than it is today. Second, he extends the single-lab model to a multi-actor setting: what happens when multiple labs share improvements (through open-source releases, published papers, or even inadvertent leaks)? The result is that shared improvements can push the aggregate ecosystem into the ℛ<sub>AI</sub> &gt; 1 regime even when no individual lab's own work would cross that threshold alone.</p>
+
+      <h3>What they found</h3>
+      <p>The paper doesn't claim to measure the current value of ℛ<sub>AI</sub> — the data isn't there yet. What it does show is what you would need to measure to know: specifically, how much of a capability gain in one cycle actually feeds back into the next cycle's research, and how fast the difficulty of further gains is increasing. The multi-actor result is the most striking: in a world where open-source models, published papers, and API-enabled distillation let progress spread across labs, the collective ℛ<sub>AI</sub> may already be above 1 even if each lab's internal loop is still dampening. It's a kind of commons problem — each actor's shared contributions can tip the whole system past the threshold without any single actor intending it.</p>
+
+      <h3>The catch</h3>
+      <p>This is a mathematical framework, not a measurement. The paper doesn't estimate what ℛ<sub>AI</sub> actually is — it can't, because the right data doesn't exist publicly. Burtsev also simplifies by treating capability as a single number, when real AI systems have highly uneven capability profiles (excellent at code, weaker at physical reasoning, etc.). And the model doesn't yet account for the role of compute: whether a lab has unlimited GPU time matters enormously for whether improvements actually feed back into the next training run. The framework is a telescope for a question that still needs the right pointing coordinates.</p>
+
+      <p><strong>If you remember one thing:</strong> A reproduction number above 1 means the system is self-amplifying — and a new paper argues that because labs share improvements through publications, open-source models, and leaked techniques, the aggregate AI ecosystem may already be past that threshold even if no individual lab is.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy's autoresearch repo — a minimal, self-contained AI research agent that runs overnight experiments on a single GPU — continues to accumulate contributors and forks. The core idea: give an agent a tiny but real LLM training setup, let it modify the code, run five-minute training passes, evaluate, keep or discard, and repeat. You wake up to a log of completed experiments. The stripped-down implementation is about 630 lines. <a href="https://github.com/karpathy/autoresearch">github.com/karpathy/autoresearch</a></span></li>
+        <li><span class="tag tech">Dwarkesh</span><span>Episode 139 of the Dwarkesh Podcast features Ajeya Cotra of METR — the organization that runs the independent evaluations on frontier models for dangerous capabilities. The conversation is unusually concrete about what "loss of control" actually means as an engineering and governance challenge, not a science-fiction scenario. <a href="https://www.dwarkesh.com/podcast">dwarkesh.com/podcast</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The PaperCut attack and the reproduction-number paper are the same story read from two different angles. The attack shows what ℛ<sub>AI</sub> &gt; 1 looks like in an adversarial setting: capability that was barely available six months ago — autonomous multi-step hacking — was available to a moderately skilled threat actor this week, at a price point low enough to run hundreds of parallel agents. The paper asks whether the improvement rate that produced that capability is itself accelerating. Those are distinct questions. But if both answers are "yes," then the gap between today's AI capabilities and tomorrow's is not narrowing — it is widening. That's the thing worth watching.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.getreadyforagents.com/news/papercut-exploit-campaign-ai-agents/">PaperCut AI agent attack (Agentic Ready)</a> ·
+        <a href="https://tech-insider.org/papercut-ai-agent-swarm-attack-2026/">PaperCut AI Swarm (Tech Insider)</a> ·
+        <a href="https://arxiv.org/abs/2609.00137">Recursive Criticality of AI Self-Improvement (arXiv 2609.00137)</a> ·
+        <a href="https://www.anthropic.com/institute/recursive-self-improvement">When AI Builds Itself (Anthropic Institute)</a> ·
+        <a href="https://sakana.ai/fugu-max-release/">Sakana AI Fugu Max/Ultra v2</a> ·
+        <a href="https://thehackernews.com/2026/09/google-anthropic-and-openai-unveil.html">Google/Anthropic/OpenAI Cyber AI (The Hacker News)</a> ·
+        <a href="https://www.dwarkesh.com/podcast">Dwarkesh Podcast Ep. 139</a> ·
+        <a href="https://github.com/karpathy/autoresearch">karpathy/autoresearch (GitHub)</a> ·
+        <a href="https://www.scientificamerican.com/article/anthropic-warns-ai-may-soon-begin-recursive-self-improvement/">Anthropic RSI warning (Scientific American)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Agentic</div>
+        <div>Describes an AI that takes a sequence of actions on its own — browsing the web, writing code, running tools — rather than just answering a question. An agentic system is like the difference between giving someone an address and watching them drive the whole route themselves, choosing their own turns.</div>
+      </div>
+      <dl>
+        <dt>Recursive self-improvement (RSI)</dt>
+        <dd>The scenario in which an AI system uses its own capabilities to make the next version of itself smarter — which then makes the version after that smarter still, and so on. Currently: partially real (AI helps write AI training code) but not yet fully closed-loop.</dd>
+
+        <dt>Reproduction number (ℛ)</dt>
+        <dd>Borrowed from epidemiology: a number that says how much of the current "thing" produces the next round of the "thing." If ℛ &lt; 1, the process fizzles; if ℛ &gt; 1, it grows. In AI self-improvement, ℛ<sub>AI</sub> measures whether each development cycle produces more improvement than the one before.</dd>
+
+        <dt>Orchestration</dt>
+        <dd>In AI systems, the process of routing different tasks to different specialized models — then combining their outputs. An orchestrator model is the traffic controller: it decides which "expert" handles which part of a problem. Sakana's Fugu is built around a learned orchestrator rather than one giant model that tries to do everything.</dd>
+
+        <dt>Lateral movement</dt>
+        <dd>A term from cybersecurity: after an attacker gets into one machine, they move sideways through a network to reach more valuable systems. In the PaperCut attack, AI agents automated this step — finding connected systems, stealing credentials, and jumping from one machine to the next without human direction.</dd>
+
+        <dt>CVE</dt>
+        <dd>Common Vulnerabilities and Exposures — a numbered label for a specific, documented security flaw in a piece of software. When you hear that a patch was issued for "CVE-2026-81578," that number identifies exactly which hole was plugged.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
