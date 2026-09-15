@@ -1,5 +1,12 @@
 [
   {
+    "num": 109,
+    "date": "2026-09-15",
+    "slug": "issues/2026-09-15.html",
+    "title": "What Agents Do",
+    "blurb": "A startup launched a platform that runs entire companies with autonomous agents. An attacker used the same technology to breach 440 organizations in hours. A new paper shows predicting meaning-sized chunks cuts language model training compute roughly in half."
+  },
+  {
     "num": 108,
     "date": "2026-09-14",
     "slug": "issues/2026-09-14.html",

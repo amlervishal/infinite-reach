@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №109 — What Agents Do · Infinite Reach</title>
+  <meta name="description" content="A startup launched a cloud platform that runs entire companies autonomously. An attacker used the same technology to breach 440 organizations in hours. A new paper explains how training language models to think in concepts — not just words — cuts compute roughly in half." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №109 &middot; Monday, September 15, 2026</p>
+      <h1>What Agents Do</h1>
+      <p>On the same day a startup opened a cloud platform for running businesses autonomously, a lone attacker used autonomous agents to breach 440 organizations across 48 countries in under four hours. The technology has arrived — the question is who it works for.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>A single attacker armed with OpenAI's Codex and a DeepSeek model built a swarm of autonomous agents that compromised 440 servers belonging to 395 organizations — mostly schools and universities — across 48 countries. The campaign peaked at eleven breaches in twenty-six seconds and achieved domain administrator access in six hours. The speed is the story: one person, commercial AI tools, and a PaperCut print-server vulnerability that had only been disclosed on August 27. What would have taken a well-resourced team days of manual work took an automated swarm hours. Security researchers noted that the attacker used DeepSeek specifically because it lacks the content-safety guardrails that US frontier models impose on offensive queries.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Agents</span><span>Andon Labs launched Pion, described as a cloud operating system for running an entire company autonomously — handling banking, email, browser tasks, and phone calls through a fleet of sub-agents coordinated by a supervisory model called Andonos. The company has been testing it quietly: a vending machine at Anthropic's office became profitable by late 2025; a San Francisco market and a Stockholm café are live but not yet profitable. <a href="https://andonlabs.com/pion">andonlabs.com</a></span></li>
+        <li><span class="tag money">Profit</span><span>Anthropic told investors it expects roughly $559 million in adjusted operating income for Q2 on $11.5 billion in revenue — its second consecutive profitable quarter, a milestone that matters as its IPO roadshow approaches this autumn. <a href="https://www.buildfastwithai.com/blogs/collection/ai-industry-news-trends">buildfastwithai</a></span></li>
+        <li><span class="tag policy">Standards</span><span>Anthropic, OpenAI, and Google DeepMind have been quietly running working-group meetings since July, with Dario Amodei driving the effort, aimed at forming an industry-led AI standards body — an alternative to waiting for governments to mandate one. <a href="https://artificialintelligenceherald.com/ai-news-today">AI Herald</a></span></li>
+        <li><span class="tag policy">Distillation</span><span>At YC Demo Day, Garry Tan said he would "do nothing" about AI model distillation — the practice of training a smaller model to copy a larger one's behaviour — and wants US open-weight labs to use the same techniques, even as the NSA, FBI, and CISA named six Chinese firms for doing exactly that to American frontier models. <a href="https://techcrunch.com/2026/09/11/y-combinators-garry-tan-wants-u-s-open-weight-ai-labs-to-distill-frontier-models-too/">TechCrunch</a></span></li>
+        <li><span class="tag tech">Healthcare</span><span>A Nature Medicine study across 2,396 patients in six countries found that an explainable AI tool raised twenty physicians' disease-control sensitivity from 0.72 to 0.87 — in plain English, fewer missed cases — while remaining readable enough for doctors to understand why it flagged each patient.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: Teaching language models to think in concepts, not just words</h2>
+      <p class="kicker">NCP-ArchPreview Technical Report: Moving towards Latent Space Language Models through Next Concept Prediction &middot; Intern-NCP Team, Shanghai AI Lab &amp; LUMIA Lab, Shanghai Jiao Tong University &middot; <a href="https://arxiv.org/abs/2609.10715">arXiv:2609.10715</a></p>
+
+      <p>This paper was the top trending paper on Hugging Face this week. It asks a deceptively simple question: what if, alongside predicting the next word, a language model also had to predict the next <em>concept</em> — a meaningful chunk spanning several words at once? The answer cuts training compute roughly in half.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Every major language model today — Claude, ChatGPT, Gemini, and the open-source alternatives — is trained the same way at its core: predict the next token. A token is roughly a word or word-fragment. Given "the old man sat by the", the model predicts "fire." Then "fire." Then "." And so on, one step at a time.</p>
+
+      <p>This works astonishingly well, but it has an inefficiency built in. The word "the" appears in thousands of contexts, and the model must learn, token by token, which ones predict "fire" versus "Eiffel Tower" versus "government." There is no explicit layer of the model that says "these three tokens together mean 'an elderly person.'" The model must infer that pattern entirely from the statistics of which tokens follow which — across trillions of examples. Researchers have suspected for years that adding an explicit layer of higher-level, multi-token patterns — what they call <em>latent concepts</em> — might help models learn faster and generalize better. The challenge: how do you define a concept? Words have agreed meanings; concepts have to be constructed from the model's own behaviour, and that construction has to stay consistent enough to be useful.</p>
+
+      <h3>How it works</h3>
+      <p>The everyday analogy here is reading sheet music. A note-by-note reader processes each pitch in sequence — the equivalent of next-token prediction. But an experienced musician also reads in measures: they see the four-beat pattern as a unit, anticipate its direction, and process it more efficiently. NCP adds the measure-level track without removing the note-by-note precision.</p>
+
+      <p>Concretely, NCP-ArchPreview splits the standard transformer into three parts. The <strong>Token Encoder</strong> (sixteen transformer layers) reads the input and produces a stream of hidden states — rich numeric representations of each word in context. The <strong>Concept Module</strong> (eight layers, sitting in the middle) takes those hidden states and discretizes them using a technique called <em>product quantization</em>: it maps continuous numeric vectors into a fixed vocabulary of discrete "concept" codes, grouping several tokens' worth of meaning into one symbol. It then learns to predict which concept code comes next — essentially a next-token prediction problem, but over this higher-level vocabulary. The predicted concept embedding is then fed back into the third component, the <strong>Token Decoder</strong> (sixteen layers), which combines the concept-level prediction with the ordinary token-level context to produce the final word.</p>
+
+      <p>Critically, the concept prediction must remain <em>causal</em> — it can only look at tokens that came before, never ahead. The position predicting token <em>m</em> sees only concepts derived from earlier positions. This ensures the extra track doesn't accidentally cheat by peeking at future words. The two objectives — predict the next token, predict the next concept — are trained jointly, so the concept vocabulary emerges from what the model finds genuinely useful to group together, not from human-defined categories.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 270" role="img" aria-label="NCP architecture: three-stage pipeline with a concept layer between encoder and decoder">
+          <rect width="720" height="270" fill="#F7F5F0" rx="8"/>
+
+          <!-- Standard NTP (top) -->
+          <text x="24" y="44" font-family="ui-serif" font-size="13" font-weight="bold" fill="#141413">Standard model</text>
+          <text x="24" y="60" font-family="system-ui" font-size="11" fill="#87867F">predicts one token at a time</text>
+
+          <!-- Tokens in (standard) -->
+          <rect x="24" y="72" width="90" height="28" rx="5" fill="#D1CFC5" stroke="#141413" stroke-width="1"/>
+          <text x="69" y="91" text-anchor="middle" font-family="ui-monospace" font-size="11" fill="#141413">tokens in</text>
+
+          <path d="M114,86 L148,86" stroke="#87867F" stroke-width="1.5" fill="none" marker-end="url(#a1)"/>
+
+          <rect x="148" y="64" width="110" height="44" rx="5" fill="#6A8CAF"/>
+          <text x="203" y="84" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">Language</text>
+          <text x="203" y="100" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">Model</text>
+
+          <path d="M258,86 L292,86" stroke="#87867F" stroke-width="1.5" fill="none" marker-end="url(#a1)"/>
+
+          <rect x="292" y="72" width="90" height="28" rx="5" fill="#D97757"/>
+          <text x="337" y="91" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">next token</text>
+
+          <!-- Divider -->
+          <line x1="24" y1="120" x2="696" y2="120" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="4,4"/>
+
+          <!-- NCP (bottom) -->
+          <text x="24" y="148" font-family="ui-serif" font-size="13" font-weight="bold" fill="#141413">NCP model</text>
+          <text x="24" y="164" font-family="system-ui" font-size="11" fill="#87867F">predicts tokens <tspan font-style="italic">and</tspan> concepts simultaneously</text>
+
+          <!-- Tokens in (NCP) -->
+          <rect x="24" y="178" width="90" height="28" rx="5" fill="#D1CFC5" stroke="#141413" stroke-width="1"/>
+          <text x="69" y="197" text-anchor="middle" font-family="ui-monospace" font-size="11" fill="#141413">tokens in</text>
+
+          <path d="M114,192 L148,192" stroke="#87867F" stroke-width="1.5" fill="none" marker-end="url(#a1)"/>
+
+          <!-- Token Encoder -->
+          <rect x="148" y="170" width="110" height="44" rx="5" fill="#6A8CAF"/>
+          <text x="203" y="190" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">Token</text>
+          <text x="203" y="206" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">Encoder</text>
+
+          <!-- Arrow up to concept module -->
+          <path d="M258,178 L292,155" stroke="#D97757" stroke-width="1.5" fill="none" marker-end="url(#a2)"/>
+
+          <!-- Concept Module (elevated) -->
+          <rect x="292" y="132" width="130" height="36" rx="5" fill="#D97757"/>
+          <text x="357" y="155" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">Concept Module</text>
+
+          <!-- Label: concept vocabulary -->
+          <text x="357" y="125" text-anchor="middle" font-family="system-ui" font-size="10" fill="#D97757">← product quantization → concept codes</text>
+
+          <!-- Arrow down from concept module to decoder -->
+          <path d="M422,155 L456,178" stroke="#D97757" stroke-width="1.5" fill="none" marker-end="url(#a2)"/>
+
+          <!-- Arrow from encoder to decoder (token path) -->
+          <path d="M258,192 L292,192" stroke="#87867F" stroke-width="1.5" fill="none" marker-end="url(#a1)"/>
+
+          <!-- Skip connector along token path to decoder -->
+          <path d="M292,192 L456,192" stroke="#87867F" stroke-width="1.5" fill="none" stroke-dasharray="3,3" marker-end="url(#a1)"/>
+
+          <!-- Token Decoder -->
+          <rect x="456" y="170" width="110" height="44" rx="5" fill="#6A8CAF"/>
+          <text x="511" y="190" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">Token</text>
+          <text x="511" y="206" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">Decoder</text>
+
+          <path d="M566,192 L600,192" stroke="#87867F" stroke-width="1.5" fill="none" marker-end="url(#a1)"/>
+
+          <!-- Next token out -->
+          <rect x="600" y="178" width="96" height="28" rx="5" fill="#D97757"/>
+          <text x="648" y="197" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">next token</text>
+
+          <!-- Legend bottom -->
+          <line x1="24" y1="240" x2="50" y2="240" stroke="#87867F" stroke-width="1.5" stroke-dasharray="3,3"/>
+          <text x="56" y="244" font-family="system-ui" font-size="10" fill="#87867F">token path</text>
+          <line x1="130" y1="240" x2="156" y2="240" stroke="#D97757" stroke-width="1.5"/>
+          <text x="162" y="244" font-family="system-ui" font-size="10" fill="#D97757">concept path</text>
+
+          <!-- Arrow markers -->
+          <defs>
+            <marker id="a1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#87867F"/>
+            </marker>
+            <marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#D97757"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>The NCP architecture splits the standard transformer into three stages. The Token Encoder processes raw words; the Concept Module sits above it, learning to predict higher-level multi-token patterns via product quantization; the Token Decoder combines both signals to produce the next word. The concept path (clay) runs in parallel to the standard token path (grey).</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The team trained an 8.9-billion-parameter NCP model on 5.73 trillion tokens from the Dolma-3 dataset — a large, openly licensed corpus of web text, books, and code. They compared it against OLMo-3-7B, a well-regarded open-weight baseline of similar size trained on the same data under the same conditions, using it as the yardstick throughout. Training used the Muon optimizer, a relatively new gradient-descent algorithm the team found worked better than the standard Adam optimizer for this architecture.</p>
+
+      <h3>What they found</h3>
+      <p>The headline result: the NCP model reached OLMo-3-7B's final pretraining loss after seeing just 51.3% of the training tokens — roughly 2.94 trillion tokens instead of 5.73 trillion. It learned the same things about language using about half the compute. After training on all 5.73 trillion tokens, it outperformed OLMo-3-7B by an average of 2.45 points across a standard suite of downstream benchmarks. The biggest gain came on GSM8K, an arithmetic word-problem test, where NCP scored 5.99 points higher. The researchers interpret the math gain as evidence that the concept layer is learning something genuinely meaningful about multi-step structure — the kind of pattern where several words together imply a logical relationship that no single word captures.</p>
+
+      <h3>The catch</h3>
+      <p>This is explicitly a "technical report" — an architectural preview rather than a final result. The authors benchmark against OLMo-3-7B, a solid but not state-of-the-art model; whether NCP would still outperform a Llama-4 or DeepSeek-V4.1 trained on far more data is an open question. Product quantization introduces design choices (how many codebooks? how many codewords per codebook?) that have to be tuned, and the paper doesn't exhaustively explore how sensitive results are to those choices. The concept vocabulary is constructed from the model's own hidden states, which means it may not transfer cleanly if you change the training data significantly. And the paper was trained with a custom optimizer — results might differ with more standard training recipes.</p>
+
+      <p><strong>If you remember one thing:</strong> Adding a parallel track that predicts meaning-sized chunks instead of just words teaches a language model the same things at roughly half the training cost — suggesting next-token prediction alone may be leaving efficiency on the table.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag policy">Garry Tan</span><span>At YC's Demo Day this week, Tan argued publicly against any regulation targeting AI distillation — the technique of training a smaller model to mimic a larger one — making the case that American open-weight labs should freely use the same methods being attributed to Chinese copycats. The argument is worth reading alongside the NSA/FBI/CISA advisory naming six Chinese firms: it illustrates how the same technical act (model distillation) looks completely different depending on who is doing it and why. <a href="https://techcrunch.com/2026/09/11/y-combinators-garry-tan-wants-u-s-open-weight-ai-labs-to-distill-frontier-models-too/">TechCrunch</a></span></li>
+        <li><span class="tag tech">Dwarkesh Patel</span><span>The September 1 episode of the Dwarkesh Podcast features Ajeya Cotra, a researcher at METR who specializes in threat modelling for loss-of-control risk — precisely the class of risk that motivated Amodei's pacing essay and that the PaperCut attack makes concrete. A good companion listen to this week's news. <a href="https://www.dwarkesh.com/">dwarkesh.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things happened this week that look unrelated but tell the same story. Andon Labs opened a platform for AI agents to run businesses. An attacker used AI agents to run a cyberattack. In both cases, the agents are doing real work — not as a demo, not in a sandbox, but consequentially in the world. The PaperCut attack is, in a sense, the clearest demonstration yet of what the pacing debate Dario Amodei kicked off on Saturday is actually about. The concern is not that AI will become sentient; it is that AI makes certain kinds of harmful action much cheaper and faster — not impossibly hard, but offensively easy. The attacker didn't need a nation-state budget or a team of elite hackers. They needed commercial API access and a few hours. The NCP paper points in the other direction: the same efficiency gains that make attacks faster also make legitimate models cheaper to train and cheaper to run. These are not separable. The architecture improvements arrive for everyone at once.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://thehackernews.com/2026/09/papercut-attacker-uses-hundreds-of-ai.html">The Hacker News — PaperCut AI swarm</a> ·
+        <a href="https://www.govinfosecurity.com/ai-agents-used-in-papercut-attacks-on-395-organizations-a-32801">GovInfoSecurity</a> ·
+        <a href="https://andonlabs.com/pion">Andon Labs — Pion</a> ·
+        <a href="https://andonlabs.com/blog/why-we-built-pion">Why we built Pion</a> ·
+        <a href="https://arxiv.org/abs/2609.10715">arXiv:2609.10715 — NCP-ArchPreview</a> ·
+        <a href="https://github.com/tachytelicdetonation/NCP-64M">NCP-64M replication (GitHub)</a> ·
+        <a href="https://darioamodei.com/post/we-must-pace-the-frontier">Dario Amodei — We Must Pace the Frontier</a> ·
+        <a href="https://techcrunch.com/2026/09/11/y-combinators-garry-tan-wants-u-s-open-weight-ai-labs-to-distill-frontier-models-too/">TechCrunch — Garry Tan on distillation</a> ·
+        <a href="https://artificialintelligenceherald.com/ai-news-today">AI Herald — industry standards body</a> ·
+        <a href="https://www.buildfastwithai.com/blogs/collection/ai-industry-news-trends">Build Fast With AI — Anthropic profitability</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Latent space</div>
+        <div>A mathematical region inside a model where similar things live near each other — not in words, but in numbers. When the NCP Concept Module maps "the old man" into a concept code, it is choosing a point in latent space. Think of it as a map where meaning, not geography, determines distance.</div>
+      </div>
+      <dl>
+        <dt>Next-token prediction</dt><dd>The standard training objective for language models: given everything so far, predict the next word. Sounds simple; it is deceptively powerful.</dd>
+        <dt>Product quantization</dt><dd>A compression technique that maps a large continuous space into a small set of discrete codes — like converting a photo to a limited palette of colours. In NCP, it turns continuous hidden states into a manageable "concept vocabulary."</dd>
+        <dt>Agentic</dt><dd>Describes an AI system that takes sequences of actions autonomously — searching the web, running code, sending messages — rather than just answering a single question. The PaperCut attacker deployed agentic systems; Pion is an agentic platform.</dd>
+        <dt>RCE</dt><dd>Remote Code Execution — the ability to run arbitrary software on someone else's computer over a network. Achieving RCE is a major escalation in a cyberattack; it means the attacker effectively owns that machine.</dd>
+        <dt>Distillation</dt><dd>Training a smaller, cheaper model to mimic the behaviour of a larger one by studying its outputs rather than raw data. Not illegal — but at the centre of a debate about who benefits when the mimic is a foreign competitor.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
