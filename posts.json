@@ -1,5 +1,12 @@
 [
   {
+    "num": 110,
+    "date": "2026-09-16",
+    "slug": "issues/2026-09-16.html",
+    "title": "Something Worth Pausing For",
+    "blurb": "Three frontier AI labs are openly coordinating on a safety framework while OpenAI admits its most powerful models are too dangerous to release. A new 744-billion-parameter open-source research agent from China shows why: researchers say a third of what they accomplished with it would have been impossible without it."
+  },
+  {
     "num": 109,
     "date": "2026-09-15",
     "slug": "issues/2026-09-15.html",

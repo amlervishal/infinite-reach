@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №110 — Something Worth Pausing For · Infinite Reach</title>
+  <meta name="description" content="Three frontier AI labs are drafting a shared safety framework while OpenAI's CEO admits his most powerful models are too dangerous to release. A Chinese research model shows what happens when AI becomes genuinely indispensable to science." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №110 &middot; Tuesday, September 16, 2026</p>
+      <h1>Something Worth Pausing For</h1>
+      <p>The three companies building the most powerful AI systems in the world are now in open talks about slowing themselves down — while a model released yesterday from a Chinese lab shows just how much is at stake on the other side of that decision.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>OpenAI, Anthropic, and Google DeepMind have been coordinating on AI safety for several weeks, OpenAI's chief global affairs officer Chris Lehane confirmed Monday in Washington. What makes this unusual is the candour around it: Sam Altman told <em>Fortune</em> last week that OpenAI has models it cannot safely release right now, because the science of making them behave reliably has not kept up with the science of making them capable. Anthropic CEO Dario Amodei published an essay on September 12 calling for the three labs to agree on voluntary slowdowns when models cross new capability thresholds. The labs say they do not need a government antitrust waiver to coordinate. No binding agreement has been signed — but this is the closest the frontier AI industry has come to saying out loud that it might be moving faster than it should.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Open model</span><span>Shanghai AI Lab released Atria Dawn Preview, a 744-billion-parameter open-source AI agent designed to carry out full scientific research workflows end-to-end — free to download, highest scores on four of the sixteen benchmarks it entered. <a href="https://huggingface.co/internlm/Atria-Dawn-Preview">Hugging Face</a></span></li>
+        <li><span class="tag policy">EU</span><span>The EU's deadline for GPAI foundation models trained on more than 10²⁵ operations (the rough compute budget of the largest frontier models) to submit formal systemic-risk evaluations to the European AI Office passed on September 15.</span></li>
+        <li><span class="tag tech">Google internal</span><span>Google quietly opened Claude Opus 5 access to all of its engineers via its internal Antigravity IDE, breaking a longstanding policy that required staff to use Gemini — a notable sign of how even Alphabet is hedging its bets on which tools its own people want.</span></li>
+        <li><span class="tag policy">California</span><span>Governor Newsom has until September 30 to sign or veto SB&nbsp;1047, the state's frontier AI safety bill, which would require developers of large models to put safety measures in place before release.</span></li>
+        <li><span class="tag money">OpenAI IPO</span><span>Sam Altman confirmed to <em>Fortune</em> that OpenAI will not go public in 2026, saying the timing is "ill-advised" given safety concerns — a notable departure from earlier signals about an imminent listing.</span></li>
+        <li><span class="tag tech">Hardware</span><span>Nvidia's Vera Rubin NVL72 rack is ramping into volume production in the second half of 2026; independent analysis shows it delivering 30× higher AI throughput per megawatt than the previous Blackwell generation — a significant efficiency jump for anyone running large inference workloads.</span></li>
+      </ul>
+
+      <h2>Paper, explained: the research agent that did a third of the impossible</h2>
+      <p class="kicker">Atria Dawn: The Dawn of Agentic Superintelligence &middot; Shanghai AI Laboratory (InternLM) &middot; 143 authors &middot; <a href="https://arxiv.org/abs/2609.15818">arXiv 2609.15818</a></p>
+
+      <p>A paper published this Sunday describes something researchers have been gesturing at for years but nobody has formally measured: how often do AI agents complete tasks that a human expert would have rated impossible to do alone? The answer, from 56 researchers who spent months working alongside Atria Dawn, is roughly one in three. That number is the most striking thing in a paper that also introduces one of the largest open-source models ever released.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>For the past few years, AI tools have been impressive at narrow, well-defined tasks — write code to this specification, summarise this paper, translate this sentence. But real scientific research is not narrow or well-defined. A working scientist needs to identify a hypothesis, design an experiment, write and debug the code to run it, interpret ambiguous results, recover from failures mid-run, and finally produce a report that others can inspect and verify. No single AI tool has been trained to handle that whole chain. Most agents are good at one step and fall apart when the next step requires remembering the context of the one before.</p>
+
+      <p>The deeper difficulty is training. Standard language model training rewards predicting text; it doesn't reward getting an experiment right. You can tell a model what a good research workflow looks like in writing, but that doesn't teach it to actually do one. What you really want is to train on outcomes — did the experiment run cleanly? Did the code pass external tests? Did the report accurately reflect the results? — but gathering that kind of verified feedback at scale is slow and expensive.</p>
+
+      <h3>How it works</h3>
+      <p>The core idea in this paper is what the authors call the <em>Verifiable Experience Pipeline</em>. Think of it like an apprenticeship rather than a textbook. In a traditional apprenticeship, the apprentice doesn't just read about how to make something — they try to make it, and someone checks whether it came out right. Atria Dawn was trained the same way: given real tasks where the outcome could be independently verified (does the code compile and produce the right output? does the data analysis match a known answer?), it took actions, received external feedback on whether those actions worked, and learned from the full trajectory of what it did — not just the words it generated.</p>
+
+      <p>That trajectory is the key. The model learns not just "here is a correct answer" but "here is a sequence of tool calls, code executions, failure recoveries, and reasoning steps that eventually produced a correct answer." This means it internalises something closer to a <em>process</em> — how to move from a fuzzy goal to a concrete result through a chain of actions — rather than a <em>pattern</em> about what correct answers tend to look like.</p>
+
+      <p>The base model underneath is GLM-5.2, the 744-billion-parameter mixture-of-experts system released by Z.ai in June 2026. (A mixture-of-experts model routes each task to a subset of its parameters rather than activating all of them at once, which lets it be large without being proportionally expensive to run.) Shanghai AI Lab's contribution is the post-training: the long process of fine-tuning and reinforcement learning on top of GLM-5.2 using the Verifiable Experience Pipeline to produce an agent that can handle the full research loop.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team evaluated Atria Dawn Preview across 16 benchmarks spanning scientific research, engineering workflows, and general digital tasks. It scored highest on four of them: <strong>AutomationBench</strong> (53.8), which tests multi-step computer-use tasks; <strong>BFCL v4</strong> (77.0), a rigorous function-calling test requiring precise tool use; <strong>DeepSearchQA</strong> (96.0), where the model must find and synthesise accurate information from the open web; and <strong>BrowseComp</strong> (92.5), which involves complex multi-step browsing and reasoning.</p>
+
+      <p>Alongside the benchmarks, the paper reports a more unusual study. Fifty-six researchers — mostly from within Shanghai AI Lab — used Atria Dawn on their actual work over a period of months. They generated 769 logged task records, which the team then analysed to understand what the collaboration actually looked like. The key finding: participants rated <strong>about one-third of the completed AI-assisted tasks as infeasible without the AI</strong>. These were not marginal judgements — the researchers believed they genuinely could not have done those particular tasks in the available time, with the available resources, working alone. The model's 256,000-token context window helped it hold long, multi-stage projects in its working memory without losing track of earlier results.</p>
+
+      <!-- SVG: The Verifiable Experience Pipeline -->
+      <figure>
+        <svg viewBox="0 0 720 260" role="img" aria-label="Diagram of the Verifiable Experience Pipeline: task goes in, model acts, external verifier checks outcome, feedback returns to training" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;">
+          <!-- Background -->
+          <rect width="720" height="260" fill="none"/>
+
+          <!-- Arrow helper: define arrowhead -->
+          <defs>
+            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#87867F"/>
+            </marker>
+            <marker id="arrowhead-clay" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#D97757"/>
+            </marker>
+          </defs>
+
+          <!-- Label: The Verifiable Experience Pipeline -->
+          <text x="360" y="22" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#87867F" font-style="italic">The Verifiable Experience Pipeline</text>
+
+          <!-- Box 1: Real task -->
+          <rect x="30" y="50" width="130" height="60" rx="6" fill="#F5F3EF" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="95" y="78" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413" font-weight="600">Real task</text>
+          <text x="95" y="96" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">e.g. run experiment,</text>
+          <text x="95" y="110" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">write analysis code</text>
+
+          <!-- Arrow 1→2 -->
+          <line x1="160" y1="80" x2="208" y2="80" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <!-- Box 2: Model acts -->
+          <rect x="210" y="50" width="140" height="60" rx="6" fill="#D97757" fill-opacity="0.12" stroke="#D97757" stroke-width="1.5"/>
+          <text x="280" y="78" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413" font-weight="600">Atria Dawn acts</text>
+          <text x="280" y="96" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">tool calls, code,</text>
+          <text x="280" y="110" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">search, reasoning</text>
+
+          <!-- Arrow 2→3 -->
+          <line x1="350" y1="80" x2="398" y2="80" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <!-- Box 3: External verifier -->
+          <rect x="400" y="50" width="140" height="60" rx="6" fill="#6A8CAF" fill-opacity="0.12" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="470" y="78" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413" font-weight="600">External check</text>
+          <text x="470" y="96" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">code compiles?</text>
+          <text x="470" y="110" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">results match?</text>
+
+          <!-- Arrow 3→4 -->
+          <line x1="540" y1="80" x2="588" y2="80" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <!-- Box 4: Outcome -->
+          <rect x="590" y="50" width="100" height="60" rx="6" fill="#788C5D" fill-opacity="0.15" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="640" y="78" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413" font-weight="600">Outcome</text>
+          <text x="640" y="96" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">pass / fail</text>
+          <text x="640" y="110" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">+ full trace</text>
+
+          <!-- Feedback arrow: from outcome back down and to model -->
+          <line x1="640" y1="110" x2="640" y2="175" stroke="#D97757" stroke-width="1.5"/>
+          <line x1="640" y1="175" x2="280" y2="175" stroke="#D97757" stroke-width="1.5"/>
+          <line x1="280" y1="175" x2="280" y2="115" stroke="#D97757" stroke-width="1.5" marker-end="url(#arrowhead-clay)"/>
+
+          <!-- Label on feedback arrow -->
+          <text x="460" y="192" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#D97757">feedback on full trajectory feeds back into training</text>
+
+          <!-- Key insight box -->
+          <rect x="30" y="210" width="660" height="38" rx="5" fill="#F5F3EF" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="360" y="229" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">The model learns a <tspan font-weight="600">process</tspan> (how to move from goal to result through many steps), not just a <tspan font-weight="600">pattern</tspan> (what correct answers look like).</text>
+          <text x="360" y="243" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">This is why it can handle the full research loop, including recovering from failures mid-run.</text>
+        </svg>
+        <figcaption>How the Verifiable Experience Pipeline works: every task the model attempts is checked by an external verifier, and the full record of what the model did — including failures — flows back to improve it. Unlike standard text prediction training, this teaches the model a <em>process</em>.</figcaption>
+      </figure>
+
+      <h3>What they found</h3>
+      <p>Atria Dawn achieves the highest reported scores on AutomationBench, BFCL v4, DeepSearchQA, and BrowseComp — four benchmarks that between them cover the breadth of what a research agent needs to do. On the human study, the "one-third infeasible" finding held across different types of tasks and different participants, suggesting it is not an artefact of one particularly AI-dependent team or one easy category of work. The model's ability to maintain context across very long projects — 256,000 tokens means it can hold a book-length conversation in memory at once — appears to be a significant factor in the most demanding tasks.</p>
+
+      <p>The failure modes are also clearly described. The model struggles with tasks that require genuine physical intuition (designing a real lab experiment from first principles, rather than running a virtual one), with novel mathematical proofs that require creativity rather than pattern-matching, and with any situation where the verifier itself is unreliable — if you cannot tell whether the answer is right, the training signal degrades.</p>
+
+      <h3>The catch</h3>
+      <p>The "one-third infeasible" finding is self-reported by researchers who had already used the AI and knew what it could do — so there may be some selection bias toward people who found the tool useful. The benchmarks are also the most impressive when compared against agents; against specialist human teams with adequate time and resources, the picture is murkier. And "highest on four of sixteen benchmarks" means it is not the best at everything: on the twelve remaining benchmarks it is competitive with, but does not beat, the current frontier. The paper is a technical report accompanying a model release, not a peer-reviewed study with independent replication.</p>
+
+      <p><strong>If you remember one thing:</strong> A Chinese lab has built an open-source research agent running on 744 billion parameters, and the researchers who used it say a third of what they accomplished with it would have been impossible without it — a small, real-world data point about where this technology is heading.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>His <a href="https://github.com/karpathy/autoresearch">autoresearch</a> GitHub repo — AI agents that autonomously run nano-scale LLM training experiments on a single GPU — quietly became one of the more cited reference projects in the AI-does-science discussion this week, as the Atria Dawn paper reignited the question of how much scientific work can be delegated to agents. The repo is from March but is actively updated.</span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things happened this week that look unrelated but are telling the same story. Three of the most powerful AI labs in the world sat down together and said, in effect: we may be moving faster than we should, and we need an agreed mechanism for slowing down. At the same time, a paper showed that researchers working with an AI agent rated a third of their completed tasks as impossible to have done alone. Put those two facts side by side and the picture is clear: the tools are becoming genuinely useful — not just time-saving but capability-expanding — precisely at the moment when the people building them are most uncertain about what comes next. The safety debate is no longer abstract. The thing worth pausing for is a real technology that real scientists are now depending on.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2609.15818">arXiv: Atria Dawn paper (2609.15818)</a> ·
+        <a href="https://huggingface.co/internlm/Atria-Dawn-Preview">Hugging Face: Atria Dawn Preview</a> ·
+        <a href="https://fortune.com/2026/09/12/openai-ceo-sam-altman-safety-pact-ai-companies-risks-anthropic-dario-amodei/">Fortune: Altman on safety pact</a> ·
+        <a href="https://www.washingtonpost.com/technology/2026/09/14/anthropic-openai-google-discussed-creating-new-ai-safety-body/">Washington Post: Labs safety body talks</a> ·
+        <a href="https://www.cnbc.com/2026/09/11/y-combinator-garry-tan-says-do-nothing-about-distillation.html">CNBC: Garry Tan on distillation</a> ·
+        <a href="https://blogs.nvidia.com/blog/vera-rubin-nvl72-efficiency-ai-agents/">Nvidia: Vera Rubin NVL72</a> ·
+        <a href="https://github.com/karpathy/autoresearch">GitHub: karpathy/autoresearch</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Verifiable experience</div>
+        <div>Training an AI on tasks where the outcome can be checked by an independent test — like whether code compiles, or whether a maths answer is correct — rather than on human ratings of text quality. Like teaching an apprentice by giving them real jobs with clear pass/fail results, rather than just reading them textbooks.</div>
+      </div>
+      <dl>
+        <dt>MoE (Mixture of Experts)</dt><dd>A model architecture that splits the network into many specialised sub-networks ("experts") and routes each input to only a few of them. This lets a model have a huge number of total parameters while only activating a small fraction on any given task — making it larger and cheaper to run at the same time.</dd>
+        <dt>GPAI</dt><dd>General Purpose AI — the EU's term for large foundation models (like GPT-5, Gemini, Claude) that can be applied to many different tasks rather than being purpose-built for one. EU law now requires the most powerful GPAI models to submit formal risk evaluations.</dd>
+        <dt>Context window</dt><dd>The maximum amount of text (measured in tokens — roughly three-quarters of a word each) that a model can hold in its working memory at once. A 256,000-token window can hold roughly 200,000 words — about the length of two average novels.</dd>
+        <dt>Post-training</dt><dd>Everything that happens to a model after its initial large-scale training on text — fine-tuning on specific tasks, reinforcement learning from human or automated feedback, safety training. It shapes personality and skills; the base training shapes raw knowledge and language ability.</dd>
+        <dt>Systemic risk evaluation</dt><dd>A formal safety assessment required by the EU's AI Act for the most powerful foundation models — a structured review of what the model could be used for at scale, what could go wrong, and what mitigations exist. The first such evaluations were due September 15, 2026.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
