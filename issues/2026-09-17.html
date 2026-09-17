@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №111 — What Caution Buys · Infinite Reach</title>
+  <meta name="description" content="Canada and Germany commit $300 million to Yoshua Bengio's LawZero for 'Scientist AI' — a model designed to have no goals of its own — as the week's top research paper shows how thinking in meaning-sized chunks cuts training compute nearly in half." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №111 &middot; Thursday, September 17, 2026</p>
+      <h1>What Caution Buys</h1>
+      <p>Canada and Germany are putting $300 million behind a lab that promises to build intelligence with no agenda of its own. Separately, the week's most-read research paper shows that language models can learn more by thinking in bigger pieces — cutting training costs nearly in half on the way to the same quality.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Yoshua Bengio — one of the trio credited with inventing the mathematical foundations of modern neural networks — runs a Montreal non-profit called LawZero. Its mission is to build a different kind of model: one that tells you facts without trying to please you, and that pursues no goals beyond answering your question accurately. On September 16, Canada and Germany announced they would jointly commit up to CAD $300 million to fund it — $150 million from Ottawa, €100 million from Berlin. The money will hire researchers and secure computing infrastructure for what LawZero calls its "Scientist AI." Bengio told reporters that humanity is "losing control" of the technology and that the world needs guardrails similar to nuclear arms controls. Scientist AI is designed to be constrained to verifiable, objective output: a useful tool, not an agent with a direction of its own.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag policy">Safety talks</span><span>OpenAI's global policy chief confirmed in Washington that OpenAI, Anthropic, and Google DeepMind have been coordinating on safety since July — centred on building a shared industry-standards body for frontier models. First confirmed on the record.</span></li>
+        <li><span class="tag policy">Brazil</span><span>Brazil's Senate held its plenary floor vote on Bill 2338/2023, its comprehensive AI governance framework, on September 16 — one of the first such votes in a major non-EU economy, and one to watch for how the Global South governs the technology.</span></li>
+        <li><span class="tag tech">Model wave</span><span>September has seen five frontier releases in ten days: Claude Fable 5.1, GPT-6 Astra, Gemini 3.8 Flash, Muse Spark 1.3, and DeepSeek V4.1-Flash — described by trackers as the densest release window since August's wave.</span></li>
+        <li><span class="tag policy">US deregulation</span><span>The current US administration formally shelved Biden-era safety-institute work this week, with officials framing the move as prioritising national AI competitiveness over precautionary oversight.</span></li>
+        <li><span class="tag money">Distillation debate</span><span>Y Combinator CEO Garry Tan told CNBC he would "do nothing" about Chinese labs distilling US frontier models and suggested American open-weight labs should run the same playbook. A clear read on where the startup world stands. <a href="https://www.cnbc.com/2026/09/11/y-combinator-garry-tan-says-do-nothing-about-distillation.html">CNBC</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: Teaching a model to think in chunks</h2>
+      <p class="kicker">NCP-ArchPreview Technical Report: Moving towards Latent Space Language Models through Next Concept Prediction &middot; Shanghai AI Lab, LUMIA Lab &amp; SJTU &middot; <a href="https://arxiv.org/abs/2609.10715">arXiv 2609.10715</a></p>
+
+      <p>This week's top trending paper on Hugging Face asks a deceptively simple question: what if a language model learned not just the next word, but the next <em>idea</em>? The team's answer — a two-stream training approach that cuts the data needed to reach state-of-the-art quality nearly in half — has researchers paying close attention.</p>
+
+      <h3>The problem, and why it's hard</h3>
+
+      <p>Every language model in wide use today is built on the same core engine, invented in the 1980s and scaled up a thousandfold since: read a string of tokens (roughly syllables or short words), predict the probability of the next one. Do this billions of times across trillions of tokens and the model learns a great deal about language. The trouble is that this approach treats every token equally — whether it's a filler word like "the" or the conceptual crux of a sentence like "photosynthesis." The model spends enormous amounts of its training budget absorbing low-level patterns before it gets enough signal to grasp higher-order structure: how sentences relate, how arguments build, how reasoning chains connect one idea to another.</p>
+
+      <p>Researchers have long asked whether you could give a model a shortcut: explicitly teach it to think in larger chunks of meaning, not just individual syllables. The challenge is that there is no ready-made list of "chunks." Language doesn't come with its ideas pre-labelled. Any such structure has to be discovered or constructed from the text itself — and that's where previous attempts got complicated.</p>
+
+      <h3>How it works</h3>
+
+      <p>Think of the difference between a beginner pianist practising one keystroke at a time, and an intermediate one who has internalised whole phrases. The beginner can play every key correctly but makes music slowly and haltingly; the intermediate has grouped keystrokes into meaningful units and is free to think about the shape of the piece. NCP-ArchPreview tries to give language models the same promotion.</p>
+
+      <p>During training, the model's internal "hidden states" — the rich numerical vectors that represent its understanding at each step — are passed through a compression process called <em>product quantization</em>. Think of it like sorting a vast continuum of paint shades into a catalogue of 256 named colours: the detail is lost, but the categories are crisp and learnable. Those compressed categories become the "concept vocabulary." A dedicated add-on — the Concept Module — is trained to predict which concept label will appear next in the sequence. The predicted concept is then fed <em>back</em> into the main model, so its guess about the upcoming idea actively shapes its guess about the upcoming word. The two objectives — next-token prediction (NTP) and next-concept prediction (NCP) — train together, end-to-end, with no separate pre-processing step required.</p>
+
+      <p>The loop matters. Without the feedback, the concept prediction would be a separate head bolted on for evaluation purposes. With it, the word-level and idea-level streams inform each other during every forward pass of training. The model learns that knowing what conceptual territory it's heading into is useful for picking the right next token — and adjusts its internal representations accordingly.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 340" role="img" aria-label="Diagram comparing standard next-token prediction with NCP dual-stream training">
+          <defs>
+            <marker id="arr-gray" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <path d="M0,0 L8,3 L0,6 Z" fill="#87867F"/>
+            </marker>
+            <marker id="arr-clay" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <path d="M0,0 L8,3 L0,6 Z" fill="#D97757"/>
+            </marker>
+            <marker id="arr-olive" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <path d="M0,0 L8,3 L0,6 Z" fill="#788C5D"/>
+            </marker>
+          </defs>
+
+          <!-- Background -->
+          <rect width="720" height="340" fill="#FAF9F6" rx="8"/>
+
+          <!-- ─── TOP ROW: Standard NTP ─── -->
+          <text x="24" y="30" font-family="ui-serif,Georgia,serif" font-size="13" fill="#87867F" font-style="italic">Standard approach — every model today</text>
+
+          <!-- Input tokens -->
+          <rect x="24" y="42" width="90" height="36" rx="6" fill="#D1CFC5"/>
+          <text x="69" y="65" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413">tokens in</text>
+
+          <!-- Arrow -->
+          <line x1="115" y1="60" x2="148" y2="60" stroke="#87867F" stroke-width="1.6" marker-end="url(#arr-gray)"/>
+
+          <!-- Model -->
+          <rect x="150" y="38" width="120" height="44" rx="6" fill="#6A8CAF"/>
+          <text x="210" y="56" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="white" font-weight="bold">Language</text>
+          <text x="210" y="74" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="white" font-weight="bold">Model</text>
+
+          <!-- Arrow -->
+          <line x1="271" y1="60" x2="304" y2="60" stroke="#87867F" stroke-width="1.6" marker-end="url(#arr-gray)"/>
+
+          <!-- Next token output -->
+          <rect x="306" y="42" width="110" height="36" rx="6" fill="#D1CFC5"/>
+          <text x="361" y="65" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413">next token ✓</text>
+
+          <!-- ─── DIVIDER ─── -->
+          <line x1="24" y1="108" x2="696" y2="108" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="5,4"/>
+
+          <!-- ─── BOTTOM ROWS: NCP approach ─── -->
+          <text x="24" y="130" font-family="ui-serif,Georgia,serif" font-size="13" fill="#87867F" font-style="italic">NCP approach — this paper</text>
+
+          <!-- Input tokens -->
+          <rect x="24" y="142" width="90" height="36" rx="6" fill="#D1CFC5"/>
+          <text x="69" y="165" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413">tokens in</text>
+
+          <!-- Arrow -->
+          <line x1="115" y1="160" x2="148" y2="160" stroke="#87867F" stroke-width="1.6" marker-end="url(#arr-gray)"/>
+
+          <!-- Model -->
+          <rect x="150" y="138" width="120" height="44" rx="6" fill="#6A8CAF"/>
+          <text x="210" y="156" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="white" font-weight="bold">Language</text>
+          <text x="210" y="174" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="white" font-weight="bold">Model</text>
+
+          <!-- Arrow to next token (NTP stream) -->
+          <line x1="271" y1="155" x2="304" y2="155" stroke="#87867F" stroke-width="1.6" marker-end="url(#arr-gray)"/>
+          <rect x="306" y="138" width="110" height="36" rx="6" fill="#D1CFC5"/>
+          <text x="361" y="161" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413">next token</text>
+
+          <!-- Label: NTP stream -->
+          <text x="288" y="147" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">NTP</text>
+
+          <!-- Hidden states branch downward from model -->
+          <line x1="210" y1="182" x2="210" y2="222" stroke="#D97757" stroke-width="1.8" stroke-dasharray="5,3"/>
+          <text x="216" y="208" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">hidden states</text>
+
+          <!-- Concept Module -->
+          <rect x="150" y="224" width="120" height="40" rx="6" fill="#D97757"/>
+          <text x="210" y="240" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="white" font-weight="bold">Concept</text>
+          <text x="210" y="256" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="white" font-weight="bold">Module</text>
+
+          <!-- Arrow from concept module to concept label -->
+          <line x1="271" y1="244" x2="304" y2="244" stroke="#D97757" stroke-width="1.6" marker-end="url(#arr-clay)"/>
+
+          <!-- Concept output box -->
+          <rect x="306" y="226" width="110" height="36" rx="6" fill="#D97757" fill-opacity="0.15" stroke="#D97757" stroke-width="1.2"/>
+          <text x="361" y="249" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413">next concept</text>
+
+          <!-- Label: NCP stream -->
+          <text x="288" y="237" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">NCP</text>
+
+          <!-- Feedback arrow: concept → back into token prediction -->
+          <line x1="416" y1="244" x2="452" y2="244" stroke="#D97757" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <line x1="452" y1="244" x2="452" y2="156" stroke="#D97757" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <line x1="452" y1="156" x2="418" y2="156" stroke="#D97757" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-clay)"/>
+          <text x="466" y="204" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">guides</text>
+          <text x="466" y="216" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">generation</text>
+
+          <!-- Result badge -->
+          <rect x="500" y="138" width="196" height="56" rx="8" fill="#788C5D" fill-opacity="0.12" stroke="#788C5D" stroke-width="1.2"/>
+          <text x="598" y="158" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#788C5D" font-weight="bold">Same quality as baseline</text>
+          <text x="598" y="176" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#788C5D">at only 51.3 % of training tokens</text>
+          <text x="598" y="188" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#788C5D">+2.45 pts overall · +5.99 pts on GSM8K</text>
+
+          <!-- Legend -->
+          <rect x="500" y="226" width="14" height="14" rx="2" fill="#6A8CAF"/>
+          <text x="520" y="238" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">NTP — token stream (standard)</text>
+          <rect x="500" y="248" width="14" height="14" rx="2" fill="#D97757"/>
+          <text x="520" y="260" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">NCP — concept stream (new)</text>
+          <line x1="500" y1="278" x2="514" y2="278" stroke="#D97757" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <text x="520" y="282" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">feedback loop</text>
+        </svg>
+        <figcaption>Standard language models have one stream: predict the next token. NCP adds a second stream (orange) that compresses the model's internal states into discrete "concepts" — multi-token units of meaning — and feeds those predictions back into token-level generation. Training under both objectives reaches the same final quality at roughly half the usual data budget.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+
+      <p>The team scaled NCP-ArchPreview to 8.9 billion parameters and trained it on 5.73 trillion tokens from the Dolma-3 dataset — a large, open-source collection of web text, books, and code that serves as a common benchmark for training comparison. Their baseline was OLMo-3-7B, a well-established open model trained on the same data corpus, which made apples-to-apples comparison straightforward.</p>
+
+      <h3>What they found</h3>
+
+      <p>The headline result is striking: NCP-ArchPreview reached OLMo-3-7B's final pretraining loss after consuming just 51.3% of the training tokens. Put plainly, it learned what the baseline took a full training run to absorb in roughly half the data. After both models had finished training, NCP-ArchPreview scored 2.45 points higher on a battery of downstream benchmarks. The gap was most pronounced on mathematical reasoning: a 5.99-point advantage on GSM8K, a standard set of grade-school arithmetic problems researchers use to measure whether a model can chain reasoning steps. The concept stream seems to particularly help tasks that require building an argument step by step — which is exactly what you'd predict if thinking in higher-level chunks makes reasoning more coherent.</p>
+
+      <p>The model was developed and published by researchers at Shanghai AI Lab, LUMIA Lab, and Shanghai Jiao Tong University — a reminder that efficiency breakthroughs in this space are now arriving from multiple directions simultaneously.</p>
+
+      <h3>The catch</h3>
+
+      <p>Honest caveats matter here. First, the concept vocabulary is built from the model's own hidden states, which means the concepts it discovers are bounded by what the base model already represents — it cannot invent structure that the underlying numbers don't support. Second, the comparison baseline is OLMo-3-7B; how NCP-ArchPreview fares against closed frontier models like GPT-6 Astra or Claude Fable 5.1 is not tested and not known. Third, this is a preprint from researchers affiliated with a lab that also builds production models; independent replication has not yet appeared. And fourth, while training compute is lower, the paper doesn't fully characterise inference behaviour — whether the Concept Module adds latency at deployment time still needs examination.</p>
+
+      <p><strong>If you remember one thing:</strong> Adding a second training objective — predict the next cluster of meaning, not just the next word — and feeding that prediction back into token-level generation lets a model reach state-of-the-art quality with roughly half the usual training data.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>His Sequoia Ascent 2026 essay — published in April but still spreading — coins "Software 3.0," the era when LLMs can be used to automate anything humans can verify. His worked example, <em>menugen</em>, is an app whose entire stack can be absorbed and regenerated by a model. A clean framework if you missed it. <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">karpathy.bearblog.dev</a></span></li>
+        <li><span class="tag money">Garry Tan</span><span>This week the YC president told CNBC he'd "do nothing" about Chinese distillation of US frontier models — and proposed an "American distillation regime" in which US open-weight labs run the same playbook. Useful shorthand for where startup-world thinking sits right now. <a href="https://www.cnbc.com/2026/09/11/y-combinator-garry-tan-says-do-nothing-about-distillation.html">CNBC</a></span></li>
+        <li><span class="tag tech">Dwarkesh Patel</span><span>A new Dwarkesh Podcast episode this month features Ajeya Cotra, a researcher at METR who specialises in threat-modelling for loss-of-control scenarios — arguably the clearest public conversation on that risk currently available. Worth the listen. <a href="https://www.dwarkesh.com/">dwarkesh.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>This week produced two notable moves toward caution — and both came from outside the labs themselves. Canada and Germany chose to fund an alternative approach rather than regulate the incumbents. Three major US labs voluntarily began coordinating on safety standards without being legally required to. These are early signals, not guarantees of any particular outcome. But they do suggest something real: the conversation about pace is no longer happening only inside the buildings that build the models.</p>
+
+      <p>The paper slots into this picture at a technical level. If the same capability can be reached with half the training compute, the cost to build increasingly capable systems keeps falling — which is good news for smaller labs and academic researchers, and puts pressure on any governance framework to keep up with a development curve that is not going to slow down on its own. Efficiency gains and safety efforts are running on parallel tracks. The interesting question for the months ahead is whether the second track is moving as fast as the first.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.prnewswire.co.uk/news-releases/lawzero-receives-a-commitment-of-up-to-300m-in-joint-funding-from-canada-and-germany-302880733.html">LawZero press release</a> &middot;
+        <a href="https://www.canada.ca/en/innovation-science-economic-development/news/2026/09/canada-and-germany-invest-in-lawzero-to-build-a-new-approach-to-safe-sovereign-ai.html">Canada.ca announcement</a> &middot;
+        <a href="https://www.bnnbloomberg.ca/business/artificial-intelligence/2026/09/16/were-losing-control-canadian-ai-pioneer-yoshua-bengio-warns/">BNN Bloomberg — Bengio</a> &middot;
+        <a href="https://www.theglobeandmail.com/business/article-yoshua-bengio-lawzero-receives-300-million-from-canada-germany/">Globe and Mail</a> &middot;
+        <a href="https://arxiv.org/abs/2609.10715">NCP-ArchPreview (arXiv 2609.10715)</a> &middot;
+        <a href="https://qz.com/openai-anthropic-google-deepmind-ai-safety-talks-091626">Quartz — lab safety talks</a> &middot;
+        <a href="https://www.bloomberg.com/news/articles/2026-09-15/openai-says-it-s-working-with-anthropic-google-on-ai-safety">Bloomberg — safety coordination</a> &middot;
+        <a href="https://www.cnbc.com/2026/09/11/y-combinator-garry-tan-says-do-nothing-about-distillation.html">CNBC — Garry Tan</a> &middot;
+        <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/">Karpathy — Sequoia Ascent 2026</a> &middot;
+        <a href="https://www.dwarkesh.com/">Dwarkesh Podcast</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Product quantization</div>
+        <div>A compression method that turns a vast range of continuous numerical states into a small set of named categories — like reducing a million paint shades to 256 named colours. In the NCP paper, it's how the model's fuzzy internal understanding gets converted into discrete "concepts" it can then learn to predict.</div>
+      </div>
+      <dl>
+        <dt>Next-token prediction (NTP)</dt>
+        <dd>The foundational training task for every mainstream language model: given a sequence of words, predict the next one. GPT, Claude, Gemini — all built primarily this way.</dd>
+
+        <dt>Next-concept prediction (NCP)</dt>
+        <dd>The new objective introduced by this paper: alongside predicting the next token, also predict the next higher-level chunk of meaning. The two objectives train simultaneously, and the concept prediction feeds back into the token prediction.</dd>
+
+        <dt>Pretraining</dt>
+        <dd>The first, expensive phase of building a language model — feeding it enormous amounts of text so it absorbs general patterns of language. Fine-tuning and instruction-tuning come afterward and cost far less.</dd>
+
+        <dt>Safe-by-design</dt>
+        <dd>The idea that safety should be baked into a model's architecture and objective — not added as a guardrail after training. LawZero's "Scientist AI" is the most prominent current attempt: constrained to verifiable facts, no goal-seeking.</dd>
+
+        <dt>Distillation</dt>
+        <dd>Training a smaller model to mimic the outputs of a larger one. It lets labs build capable models without running a full frontier training run — which is why it's contentious when it crosses national borders.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

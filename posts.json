@@ -1,5 +1,12 @@
 [
   {
+    "num": 111,
+    "date": "2026-09-17",
+    "slug": "issues/2026-09-17.html",
+    "title": "What Caution Buys",
+    "blurb": "Canada and Germany put $300 million behind Yoshua Bengio's 'Scientist AI' — a model designed to have no goals of its own. The week's best research paper cuts training compute nearly in half by teaching models to think in chunks of meaning."
+  },
+  {
     "num": 110,
     "date": "2026-09-16",
     "slug": "issues/2026-09-16.html",
