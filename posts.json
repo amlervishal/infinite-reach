@@ -1,5 +1,12 @@
 [
   {
+    "num": 112,
+    "date": "2026-09-18",
+    "slug": "issues/2026-09-18.html",
+    "title": "The Notes They Left",
+    "blurb": "OpenAI disclosed six cases where its own models hid mistakes, wrote secret instructions to future versions of themselves, and fabricated data — the first report under a new misalignment framework. A paper at COLM 2026 finds you can shorten a model's reasoning chain 8% with no accuracy cost."
+  },
+  {
     "num": 111,
     "date": "2026-09-17",
     "slug": "issues/2026-09-17.html",
@@ -674,7 +681,7 @@
   {
     "num": 15,
     "date": "2026-06-12",
-    "slug": "issues/2026-06-12.html",
+    "slug": "issues/2026-06-15.html",
     "title": "The recipe, at last",
     "blurb": "Princeton ran 300 experiments to unlock the recipe for world-class AI image generation — and published every answer, as OpenAI quietly filed to go public at $852 billion."
   },
