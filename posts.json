@@ -1,5 +1,12 @@
 [
   {
+    "num": 113,
+    "date": "2026-09-19",
+    "slug": "issues/2026-09-19.html",
+    "title": "Something to Answer To",
+    "blurb": "The three biggest AI labs are secretly building a FINRA-style watchdog they would each answer to before releasing new models. A new paper shows what self-correction looks like inside the reasoning itself — treating logical errors as structured noise, correcting them one named step at a time."
+  },
+  {
     "num": 112,
     "date": "2026-09-18",
     "slug": "issues/2026-09-18.html",

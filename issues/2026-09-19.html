@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №113 — Something to Answer To · Infinite Reach</title>
+  <meta name="description" content="The three biggest AI labs are drafting their own testing rules — while a new paper shows how to build the same habit of self-correction into a model's reasoning, one precise step at a time." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №113 &middot; Friday, September 19, 2026</p>
+      <h1>Something to Answer To</h1>
+      <p>The three biggest AI labs have been quietly building a watchdog they would each answer to before releasing new models. And a new paper shows what self-correction looks like inside a model's own reasoning — not a broad restart, but a series of small, named fixes applied one at a time.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>OpenAI, Anthropic, and Google have been meeting since at least July to design an AI industry standards body modeled on FINRA — the US body that certifies brokers and can refer violations to federal regulators — to test frontier models before release. OpenAI's policy chief confirmed the talks this week. The proposed body would write and enforce its own testing rules, funded entirely by industry. Cohere CEO Aidan Gomez called it a cartel: "Who writes the rules, and whose interests do they protect?" Senator Bernie Sanders said binding international rules, not voluntary industry standards, are what's actually needed. No agreement has been reached, and the Trump administration has not joined the talks.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Infrastructure</span><span>Crusoe raised $3.9 billion at a $30.9 billion valuation for vertically-integrated AI data centers, with backing from NVIDIA, Qatar's sovereign wealth fund, Founders Fund, and Mubadala. The round closed September 17, tripling the company's valuation in nine months.</span></li>
+        <li><span class="tag policy">Rules</span><span>OpenAI published a policy paper calling for mandatory, capability-based national AI safety regulation and a "Right to AI" — the idea that access to AI tools should be as foundational to participation in modern life as electricity once was.</span></li>
+        <li><span class="tag policy">Governance</span><span>An EY survey of 202 senior AI leaders at US companies with over $1 billion in revenue found that 47% have bypassed their own internal AI governance policies for urgent deployments. The rules exist; the question is whether anyone enforces them.</span></li>
+        <li><span class="tag money">Security</span><span>MIND, an AI-native data-loss prevention startup, raised $72 million Series B as enterprises deploying AI tools discover those tools can inadvertently expose sensitive internal data.</span></li>
+        <li><span class="tag tech">Voice</span><span>Andrej Karpathy — now leading pre-training research at Anthropic — publicly backed Dario Amodei's "We Must Pace the Frontier" essay: "I love this and really hope we can come together as an industry and make it happen." Karpathy has historically been cautious about doomsday framings; this direct public endorsement of a concrete slowdown plan is new ground.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: Paper, explained -->
+      <h2>Paper, explained: correcting a model's reasoning errors, one step at a time</h2>
+      <p class="kicker">Semantic Reasoning Denoising: Correcting Language Model Reasoning with Semantic Operators &middot; Yujiao Yang &middot; arXiv, August 22 2026 &middot; <a href="https://arxiv.org/abs/2608.22090">arXiv:2608.22090</a></p>
+      <p>When a language model reasons out loud, a single wrong step can quietly corrupt everything that comes after it. This paper introduces a new method — Semantic Reasoning Denoising, or SRD — that treats those errors as a kind of noise you can name, locate, and remove, step by step, the way an image-processing algorithm peels static off a photograph.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Modern language models often produce long "reasoning traces" — chains of written steps that lead to a final answer. Think of them as scratch-pad work you can read. The problem is that these traces are fragile. If the model makes a wrong assumption at step three, steps four, five, and six are all built on that faulty foundation. The final conclusion can be wrong even when all the subsequent logic is technically valid. Two families of fixes already exist, and both are unsatisfying. The first is to start the whole trace over from scratch and try again — expensive, and uninformed about where things went wrong. The second is to ask the model to "check itself," which too often just confirms the same errors: the model is working from the same faulty internal patterns that produced the mistake in the first place. Neither approach can say, with precision: <em>here is the exact wrong turn, this is what it should have been.</em></p>
+
+      <h3>How it works</h3>
+      <p>SRD borrows a framing from image-generation models, which are trained to reverse a noise-adding process. You start with a clean image, add random static in stages, and teach the model to undo each stage in reverse — until you're back to the original. The "diffusion" trick works not just on pixels but, SRD proposes, on logical steps. If you can describe precisely <em>how</em> a reasoning trace got corrupted, you can train a model to undo it.</p>
+      <p>The core invention is the <strong>error operator</strong>: a precise, executable description of one specific mistake. An error operator specifies three things at once — what kind of error it is (wrong inference, faulty premise, miscalculation), where it sits in the trace, and what the correct proposition would look like instead. Think of it less like a red underline and more like a surgical annotation: not "this is wrong" but "at step 3, you inferred X from premise Y; the valid inference is Z; here is why." These descriptions are <em>executable</em> — they can be applied programmatically to transform a noisy trace into a less-noisy one.</p>
+      <p>During training, the model sees pairs of reasoning traces at adjacent noise levels and learns to predict which error operator is currently "active" in the noisier version. At inference, the process loops: predict the active operator, check whether it applies, apply the inverse (the fix), then check again — and keep going until the trace reaches a stable, low-noise state. It is the reasoning equivalent of a grammar checker that not only flags an error but explains its type, location, and fix, then keeps scanning until no more specific errors are detected. The figure below shows the loop in schematic form.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 268" role="img" aria-label="Diagram of the SRD denoising loop: a noisy reasoning trace enters from the left, passes through the error-operator identification step in the centre, and exits as a corrected trace on the right; a dashed arrow shows the optional iteration back to the start">
+          <defs>
+            <marker id="arr113" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#87867F"/>
+            </marker>
+            <marker id="arrd113" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#D1CFC5"/>
+            </marker>
+          </defs>
+
+          <!-- Left panel: Noisy trace -->
+          <rect x="10" y="14" width="178" height="230" rx="8" fill="#F8F6F1" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="99" y="36" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="12.5" fill="#141413" font-weight="600">Noisy trace</text>
+          <rect x="26" y="46" width="146" height="30" rx="5" fill="#E6EEE0" stroke="#788C5D" stroke-width="1"/>
+          <text x="99" y="65" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413">Step 1 — correct</text>
+          <rect x="26" y="84" width="146" height="30" rx="5" fill="#E6EEE0" stroke="#788C5D" stroke-width="1"/>
+          <text x="99" y="103" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413">Step 2 — correct</text>
+          <rect x="26" y="122" width="146" height="32" rx="5" fill="#F5E0D5" stroke="#D97757" stroke-width="2"/>
+          <text x="99" y="141" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413" font-weight="600">Step 3 — ✗ wrong inference</text>
+          <rect x="26" y="162" width="146" height="30" rx="5" fill="#EEECEA" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="99" y="181" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">Step 4 — downstream</text>
+          <rect x="26" y="200" width="146" height="30" rx="5" fill="#EEECEA" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="99" y="219" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">Conclusion ✗</text>
+
+          <!-- Arrow right to middle -->
+          <line x1="192" y1="134" x2="248" y2="134" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr113)"/>
+          <text x="220" y="126" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">detect</text>
+
+          <!-- Middle: Error operator box -->
+          <rect x="252" y="90" width="166" height="92" rx="8" fill="#E4EEF5" stroke="#6A8CAF" stroke-width="1.8"/>
+          <text x="335" y="113" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="12.5" fill="#141413" font-weight="600">Error operator</text>
+          <text x="335" y="131" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9.5" fill="#141413">type: wrong inference</text>
+          <text x="335" y="148" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9.5" fill="#141413">at: step 3</text>
+          <text x="335" y="165" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9.5" fill="#141413">fix: replace X with Z</text>
+
+          <!-- Arrow right to right panel -->
+          <line x1="420" y1="134" x2="490" y2="134" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr113)"/>
+          <text x="455" y="126" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">apply</text>
+
+          <!-- Iterate dashed arrow (below) -->
+          <path d="M 335 183 Q 335 240 210 252 Q 120 260 70 244 Q 42 236 30 220" fill="none" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrd113)"/>
+          <text x="230" y="258" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">loop until stable</text>
+
+          <!-- Right panel: Corrected trace -->
+          <rect x="494" y="14" width="216" height="230" rx="8" fill="#F8F6F1" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="602" y="36" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="12.5" fill="#141413" font-weight="600">Corrected trace</text>
+          <rect x="510" y="46" width="184" height="30" rx="5" fill="#E6EEE0" stroke="#788C5D" stroke-width="1"/>
+          <text x="602" y="65" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413">Step 1 — correct</text>
+          <rect x="510" y="84" width="184" height="30" rx="5" fill="#E6EEE0" stroke="#788C5D" stroke-width="1"/>
+          <text x="602" y="103" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413">Step 2 — correct</text>
+          <rect x="510" y="122" width="184" height="32" rx="5" fill="#E6EEE0" stroke="#788C5D" stroke-width="2"/>
+          <text x="602" y="141" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413" font-weight="600">Step 3 — ✓ corrected</text>
+          <rect x="510" y="162" width="184" height="30" rx="5" fill="#E6EEE0" stroke="#788C5D" stroke-width="1"/>
+          <text x="602" y="181" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413">Step 4 — correct</text>
+          <rect x="510" y="200" width="184" height="30" rx="5" fill="#DFF0DB" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="602" y="219" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#141413" font-weight="600">Conclusion ✓</text>
+        </svg>
+        <figcaption>SRD's correction loop: the model identifies the active error operator at the corrupted step (orange), applies the inverse fix, then iterates if any errors remain — stopping only when the trace is stable. The rightmost column shows the corrected chain, with the bad inference replaced and the downstream conclusion restored.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The researchers tested SRD using two backbone models — Llama-3-8B-Instruct and Qwen3-8B-Instruct — across six in-domain benchmarks covering mathematics, code generation, factual knowledge, and commonsense reasoning. To check whether the gains were genuine or just memorized patterns, they also ran the same models on seven out-of-distribution transfer datasets the models had never seen during SRD training. As a further check, they ran a smaller Qwen3-4B variant. Ablation tests stripped out key components one at a time to measure how much each contributed.</p>
+
+      <h3>What they found</h3>
+      <p>SRD improved the strongest same-backbone baseline by <strong>3.2 points on average</strong> across the six in-domain benchmarks. On the seven out-of-distribution transfer targets, it improved the strongest Qwen3-8B baseline average by <strong>2.9 points</strong>. The gains held across benchmark types — not only in mathematics, where verifying correctness is easiest, but in code and factual knowledge tasks too. The ablation tests confirmed that both ingredients are necessary: the structured error-operator format and the iterative loop each contribute, and removing either produces a noticeably smaller improvement than keeping both. The method also scaled down cleanly: at the 4B parameter size, gains of 2.5–2.6 points were observed. No dramatic failures or benchmark types where the method backfired were reported.</p>
+
+      <h3>The catch</h3>
+      <p>This is a single-author preprint — it has not yet been peer-reviewed. The improvements are consistent but modest: 2–3 percentage points does not transform a model that was failing into one that passes. The method adds compute at inference time, since each correction loop requires an extra pass through the model; it is slower and more expensive than a single-shot answer. And the error operators need a training corpus of annotated mistakes — someone or something has to label not just "this step is wrong" but "this is a wrong-inference error, and here is what the fix looks like." The paper does not fully address how expensive or scalable that annotation process is when applied to entirely new domains. Transfer results, while positive, are described as "competitive" with baselines — not always leading.</p>
+
+      <p><strong>If you remember one thing:</strong> Calling reasoning errors "structured noise with a known type, location, and fix" rather than just "wrong" gives a specific, reversible handle to correct them — and that framing alone is worth 2–3 benchmark points without touching the underlying model.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Now heading Anthropic's pre-training research team, Karpathy publicly endorsed Dario Amodei's "We Must Pace the Frontier" essay this week, writing: "I love this and really hope we can come together as an industry and make it happen." He has historically been cautious about extinction-risk framings; direct public backing of a concrete, three-part slowdown plan is a new position. <a href="https://x.com/karpathy/status/2098811935114551617">→ his endorsement</a></span></li>
+        <li><span class="tag tech">Boris Cherny</span><span>Simon Willison flagged a notable quote from the Claude Code creator: "Production code written by Claude should have a higher bar than if written by a human." An unusual standard to articulate publicly — and one that immediately raises the question of how you consistently enforce it. <a href="https://simonwillison.net/2026/Sep/11/boris-cherny/">→ Willison's note</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two threads ran through the week, and they rhyme. The first is about external oversight: the three biggest labs trying to write their own testing rules, a government ally questioning whether voluntary standards are enough, and an EY survey showing that nearly half of large companies bypass their internal AI governance under pressure anyway. The second is about internal correction: a paper demonstrating that reasoning errors can be identified and fixed with surgical precision, rather than through expensive retries or self-checks that just reinforce the same mistakes. The connection isn't accidental. As AI takes on longer, multi-step tasks — research, code generation, legal analysis — the gap between "plausible-sounding" and "actually right" widens, and so does the need for mechanisms, inside the model and outside it, to catch the moment things go wrong. This week's news is, in a way, a single question asked at two different scales: who corrects the error once it's been made?</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2608.22090">arXiv:2608.22090</a> ·
+        <a href="https://qz.com/anthropic-google-openai-ai-standards-body-091426">Quartz — AI standards body</a> ·
+        <a href="https://us.cnn.com/2026/09/14/tech/ai-standards-body">CNN — standards body talks</a> ·
+        <a href="https://www.shopifreaks.com/anthropic-google-and-openai-have-discussed-creating-their-own-ai-standards-body-modeled-on-finra-to-test-frontier-models/">Shopifreaks — FINRA model details</a> ·
+        <a href="https://techstartups.com/2026/09/17/crusoe-raises-3-9-billion-at-30-9-billion-valuation-as-ai-infrastructure-demand-surges/">Tech Startups — Crusoe raise</a> ·
+        <a href="https://www.crusoe.ai/resources/newsroom/crusoe-announces-series-f-funding">Crusoe newsroom</a> ·
+        <a href="https://openai.com/index/new-policy-ideas-for-the-intelligence-age/">OpenAI — policy ideas</a> ·
+        <a href="https://solutionsreview.com/ai-news-for-the-week-of-september-18-updates-from-agentic-ai-foundation-cisco-ey-more/">Solutions Review — EY survey</a> ·
+        <a href="https://www.medianama.com/2026/09/223-tech-leaders-countries-amodei-slowdown-ai/">MediaNama — industry reaction to slowdown call</a> ·
+        <a href="https://x.com/karpathy/status/2098811935114551617">Karpathy endorsement (X)</a> ·
+        <a href="https://simonwillison.net/2026/Sep/11/boris-cherny/">Simon Willison — Boris Cherny quote</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Denoising</div>
+        <div>Originally an image-processing idea: start with a clean picture, add random static in stages, then train a model to undo each stage in reverse order. The technique powers image generators like Stable Diffusion. SRD applies it to reasoning: if you can describe exactly how a logical error "corrupted" a trace, you can train a model to reverse it, step by step, until the reasoning is clean again.</div>
+      </div>
+      <dl>
+        <dt>Error operator</dt><dd>SRD's key invention: a precise, executable label for one specific mistake — its type (wrong inference, faulty premise, bad calculation), its location in the reasoning trace, and what the correct version looks like. More surgical than "this step is wrong."</dd>
+        <dt>Reasoning trace</dt><dd>The written-out chain of steps a language model produces before its final answer. Useful for checking the work — but fragile, because one wrong step can corrupt every step that builds on it.</dd>
+        <dt>FINRA</dt><dd>Financial Industry Regulatory Authority — a US body funded by the securities industry itself that writes rules for brokers and can refer violations to the SEC. The proposed AI standards body would copy this structure: industry-funded, industry-governed, but with real enforcement power.</dd>
+        <dt>Distillation</dt><dd>Training a smaller, cheaper model to mimic a larger one by learning from its outputs rather than raw data. US intelligence agencies recently accused six Chinese AI firms of doing this covertly. YC's Garry Tan argues American open-source labs should be allowed to do it openly.</dd>
+        <dt>Ablation study</dt><dd>An experiment where you remove one component of a system and measure how much performance drops. SRD's ablations confirmed that both the structured error-operator format and the iterative loop contribute — neither alone is as effective as both together.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
