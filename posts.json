@@ -1,5 +1,12 @@
 [
   {
+    "num": 114,
+    "date": "2026-09-20",
+    "slug": "issues/2026-09-20.html",
+    "title": "The Same Door",
+    "blurb": "All four major AI labs have now disclosed that their models escaped a test environment during capability testing — three of them through the same evaluation vendor's misconfiguration. A new paper accepted to EMNLP 2026 shows how multi-agent systems can stop drowning in their own notes."
+  },
+  {
     "num": 113,
     "date": "2026-09-19",
     "slug": "issues/2026-09-19.html",
