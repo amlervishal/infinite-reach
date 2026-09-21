@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №115 — At the Wheel · Infinite Reach</title>
+  <meta name="description" content="Trump announced an 'AI Force' and rejected pacing constraints; a zero-click flaw hit four AI coding tools; and a new paper found the scaffold around a model can matter as much as the model itself." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №115 &middot; Monday, September 21, 2026</p>
+      <h1>At the Wheel</h1>
+      <p>The White House announced an AI Force and rejected calls for any development slowdown — the same week a zero-click security flaw let attackers quietly hijack AI coding tools, and a new paper measured just how much the wrapper around a model shapes what it achieves.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On Saturday, President Trump announced plans to create an “AI Force” modelled on the Space Force and to appoint an AI czar — and explicitly rejected the September 12 letter signed by Sam Altman, Dario Amodei, and Elon Musk calling for government pacing mechanisms. “We will not in any way hinder or stifle the Growth of this incredible Industry,” he wrote on Truth Social. The announcement named neither the czar’s duties nor the force’s mission nor any timeline. What it established clearly is that the administration’s current position is maximum acceleration — and that the proposal from three of the world’s most powerful AI executives for any kind of government-enforced speed limit is, as far as Washington is presently concerned, dead.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Security</span><span><strong>Plugin4Shell:</strong> a zero-click bug disclosed September 17 lets attackers replace a legitimate plugin update with malicious code before an AI coding agent installs it. The flaw exploits a shared assumption across four tools — that a 40-character git commit hash uniquely identifies safe code. Anthropic patched Claude Code (v2.1.179) and OpenAI patched Codex (v0.146.0). GitHub Copilot remains unpatched.</span></li>
+        <li><span class="tag tech">Tools</span><span><strong>Claude Code Projects redesigned:</strong> Anthropic rebuilt its Projects feature as a persistent, always-on conversation that dispatches parallel agent threads. You describe the goal; it keeps working after you close your laptop. Beta for select Pro and Max cloud users now, rolling out broadly soon.</span></li>
+        <li><span class="tag money">Funding</span><span><strong>Naive AI hits $1.42 billion:</strong> the Beijing startup — founded in February 2026 by Tsinghua professor Jifeng Dai — closed a $400 million round backed by Tencent and IDG Capital. Plans an open-weight model release this month and is also researching recursive self-improvement.</span></li>
+        <li><span class="tag money">IPO</span><span><strong>Anthropic listing slides to November:</strong> the planned late-September/October IPO was delayed; the confidential S-1 was filed June 1. Valuation targets range from roughly $965 billion to over $2 trillion, depending on who is estimating.</span></li>
+        <li><span class="tag policy">Privacy</span><span><strong>ChatGPT’s logged-out tracker:</strong> independent researcher Buchodi found that ChatGPT generates a persistent identifier that links signed-in accounts to third-party browsing activity across 12+ commercial sites — classified as analytics to avoid marketing consent settings.</span></li>
+      </ul>
+
+      <h2>Paper, explained: Does the wrapper around an AI agent matter as much as the model?</h2>
+      <p class="kicker">How Do Agent Harnesses Create Value? Planning Information and Release Control in Stateful LLM Agents &middot; Yukun Zhang, Kemu Xu, Yishen Chen &middot; <a href="https://arxiv.org/abs/2609.20474">arXiv 2609.20474</a></p>
+
+      <p>Every AI agent lives inside a harness — the code layer that hands it a goal, tools, and sometimes a plan before it starts. Builders have long suspected the harness matters. This paper actually measured it. The results have a direct bearing on how engineering teams should spend their time.</p>
+
+      <h3>The problem, and why it’s hard</h3>
+      <p>When an agent completes a multi-step task — processing a return, modifying a flight booking — it’s almost impossible to know what drove that success. Was it the model’s underlying reasoning? The instructions it received before it started? The way its output was checked at the end? Researchers and engineers have intuited that “better scaffolding helps,” but intuition isn’t a measurement. The field has been building increasingly elaborate harnesses — pre-written workflows, automated verifiers, memory systems — without a clean answer to the basic question: which part is actually carrying the weight?</p>
+
+      <p>The challenge is that you can’t simply compare “harness on” versus “harness off,” because a harness does many things simultaneously. You need a way to isolate one component while holding everything else constant — and that is harder than it sounds when the system you’re studying is a language model reading free text.</p>
+
+      <h3>How it works</h3>
+      <p>The researchers’ key move is borrowed from pharmaceutical trials: the placebo condition. They compared two kinds of guidance given to an agent before each task:</p>
+
+      <p>The <strong>Fixed plan</strong> is a task-specific, pre-written workflow — step-by-step guidance tuned to the actual task type, such as how to handle a partial-order return in a retail system. This is the real intervention, the thing a careful engineer would write.</p>
+
+      <p>The <strong>Sham plan</strong> is the same amount of text, but scrambled. The words are real; the length is identical; but the sentences have been shuffled into nonsense. The agent still reads this text before it starts — it just contains no useful signal.</p>
+
+      <p>Think of it like a musician who receives either a correct lead sheet or a correct-looking lead sheet with the measures in the wrong order. The paper, the format, the length: identical. The meaning: gone. If the agent does better with the Fixed plan than the Sham, that proves it is the planning <em>content</em> that matters — not some artifact of merely having text in the harness at all.</p>
+
+      <p>They also tested a second component: a <strong>verifier</strong>. Rather than trusting the agent to self-report whether it finished correctly, this is a read-only automated checker that looks at the terminal output and makes its own call on whether the task was actually completed.</p>
+
+      <h3>What they actually did</h3>
+      <p>The experiment used <em>τ²-bench</em>, a benchmark of realistic customer-service tasks across two domains: Retail (product returns, order changes) and Airline (booking modifications, refunds). They ran 265 matched task cells — paired comparisons where the same underlying task was given to an agent with a Fixed plan and then a Sham plan — keeping task complexity constant to enable a direct apples-to-apples comparison. The verifier was evaluated on the Retail domain.</p>
+
+      <h3>What they found</h3>
+      <p>The Fixed plan beats the Sham plan by <strong>7.17 percentage points</strong> in oracle-verified success — the fraction of tasks the agent completes correctly (90% confidence interval: 1.15 to 13.36 points). The gains are uneven: harder, more complex tasks benefit more than simple ones. For tasks where an agent could probably muddle through anyway, Fixed and Sham look roughly alike. For multi-step tasks with conditional logic and edge cases, the gap widens considerably.</p>
+
+      <p>The verifier tells a sharper story. It correctly rejects <strong>61% of episodes</strong> where the agent claimed success but actually failed — failures that a system without a verifier would have reported as completed. The cost of that catching is a false-negative rate of <strong>17%</strong>: real successes the verifier wrongly flags as failures. The per-episode cost of running it: under one cent.</p>
+
+      <p>Whether you prioritise the planning gain or the verifier gain depends on what kind of mistake is more expensive in your context. In low-stakes settings — exploratory queries, casual drafting — getting more tasks right (the planning gain) tends to dominate. In high-liability settings — financial transactions, health bookings, anything where a wrong confirmation causes real harm — catching false completions (the verifier’s role) becomes more valuable than any gain in raw success rate.</p>
+
+      <h3>The catch</h3>
+      <p>The study covers two task domains, both in the customer-service family. Whether these results hold in coding tasks, scientific research, or open-ended creative work is not established. The 7.17-point improvement is statistically meaningful but modest — it won’t rescue a weak model or a badly designed system. The Sham condition is also not the same as having no plan at all; agents given truly empty context might behave differently. And the verifier is domain-specific, not a general-purpose quality gate that can be dropped unchanged into any workflow.</p>
+
+      <p><strong>If you remember one thing:</strong> Good planning guidance reliably improves an agent’s success by about 7 points — not because models are bad at reasoning, but because knowing the shape of a task before it starts is genuinely valuable information, and that’s as true for a language model as it is for a person.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 318" role="img" aria-label="Two agent harness architectures side by side: Sham plan on left, Fixed plan plus verifier on right, with 7.17 percentage point gap labeled between them">
+          <defs>
+            <marker id="arr-muted" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#87867F" />
+            </marker>
+            <marker id="arr-olive" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#788C5D" />
+            </marker>
+            <marker id="arr-clay" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#D97757" />
+            </marker>
+          </defs>
+
+          <line x1="360" y1="10" x2="360" y2="300" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="5,4"/>
+
+          <text x="155" y="30" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="15" font-weight="600" fill="#141413">Sham harness</text>
+          <text x="155" y="48" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">shuffled text, no useful guidance</text>
+
+          <rect x="55" y="62" width="200" height="46" rx="6" fill="#F3F2EF" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="155" y="81" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#87867F">Sham plan</text>
+          <text x="155" y="97" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#87867F">(same length, shuffled sentences)</text>
+
+          <line x1="155" y1="108" x2="155" y2="132" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr-muted)"/>
+
+          <rect x="55" y="132" width="200" height="46" rx="6" fill="#ECEAE4" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="155" y="152" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413">Agent execution</text>
+          <text x="155" y="168" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">model + tools</text>
+
+          <line x1="155" y1="178" x2="155" y2="202" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr-muted)"/>
+
+          <rect x="55" y="202" width="200" height="46" rx="6" fill="#F3F2EF" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="155" y="222" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#87867F">Self-reported done</text>
+          <text x="155" y="238" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">no independent check</text>
+
+          <text x="155" y="278" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" fill="#87867F">Baseline</text>
+
+          <text x="565" y="30" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="15" font-weight="600" fill="#141413">Fixed + Verifier</text>
+          <text x="565" y="48" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#788C5D">task-specific plan + automated check</text>
+
+          <rect x="465" y="62" width="200" height="46" rx="6" fill="#EEF2EA" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="565" y="81" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#788C5D">Task-specific plan</text>
+          <text x="565" y="97" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D">(step-by-step workflow for this task type)</text>
+
+          <line x1="565" y1="108" x2="565" y2="132" stroke="#788C5D" stroke-width="1.5" marker-end="url(#arr-olive)"/>
+
+          <rect x="465" y="132" width="200" height="46" rx="6" fill="#ECEAE4" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="565" y="152" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413">Agent execution</text>
+          <text x="565" y="168" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">model + tools</text>
+
+          <line x1="565" y1="178" x2="565" y2="202" stroke="#788C5D" stroke-width="1.5" marker-end="url(#arr-olive)"/>
+
+          <rect x="465" y="202" width="200" height="46" rx="6" fill="#EEF2FA" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="565" y="222" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#6A8CAF">Read-only verifier</text>
+          <text x="565" y="238" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#6A8CAF">catches 61% of failures · &lt;$0.01 / episode</text>
+
+          <text x="565" y="278" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" fill="#788C5D">Baseline +7.17 pp</text>
+
+          <line x1="258" y1="268" x2="463" y2="268" stroke="#D97757" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-clay)"/>
+          <text x="360" y="260" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#D97757">+7.17 percentage points</text>
+          <text x="360" y="292" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">90% CI: 1.15 – 13.36 · across 265 matched task cells (τ²-bench)</text>
+        </svg>
+        <figcaption>Two harness configurations in τ²-bench. The Sham harness provides pre-task text that matches the length and format of real guidance but contains scrambled, meaningless sentences. The Fixed harness adds a real task-specific workflow plus a lightweight verifier. The Fixed configuration improves oracle-verified task success by 7.17 percentage points, with gains concentrated in higher-complexity tasks.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>The <strong>Claude Code Projects redesign</strong> launched in beta September 17 — Boris’s team’s work. Projects now run as a persistent, coordinating conversation rather than a static folder; you describe a goal once, and parallel agent threads carry it forward. He published a new post to his blog on September 20 covering the design thinking behind it. <a href="https://claude.com/blog/projects-redesigned">Anthropic post</a></span></li>
+        <li><span class="tag tech">Dwarkesh Patel</span><span>His September 11 episode with <strong>Noam Brown</strong> — researcher behind the Libratus poker AI — covers agent swarms, alignment, and what recursive self-improvement actually means in practice. One of the cleaner conversations on this topic. <a href="https://www.dwarkesh.com/">dwarkesh.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>This week’s stories share a thread: the question of who holds the wheel. Trump said the government will not constrain AI development, installing an unnamed czar and creating a new force without specifying either’s role. Plugin4Shell showed that four widely-trusted AI coding tools shared a hidden assumption that let attackers silently take control of a developer’s machine. And the agent harness paper showed that the decisions made before a model starts running — the instructions handed to it, the checks placed on its output — matter more than many builders appreciate. As AI agents earn more trust and take on more autonomous work, what’s inside the harness becomes as consequential as what’s inside the model. That’s a design problem, a security problem, and now, apparently, a political one too.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.washingtonpost.com/politics/2026/09/19/trump-form-ai-force-name-ai-czar-rejects-calls-constraints/">Washington Post — Trump AI Force</a> &middot;
+        <a href="https://www.cbsnews.com/news/trump-vows-ai-force-czar-development/">CBS News — AI Force</a> &middot;
+        <a href="https://cybersecuritynews.com/plugin4shell-zero-click-rce/">Cybersecurity News — Plugin4Shell</a> &middot;
+        <a href="https://www.helpnetsecurity.com/2026/09/18/plugin4shell-ai-coding-agents-vulnerability/">Help Net Security — Plugin4Shell</a> &middot;
+        <a href="https://www.air.security/blog-posts/plugin4shell">AIR Security — Plugin4Shell disclosure</a> &middot;
+        <a href="https://claude.com/blog/projects-redesigned">Anthropic — Projects redesigned</a> &middot;
+        <a href="https://venturebeat.com/orchestration/anthropic-launches-claude-code-projects-an-always-on-conversation-that-remembers-and-delegates-your-long-running-dev-work">VentureBeat — Claude Code Projects</a> &middot;
+        <a href="https://cryptobriefing.com/tencent-backs-naive-ai-billion-valuation/">CryptoBriefing — Naive AI $1.42B</a> &middot;
+        <a href="https://arxiv.org/abs/2609.20474">arXiv 2609.20474 — Harnesses paper</a> &middot;
+        <a href="https://github.com/diclogic/ai-daily-digest/issues/159">AI Daily Digest Sept 21</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Harness</div>
+        <div>The code layer that wraps around an AI model to give it a goal, tools, memory, and a plan before it starts. The model is the engine; the harness is the cockpit, the seat belt, and the route planner. This week’s top paper measured how much the harness itself — not the engine — determines how far you get.</div>
+      </div>
+      <dl>
+        <dt>τ²-bench</dt><dd>A benchmark that tests AI agents on realistic multi-step tasks — customer-service returns, airline booking changes — designed to be close enough to real work to show where a model and its scaffolding succeed or fail under pressure.</dd>
+        <dt>Zero-click vulnerability</dt><dd>A security flaw that an attacker can exploit without you doing anything. No link to click, no file to open — the attack fires when software performs a routine action it normally trusts.</dd>
+        <dt>Pacing proposal</dt><dd>A suggestion — here, from Altman, Amodei, and Musk — that AI developers accept pre-set limits on training runs or capability jumps, coordinated with governments, to create space for safety reviews before each new model ships.</dd>
+        <dt>RLCD</dt><dd>Reinforcement Learning from Calibrated Decisions. A training method that rewards a model for emitting structured choices (yes/no, which category) rather than open text — keeping outputs short, fast, and easy to verify.</dd>
+        <dt>Recursive self-improvement</dt><dd>The theoretical ability for an AI to improve its own training process or architecture, so that each generation produces a better version of itself without humans redesigning it from scratch.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
