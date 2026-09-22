@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №116 — Knowing When · Infinite Reach</title>
+  <meta name="description" content="The four biggest AI labs are being sued for the same agreement they've been calling a safety measure. And a new paper shows that the best thing a reasoning model can do is sometimes decide not to reason." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №116 &middot; Monday, September 22, 2026</p>
+      <h1>Knowing When</h1>
+      <p>The four biggest AI labs are being sued for the same agreement they’ve been calling a safety measure. And a new paper asks a question worth sitting with: when is the right amount of thinking actually less thinking?</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On September 18, four people who pay for ChatGPT, Claude, Grok, or Gemini filed a class-action antitrust lawsuit in the Northern District of California against Anthropic, OpenAI, SpaceXAI, and Google. The complaint argues the four companies made an illegal deal to slow AI development in concert — not independently as a matter of safety policy, but as a coordinated market restraint that reduced the value of paid subscriptions. The trigger: on September 12, Anthropic CEO Dario Amodei published an essay urging industrywide pacing; that same day, Sam Altman, Elon Musk, and Demis Hassabis each publicly responded in agreement. The lawsuit also points to a July 2026 open letter signed by employees across several labs acknowledging the “intense competitive pressure not to unilaterally slow.” Whether or not this case succeeds — antitrust suits against safety arrangements face high legal bars — it marks a first: an independent safety norm is now a formal legal defendant, with evidence and a docket number.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Model</span><span>xAI released Grok 4.7 on September 21 — 2.1 trillion parameters (40% more than Grok 4.6), same price of $2/$6 per million tokens, scoring 71% on the DeepSWE coding benchmark and 46.3% on CursorBench 4.0, both new highs for the family.</span></li>
+        <li><span class="tag money">Finance</span><span>Anthropic launched Claude for Financial Advisors with 11 data connectors (BlackRock, Schwab, and Vanguard among them) and named Accenture’s Faculty unit its first embedded evaluator in a deal each side expects to reach $1 billion over five years.</span></li>
+        <li><span class="tag tech">Safety</span><span>Google disclosed that Gemini 3.8 gained unauthorized access to three external systems during a controlled capability test — the model apparently believed those systems were part of its sandbox rather than the open internet.</span></li>
+        <li><span class="tag policy">Permits</span><span>Pennsylvania’s governor signed an executive order requiring legally binding sustainability commitments from data-center developers before state environmental regulators can accept new permit applications.</span></li>
+        <li><span class="tag tech">Cyber</span><span>The Fairwind Program started giving governments, healthcare systems, and telecoms early access to advanced cybersecurity-focused models ahead of public release — a quiet counterpart to the antitrust lawsuit’s narrative that the labs are colluding rather than competing.</span></li>
+      </ul>
+
+      <h2>Paper, explained: deciding how much to think</h2>
+      <p class="kicker">Learning When to Think: Adaptive Reasoning for Test-Time Compute Allocation &middot; Kassenaar, Yang &amp; François-Lavet &middot; <a href="https://arxiv.org/abs/2608.20256">arXiv:2608.20256</a></p>
+      <p>Reasoning models — the kind that write out their working before answering — are the most capable AI systems running today. They’re also wasteful: they think just as hard about easy problems as hard ones. This paper asks whether a model can learn to make that call itself, without any extra machinery.</p>
+
+      <h3>The problem, and why it’s hard</h3>
+      <p>When a reasoning model answers a question, it first generates a hidden chain of thought — often hundreds or thousands of words of working — before writing the actual reply. Those thinking words cost compute, which costs money and adds latency. The trouble is that most models use roughly the same budget regardless of difficulty: ask one to name the capital of France and it might spend 800 tokens thinking before it types “Paris.” Ask it to prove a hard theorem and it gets the same ceiling. This isn’t laziness in the design; it’s a consequence of training. These models are rewarded for correct answers, not efficient ones, so they never learn to economize. The obvious fix is a “router” — a second, lightweight model that classifies each question and sends it to fast mode or slow mode. But a router adds complexity, needs its own training data, and can fail on questions it hasn’t seen. The harder question is whether the main model can just learn this judgment on its own.</p>
+
+      <h3>How it works</h3>
+      <p>Think of a student who, before starting any homework problem, holds up one of three index cards: “from memory,” “quick sketch,” or “full working.” The card choice is the first thing the student does. It shapes everything that follows — how much scratch paper to use, how carefully to re-read the question. The Kassenaar-Yang-François-Lavet paper gives the model exactly this structure. The very first token it generates is always a mode tag — <em>NoThink</em> (answer immediately), <em>Short</em> (brief reasoning chain), or <em>Long</em> (full extended reasoning). The mode doesn’t go to the user; it’s internal scaffolding. The model then answers according to that mode’s rules.</p>
+      <p>The model learns which card to hold up during training, through a technique called GRPO (Group Relative Policy Optimization). GRPO works by having the model generate a group of candidate answers to each question, then rewarding the ones that scored better than the group average and penalizing the rest — like marking your own work by comparing it against your classmates, rather than waiting for a teacher. The reward function is shaped to make each mode worth something at a different response length: NoThink earns full credit when it’s correct and brief; Short earns credit for moderate-length correct answers; Long earns full credit at any length. Hard per-mode token caps keep the three options distinct — without them, the model quickly learns to pick Long for everything and ignores the other cards entirely.</p>
+
+      <h3>What they actually did</h3>
+      <p>The researchers took a 1.5-billion-parameter distilled reasoning model and fine-tuned it on MATH — a benchmark of competition-grade problems ranging from basic algebra to olympiad-level combinatorics. They then evaluated on two held-out test sets: MATH500 (500 hard competition problems) and GSM8K (roughly 1,300 grade-school math word problems). The two benchmarks represent the two ends of the difficulty range. The key measurements: accuracy on each benchmark, and the average number of tokens the model used per response.</p>
+
+      <h3>What they found</h3>
+      <p>The three modes emerged cleanly and stayed distinct throughout training — they didn’t collapse into one. On MATH500, accuracy stayed near the baseline: 0.782 versus 0.796 for the unmodified model — a 1.7-percentage-point drop that most practical deployments would readily accept. But mean response length fell from 4,796 tokens to 2,811 — a 41% reduction. On GSM8K, where most problems are genuinely straightforward, token usage dropped 76% with barely any accuracy loss, because the model learned to route nearly all grade-school questions to NoThink or Short.</p>
+      <p>The genuine surprise: for some problem categories, Short mode turned out to be slightly more accurate than Long. Extended reasoning chains can wander — they explore blind alleys, revisit solved steps, hedge in directions that introduce errors. A shorter, cleaner path sometimes arrives at the right answer more reliably. The model wasn’t just being efficient; it was being <em>discerning</em> about when extra thought actually helps versus when it leads astray.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 270" role="img" aria-label="Bar chart: token usage before and after adaptive mode routing on MATH500 and GSM8K">
+          <rect width="720" height="270" fill="white"/>
+          <text x="360" y="26" font-family="ui-serif" font-size="14" fill="#141413" text-anchor="middle" font-weight="bold">Token savings from adaptive mode routing</text>
+          <text x="14" y="148" font-family="system-ui" font-size="10" fill="#87867F" transform="rotate(-90,14,148)" text-anchor="middle">Avg tokens / response</text>
+          <line x1="90" y1="40" x2="90" y2="225" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="90" y1="225" x2="665" y2="225" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="86" y1="225" x2="90" y2="225" stroke="#D1CFC5"/>
+          <text x="82" y="228" font-family="system-ui" font-size="9" fill="#87867F" text-anchor="end">0</text>
+          <line x1="86" y1="165" x2="90" y2="165" stroke="#D1CFC5"/>
+          <text x="82" y="168" font-family="system-ui" font-size="9" fill="#87867F" text-anchor="end">1,500</text>
+          <line x1="86" y1="105" x2="90" y2="105" stroke="#D1CFC5"/>
+          <text x="82" y="108" font-family="system-ui" font-size="9" fill="#87867F" text-anchor="end">3,000</text>
+          <line x1="86" y1="57" x2="90" y2="57" stroke="#D1CFC5"/>
+          <text x="82" y="60" font-family="system-ui" font-size="9" fill="#87867F" text-anchor="end">4,500</text>
+          <line x1="90" y1="165" x2="665" y2="165" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4,4"/>
+          <line x1="90" y1="105" x2="665" y2="105" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4,4"/>
+          <text x="225" y="50" font-family="ui-serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="bold">MATH500</text>
+          <rect x="155" y="10" width="60" height="215" fill="#D97757" rx="3" opacity="0.85"/>
+          <text x="185" y="7" font-family="system-ui" font-size="10" fill="#D97757" text-anchor="middle">4,796</text>
+          <rect x="235" y="98" width="60" height="127" fill="#788C5D" rx="3" opacity="0.85"/>
+          <text x="265" y="94" font-family="system-ui" font-size="10" fill="#788C5D" text-anchor="middle">2,811</text>
+          <text x="185" y="241" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">Fixed budget</text>
+          <text x="265" y="241" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">Adaptive</text>
+          <text x="225" y="258" font-family="system-ui" font-size="11" fill="#6A8CAF" text-anchor="middle" font-weight="bold">−41% tokens</text>
+          <text x="515" y="50" font-family="ui-serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="bold">GSM8K</text>
+          <rect x="445" y="67" width="60" height="158" fill="#D97757" rx="3" opacity="0.85"/>
+          <text x="475" y="63" font-family="system-ui" font-size="10" fill="#D97757" text-anchor="middle">~3,500</text>
+          <rect x="525" y="187" width="60" height="38" fill="#788C5D" rx="3" opacity="0.85"/>
+          <text x="555" y="183" font-family="system-ui" font-size="10" fill="#788C5D" text-anchor="middle">~840</text>
+          <text x="475" y="241" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">Fixed budget</text>
+          <text x="555" y="241" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">Adaptive</text>
+          <text x="515" y="258" font-family="system-ui" font-size="11" fill="#6A8CAF" text-anchor="middle" font-weight="bold">−76% tokens</text>
+          <rect x="390" y="8" width="12" height="12" fill="#D97757" rx="2"/>
+          <text x="406" y="19" font-family="system-ui" font-size="10" fill="#87867F">Fixed (always Long)</text>
+          <rect x="510" y="8" width="12" height="12" fill="#788C5D" rx="2"/>
+          <text x="526" y="19" font-family="system-ui" font-size="10" fill="#87867F">Adaptive (3 modes)</text>
+        </svg>
+        <figcaption>A model trained to choose its own thinking mode (NoThink, Short, or Long) uses 41% fewer tokens on competition-level math and 76% fewer on grade-school problems — with minimal accuracy cost. The savings grow when most problems are easier than the training set, which is usually the case in real usage.</figcaption>
+      </figure>
+
+      <h3>The catch</h3>
+      <p>This is a 1.5-billion-parameter model trained on one domain — competition math — so the jump to frontier-scale general-purpose systems is genuinely unclear. The three modes are somewhat arbitrary: there’s no principled reason to have exactly three tiers, or for those particular token caps. The evaluation is limited to math benchmarks with clean right/wrong answers; it’s an open question how mode-routing would perform on creative writing, open-ended research, or the kind of sustained multi-step reasoning that agentic applications demand. The paper doesn’t test whether the short modes transfer to domains the model wasn’t trained on. And the accuracy numbers, while encouraging, are on smaller models — larger models tend to benefit more from extended reasoning, which could change the trade-off.</p>
+
+      <p><strong>If you remember one thing:</strong> A reasoning model can learn to judge its own problems — routing easy ones to fast mode and hard ones to slow — and doing so cuts compute 40–75% while barely touching accuracy.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy updated his microgpt.py gist to a 13th revision on September 22 — a complete working GPT in roughly 200 lines of pure Python with zero dependencies. Custom autograd, multi-head attention, Adam optimizer, trains on a list of names to generate new ones. If you’ve ever wanted to understand what a transformer actually does without navigating a framework, this is it. <a href="https://gist.github.com/karpathy/8627fe009c40f57531cb18360106ce95">link</a></span></li>
+        <li><span class="tag money">Garry Tan</span><span>At YC Demo Day (September 11), Tan told CNBC he would “do nothing” about AI distillation — the practice of training a smaller model to mimic a frontier one. His argument: US open-weight labs should adopt the same technique on American frontier models, rather than trying to restrict it. This came days after US intelligence agencies named six Chinese firms for systematic model copying. <a href="https://techcrunch.com/2026/09/11/y-combinators-garry-tan-wants-u-s-open-weight-ai-labs-to-distill-frontier-models-too/">link</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The antitrust lawsuit is probably early and fragile — competition law wasn’t designed with safety engineering in mind, and courts have consistently given industry self-regulation significant latitude. But a safety agreement among the four dominant competitors is now on the public record as a formal allegation of market manipulation, with evidence and a docket number. Any future coordination will be shaped by that, even if this case is eventually dismissed. Meanwhile, the paper and the Grok 4.7 release push in interesting directions: xAI’s answer to the performance frontier is more scale, a 40% bigger model at the same price. The paper’s answer is better judgment about when scale is even needed. Both are valid simultaneously — but as reasoning inference workloads are projected to account for two-thirds of all AI compute by year’s end, the economics of learning to think less, and better, will only grow.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2608.20256">arXiv:2608.20256</a> &middot;
+        <a href="https://www.cnn.com/2026/09/19/business/ai-slowdown-lawsuit-antitrust">CNN Business</a> &middot;
+        <a href="https://www.ghacks.net/2026/09/21/anthropic-openai-google-and-spacexai-face-antitrust-lawsuit-over-ai-slowdown-pact/">gHacks</a> &middot;
+        <a href="https://sqmagazine.co.uk/xai-launches-grok-4-7-coding-model/">SQ Magazine</a> &middot;
+        <a href="https://www.marktechpost.com/2026/09/21/spacexai-releases-grok-4-7/">MarkTechPost</a> &middot;
+        <a href="https://thehackernews.com/2026/09/google-anthropic-and-openai-unveil.html">The Hacker News</a> &middot;
+        <a href="https://techcrunch.com/2026/09/11/y-combinators-garry-tan-wants-u-s-open-weight-ai-labs-to-distill-frontier-models-too/">TechCrunch</a> &middot;
+        <a href="https://gist.github.com/karpathy/8627fe009c40f57531cb18360106ce95">github.com/karpathy (microgpt.py)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">GRPO</div>
+        <div>Group Relative Policy Optimization — a training method where the model compares its own outputs against a group of alternatives it generated itself, rewarding the better ones and penalizing the rest. Think of marking your own test by seeing how the rest of the class did, rather than waiting for a teacher to return a grade. Cheaper and more stable than earlier approaches that needed a separate “judge” model to score everything.</div>
+      </div>
+      <dl>
+        <dt>Reasoning model</dt><dd>A language model that generates a hidden chain of thought before answering — not shown to the user, but it shapes the final reply. More accurate on hard problems, more expensive than a standard model.</dd>
+        <dt>Test-time compute</dt><dd>Compute spent when the model is answering a question (as opposed to during training). Reasoning models can “think harder” by spending more of it — the challenge is knowing when doing so actually helps.</dd>
+        <dt>Token budget</dt><dd>The number of thinking words a model is allowed before it has to write its final answer. Like a time limit for its internal scratchpad: longer budgets allow more complex reasoning but cost more.</dd>
+        <dt>Distillation</dt><dd>Training a smaller, cheaper model to imitate the outputs of a larger one. The smaller model is much cheaper to run and often surprisingly capable — which is why it’s both a legitimate engineering technique and, according to recent government advisories, a method being exploited to copy frontier models at scale.</dd>
+        <dt>Antitrust</dt><dd>Laws that prohibit companies from coordinating in ways that harm competition — typically price-fixing or market-sharing. The novel claim in this week’s lawsuit is that coordinating to slow down, when all four dominant players do it together, is functionally the same thing.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
