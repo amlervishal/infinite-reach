@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №117 — The First Briefing · Infinite Reach</title>
+  <meta name="description" content="The UN Security Council heard from OpenAI, Anthropic, and DeepSeek today — the first formal session on AI as an international security concern. Also: OpenAI's cheaper GPT-6 duo, Xiaomi's trillion-parameter open-source model, and a paper on making large models run 40% faster without changing a single weight." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №117 &middot; September 23, 2026</p>
+      <h1>The First Briefing</h1>
+      <p>For the first time, the UN Security Council sat down with the people building frontier AI. Today in New York, the chiefs of OpenAI and Anthropic — plus representatives of China's DeepSeek — spoke before all fifteen members about risks to international security. Alongside it: OpenAI cut prices in half, Xiaomi dropped a trillion-parameter open-source model, and a quiet arXiv paper showed you can make a large model run 40% faster without touching a single weight.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>France holds the Security Council presidency this month, and it chose to convene the Council's first-ever session specifically on AI and international security. Sam Altman attended in person; Dario Amodei joined virtually. Representatives from DeepSeek and Moonshot — two Chinese AI firms — also made statements, marking the first time Chinese and American frontier developers have shared a formal UN platform. Yoshua Bengio, co-chair of the UN's own AI advisory panel, and Clément Delangue, CEO of Hugging Face, also spoke. No votes were taken, no resolutions passed. The Council was essentially sitting down to understand what these systems are. But that framing matters: by putting AI on the Security Council's calendar as an <em>international security</em> question — not a trade or technology question — it signals that the world's most senior diplomatic body now treats frontier AI as something worth convening about. That's a first.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">OpenAI</span><span>GPT-6 Sol and Luna launched Monday — cheaper siblings of flagship Astra. Sol at $2/$10 per million tokens (half the GPT-5.6 rate) makes roughly half as many factual mistakes as its predecessor; Luna at $0.10/$0.50 is built for high-volume, read-heavy work. Both are live in ChatGPT and the API.</span></li>
+        <li><span class="tag tech">Open source</span><span>Xiaomi released MiMo-V2.6, a 1-trillion-parameter omnimodal model trained with reinforcement learning, now topping the open-weight leaderboard. Anthropic responded by accusing Xiaomi of routing 400,000 user conversations through Claude — via tools called OpenClaw and OpenCode — to harvest training data for the model. Xiaomi has not responded.</span></li>
+        <li><span class="tag tech">Robotics</span><span>Alphabet's robotics software subsidiary Intrinsic open-sourced Intrinsic Core, a ROS-compatible programming environment, under Apache 2.0 at ROSCon 2026 in Toronto — lowering the floor for building production robot software.</span></li>
+        <li><span class="tag policy">Finance</span><span>The US Commodity Futures Trading Commission opened a public comment period on listing "compute derivatives" — standardized financial contracts whose price is pegged to GPU-hour costs. Financial regulators are starting to treat compute like a commodity, the way they treat oil or natural gas.</span></li>
+      </ul>
+
+      <h2>Paper, explained: Route the question, not the model</h2>
+      <p class="kicker">SpecQuant: Speculative Decoding with Multi-Parent Quantization for Adaptive LLM Inference &middot; arXiv 2609.21704 &middot; <a href="https://arxiv.org/abs/2609.21704">source</a></p>
+      <p>Most conversations about making AI cheaper focus on building smaller models. This paper asks a different question: what if you kept the large model, but were smarter about which version of it you actually used on each query?</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Running a large language model costs the same amount of compute whether you're asking it to add two numbers or explain quantum entanglement. The model's size is fixed; the bill is fixed. That's wasteful. The obvious fix — use a smaller, cheaper model for easy questions — runs into a real obstacle: you don't know which questions are easy until you've started answering them. "What's the capital of France?" looks trivial. "What's the most efficient sorting algorithm for this particular data distribution?" looks like a one-liner but requires careful reasoning. Guessing wrong and routing a hard question to a cheap model means a worse answer.</p>
+
+      <p>There's an existing technique called <em>speculative decoding</em> that tries to thread this needle differently. A small "draft" model quickly proposes the next several tokens; a larger "verifier" model checks them all in a single pass. When the draft is right — which it usually is for easy steps — you get the verifier's accuracy at the draft's speed. When the draft is wrong, the verifier corrects it. The catch: speculative decoding requires the draft and verifier to have compatible output spaces. Mix two completely different model families and their token predictions don't line up — verification breaks. So in practice you're stuck using models from the same family, at the same training recipe, just different sizes. That limits how different the two can actually be in speed.</p>
+
+      <h3>How it works</h3>
+      <p>SpecQuant's insight is to stop using separate models altogether. Instead, take one large model and derive multiple <em>quantized variants</em> from it — copies of the same weights stored at different numerical precisions.</p>
+
+      <p>Think of it like printing a photograph at three different resolutions. The 4K version and the 72-dpi thumbnail come from the same original image file; they share the same composition, the same colours, the same structure — they just differ in how fine-grained the detail is. Compressing a photo to 72 dpi doesn't change the subject; it just loses some sharpness. SpecQuant does the same thing to a model's weights. The INT4 variant packs each number into 4 bits (very compact, slightly noisy). FP8 uses 8 bits (moderate compression). FP16 uses the full 16-bit precision. Because all three variants come from the same parent, their internal representations are structurally compatible — you can use the INT4 version to draft tokens and the FP16 version to verify them, and the verification step works cleanly.</p>
+
+      <p>On top of this, SpecQuant adds a lightweight <em>complexity predictor</em> — a small classifier that reads each incoming query and estimates how hard it is before anyone starts generating. Simple queries go straight to INT4. Harder ones route to FP8 or FP16. For borderline queries, the system starts with the cheaper variant and drafts ahead; the heavier variant verifies. This tiered approach means easy questions are served almost entirely by the fastest, cheapest version — with the expensive one only coming in to check the output if something looks uncertain.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="SpecQuant routes queries to different precision levels based on complexity">
+          <rect width="720" height="310" fill="#F7F6F3" rx="6"/>
+          <text x="360" y="26" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413" font-weight="600">SpecQuant: route by complexity, not by model</text>
+          <rect x="290" y="40" width="140" height="38" rx="5" fill="#6A8CAF" opacity="0.85"/>
+          <text x="360" y="64" text-anchor="middle" font-family="system-ui" font-size="12" fill="#fff">Query arrives</text>
+          <line x1="360" y1="78" x2="360" y2="108" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <polygon points="360,108  430,138  360,168  290,138" fill="#D97757" opacity="0.85"/>
+          <text x="360" y="135" text-anchor="middle" font-family="system-ui" font-size="11" fill="#fff">Complexity</text>
+          <text x="360" y="151" text-anchor="middle" font-family="system-ui" font-size="11" fill="#fff">Predictor</text>
+          <line x1="290" y1="138" x2="155" y2="138" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <text x="222" y="132" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">simple</text>
+          <rect x="60" y="118" width="95" height="40" rx="5" fill="#788C5D" opacity="0.85"/>
+          <text x="107" y="135" text-anchor="middle" font-family="ui-monospace" font-size="11" fill="#fff">INT4</text>
+          <text x="107" y="150" text-anchor="middle" font-family="system-ui" font-size="10" fill="#fff">4-bit (fast)</text>
+          <line x1="107" y1="158" x2="107" y2="240" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="360" y1="168" x2="360" y2="210" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <text x="367" y="192" font-family="system-ui" font-size="10" fill="#87867F">medium</text>
+          <rect x="310" y="210" width="100" height="40" rx="5" fill="#D97757" opacity="0.75"/>
+          <text x="360" y="227" text-anchor="middle" font-family="ui-monospace" font-size="11" fill="#fff">FP8</text>
+          <text x="360" y="242" text-anchor="middle" font-family="system-ui" font-size="10" fill="#fff">8-bit (balanced)</text>
+          <line x1="430" y1="138" x2="555" y2="138" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <text x="492" y="132" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">complex</text>
+          <rect x="555" y="118" width="105" height="40" rx="5" fill="#141413" opacity="0.85"/>
+          <text x="607" y="135" text-anchor="middle" font-family="ui-monospace" font-size="11" fill="#fff">FP16</text>
+          <text x="607" y="150" text-anchor="middle" font-family="system-ui" font-size="10" fill="#D1CFC5">16-bit (full)</text>
+          <line x1="607" y1="158" x2="607" y2="240" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="360" y1="250" x2="360" y2="270" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <path d="M 155 138 Q 380 60 555 128" stroke="#D97757" stroke-width="1.3" stroke-dasharray="5,3" fill="none"/>
+          <text x="340" y="80" font-family="system-ui" font-size="9.5" fill="#D97757">speculative draft + verify</text>
+          <rect x="57" y="240" width="100" height="30" rx="4" fill="#D1CFC5"/>
+          <text x="107" y="260" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">output (fast)</text>
+          <rect x="310" y="270" width="100" height="30" rx="4" fill="#D1CFC5"/>
+          <text x="360" y="290" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">output</text>
+          <rect x="557" y="240" width="100" height="30" rx="4" fill="#D1CFC5"/>
+          <text x="607" y="260" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">output (precise)</text>
+          <defs>
+            <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#87867F"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>SpecQuant derives INT4, FP8, and FP16 variants from a single parent model. A complexity predictor routes each query to the appropriate tier. When needed, INT4 drafts tokens that FP16 then verifies — a valid combination because both variants share the same underlying weights.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The researchers tested SpecQuant using the Qwen2.5 model family — deriving INT4, FP8, and FP16 variants from the same base — on three standard benchmarks: MMLU (a broad general-knowledge test covering 57 academic subjects), AlpacaEval (instruction following), and GSM8K (grade school arithmetic requiring multi-step reasoning). They compared against two baselines: serving the full FP16 model on every query (the "no tricks" approach), and standard speculative decoding with a separate, smaller draft model.</p>
+
+      <h3>What they found</h3>
+      <p>SpecQuant achieved 35–43% throughput improvements across the three benchmarks, with accuracy declining by no more than 2% in any case. The largest gains came on MMLU, where the diversity of question difficulty gave the complexity predictor the most to work with — simple factual recall (well-served by INT4) sat alongside complex multi-step reasoning (needing FP16). On GSM8K, where nearly every question demands careful reasoning, the routing benefit was smaller (around 35%) because fewer queries could be cheaply handled. The system also outperformed standard speculative decoding in total throughput: because the draft and verifier share the same parent, verification mismatches were rarer than when using a completely separate draft model.</p>
+
+      <h3>The catch</h3>
+      <p>The complexity predictor must be trained on labeled examples of "easy" versus "hard" queries for a given domain. A predictor calibrated on general English text may misroute questions that arrive in code, mathematics, or specialized fields — those patterns look different to the classifier. The paper evaluates on well-studied benchmarks but doesn't show how the router handles out-of-distribution input. There's also a distributional caveat inside the 2% accuracy drop: it's an average. For tasks that are precision-sensitive — formal proofs, exact numerical calculations — the INT4 variant's rounding noise may produce worse errors than the average suggests.</p>
+
+      <p><strong>If you remember one thing:</strong> SpecQuant proves you can run a large model 35–43% faster, with almost no quality loss, just by routing each query to the cheapest version of it that's accurate enough — no new training, no smaller model, just smarter serving.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>Claude Code "Projects" entered beta last week — background agents that continue parallel work threads after you close your laptop. Cherny noted that code output per Anthropic engineer is up 200% this year, and that reviews, not writing, were the new bottleneck. <a href="https://x.com/bcherny/status/2100639991244427490">announcement</a></span></li>
+        <li><span class="tag tech">Dwarkesh Patel</span><span>New episode with Noam Brown (released September 17) — a long conversation on multi-agent systems, the Navier-Stokes proof, and what it would mean to automate AI research itself. One of the more substantive discussions of where agentic systems are actually heading. <a href="https://www.dwarkesh.com/podcast">dwarkesh.com/podcast</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three things happened today that, taken separately, are just news items. Taken together, they describe where the next few years are heading. The UN Security Council formally acknowledged frontier AI as an international security question — not a tech policy question — for the first time. OpenAI cut its API prices by half. And a paper showed that the large model you've already built can run 40% faster with no extra training, just by routing queries more carefully. The story is no longer "who can build the biggest model." It's: who decides what these systems are used for, at what price, and under what rules? Those three questions are now landing on three different tables — financial regulators (compute derivatives), diplomatic bodies (the Security Council), and research labs (SpecQuant, GPT-6 pricing). They haven't collided yet. When they do, the answers will matter.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.business-standard.com/world-news/deepseek-openai-and-anthropic-to-brief-un-security-council-on-ai-this-week-126092201553_1.html">Business Standard — UN Security Council AI briefing</a> ·
+        <a href="https://parameter.io/un-security-council-convenes-ai-safety-briefing-with-openai-anthropic-and-deepseek-executives/">Parameter — UN Security Council briefing details</a> ·
+        <a href="https://venturebeat.com/technology/openai-releases-gpt-6-sol-and-luna-models-slashing-api-costs-50-or-more">VentureBeat — GPT-6 Sol and Luna</a> ·
+        <a href="https://techcrunch.com/2026/09/22/openai-launches-gpt-6-sol-and-luna/">TechCrunch — GPT-6 Sol and Luna</a> ·
+        <a href="https://siliconangle.com/2026/09/22/xiaomi-introduces-mimo-v2-6-series-open-source-ai-model-family/">SiliconAngle — Xiaomi MiMo-V2.6</a> ·
+        <a href="https://the-decoder.com/xiaomis-affordable-flagship-ai-leads-the-open-models-and-anthropic-says-claude-helped-get-it-there/">The Decoder — Anthropic vs. Xiaomi distillation</a> ·
+        <a href="https://arxiv.org/abs/2609.21704">arXiv 2609.21704 — SpecQuant</a> ·
+        <a href="https://x.com/bcherny/status/2100639991244427490">Boris Cherny — Claude Code Projects</a> ·
+        <a href="https://www.dwarkesh.com/podcast">Dwarkesh Podcast</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Quantization</div>
+        <div>Storing a model's numbers in fewer bits to save memory and speed up computation — like writing "3.14" instead of "3.14159265358979." You lose a little precision but gain a lot of speed. The tradeoff is well-understood enough that, done carefully, most answers stay the same.</div>
+      </div>
+      <dl>
+        <dt>Speculative decoding</dt><dd>A speed trick where a cheap model drafts several tokens at once, and the real model verifies them in a single pass. When the draft is right (usually), you get the big model's quality at the small model's speed.</dd>
+        <dt>Inference</dt><dd>Running a trained model to produce answers — as opposed to training, which is the expensive process of building the model in the first place. Most AI costs are now inference costs.</dd>
+        <dt>Open weights</dt><dd>A model whose trained parameters are publicly downloadable. You can run it yourself, fine-tune it, study it, or build on it. Different from "open source" — the training data and code may not be shared.</dd>
+        <dt>Distillation attack</dt><dd>Using one company's AI model to generate training data for a competing model, typically by routing large numbers of queries through it. It transfers knowledge from the target model to the imitator without paying for the original training.</dd>
+        <dt>Compute derivatives</dt><dd>Financial contracts whose value is tied to the price of GPU-hours or similar compute resources. The CFTC is exploring whether these should be regulated like commodity futures, which would bring compute markets under formal financial oversight.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
