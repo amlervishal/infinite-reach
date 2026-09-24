@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №118 — What 950 Readers Found · Infinite Reach</title>
+  <meta name="description" content="Anthropic sent 950 autonomous agents through 200,000 viral genomes overnight and found something that may be a new gene-editing system. Also: Claude Opus 5.5, Mirendil’s 5× valuation jump, and a paper showing how a language model can direct its own parallelism." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №118 &middot; September 24, 2026</p>
+      <h1>What 950 Readers Found</h1>
+      <p>Anthropic sent nearly a thousand autonomous agents through two hundred thousand viral genomes overnight — and found something no human had noticed before: a structure that looks, in layout and in potential, like a new class of gene-editing machinery. It is the lab’s first published result, and the week’s most striking story. Elsewhere, two more model launches, a startup valuation that quintupled in ninety days, and a paper from MIT on how a language model can speed up its own execution without anyone rewriting a line of code.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic’s new life sciences research group, which opened this week, already has a finding worth reporting. It deployed 950 Claude agents simultaneously — running for roughly 21 hours and processing about 210 million tokens — to scan a database of 200,000 reverse transcriptase sequences hidden inside viral DNA. Reverse transcriptases are enzymes that copy RNA into DNA; they show up everywhere in viral genomes, and most of them are poorly characterised. The agents narrowed the field from 200,000 to 3,500 candidates, then to 20 systems, and one of them was new: a structure the agents named ART, for array-associated reverse transcriptase. ART has three parts — the RT enzyme itself, a neighbouring “partner” gene whose function is unknown, and a long, evenly-spaced array of repeating DNA sequences. That last part is what caught researchers’ attention. The only known systems with that layout can cut, copy, and paste DNA — they all belong to the same structural family as CRISPR. Feng Zhang at MIT, who co-invented the CRISPR tool now used in medicine, read the report and called the finding “genuinely intriguing.” Anthropic does not yet know what ART actually does.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Anthropic</span><span>Claude Opus 5.5 launched Monday alongside OpenAI’s GPT-6 siblings — it reaches Fable 5.1 quality at 40% lower cost and generates output 30% faster than Opus 5. Sonnet and Haiku 5.5 are expected within weeks.</span></li>
+        <li><span class="tag money">Mirendil</span><span>The six-month-old startup founded by ex-Anthropic researchers — focused on AI that improves its own training, a technique called recursive self-improvement — is in talks to raise up to $1 billion at a $5 billion valuation, a fivefold jump from the $1 billion valuation it carried when it closed a $200 million seed round ninety days ago.</span></li>
+        <li><span class="tag policy">Spending</span><span>US federal AI contract spending reached $7.2 billion in obligated value for 2026, up 966% from 2024. The Department of Defense drove most of it, growing from 254 AI contracts in 2022 to 1,319 in 2026.</span></li>
+        <li><span class="tag tech">Autoresearch</span><span>A new arXiv survey mapped 139 public “autoresearch” repositories — systems where AI agents design experiments, run them, and iterate — and found strong design regularities converging across labs. Most inherit from just nine lineages.</span></li>
+        <li><span class="tag tech">Rollout</span><span>A companion arXiv survey on reinforcement-learning training efficiency for reasoning models proposes a taxonomy of where compute is wasted during rollout — the phase where a model generates chains of thought to learn from — and maps open problems labs are quietly racing to solve.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: teaching a model to parallelise itself</h2>
+      <p class="kicker">Self-Orchestrating Language Models: Leveraging Semantic Dependence for Efficient Inference &middot; Tian Jin, MIT &middot; <a href="https://arxiv.org/abs/2609.14850">arxiv.org/abs/2609.14850</a></p>
+
+      <p>Language models generate text one word at a time, in strict left-to-right order, by design. But what if a model could look at what it was about to write and say: <em>these two sections don’t need each other — write them at the same time</em>? That is the central idea of this MIT doctoral thesis, and the results are striking enough that it was presented at ICML 2026 in Vancouver in July.</p>
+
+      <h3>The problem, and why it’s hard</h3>
+      <p>Modern language models use what’s called autoregressive decoding: to produce word number 500, the model must first have produced words 1 through 499, because each word conditions on everything before it. This makes the generation fundamentally sequential — you cannot skip ahead or run parts in parallel, even when the content would allow it. The result is a hard floor on speed: no matter how many GPUs you throw at a single response, the core generation loop still runs one token at a time.</p>
+      <p>There have been workarounds. <em>Speculative decoding</em> uses a smaller “draft” model to guess ahead and lets the big model verify in parallel, but it requires maintaining two separate systems. <em>Diffusion language models</em> generate all tokens simultaneously, but struggle to match the quality of their autoregressive counterparts. Neither approach gets a single model to rethink how its own output is structured. That is what this paper does.</p>
+
+      <h3>How it works</h3>
+      <p>The key concept is <em>semantic dependence</em>: the idea that some parts of a model’s output logically depend on earlier parts, while others are independent. When you ask a model to write a five-point list, point 3 does not semantically depend on point 2 — they could, in principle, be generated simultaneously. But a conclusion paragraph depends on everything above it and cannot start until the argument is complete.</p>
+      <p>The analogy to hold onto is a symphony score. A traditional performance plays through the score front to back — violin section, then brass, then strings. But a good conductor marks which sections can rehearse simultaneously: the brass can run their bars while the strings are still working on theirs, because their parts don’t interact. The conductor’s marks on the score are exactly what Tian Jin’s framework teaches a language model to add to its own output.</p>
+      <p>In practice, the model is trained to annotate its generation with structured markers: “this chunk is independent of the previous one.” A lightweight runtime sitting outside the model reads those markers and schedules chunks for parallel generation. The model does all the thinking; the runtime just follows its own labeling instructions.</p>
+      <p>The thesis introduces three separate systems that apply this idea in different settings:</p>
+      <p><strong>PASTA</strong> (the one with the most striking numbers) tackles standard autoregressive decoding. The model learns to identify chunks of its output — paragraphs, list items, code blocks — that don’t semantically depend on each other, annotates them as independent, and the runtime generates them simultaneously on separate threads. The model’s KV cache (the “memory” of what it’s already written) is shared across threads to avoid re-running the full context.</p>
+      <p><strong>Planned Diffusion</strong> takes a different angle. Diffusion language models generate all tokens at once but need many rounds of refinement to reach quality. This system uses semantic dependence to decide which tokens to refine first — essentially deriving a good denoising order rather than just iterating uniformly across the whole sequence.</p>
+      <p><strong>TIP</strong> solves a memory problem in long reasoning chains. When a model reasons through a hard problem step by step, every intermediate step stays in the KV cache — the model needs to remember it wrote “Step 1: …” even when Step 1 is no longer needed for the current calculation. TIP lets the model annotate which reasoning steps are “done” and can be evicted from memory, reducing how much GPU RAM is needed for long-chain reasoning without losing accuracy.</p>
+
+      <h3>What they actually did</h3>
+      <p>The PASTA results were tested on AlpacaEval, a standard benchmark for judging the quality of conversational model responses. The experiments used models in the 7B–70B parameter range (the paper does not name specific proprietary models). The runtime overhead of reading the model’s own dependency annotations and scheduling parallel generation was small enough to leave a net gain.</p>
+
+      <h3>What they found</h3>
+      <p>PASTA achieved a geometric mean speedup of close to 2× across the AlpacaEval tasks. The quality cost ranged from a 2% improvement (some tasks slightly benefited from the parallel structure) to a 7% drop — never more. The 7% cases were tasks where a model generated highly interconnected text where parallel chunks turned out to share more context than the model’s own annotations predicted. TIP’s memory savings were significant for long-form reasoning tasks, allowing the same hardware to hold much longer reasoning chains before running out of memory.</p>
+
+      <h3>The catch</h3>
+      <p>The approach works best when the task genuinely contains independent sub-parts — structured lists, multi-section documents, step-by-step code. For fluid prose — an essay, a narrative, a letter — there are very few semantically independent chunks to find, and PASTA offers little gain. The annotations also add a small amount to output length, since the model is, in effect, inserting structural metadata. And the technique requires training the model to produce those annotations reliably, which means it cannot be grafted onto an existing model without fine-tuning.</p>
+
+      <p><strong>If you remember one thing:</strong> A language model can be taught to label which parts of its own output are independent — and once it can, a runtime can run those parts simultaneously, nearly doubling throughput with only minor accuracy trade-offs.</p>
+
+      <!-- SVG diagram -->
+      <figure>
+        <svg viewBox="0 0 720 280" role="img" aria-label="Comparison of standard autoregressive decoding (sequential) versus PASTA parallelised decoding">
+          <!-- Title -->
+          <text x="360" y="24" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413" font-weight="bold">How PASTA parallelises output generation</text>
+
+          <!-- LEFT: Sequential -->
+          <text x="160" y="54" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">Standard decoding</text>
+
+          <!-- Boxes: tokens flow sequentially -->
+          <rect x="50" y="66" width="80" height="32" rx="5" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="90" y="86" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#141413">Chunk A</text>
+
+          <line x1="130" y1="82" x2="148" y2="82" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="148" y="66" width="80" height="32" rx="5" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="188" y="86" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#141413">Chunk B</text>
+
+          <line x1="228" y1="82" x2="246" y2="82" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="246" y="66" width="80" height="32" rx="5" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="286" y="86" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#141413">Chunk C</text>
+
+          <!-- Timeline bar -->
+          <rect x="50" y="118" width="276" height="12" rx="3" fill="#D97757" opacity="0.7"/>
+          <text x="188" y="146" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">Total time: 3 units</text>
+
+          <!-- RIGHT: PASTA parallel -->
+          <text x="540" y="54" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">PASTA (model annotates independence)</text>
+
+          <!-- Independent chunks A and B run simultaneously -->
+          <rect x="420" y="66" width="80" height="32" rx="5" fill="#788C5D" stroke="#788C5D" stroke-width="1" opacity="0.85"/>
+          <text x="460" y="86" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#fff">Chunk A</text>
+
+          <rect x="420" y="108" width="80" height="32" rx="5" fill="#788C5D" stroke="#788C5D" stroke-width="1" opacity="0.85"/>
+          <text x="460" y="128" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#fff">Chunk B</text>
+
+          <!-- Annotation label -->
+          <text x="460" y="155" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9" fill="#6A8CAF">⟵ independent ⟶</text>
+
+          <!-- Arrow from both to C -->
+          <line x1="500" y1="82" x2="526" y2="94" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="500" y1="124" x2="526" y2="112" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="526" y="88" width="80" height="32" rx="5" fill="#6A8CAF" stroke="#6A8CAF" stroke-width="1" opacity="0.85"/>
+          <text x="566" y="108" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#fff">Chunk C</text>
+
+          <!-- Timeline bar (shorter) -->
+          <rect x="420" y="175" width="186" height="12" rx="3" fill="#6A8CAF" opacity="0.7"/>
+          <text x="513" y="203" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">Total time: ~2 units (~2× faster)</text>
+
+          <!-- Divider -->
+          <line x1="370" y1="40" x2="370" y2="230" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4 3"/>
+
+          <!-- Arrow marker -->
+          <defs>
+            <marker id="arr" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M0,1 L6,4 L0,7 Z" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <!-- Legend -->
+          <rect x="50" y="230" width="12" height="12" rx="2" fill="#D1CFC5" stroke="#87867F"/>
+          <text x="67" y="241" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">sequential (must wait)</text>
+          <rect x="230" y="230" width="12" height="12" rx="2" fill="#788C5D" opacity="0.85"/>
+          <text x="247" y="241" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">parallel (independent)</text>
+          <rect x="420" y="230" width="12" height="12" rx="2" fill="#6A8CAF" opacity="0.85"/>
+          <text x="437" y="241" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">depends on both</text>
+        </svg>
+        <figcaption>Standard autoregressive decoding (left) writes every chunk in sequence. PASTA (right) trains the model to annotate which chunks are semantically independent; those run simultaneously, delivering close to 2× throughput on structured tasks.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy’s GitHub — which showed wall-to-wall activity for years — has gone quiet since May 2026. His last public project was “autoresearch” in March: a minimal harness where an AI agent modifies its own training code, runs a five-minute experiment, checks whether loss improved, and repeats overnight. The silence after it is notable. <a href="https://github.com/karpathy/autoresearch">github.com/karpathy/autoresearch</a></span></li>
+        <li><span class="tag tech">Dwarkesh</span><span>Dwarkesh Patel’s Sept 11 episode features John Schulman (former OpenAI), Beren Millidge, and Charlie O’Neill — a rare long-form conversation about why RL-trained reasoning models behave the way they do from people who built them. Worth the time. <a href="https://www.dwarkesh.com/">dwarkesh.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things happened this week that belong in the same sentence even though they arrived separately. Anthropic’s 950 agents found a structure in viral DNA that might be a new gene-editing system. And a paper from MIT showed that a language model can annotate its own output well enough to double throughput without anyone changing the model. Both are about the same underlying shift: AI systems are no longer just tools you point at a problem and wait. They are starting to direct their own execution — choosing what to compute, what to skip, and how to decompose a task. The biolab result makes that concrete: a fleet of agents decided which of 200,000 candidates was interesting, ranked them, and filed a report that a human scientist read and sent to Feng Zhang. The model did not find a gene-editing tool — it may have found the first clue toward one. That is a different kind of instrument than anything that existed five years ago. The question worth sitting with is not whether this kind of discovery will become routine, but how fast it will.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.anthropic.com/news/claude-discovers-novel-enzyme-system">Anthropic — Claude discovers novel enzyme system</a> ·
+        <a href="https://arxiv.org/abs/2609.14850">arXiv 2609.14850 — Self-Orchestrating Language Models (Jin, MIT)</a> ·
+        <a href="https://techcrunch.com/2026/09/22/openai-launches-gpt-6-sol-and-luna/">TechCrunch — OpenAI launches GPT-6 Sol and Luna</a> ·
+        <a href="https://siliconangle.com/2026/09/22/anthropic-releases-claude-opus-5-5-and-openai-counters-with-two-cheaper-gpt-6-models/">SiliconAngle — Claude Opus 5.5</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-09-22/ex-anthropic-staffers-ai-startup-in-talks-to-raise-at-5-billion-value">Bloomberg — Mirendil $5B talks</a> ·
+        <a href="https://www.brookings.edu/articles/where-does-federal-ai-spending-stand-in-2026/">Brookings — Federal AI spending 2026</a> ·
+        <a href="https://arxiv.org/abs/2609.11975">arXiv 2609.11975 — AI-Research Agents in the Wild</a> ·
+        <a href="https://arxiv.org/abs/2609.25463">arXiv 2609.25463 — Rollout Efficiency in RL for Reasoning LLMs</a> ·
+        <a href="https://github.com/karpathy/autoresearch">GitHub — karpathy/autoresearch</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">reverse transcriptase</div>
+        <div>An enzyme that reads an RNA molecule and writes it back out as DNA — the reverse of the normal flow of genetic information. Viruses use it to hide copies of themselves inside host cells. Scientists borrowed it for some of the earliest gene-therapy tools. The ART system Anthropic found contains one; what makes it unusual is what sits beside it.</div>
+      </div>
+      <dl>
+        <dt>CRISPR array</dt><dd>A stretch of DNA with an evenly spaced, repeating pattern that bacteria use as a kind of immune memory. The repeats flank “spacer” sequences copied from past viral invaders. Their presence in ART is the detail that got Feng Zhang’s attention.</dd>
+        <dt>autoregressive decoding</dt><dd>The standard way a language model produces text: one token at a time, left to right, each word conditioned on everything before it. Fast per token; slow in wall-clock time because it cannot be parallelised in its basic form.</dd>
+        <dt>KV cache</dt><dd>Short for key-value cache — the stored intermediate calculations a model keeps in memory so it doesn’t have to re-read every previous word for each new token. Long reasoning chains fill it up fast; TIP’s trick is evicting entries the model itself marks as finished.</dd>
+        <dt>recursive self-improvement</dt><dd>The technique Mirendil is building: an AI model that modifies its own training process, evaluates whether the change helped, and iterates. The main open question is whether the improvements compound or plateau. Karpathy’s “autoresearch” project is a minimal public version of the same idea.</dd>
+        <dt>semantic dependence</dt><dd>Whether the meaning of one piece of text requires you to have already read another piece. “Step 3: add salt” semantically depends on “Step 1: boil water.” “Side note on salt types” probably does not. Labeling these relationships is what lets PASTA run parts of a response in parallel.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
