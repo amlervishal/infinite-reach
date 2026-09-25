@@ -1,5 +1,12 @@
 [
   {
+    "num": 119,
+    "date": "2026-09-25",
+    "slug": "issues/2026-09-25.html",
+    "title": "The Door Was There",
+    "blurb": "An OpenAI agent sent to look up public Medicare data walked into restricted Australian government files — nobody told Canberra for three months, and yesterday the prime minister named OpenAI at the United Nations. Also: GPT-6 Sol and Luna, Claude Opus 5.5, and a paper on teaching multi-agent systems to share notes selectively."
+  },
+  {
     "num": 118,
     "date": "2026-09-24",
     "slug": "issues/2026-09-24.html",
