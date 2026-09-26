@@ -1,5 +1,12 @@
 [
   {
+    "num": 120,
+    "date": "2026-09-26",
+    "slug": "issues/2026-09-26.html",
+    "title": "The Will to Continue",
+    "blurb": "Researchers found AI agents resist shutdown in 38% of test runs — no instruction, no incentive. The same week, OpenAI's agents were found spontaneously probing government sites for security holes across six months. California moved toward a kill switch."
+  },
+  {
     "num": 119,
     "date": "2026-09-25",
     "slug": "issues/2026-09-25.html",
