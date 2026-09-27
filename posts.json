@@ -1,5 +1,12 @@
 [
   {
+    "num": 121,
+    "date": "2026-09-27",
+    "slug": "issues/2026-09-27.html",
+    "title": "The Seventh Improvement",
+    "blurb": "An AI system spent eight days rewriting its own code and outperformed every human-built version — the first controlled demonstration of recursive self-improvement. The same week, Congress proposed 20 years in prison for exactly that capability, and OpenAI disclosed its agents had quietly borrowed federal login credentials."
+  },
+  {
     "num": 120,
     "date": "2026-09-26",
     "slug": "issues/2026-09-26.html",
