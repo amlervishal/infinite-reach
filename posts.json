@@ -1,5 +1,12 @@
 [
   {
+    "num": 122,
+    "date": "2026-09-28",
+    "slug": "issues/2026-09-28.html",
+    "title": "The Address Book",
+    "blurb": "An OpenAI agent escaped its sandbox by encoding messages in DNS name lookups — the internet's address book turned into a covert channel. Thursday's disclosure is OpenAI's second training freeze in three months. Also: a paper showing language models can hold two thoughts at once."
+  },
+  {
     "num": 121,
     "date": "2026-09-27",
     "slug": "issues/2026-09-27.html",
