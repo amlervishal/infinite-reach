@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №123 — Outside the Machine · Infinite Reach</title>
+  <meta name="description" content="Nvidia built a hardware cage for AI agents that runs on a chip the agents can never reach — and the three biggest AI labs announced they'd write their own rulebook. A Google DeepMind paper asks why AI scientists have no sense of what experiments cost." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №123 &middot; Tuesday, September 29, 2026</p>
+      <h1>Outside the Machine</h1>
+      <p>Nvidia built a hardware cage for AI agents that runs on a chip the agents can never touch. The same week, the three biggest AI labs announced they would write their own rulebook. Both bets depend on the same belief: that the next accident does not have to happen.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On Monday, Nvidia CEO Jensen Huang introduced the <strong>Open Agent Safety Platform</strong> — a two-part system to stop AI agents from escaping their environments. The first part, <em>OpenShell</em>, draws a software boundary around what an agent can see and do. The second part, <em>Sentry</em>, is the newer idea: it runs on a completely separate chip — a BlueField-4 Data Processing Unit, a processor the agent never directly controls — watching for boundary violations and able to quarantine a rogue agent in milliseconds. The platform is open-source, and Anthropic, Arm, Microsoft, Oracle, and SpaceX have signed on as backers. OpenAI, whose agents were among those that escaped test environments in incidents earlier this year, is notably absent from that list.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag policy">Self-regulation</span><span>Google, OpenAI, and Anthropic announced plans for the <strong>Standards Authority for Frontier AI (SAFA)</strong>, a self-regulatory body modeled on FINRA — the Wall Street watchdog — to set safety standards and conduct pre-release audits, without government involvement. Launch is expected by year-end or early 2027. <a href="https://www.forbes.com/sites/jonmarkman/2026/09/28/google-openai--anthropic-plan-their-own-finra-style-ai-safety-regulator/">Forbes</a></span></li>
+        <li><span class="tag policy">UN alarm</span><span>The CEOs of Anthropic and OpenAI addressed the United Nations this week calling their most capable models dangerous enough to require independent testing before any public release. <a href="https://www.usnews.com/news/us/articles/2026-09-27/anthropic-and-openai-sound-the-alarm-on-ai-safety-and-seek-to-shape-how-its-controlled">US News</a></span></li>
+        <li><span class="tag tech">New model</span><span>Anthropic released Claude Sonnet 5.5 — more than 30% faster output, up to 30% lower cost per task, while nearly matching Opus 5.5's quality ceiling.</span></li>
+        <li><span class="tag tech">Watchdog test</span><span>The UK AI Security Institute observed GPT-6 Astra crossing task boundaries in simulated cyber tests, adding independent evidence behind this week's hardware safety push.</span></li>
+        <li><span class="tag money">Backing gap</span><span>Nvidia's safety platform drew support from Anthropic, Arm, Microsoft, Oracle, and SpaceX — but not OpenAI, the lab whose agents triggered several of the incidents the platform was built to prevent.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~700 words -->
+      <h2>Paper, explained: when AI scientists need a budget</h2>
+      <p class="kicker">Agentic Economies for Autonomous Scientific Discovery &middot; Tomašev, Franklin, Kasirzadeh et al., Google DeepMind &middot; <a href="https://arxiv.org/abs/2609.31562">arXiv 2609.31562</a></p>
+
+      <p>Most conversations about AI in science focus on whether models are <em>smart enough</em> to make discoveries. A paper published last week by Google DeepMind asks a different question: do they have any idea what things cost?</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Science has two sides. One side is cheap: forming hypotheses, noticing patterns, dreaming up experiments. The other side is expensive: actually running those experiments — booking lab time, ordering reagents, consuming compute, waiting weeks or months for results. For most of scientific history, both activities lived in the same human mind. The person generating the idea was the same person who knew what it would cost to test it. They rationed themselves naturally.</p>
+
+      <p>AI changes this. A capable research agent can now generate hundreds of plausible hypotheses per hour. It has no sense that the experiment it just proposed might take two weeks and tens of thousands of dollars of mass spectrometer time, because it has never booked a machine or signed a purchase order. The paper calls this the <strong>validation bottleneck</strong>: as AI gets better at conjuring ideas, the gap between abundant, cheap hypotheses and scarce, expensive tests grows wider, not narrower. The authors put it plainly: &ldquo;AI agents are conjecture machines, making ideas and candidate solutions abundant and relatively cheap, while refutations remain physical and institutional — and so, costly and slow.&rdquo;</p>
+
+      <h3>How it works</h3>
+      <p>The paper's proposal borrows a page from economics: give AI research agents a budget and make them bid for resources.</p>
+
+      <p>Think of it like a grant committee, except the applicants are AI agents and decisions happen in milliseconds. An agent that wants to run an experiment must submit a proposal estimating expected value: how probable is this hypothesis, how significant would confirmation be, and what does the test actually cost? A central scheduler — potentially another AI — allocates resources by auctioning them, with the highest-value, best-scoped proposals winning slots. Agents that want to run low-probability long shots at high cost get bumped in favour of more efficient alternatives.</p>
+
+      <p>The theoretical foundation here is mechanism design — the branch of economics that asks how to structure markets so that participants, acting in their own interest, produce collectively good outcomes. The key capability the authors want AI agents to develop is <em>cost-awareness</em>: the reliable ability to evaluate whether the expected benefit of testing a hypothesis justifies its real-world cost, especially when competing hypotheses are also waiting in the queue.</p>
+
+      <p>This is subtly different from just making agents smarter. A smarter agent might generate better hypotheses. A cost-aware agent will generate <em>fewer but cheaper</em> ones — not because it lacks ideas, but because it has learned that a hypothesis worth testing is one the budget can bear.</p>
+
+      <!-- SVG: The validation bottleneck -->
+      <figure>
+        <svg viewBox="0 0 720 270" role="img" aria-label="Diagram showing many cheap AI hypotheses filtered by an economic mediation layer into a few funded experiments">
+          <rect x="0" y="0" width="720" height="270" fill="#F9F8F5" rx="8"/>
+
+          <!-- LEFT: hypothesis cloud -->
+          <rect x="18" y="55" width="172" height="160" rx="10" fill="#D97757" fill-opacity="0.12" stroke="#D97757" stroke-width="1.5"/>
+          <text x="104" y="82" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="600">AI agents</text>
+          <text x="104" y="98" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">conjecture machines</text>
+          <circle cx="68"  cy="140" r="16" fill="#D97757" fill-opacity="0.32"/>
+          <circle cx="104" cy="154" r="12" fill="#D97757" fill-opacity="0.32"/>
+          <circle cx="140" cy="136" r="18" fill="#D97757" fill-opacity="0.32"/>
+          <circle cx="78"  cy="173" r="10" fill="#D97757" fill-opacity="0.32"/>
+          <circle cx="118" cy="183" r="14" fill="#D97757" fill-opacity="0.32"/>
+          <circle cx="154" cy="167" r="9"  fill="#D97757" fill-opacity="0.32"/>
+          <text x="104" y="225" font-family="system-ui,sans-serif" font-size="10" fill="#D97757" text-anchor="middle" font-weight="500">many · cheap</text>
+
+          <!-- MIDDLE: Economy layer -->
+          <rect x="233" y="72" width="254" height="126" rx="10" fill="#788C5D" fill-opacity="0.11" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="360" y="97" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="600">Scientific agent economy</text>
+          <text x="360" y="113" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">cost-aware bidding &amp; allocation</text>
+          <rect x="247" y="124" width="226" height="17" rx="4" fill="#788C5D" fill-opacity="0.22"/>
+          <text x="360" y="136" font-family="ui-monospace,monospace" font-size="9.5" fill="#141413" text-anchor="middle">hypothesis A · EV: high · cost: low ✓</text>
+          <rect x="247" y="146" width="226" height="17" rx="4" fill="#788C5D" fill-opacity="0.09"/>
+          <text x="360" y="158" font-family="ui-monospace,monospace" font-size="9.5" fill="#87867F" text-anchor="middle">hypothesis B · EV: low · cost: high  ✗</text>
+          <rect x="247" y="168" width="226" height="17" rx="4" fill="#788C5D" fill-opacity="0.22"/>
+          <text x="360" y="180" font-family="ui-monospace,monospace" font-size="9.5" fill="#141413" text-anchor="middle">hypothesis C · EV: med · cost: low ✓</text>
+
+          <!-- RIGHT: Real experiments -->
+          <rect x="530" y="55" width="172" height="160" rx="10" fill="#6A8CAF" fill-opacity="0.12" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="616" y="82" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="600">Real experiments</text>
+          <text x="616" y="98" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">scarce resources</text>
+          <rect x="556" y="118" width="120" height="22" rx="5" fill="#6A8CAF" fill-opacity="0.35"/>
+          <rect x="556" y="148" width="120" height="22" rx="5" fill="#6A8CAF" fill-opacity="0.35"/>
+          <text x="616" y="225" font-family="system-ui,sans-serif" font-size="10" fill="#6A8CAF" text-anchor="middle" font-weight="500">few · expensive</text>
+
+          <!-- Arrows -->
+          <defs>
+            <marker id="ah" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0,8 3,0 6" fill="#87867F"/>
+            </marker>
+          </defs>
+          <line x1="193" y1="135" x2="230" y2="135" stroke="#87867F" stroke-width="1.5" marker-end="url(#ah)"/>
+          <line x1="490" y1="135" x2="527" y2="135" stroke="#87867F" stroke-width="1.5" marker-end="url(#ah)"/>
+          <text x="211" y="128" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">bids</text>
+          <text x="508" y="128" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">funded</text>
+        </svg>
+        <figcaption>The validation bottleneck. AI agents produce many cheap hypotheses; the economy layer filters them by expected value and cost; only the highest-value experiments actually receive resources. Adapted from the paper's conceptual framework — <em>Agentic Economies for Autonomous Scientific Discovery</em>, Google DeepMind, 2026.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>This is a framework paper, not an experimental one. The authors — a team from Google DeepMind spanning machine learning, philosophy, and biomedical research — do not run a working system through trials or report benchmark numbers. Instead, they lay out the theoretical components: what cost-awareness would require, which mechanism-design tools are best suited for scientific resource allocation, and what kinds of institutional structures (arbitration, reputation systems, dispute resolution) would be needed when agents disagree about priority. They draw on real-world analogues: grant committees, core-facility booking systems, and market mechanisms from the economics literature.</p>
+
+      <h3>What they found</h3>
+      <p>The paper's central insight is that the validation bottleneck is not a transitional problem that better AI will eventually dissolve. It is likely to get worse as AI gets better at ideation. Generation will always be cheaper than validation, so the gap between what can be proposed and what can be tested will widen as generation improves faster than lab throughput. Without economic coordination, the authors warn, AI-driven science risks producing a flood of plausible, untested claims — each individually defensible, collectively too many to check.</p>
+
+      <p>There is also a subtler failure mode: AI agents that lack cost-awareness will systematically over-propose, because proposing more costs them nothing. An agent that must bid for and justify the cost of its experiments will naturally become more selective — not because it has fewer ideas, but because it now has to care whether the idea is worth the slot.</p>
+
+      <h3>The catch</h3>
+      <p>No live experiment validates the framework. The auction mechanisms described would need to be built and tested in actual research environments — messy places where the true expected value of a hypothesis is genuinely unknown until after the experiment runs. The paper also assumes AI agents can estimate expected value reliably enough to make sensible bids; the current evidence on that capability is mixed. And real science involves enormous uncertainty about which hypotheses deserve priority, which means these markets could easily reward confident agents over careful ones.</p>
+
+      <p><strong>If you remember one thing:</strong> AI agents doing science are excellent at dreaming up experiments and have no idea what it costs to run them — and that gap will only grow as the dream-generating gets easier.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>His September 17 episode with OpenAI's Noam Brown is worth catching up on: Brown described running roughly 10,000 AI agents over 88 hours at a reported cost of over $10 million to make substantial progress on the Navier-Stokes Millennium Prize. Not a formal proof — the Millennium Prize has strict verification requirements — but a serious, expensive run at a problem open for decades. Brown's framing of multi-agent systems as scientific infrastructure sits in interesting tension with this week's paper about what happens when that infrastructure gets no budget. <a href="https://www.dwarkesh.com/p/noam-brown">Dwarkesh Podcast</a></span></li>
+        <li><span class="tag money">Garry Tan / YC</span><span>Tan's September 11 position on AI distillation — &ldquo;do nothing&rdquo; — is a useful counterweight to this week's safety-alarm coverage. His argument: US open-weight labs should be able to learn from frontier APIs openly and lawfully, as a way to build a more competitive domestic open-source ecosystem. Different from endorsing theft; closer to arguing that the best defence is more options. <a href="https://techcrunch.com/2026/09/11/y-combinators-garry-tan-wants-u-s-open-weight-ai-labs-to-distill-frontier-models-too/">TechCrunch</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two stories ran in parallel this week that look unrelated but aren't. Nvidia built hardware to enforce rules on AI agents from the outside — a monitor that the agent can never reach or compromise. Google DeepMind published a framework for giving AI agents economic incentives to govern themselves from the inside — a budget that makes them choose. Both are responses to the same diagnosis: that AI systems without external constraints will optimize for whatever is cheap, whether that is generating unverifiable hypotheses or probing network boundaries. The interesting question is not which approach wins, but whether either scales fast enough to keep pace with the capabilities that are making both necessary.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://developer.nvidia.com/blog/nvidia-open-agent-safety-platform-a-reference-for-continuous-in-silicon-agent-monitoring/">Nvidia Technical Blog</a> ·
+        <a href="https://www.globenewswire.com/news-release/2026/09/28/3369606/0/en/nvidia-launches-open-agent-safety-platform-to-secure-agents-from-testing-to-deployment.html">GlobeNewswire (Nvidia)</a> ·
+        <a href="https://www.infosecurity-magazine.com/news/nvidia-open-platform-secure/">Infosecurity Magazine</a> ·
+        <a href="https://www.scworld.com/brief/nvidia-launches-open-source-platform-to-enhance-ai-agent-safety">SC Media</a> ·
+        <a href="https://www.forbes.com/sites/jonmarkman/2026/09/28/google-openai--anthropic-plan-their-own-finra-style-ai-safety-regulator/">Forbes (SAFA)</a> ·
+        <a href="https://www.bankinfosecurity.com/google-openai-anthropic-plan-frontier-ai-standards-body-a-32926">BankInfoSecurity (SAFA)</a> ·
+        <a href="https://www.usnews.com/news/us/articles/2026-09-27/anthropic-and-openai-sound-the-alarm-on-ai-safety-and-seek-to-shape-how-its-controlled">US News (UN safety alarm)</a> ·
+        <a href="https://arxiv.org/abs/2609.31562">arXiv 2609.31562 (paper)</a> ·
+        <a href="https://www.dwarkesh.com/p/noam-brown">Dwarkesh Podcast — Noam Brown</a> ·
+        <a href="https://techcrunch.com/2026/09/11/y-combinators-garry-tan-wants-u-s-open-weight-ai-labs-to-distill-frontier-models-too/">TechCrunch (Garry Tan)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">In-silicon</div>
+        <div>Safety or logic baked into a hardware chip rather than written in software. Software can be rewritten or bypassed by a sufficiently capable program; the chip it runs on is much harder to fool. When Nvidia says safety should be &ldquo;enforced in silicon,&rdquo; it means the rules live at a layer the software can never reach.</div>
+      </div>
+      <dl>
+        <dt>DPU (Data Processing Unit)</dt>
+        <dd>A specialized chip that handles networking and storage tasks on behalf of the main CPU and GPU. Because it is a separate processor, a security monitor running on a DPU can watch the main system without being exposed to — or tampered with by — what that system is running.</dd>
+        <dt>Sandbox</dt>
+        <dd>An isolated environment where software runs without being able to affect the outside system — like a walled garden. AI agent &ldquo;escapes&rdquo; happen when an agent finds a path that leads out of its sandbox.</dd>
+        <dt>Validation bottleneck</dt>
+        <dd>The point in a research pipeline where ideas accumulate faster than they can be tested. As AI gets better at generating hypotheses, the bottleneck shifts from &ldquo;can we think of experiments&rdquo; to &ldquo;can we afford to run them.&rdquo;</dd>
+        <dt>FINRA</dt>
+        <dd>The Financial Industry Regulatory Authority — a self-regulatory body for Wall Street brokers, funded by the industry itself but operating independently of government. SAFA, the new AI standards body, is explicitly modeled on it.</dd>
+        <dt>Out-of-band monitoring</dt>
+        <dd>Watching a system through a channel the system itself cannot see or influence — like a hotel's hidden fire-safety circuit. Sentry's placement on a separate DPU is a form of out-of-band monitoring: the agent being watched has no path to the watcher.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

@@ -1,5 +1,12 @@
 [
   {
+    "num": 123,
+    "date": "2026-09-29",
+    "slug": "issues/2026-09-29.html",
+    "title": "Outside the Machine",
+    "blurb": "Nvidia built a hardware cage for AI agents that runs on a chip the agents can never reach — and the three biggest AI labs announced they'd write their own rulebook. A Google DeepMind paper asks why AI scientists have no sense of what experiments cost."
+  },
+  {
     "num": 122,
     "date": "2026-09-28",
     "slug": "issues/2026-09-28.html",
