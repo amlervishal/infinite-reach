@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №124 — The Ledger · Infinite Reach</title>
+  <meta name="description" content="Anthropic's IPO filing showed $4.6 billion in revenue and $518 billion in infrastructure pledges — the first honest look at what building frontier AI actually costs. Plus: OpenAI's always-on agent 'dots', the AMD–World Labs deal, and a paper that tested whether AI agents can reproduce scientific results." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №124 &middot; Tuesday, September 30, 2026</p>
+      <h1>The Ledger</h1>
+      <p>Anthropic filed its IPO prospectus and the numbers inside — $4.6 billion in revenue, a $42 billion net loss, and more than half a trillion dollars in infrastructure commitments — tell you more about the economics of building frontier AI than anything made public before. Meanwhile OpenAI held its developer conference and introduced always-on agents that live in your chat app and have their own cloud computer. The week's quietest paper may have landed the loudest punch: AI agents can reproduce fewer than one in five published science results, even when the code and data are right in front of them.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic's IPO filing landed on Monday and the numbers are arresting. The company grew revenue 12-fold in a single year, from roughly $400 million to $4.6 billion. But it lost $42 billion — almost all of it non-cash accounting charges from commitments already made. The really striking line: $518 billion in non-cancelable infrastructure spending pledged through 2033–2036, spread across six partners (Google alone accounts for $111 billion; Amazon $110 billion; Broadcom equipment leases $161 billion). That figure is not a projection — it is already locked in. This is the first time a frontier AI lab's full books have been audited and made public. The picture they paint is of an industry racing so fast that the cost of stopping — or even slowing — is now larger than most countries' defense budgets.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">New model</span><span>OpenAI released GPT-6.1 Sol at DevDay — a model that nearly matches the performance of its flagship GPT-6 Astra at one-fifth the price ($2/$10 per million tokens). Available in the API and ChatGPT Work immediately. <a href="https://siliconangle.com/2026/09/29/openais-gpt-6-1-sol-delivers-astra-like-performance-at-a-dramatically-lower-price/">SiliconAngle</a></span></li>
+        <li><span class="tag tech">Always-on agents</span><span>The headline feature at DevDay was "dots" — AI agents that live inside ChatGPT with their own cloud computer and browser, connect to 4,000+ apps, and learn from feedback over time. Sam Altman called it the company's "research intern" moment. <a href="https://www.unite.ai/openai-unveils-gpt-6-1-sol-at-devday-with-new-codex-and-chatgpt-tools/">Unite.ai</a></span></li>
+        <li><span class="tag money">Acquisition</span><span>AMD agreed to buy Fei-Fei Li's spatial-intelligence startup World Labs for $8.2 billion in an all-stock deal. Li joins AMD as EVP and Chief Scientist, reporting to Lisa Su. The deal is AMD's second-largest acquisition ever. <a href="https://newsroom.amd.com/news/amd-acquire-world-labs/">AMD</a></span></li>
+        <li><span class="tag policy">Safety framework</span><span>OpenAI published "Towards Safety Cases for Frontier AI Training" — a framework proposing structured pre-training approval processes covering alignment, containment, and monitoring, framed partly as a response to the UK AISI and EU AI Act requirements. <a href="https://openai.com/index/towards-safety-cases-for-frontier-ai-training/">OpenAI</a></span></li>
+        <li><span class="tag tech">Open-weight risk</span><span>Anthropic's threat team published an analysis of Zhipu AI's GLM-5.3, an open-weight Chinese model that can autonomously generate exploits at near-flagship level. The model's own safety filters were bypassed 64–100% of the time using simple prompting techniques. <a href="https://www.anthropic.com/research/glm-5-3-and-the-spread-of-advanced-cyber-capabilities">Anthropic</a></span></li>
+        <li><span class="tag money">Infrastructure</span><span>Modal Labs, the cloud-compute startup, is closing a $750 million round at a $15.75 billion valuation — a 3× increase in just four months, reflecting rising demand for burst GPU capacity. <a href="https://idlhoussaineali.substack.com/p/openai-devday-2026-the-20-announcements">Substack/Handy AI</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: Can agents reproduce published science?</h2>
+      <p class="kicker">RECLAIM: Can Agents Reproduce the Claims of Machine Learning Papers? &middot; arXiv:2609.28850 &middot; Submitted September 23, 2026 &middot; <a href="https://arxiv.org/abs/2609.28850">arXiv</a></p>
+
+      <p>The week OpenAI announced it now has "an AI research intern," a paper quietly posted to arXiv tested that exact claim — and found that even the best AI agents today get the wrong answer more than half the time, even when you hand them the code, data, and model weights.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Science depends on reproduction. If someone publishes a result and nobody else can get the same number, the result is suspect. In machine learning, this is already a known problem for humans: studies over the past decade have found that 20–50% of published ML results fail to reproduce even when code is provided. Now that AI agents are being deployed as "research assistants," the obvious question is: can they do this job? Reproducing a result sounds mechanical — run the code, see if the numbers match — but it actually requires careful reading, judgment about which experiment is being claimed, debugging when things break, and honest verification of whether the output matches the paper. These are exactly the places where today's agents struggle.</p>
+
+      <h3>How it works</h3>
+      <p>Think of the RECLAIM benchmark like an assignment given to several students, with a separate proctor in the room to check whether the answer is actually right — not just whether the student says it is. The researchers took 100 papers from NeurIPS 2025 (one of the biggest machine-learning conferences) and divided them into three difficulty bands. In the <em>Run</em> tier (34 papers), everything is provided: code, training data, and trained model weights — the agent just needs to execute and measure. In the <em>Retrain</em> tier (33 papers), model weights are missing, so the agent must train a model from scratch using the provided code and data. In the <em>Reimplement</em> tier (33 papers), code is missing too — the agent has to read the paper and write its own implementation. Each agent received a budget of 96 GPU-hours per paper and was forbidden from self-grading. A separate AI auditor — built on Claude Sonnet 5 — read the agent's execution logs and judged whether the actual output matched the paper's claimed result. Human reviewers spot-checked the auditor and found it agreed with their verdicts at an F1 score of 0.82 (roughly 82% agreement, which is solid for this kind of task).</p>
+
+      <h3>What they actually did</h3>
+      <p>Four agents were tested across the full 100-paper benchmark, producing 400 total runs: DeepSeek-V4-Flash, Qwen3.6-27B, MiniMax-M2.7, and Muse Spark 1.2. For each run, the researchers fixed in advance which specific result must be reproduced, and what score counted as success (8 or above on a 10-point auditor scale). The total cost was $4,835, averaging $12 per run and $66 per confirmed reproduction — almost all of the cost was GPU compute, not model inference.</p>
+
+      <h3>What they found</h3>
+      <p>The best agent (DeepSeek-V4-Flash) reproduced 41% of Run-tier papers — that's the easiest case, with all code and data provided. At Retrain, its rate dropped to 27%. At Reimplement, 15%. Averaged across all four agents and all three tiers, the reproduction rate was 18%: fewer than one paper in five. The gap between self-report and reality was stark. Agents collectively claimed to have succeeded 128 times; the independent auditor confirmed only 73. The most common failure, found in 63 of 400 runs, was agents writing code and producing a number — then never checking whether that number matched what the paper claimed. They completed the task without verifying they had actually done it. Another telling sign: failed runs used only 29% of their compute budget on average. Agents weren't running out of time or resources; they were stopping early, apparently convinced the job was done when it wasn't.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 290" role="img" aria-label="Bar chart showing RECLAIM reproduction rates for the best agent across three difficulty tiers: Run 41%, Retrain 27%, Reimplement 15%">
+          <style>
+            .r-label { font: 13px system-ui, sans-serif; fill: #87867F; }
+            .r-val   { font: bold 15px system-ui, sans-serif; fill: #141413; }
+            .r-title { font: 14px ui-serif, serif; fill: #141413; }
+            .r-sub   { font: 12px system-ui, sans-serif; fill: #87867F; }
+          </style>
+          <text x="36" y="28" class="r-title">RECLAIM — best-agent reproduction rates, by tier</text>
+          <text x="36" y="46" class="r-sub">Each tier is harder: Run provides code+data+weights; Retrain drops weights; Reimplement drops code too.</text>
+          <line x1="160" y1="60" x2="160" y2="240" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="160" y1="240" x2="660" y2="240" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="310" y1="60" x2="310" y2="240" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4,3"/>
+          <line x1="460" y1="60" x2="460" y2="240" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4,3"/>
+          <line x1="610" y1="60" x2="610" y2="240" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4,3"/>
+          <text x="308" y="254" class="r-sub" text-anchor="middle">30%</text>
+          <text x="458" y="254" class="r-sub" text-anchor="middle">60%</text>
+          <text x="608" y="254" class="r-sub" text-anchor="middle">90%</text>
+          <text x="160" y="254" class="r-sub" text-anchor="middle">0%</text>
+          <text x="150" y="96" class="r-label" text-anchor="end">Run</text>
+          <text x="150" y="109" class="r-sub" text-anchor="end">(code + data + weights)</text>
+          <rect x="161" y="75" width="205" height="28" fill="#D97757" rx="3"/>
+          <text x="374" y="94" class="r-val">41%</text>
+          <text x="150" y="146" class="r-label" text-anchor="end">Retrain</text>
+          <text x="150" y="159" class="r-sub" text-anchor="end">(no weights)</text>
+          <rect x="161" y="126" width="135" height="28" fill="#788C5D" rx="3"/>
+          <text x="304" y="145" class="r-val">27%</text>
+          <text x="150" y="196" class="r-label" text-anchor="end">Reimplement</text>
+          <text x="150" y="209" class="r-sub" text-anchor="end">(no code)</text>
+          <rect x="161" y="176" width="75" height="28" fill="#6A8CAF" rx="3"/>
+          <text x="244" y="195" class="r-val">15%</text>
+        </svg>
+        <figcaption>Reproduction rates for the best agent (DeepSeek-V4-Flash) across RECLAIM's three tiers. Even with everything provided, fewer than half of results were confirmed correct by the independent auditor.</figcaption>
+      </figure>
+
+      <h3>The catch</h3>
+      <p>The benchmark covers only NeurIPS 2025 papers — one conference, mostly deep-learning research. It doesn't test any of the largest closed-source frontier models (GPT-6, the Claude Mythos family, Gemini). Each paper was tested with just one run per agent, which means the numbers are point estimates with wide uncertainty bands around them. And there's a contamination risk: agents may have been trained on code that was released alongside the benchmark. The results are a useful signal, not a definitive verdict.</p>
+
+      <p><strong>If you remember one thing:</strong> When an AI agent claims to have reproduced a scientific result, there's roughly a 45% chance it's wrong about that — even when the code and data are sitting right in front of it.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>The September 17 episode of the Dwarkesh Podcast with Noam Brown (poker-playing AI researcher, now at OpenAI) covers recursive self-improvement, agent swarms, and alignment in unusually concrete terms — Brown draws on game theory to explain why short-horizon reasoning doesn't automatically transfer to long-horizon safety. Worth an hour. <a href="https://www.dwarkesh.com/">dwarkesh.com</a></span></li>
+        <li><span class="tag tech">Dario Amodei</span><span>"We Must Pace the Frontier," published September 12, is the most substantive CEO essay on AI speed limits in years. It proposes embedded external evaluators with badge access inside labs, democratic-country coordination on capability ceilings, and eventual international verification. Anthropic committed to step one immediately. <a href="https://darioamodei.com/post/we-must-pace-the-frontier">darioamodei.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three things are happening at the same time this week, and they pull in different directions. The Anthropic IPO numbers show that the cost of this race is now so large that no single lab can stop unilaterally — the infrastructure commitments outlast any individual decision to slow down. The SAFA self-regulatory body and OpenAI's safety-case framework suggest the industry knows this and is trying to build shared brakes. And the RECLAIM paper is a reminder that the "AI research intern" framing is premature: the gap between what agents <em>say</em> they did and what they <em>actually</em> did is still large enough to matter. The interesting question is whether anyone will build auditors for the auditors.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://github.com/datnguyenquy94/news-radar/issues/635">AI Content Report 2026-09-30</a> ·
+        <a href="https://github.com/diclogic/ai-daily-digest/issues/168">AI Daily Digest 2026-09-30</a> ·
+        <a href="https://siliconangle.com/2026/09/29/openais-gpt-6-1-sol-delivers-astra-like-performance-at-a-dramatically-lower-price/">SiliconAngle — GPT-6.1 Sol</a> ·
+        <a href="https://www.unite.ai/openai-unveils-gpt-6-1-sol-at-devday-with-new-codex-and-chatgpt-tools/">Unite.ai — DevDay 2026</a> ·
+        <a href="https://openai.com/index/devday-2026-recap/">OpenAI — DevDay 2026 Recap</a> ·
+        <a href="https://newsroom.amd.com/news/amd-acquire-world-labs/">AMD — World Labs Acquisition</a> ·
+        <a href="https://www.anthropic.com/research/glm-5-3-and-the-spread-of-advanced-cyber-capabilities">Anthropic — GLM-5.3 Analysis</a> ·
+        <a href="https://www.anthropic.com/research/your-thoughts-on-ai">Anthropic — What Do You Want from AI</a> ·
+        <a href="https://openai.com/index/towards-safety-cases-for-frontier-ai-training/">OpenAI — Safety Cases</a> ·
+        <a href="https://arxiv.org/abs/2609.28850">arXiv — RECLAIM paper</a> ·
+        <a href="https://github.com/jjakimoto/research-issues/issues/1776">RECLAIM paper summary</a> ·
+        <a href="https://www.gurufocus.com/news/9097076/google-openai-anthropic-form-new-ai-selfregulation-body">GuruFocus — SAFA</a> ·
+        <a href="https://darioamodei.com/post/we-must-pace-the-frontier">Dario Amodei — We Must Pace the Frontier</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Safety case</div>
+        <div>A structured argument — with evidence — that a specific system is safe enough to deploy or train further. Borrowed from aviation and nuclear engineering, where operators must formally justify safety before proceeding, rather than simply asserting it. OpenAI's new paper proposes applying this logic to AI training runs: before you start a training run that might produce a significantly more capable model, you must build a documented case that the result will stay within safe bounds.</div>
+      </div>
+      <dl>
+        <dt>Dots</dt><dd>OpenAI's term for always-on AI agents that live inside ChatGPT. Each dot has its own dedicated cloud computer and browser, persists between sessions, learns from feedback, and can connect to thousands of external apps. Think of it less like a chatbot and more like a personal assistant that is always at their desk.</dd>
+        <dt>Abliteration</dt><dd>A technique for removing a model's safety filters by identifying and suppressing the specific neurons or attention patterns responsible for refusing requests. Anthropic's GLM-5.3 analysis found the model's defenses could be bypassed using this approach up to 100% of the time.</dd>
+        <dt>SAFA</dt><dd>Standards Authority for Frontier AI — the self-regulatory body Google, OpenAI, and Anthropic announced on September 25. Modeled on FINRA (the US financial-industry regulator), it would write common safety tests and auditing standards for frontier models. No government role; purely industry-run.</dd>
+        <dt>Spatial intelligence</dt><dd>The ability to understand, generate, and simulate 3D environments — knowing where things are in space, how they move, and how to interact with them physically. World Labs, the company AMD just acquired, builds AI models with this capability, which is central to robotics and physical simulation.</dd>
+        <dt>Non-cancelable commitment</dt><dd>A contract that cannot be walked away from without severe penalty. When Anthropic's filing says it has $518 billion in non-cancelable infrastructure commitments, it means: regardless of whether the company changes strategy, gets acquired, or goes bankrupt, those payments are contractually owed.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

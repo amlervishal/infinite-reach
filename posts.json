@@ -1,5 +1,12 @@
 [
   {
+    "num": 124,
+    "date": "2026-09-30",
+    "slug": "issues/2026-09-30.html",
+    "title": "The Ledger",
+    "blurb": "Anthropic's IPO filing showed $4.6 billion in revenue and $518 billion in infrastructure pledges — the first honest look at what building frontier AI actually costs. Plus: OpenAI's always-on 'dots' agents, the AMD–World Labs deal, and a paper finding AI agents reproduce fewer than one in five published results."
+  },
+  {
     "num": 123,
     "date": "2026-09-29",
     "slug": "issues/2026-09-29.html",
@@ -758,7 +765,7 @@
   {
     "num": 15,
     "date": "2026-06-12",
-    "slug": "issues/2026-06-15.html",
+    "slug": "issues/2026-06-12.html",
     "title": "The recipe, at last",
     "blurb": "Princeton ran 300 experiments to unlock the recipe for world-class AI image generation — and published every answer, as OpenAI quietly filed to go public at $852 billion."
   },
