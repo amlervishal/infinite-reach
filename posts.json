@@ -1,5 +1,12 @@
 [
   {
+    "num": 125,
+    "date": "2026-10-01",
+    "slug": "issues/2026-10-01.html",
+    "title": "The Shape of Proof",
+    "blurb": "Google DeepMind published a Nature paper hiding invisible watermarks inside AI-designed proteins — tested in a real lab, they still work. Plus: Gemini 4 Argon launches to vetted cyber defenders only, and OpenAI shelves GPT-6.1 Astra over safety regressions."
+  },
+  {
     "num": 124,
     "date": "2026-09-30",
     "slug": "issues/2026-09-30.html",
