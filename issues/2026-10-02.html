@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №126 — The Disagreement · Infinite Reach</title>
+  <meta name="description" content="At the UN General Assembly, the US formally rejected multilateral AI oversight — the clearest signal yet that the world's biggest powers are building incompatible rule books. A Meta paper shows why the efficiency race may be harder to govern than anyone expected." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №126 &middot; Friday, October 2, 2026</p>
+      <h1>The Disagreement</h1>
+      <p>At the UN General Assembly this week, the US formally rejected multilateral AI oversight — the most explicit statement yet that the world’s biggest technology powers are writing incompatible rule books. Meanwhile, a new paper from Meta shows why the efficiency curve behind the technology they’re arguing over is steeper than most people assumed.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On September 22, Michael Kratsios — the White House’s top technology official — told the United Nations General Assembly: “We totally reject all efforts by international bodies to assert centralized control and global governance of AI.” It was the starkest possible statement of the US position: national sovereignty over shared international standards. The same week, the EU was enforcing its AI Act on chatbot providers, China’s new AI-adjacent cyberspace inspection rules took effect on October 1, and Japan and Saudi Arabia called for international cooperation. The practical result of all this activity: any organization deploying AI across borders now faces at least three incompatible compliance frameworks — US, EU, and Chinese — with no mechanism for them to converge. The window for a unified global approach, if it ever existed, appears to have closed.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">OpenAI</span><span>GPT-6.1 Sol launched September 29 at $2 per million input tokens — one-fifth the price of the shelved Astra model — with near-Astra performance on agentic coding and computer use tasks. Available to Plus and Pro subscribers, but not yet in the main ChatGPT chat interface. <a href="https://www.androidheadlines.com/2026/09/openai-launches-gpt-6-1-sol-near-astra-performance.html">Source</a></span></li>
+        <li><span class="tag tech">Nvidia</span><span>Launched an Open Agent Safety Platform with 100+ partners including Anthropic, Microsoft, and Salesforce — a hardware-and-software watchdog (using BlueField DPUs and a secure runtime layer) that can quarantine a misbehaving AI agent in milliseconds. <a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/nvidia-launches-open-agent-safety-platform-to-restrain-rogue-ai-agents-new-hardware-and-software-security-stack-can-quarantine-agents-in-milliseconds">Source</a></span></li>
+        <li><span class="tag money">Armadin</span><span>The AI cybersecurity firm founded by Kevin Mandia (founder of Mandiant) raised $255.5 million in Series B funding at a valuation above $2.5 billion — just seven months after emerging from stealth. The new money funds detection tooling for AI agent behavior in enterprise environments. <a href="https://techstartups.com/2026/10/01/startup-funding-news-today-october-1-2026-armadin-foundational-frank-1club-osavul-more/">Source</a></span></li>
+        <li><span class="tag policy">US legislation</span><span>The Great American Artificial Intelligence Act — a 269-page bipartisan draft bill by Representatives Obernolte and Trahan — would create the first US federal AI governance regime. It would require $500M+ AI developers to manage “catastrophic risks,” report incidents, and disclose model capabilities. It would also preempt state AI laws for three years. Still a discussion draft. <a href="https://www.techpolicy.press/unpacking-the-great-american-artificial-intelligence-act-of-2026/">Source</a></span></li>
+        <li><span class="tag policy">China</span><span>China’s new Measures for Public Security Organs’ Supervision and Inspection of Cyberspace Security took effect October 1, giving authorities power to run online monitoring and on-site inspections of AI system operators. Adds to a stack of AI-specific rules — algorithm registration, security assessments, content governance — already in force. <a href="https://www.hunton.com/privacy-and-cybersecurity-law-blog/china-issues-new-rules-on-cyberspace-security-inspection">Source</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: Two tricks that double the engine</h2>
+      <p class="kicker">“Scaling Laws for Looped Mixture of Experts” &middot; Yanbei Chen, Anirudh Goyal, Raghuraman Krishnamoorthi (Meta AI) &middot; <a href="https://arxiv.org/abs/2609.40316">arXiv:2609.40316</a> (submitted September 30, 2026)</p>
+
+      <p>Every AI model released in the past two years has been bigger than the last. This paper is about something different: it shows how to make the same amount of compute go further, and it does so with real numbers that engineers can plan against.</p>
+
+      <h3>The problem, and why it’s hard</h3>
+      <p>Building a more capable language model used to have a simple recipe: add more parameters — the adjustable numbers inside the model — and feed it more data. “Scaling laws” are the mathematical rules that predict how capability improves with size; first formalized at OpenAI in 2020, they tell labs how much they’ll get from each extra dollar of compute. The problem is that brute-force scaling gets expensive fast. Two strategies have emerged to break the cost curve, but until this paper, researchers only understood each one in isolation.</p>
+
+      <h3>How it works</h3>
+      <p>The first strategy is <strong>looped transformers</strong>. A standard model is a one-way chain: input passes through layer 1, then layer 2, all the way through layer 96 (or however many there are), and out comes the answer. A looped model does something different: it builds far fewer distinct layers and runs them multiple times in sequence. Think of it as editing a document twelve times rather than having twelve different editors, each reading it once. Each pass can refine what the previous one caught, without requiring more “editors” (parameters) on the payroll. This increases the depth of reasoning without inflating memory costs.</p>
+
+      <p>The second strategy is <strong>Mixture of Experts (MoE)</strong>. Instead of every piece of text activating the full model, a router at each layer sends the input to just a small fraction of specialized “expert” sub-networks — perhaps 2 out of 64. The total model is large in terms of stored weights, but only a slim slice is active at any moment. Think of it as a hospital with a hundred specialists: a triage system routes each patient to the two or three people they actually need, so the facility can handle far more cases than if every specialist saw every patient.</p>
+
+      <p>Both tricks cut compute costs — but in different ways, and prior scaling laws only handled them separately. Chen, Goyal, and Krishnamoorthi’s key contribution is a unified set of equations — they call them Loop Scaling Laws — that predicts a model’s held-out loss given any combination of recurrence depth, sparsity level, total parameter count, and training data. At the heart of the formula is a “bounded, sparsity-conditional recurrence mapping”: in plain English, it answers the question, if you make the model loop more times through its layers, how much does adding sparsity (the MoE trick) amplify the gain? The answer turns out to be: a lot — and crucially, it’s quantifiable before you build the model.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 290" role="img" aria-label="Diagram comparing standard dense transformer, MoE transformer, looped transformer, and looped MoE">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <text x="90" y="22" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Standard dense</text>
+          <text x="255" y="22" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Mixture of Experts</text>
+          <text x="435" y="22" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Looped</text>
+          <text x="615" y="22" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Looped MoE</text>
+
+          <rect x="60" y="35" width="60" height="22" rx="4" fill="#D97757" opacity="0.25" stroke="#D97757" stroke-width="1.2"/>
+          <text x="90" y="50" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Layer 1</text>
+          <line x1="90" y1="57" x2="90" y2="67" stroke="#87867F" stroke-width="1.2" marker-end="url(#arr)"/>
+          <rect x="60" y="67" width="60" height="22" rx="4" fill="#D97757" opacity="0.25" stroke="#D97757" stroke-width="1.2"/>
+          <text x="90" y="82" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Layer 2</text>
+          <line x1="90" y1="89" x2="90" y2="99" stroke="#87867F" stroke-width="1.2" marker-end="url(#arr)"/>
+          <rect x="60" y="99" width="60" height="22" rx="4" fill="#D97757" opacity="0.25" stroke="#D97757" stroke-width="1.2"/>
+          <text x="90" y="114" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Layer 3</text>
+          <line x1="90" y1="121" x2="90" y2="131" stroke="#87867F" stroke-width="1.2" marker-end="url(#arr)"/>
+          <rect x="60" y="131" width="60" height="22" rx="4" fill="#D97757" opacity="0.25" stroke="#D97757" stroke-width="1.2"/>
+          <text x="90" y="146" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Layer 4</text>
+          <line x1="90" y1="153" x2="90" y2="163" stroke="#87867F" stroke-width="1.2" marker-end="url(#arr)"/>
+          <rect x="60" y="163" width="60" height="22" rx="4" fill="#D97757" opacity="0.25" stroke="#D97757" stroke-width="1.2"/>
+          <text x="90" y="178" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Layer 5</text>
+          <text x="90" y="210" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">All params active</text>
+          <text x="90" y="224" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">5 unique layers</text>
+
+          <line x1="165" y1="30" x2="165" y2="240" stroke="#D1CFC5" stroke-width="1"/>
+
+          <rect x="215" y="35" width="80" height="22" rx="4" fill="#6A8CAF" opacity="0.20" stroke="#6A8CAF" stroke-width="1.2"/>
+          <text x="255" y="50" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Layer 1 (router)</text>
+          <line x1="255" y1="57" x2="255" y2="67" stroke="#87867F" stroke-width="1.2" marker-end="url(#arr)"/>
+          <rect x="215" y="67" width="80" height="22" rx="4" fill="#6A8CAF" opacity="0.20" stroke="#6A8CAF" stroke-width="1.2"/>
+          <text x="255" y="82" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Layer 2 (router)</text>
+          <line x1="255" y1="89" x2="255" y2="99" stroke="#87867F" stroke-width="1.2" marker-end="url(#arr)"/>
+          <rect x="215" y="99" width="80" height="22" rx="4" fill="#6A8CAF" opacity="0.20" stroke="#6A8CAF" stroke-width="1.2"/>
+          <text x="255" y="114" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Layer 3 (router)</text>
+          <line x1="255" y1="121" x2="255" y2="131" stroke="#87867F" stroke-width="1.2" marker-end="url(#arr)"/>
+          <rect x="215" y="131" width="80" height="22" rx="4" fill="#6A8CAF" opacity="0.20" stroke="#6A8CAF" stroke-width="1.2"/>
+          <text x="255" y="146" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Layer 4 (router)</text>
+          <line x1="255" y1="153" x2="255" y2="163" stroke="#87867F" stroke-width="1.2" marker-end="url(#arr)"/>
+          <rect x="215" y="163" width="80" height="22" rx="4" fill="#6A8CAF" opacity="0.20" stroke="#6A8CAF" stroke-width="1.2"/>
+          <text x="255" y="178" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Layer 5 (router)</text>
+          <text x="255" y="210" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">Only 2 of 10 experts</text>
+          <text x="255" y="224" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">active per step</text>
+
+          <line x1="340" y1="30" x2="340" y2="240" stroke="#D1CFC5" stroke-width="1"/>
+
+          <rect x="400" y="55" width="70" height="22" rx="4" fill="#788C5D" opacity="0.25" stroke="#788C5D" stroke-width="1.2"/>
+          <text x="435" y="70" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Layer A</text>
+          <line x1="435" y1="77" x2="435" y2="87" stroke="#87867F" stroke-width="1.2" marker-end="url(#arr)"/>
+          <rect x="400" y="87" width="70" height="22" rx="4" fill="#788C5D" opacity="0.25" stroke="#788C5D" stroke-width="1.2"/>
+          <text x="435" y="102" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Layer B</text>
+          <path d="M470,87 Q495,87 495,71 Q495,55 470,55" fill="none" stroke="#788C5D" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr)"/>
+          <text x="502" y="74" font-family="system-ui" font-size="9" fill="#788C5D">×3</text>
+          <text x="435" y="145" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Same 2 layers</text>
+          <text x="435" y="159" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">run 3 times</text>
+          <text x="435" y="210" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">Fewer params, more</text>
+          <text x="435" y="224" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">compute passes</text>
+
+          <line x1="525" y1="30" x2="525" y2="240" stroke="#D1CFC5" stroke-width="1"/>
+
+          <rect x="575" y="55" width="80" height="22" rx="4" fill="#D97757" opacity="0.35" stroke="#D97757" stroke-width="1.5"/>
+          <text x="615" y="70" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Layer A (router)</text>
+          <line x1="615" y1="77" x2="615" y2="87" stroke="#87867F" stroke-width="1.2" marker-end="url(#arr)"/>
+          <rect x="575" y="87" width="80" height="22" rx="4" fill="#D97757" opacity="0.35" stroke="#D97757" stroke-width="1.5"/>
+          <text x="615" y="102" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Layer B (router)</text>
+          <path d="M655,87 Q682,87 682,71 Q682,55 655,55" fill="none" stroke="#D97757" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr)"/>
+          <text x="688" y="74" font-family="system-ui" font-size="9" fill="#D97757">×3</text>
+          <text x="615" y="145" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Loop + sparse routing</text>
+          <text x="615" y="159" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">combined</text>
+          <text x="615" y="210" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">~2× larger model’s</text>
+          <text x="615" y="224" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">reasoning performance</text>
+
+          <text x="360" y="262" text-anchor="middle" font-family="ui-serif" font-size="11" fill="#87867F" font-style="italic">The looped MoE (right) combines both efficiency tricks — fewer active params per step and</text>
+          <text x="360" y="276" text-anchor="middle" font-family="ui-serif" font-size="11" fill="#87867F" font-style="italic">repeated refinement passes — to match a model roughly twice its size on reasoning tasks.</text>
+        </svg>
+        <figcaption>Four model architectures at a glance. Standard dense (all layers, all parameters, one pass); MoE (routing sends each input to only a few expert sub-networks); Looped (fewer layers, run multiple times); Looped MoE (both tricks together). The paper derives the first unified scaling equations for the rightmost column.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The Meta team trained a large sweep of models varying both recurrence depth (how many times each layer is reused) and the number of active experts per step. They fit their Loop Scaling Law equations to the resulting loss values, then tested whether those equations accurately predicted the performance of held-out models they had not yet trained. They also ran the combined looped MoE configuration at trillion-token scale — the point where models start to behave as they would in production deployment.</p>
+
+      <h3>What they found</h3>
+      <p>The numbers are striking. MoE sparsity alone delivers roughly <strong>3× active-parameter efficiency</strong> — a sparse model can match a dense model three times its active size. Recurrence alone delivers roughly <strong>2× total-parameter efficiency</strong> specifically on reasoning benchmarks. Combined: at matched training compute, a looped MoE with the law-derived configuration matched a roughly <strong>2× larger non-looped MoE</strong> on reasoning benchmarks. There’s also a bonus: looping creates a natural lever for “test-time scaling” — you can run more passes at inference time on hard problems without retraining. The equations also recover the older dense and MoE scaling laws as special cases, which is a useful sanity check that the math is consistent.</p>
+
+      <h3>The catch</h3>
+      <p>The trillion-token experiments are large by academic standards, but frontier labs now train on ten trillion tokens or more. Whether the efficiency gains scale perfectly to that regime is unproven. The paper focuses on text-based reasoning benchmarks; whether the same gains appear in coding, image understanding, or very long-context tasks is a separate question the authors don’t claim to answer. And the equations describe the training regime — they say less about how the models behave once deployed, where other factors dominate.</p>
+
+      <p><strong>If you remember one thing:</strong> Reusing layers (looping) and routing inputs to specialist sub-networks (MoE) together let you match a model roughly twice as large, for the same compute budget — and now there are equations to plan that precisely, before you build anything.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>A new Dwarkesh Podcast episode features Noam Brown — the researcher behind the Libratus and Cicero poker-playing AIs, now at OpenAI — discussing agent swarms, alignment, and recursive self-improvement. Brown was one of the few people who predicted the current multi-agent moment early, and the episode is one of the clearest technical discussions of where agents go next. <a href="https://www.dwarkesh.com/">dwarkesh.com</a></span></li>
+        <li><span class="tag tech">Andrej Karpathy</span><span>Committed a small update to his minimal character-level language model (min-char-rnn.py) on October 1 — keeping the teaching repos alive despite joining Anthropic’s pretraining team earlier this year. The repo is one of the most-forked ML teaching tools on GitHub. <a href="https://github.com/karpathy">github.com/karpathy</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The governance fracture at the UN and the Meta paper are more connected than they look. The paper shows that the efficiency of AI systems is improving in ways that are cheap to reproduce — a group at a well-funded lab can get the equivalent of a model twice as large without doubling the hardware budget. That makes capability gains harder to meter and harder to govern. A regulation written for today’s compute threshold may be irrelevant by the time it passes. Meanwhile, the formal split between US, EU, and Chinese regulatory frameworks means there’s no single lever to pull even if governments wanted to coordinate. The three big stories this week — a governance deadlock, a safety watchdog from Nvidia, and a federal bill still at the discussion-draft stage — are all attempts to catch up with a moving target. Whether any of them land before the target moves again is the open question.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.nbcnews.com/tech/tech-news/us-rejects-international-ai-oversight-un-general-assembly-rcna233478">NBC News — US rejects international AI oversight at UNGA</a> ·
+        <a href="https://www.inkl.com/news/un-general-assembly-2026-trump-returns-to-the-world-stage-as-ukraine-middle-east-wars-and-ai-risks-dominate-agenda">Inkl — UN General Assembly 2026</a> ·
+        <a href="https://www.androidheadlines.com/2026/09/openai-launches-gpt-6-1-sol-near-astra-performance.html">AndroidHeadlines — GPT-6.1 Sol launch</a> ·
+        <a href="https://llm-stats.com/models/gpt-6.1-sol">LLM Stats — GPT-6.1 Sol benchmarks &amp; pricing</a> ·
+        <a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/nvidia-launches-open-agent-safety-platform-to-restrain-rogue-ai-agents-new-hardware-and-software-security-stack-can-quarantine-agents-in-milliseconds">Tom’s Hardware — Nvidia Open Agent Safety Platform</a> ·
+        <a href="https://nvidianews.nvidia.com/news/open-agent-safety-platform">Nvidia — OASP press release</a> ·
+        <a href="https://techstartups.com/2026/10/01/startup-funding-news-today-october-1-2026-armadin-foundational-frank-1club-osavul-more/">Tech Startups — Armadin Series B</a> ·
+        <a href="https://www.techpolicy.press/unpacking-the-great-american-artificial-intelligence-act-of-2026/">Tech Policy Press — Great American AI Act</a> ·
+        <a href="https://www.hunton.com/privacy-and-cybersecurity-law-blog/china-issues-new-rules-on-cyberspace-security-inspection">Hunton — China cyberspace inspection rules</a> ·
+        <a href="https://arxiv.org/abs/2609.40316">arXiv:2609.40316 — Scaling Laws for Looped Mixture of Experts</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Recurrence</div>
+        <div>In neural networks, running the same computational layer more than once rather than moving through a one-way chain. Imagine editing a draft twelve times rather than having twelve different editors — each pass can refine what the last one introduced, without adding more machinery to the payroll. The gain is reasoning depth without parameter cost.</div>
+      </div>
+      <dl>
+        <dt>Scaling laws</dt><dd>Mathematical equations that predict how a model’s capability improves as you add parameters, compute, or training data. First formalized at OpenAI in 2020; now used by every major lab to plan its next model before spending the money to build it.</dd>
+        <dt>Mixture of Experts (MoE)</dt><dd>An architecture where a router at each layer sends input to just a few “expert” sub-networks instead of the whole model. The total stored weights are large, but only a slim fraction activates for any given token — keeping running costs low while total capacity stays high.</dd>
+        <dt>Active parameters</dt><dd>The parameters that actually fire when the model processes a given input. In an MoE model, these are far fewer than the total stored parameters. Cost at inference time scales with active parameters, not total — which is why MoE models can be simultaneously large and cheap to run.</dd>
+        <dt>Held-out loss</dt><dd>The standard measure of how well a language model generalizes. Tested on text the model never saw during training; lower is better. The primary metric the Loop Scaling Laws paper uses to evaluate its predictions.</dd>
+        <dt>Federal preemption</dt><dd>In US law, when a federal rule overrides state rules on the same topic. The proposed Great American AI Act would preempt state AI laws for three years — meaning California and other states with AI legislation would temporarily have to defer to whatever federal standard is set.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
