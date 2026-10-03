@@ -1,10 +1,17 @@
 [
   {
+    "num": 127,
+    "date": "2026-10-03",
+    "slug": "issues/2026-10-03.html",
+    "title": "The Chain of Custody",
+    "blurb": "Google's Gemini 4 Argon launched exclusively to vetted cyber defenders — and a new paper shows why tracing where an AI agent's instructions came from matters more than scanning them for suspicious content."
+  },
+  {
     "num": 126,
     "date": "2026-10-02",
     "slug": "issues/2026-10-02.html",
     "title": "The Disagreement",
-    "blurb": "The US formally rejected multilateral AI oversight at the UN General Assembly — and the world split into three incompatible rule books. A Meta paper shows why the efficiency race behind the technology they’re arguing over may be harder to govern than anyone expected."
+    "blurb": "The US formally rejected multilateral AI oversight at the UN General Assembly — and the world split into three incompatible rule books. A Meta paper shows why the efficiency race behind the technology they're arguing over may be harder to govern than anyone expected."
   },
   {
     "num": 125,
