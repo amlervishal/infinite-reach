@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №128 — Before the Sentence · Infinite Reach</title>
+  <meta name="description" content="Three companies shipped AI models on the same morning that answer questions without ever writing a word — joining a startup that named the category sixteen days earlier. A paper from Illinois proposed the same principle from first principles: staying wordless longer turns out to be better." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №128 &middot; Sunday, October 4, 2026</p>
+      <h1>Before the Sentence</h1>
+      <p>Three companies shipped AI models on the same morning that answer questions without writing a single word &mdash; joining a startup that named the category sixteen days earlier. The same day, a paper from Illinois proposed staying wordless all the way through generation, too. Both stories are wrestling with the same question: when does the model actually need to make words?</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>TypeSafe AI came out of stealth on September&nbsp;15 with Jev &mdash; a model that doesn&rsquo;t generate text. You send it a piece of text or structured data and a list of typed questions; it evaluates all of them in a single parallel pass and returns probabilities, not prose. On October&nbsp;1, Cloudflare, Perplexity, and AWS all shipped their own versions on the same day, naming it a category: &ldquo;decision models.&rdquo; The appeal is straightforward. When an AI agent needs to decide whether a customer message is about billing or shipping, asking a full language model to think out loud costs roughly two seconds and several tokens; a decision model answers in under 150&nbsp;milliseconds and gives you a structured confidence score. A category went from one startup&rsquo;s idea to four competing products in sixteen days.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag policy">Policy</span><span>Connecticut&rsquo;s Artificial Intelligence Responsibility and Transparency (CART) Act took effect October&nbsp;1 &mdash; one of the most comprehensive state AI laws yet, covering employment screening, chatbot disclosure, synthetic-content labeling, and frontier model developers (defined as any entity running more than 10<sup>26</sup> compute operations).</span></li>
+        <li><span class="tag money">Money</span><span>Armadin, a cybersecurity AI startup led by Kevin Mandia (founder of Mandiant), raised $255.5&nbsp;million in Series&nbsp;B funding at a valuation above $2.5&nbsp;billion &mdash; just seven months after emerging from stealth. One of the larger purely cyber-focused AI rounds this year.</span></li>
+        <li><span class="tag tech">Tech</span><span>Cloudflare open-sourced Clef (27B parameters, Apache&nbsp;2.0) and its lighter sibling Clef-flash (9B), both built on Qwen3.8-27B &mdash; directly challenging Jev and Perplexity&rsquo;s pplx-decider-v1-27b. AWS&rsquo;s Strands Decider 2B runs in a median 115&nbsp;ms on consumer hardware and scored 0.723 on the shared JevBench evaluation set.</span></li>
+        <li><span class="tag policy">Policy</span><span>The US federal AI preemption debate intensified this week. California, Colorado, Utah, and Washington now each have distinct AI statutes, and tech-industry coalitions are pushing hard for a single federal standard before the patchwork grows further.</span></li>
+      </ul>
+
+      <h2>Paper, explained: Staying liquid all the way down</h2>
+      <p class="kicker"><em>Hierarchical Continuous Diffusion Language Models</em> &middot; Hui Ren, Zihan Li, Chang Liu, Huidong Liu, Alexander Schwing &middot; University of Illinois Urbana-Champaign &middot; <a href="https://arxiv.org/abs/2610.02193">arXiv:2610.02193</a> (October&nbsp;1, 2026)</p>
+
+      <p>A paper proposing a principled fix to a fundamental problem in text generation landed the same week four products shipped around the insight that text generation isn&rsquo;t always what you need. HC-DLM asks a simple question: what if the model never had to commit to specific words until it was completely done thinking?</p>
+
+      <h3>The problem, and why it&rsquo;s hard</h3>
+      <p>The standard way AI generates text is <em>autoregressive</em>: pick a word, commit to it, pick the next, and so on, left to right. Every early choice constrains everything that follows. For open-ended writing this is mostly fine &mdash; you settle on a direction and run with it. But for tasks that need <em>global consistency</em> &mdash; logic puzzles, arithmetic planning, any output where every part must fit every other &mdash; locking in early words can strand you in a wrong path you can&rsquo;t back out of.</p>
+
+      <p>Diffusion models handle this beautifully for images: start from visual noise, gradually refine the whole picture at once, let every pixel influence every other. Researchers have been trying to bring the same idea to text for years. The catch is that words are <em>discrete</em>. A pixel can sit at 0.47; a word cannot sit 0.47 of the way between &ldquo;cat&rdquo; and &ldquo;dog.&rdquo; Early text diffusion models worked around this either by masking and unmasking words step by step (<em>masked diffusion</em>), or by moving words into a continuous numerical space but snapping back to real token identities at each denoising step. Both approaches lose information every time they snap. The continuous evolution you want gets interrupted by a forced commitment to a specific word at every turn.</p>
+
+      <h3>How it works</h3>
+      <p>HC-DLM&rsquo;s core move: <em>don&rsquo;t snap</em>. Keep the internal state as a continuous numerical vector all the way through generation. Never force it to pick a real word until you need to read the output.</p>
+
+      <p>Think of developing a photograph in a darkroom. Halfway through development you don&rsquo;t name the shapes you see &mdash; you keep the print in the developer, let the image build up, and interpret it only when it&rsquo;s ready. HC-DLM&rsquo;s internal state is that developing print. At each denoising step the model reads off <em>token probabilities</em> &mdash; what words look plausible right now &mdash; not as a final answer but as a scaffold for the next step. Those scaffold tokens feed back in alongside the continuous latent, helping orient the next refinement. Crucially, they don&rsquo;t <em>replace</em> the continuous latent. The latent keeps evolving from itself.</p>
+
+      <p>The training objective is derived from a variational bound on the true token likelihood &mdash; a mathematical guarantee that you&rsquo;re optimizing a valid approximation of what you actually want. The whole system trains end-to-end: the readout and the latent evolution learn to work together. The model gets better at reading useful scaffolds from the latent, and better at using those scaffolds to guide the next step, simultaneously.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 262" role="img" aria-label="Two-column diagram comparing masked diffusion (tokens committed at each step) with HC-DLM (continuous latent, tokens read out as scaffold only)">
+          <defs>
+            <marker id="arr-ink" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+              <path d="M0,0 L0,7 L7,3.5 z" fill="#141413"/>
+            </marker>
+            <marker id="arr-sky" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+              <path d="M0,0 L0,7 L7,3.5 z" fill="#6A8CAF"/>
+            </marker>
+            <marker id="arr-olive" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+              <path d="M0,0 L0,7 L7,3.5 z" fill="#788C5D"/>
+            </marker>
+          </defs>
+          <rect width="720" height="262" fill="#FAF9F6" rx="6"/>
+
+          <!-- Left panel -->
+          <text x="172" y="22" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="600" fill="#141413">Masked diffusion</text>
+          <text x="172" y="37" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">tokens committed at each step</text>
+
+          <rect x="56" y="48" width="232" height="32" rx="5" fill="#D97757" fill-opacity="0.12" stroke="#D97757" stroke-width="1.5"/>
+          <text x="172" y="68" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#141413">[noise] [noise] [noise]</text>
+
+          <line x1="172" y1="80" x2="172" y2="98" stroke="#141413" stroke-width="1.5" marker-end="url(#arr-ink)"/>
+          <text x="198" y="93" font-family="system-ui" font-size="9" fill="#87867F">unmask &amp; snap</text>
+
+          <rect x="56" y="100" width="232" height="32" rx="5" fill="#D97757" fill-opacity="0.3" stroke="#D97757" stroke-width="1.5"/>
+          <text x="172" y="120" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#141413">&ldquo;The&rdquo; &nbsp;[noise] &nbsp;[noise]</text>
+
+          <line x1="172" y1="132" x2="172" y2="150" stroke="#141413" stroke-width="1.5" marker-end="url(#arr-ink)"/>
+          <text x="198" y="145" font-family="system-ui" font-size="9" fill="#87867F">unmask &amp; snap</text>
+
+          <rect x="56" y="152" width="232" height="32" rx="5" fill="#D97757" fill-opacity="0.5" stroke="#D97757" stroke-width="1.5"/>
+          <text x="172" y="172" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#141413">&ldquo;The &nbsp;cat &nbsp;sat&rdquo;</text>
+
+          <text x="56" y="210" font-family="system-ui" font-size="9" fill="#D97757">&#x26A0; &ldquo;The&rdquo; is locked in at step 2 &mdash; later steps can&rsquo;t revise it</text>
+
+          <!-- Divider -->
+          <line x1="360" y1="14" x2="360" y2="248" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="5,4"/>
+
+          <!-- Right panel -->
+          <text x="548" y="22" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" font-weight="600" fill="#141413">HC-DLM</text>
+          <text x="548" y="37" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">continuous latent &mdash; tokens are scaffold only</text>
+
+          <rect x="384" y="48" width="208" height="32" rx="5" fill="#6A8CAF" fill-opacity="0.12" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="488" y="68" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#141413">latent vector (noise)</text>
+
+          <line x1="488" y1="80" x2="488" y2="98" stroke="#6A8CAF" stroke-width="2" marker-end="url(#arr-sky)"/>
+          <line x1="592" y1="80" x2="624" y2="92" stroke="#788C5D" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#arr-olive)"/>
+          <text x="628" y="95" font-family="ui-monospace,monospace" font-size="9" fill="#788C5D">scaffold: &ldquo;the&hellip;&rdquo;</text>
+
+          <rect x="384" y="100" width="208" height="32" rx="5" fill="#6A8CAF" fill-opacity="0.28" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="488" y="120" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#141413">latent vector (step 2)</text>
+
+          <line x1="488" y1="132" x2="488" y2="150" stroke="#6A8CAF" stroke-width="2" marker-end="url(#arr-sky)"/>
+          <line x1="592" y1="132" x2="624" y2="144" stroke="#788C5D" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#arr-olive)"/>
+          <text x="628" y="147" font-family="ui-monospace,monospace" font-size="9" fill="#788C5D">scaffold: &ldquo;the cat&hellip;&rdquo;</text>
+
+          <rect x="384" y="152" width="208" height="32" rx="5" fill="#6A8CAF" fill-opacity="0.48" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="488" y="172" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#141413">&ldquo;The &nbsp;cat &nbsp;sat&rdquo;</text>
+
+          <text x="384" y="210" font-family="system-ui" font-size="9" fill="#6A8CAF">&#x2713; latent evolves freely &mdash; words committed only at the final readout</text>
+        </svg>
+        <figcaption>Left: masked diffusion forces word choices at each denoising step; an early wrong word can&rsquo;t be undone. Right: HC-DLM keeps a continuous internal state throughout &mdash; token &ldquo;scaffolds&rdquo; (dashed) hint at what the latent is developing into, but they never replace it. Words only appear at the end.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The team trained HC-DLM at 6&nbsp;million parameters &mdash; a small research scale &mdash; and tested it on three benchmarks. <strong>Sudoku</strong> tests structured reasoning: given a partially-filled puzzle, complete it legally. <strong>Countdown</strong> tests mathematical planning: make a target number from five given numbers using only basic arithmetic. <strong>LM1B</strong> tests open-ended language generation (measured by perplexity &mdash; lower means the model generates text more coherently). They compared against four existing approaches: standard masked diffusion (MDLM), a continuous flow model (LangFlow), and two hybrid methods that couple continuous and discrete representations in simpler ways (Plaid and CCDD).</p>
+
+      <h3>What they found</h3>
+      <p>HC-DLM outperformed all four baselines at matched model size. On hard Sudoku it reached 72.41% accuracy &mdash; 22.5 percentage points ahead of masked diffusion and 1.7 ahead of the best hybrid (CCDD). On Countdown&rsquo;s hardest five-number split it scored 37.52%, 12.2 points over CCDD. On LM1B perplexity it landed at 75.5, beating Plaid by 1.8 and LangFlow by 16.7.</p>
+
+      <p>The reasoning-task gains are the most striking. Sudoku and Countdown both demand that the whole output be consistent at once &mdash; exactly the scenario where locking in words early hurts most. The model can&rsquo;t fix a conflicting number it committed to three steps ago; HC-DLM, because it never committed, can keep refining everything simultaneously.</p>
+
+      <h3>The catch</h3>
+      <p>Six million parameters is a toy scale; the models in everyday use are hundreds of times larger. Whether the approach scales &mdash; and whether the added architectural complexity pays off at billions of parameters &mdash; is unproven. LM1B perplexity at 75.5 is excellent for a diffusion model but still far behind comparably-sized autoregressive models. Training is slower because the continuous latent state adds compute at each step. And the paper evaluates on narrow, structured tasks; how &ldquo;staying liquid&rdquo; plays out on the full range of open-ended text is an open question.</p>
+
+      <p><strong>If you remember one thing:</strong> Keeping the internal generation state continuous until the very last readout step lets a small model correct itself globally &mdash; and the gains show up most on tasks that demand the whole output be consistent at once.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>His October&nbsp;1 episode with military historian Si Sheppard on how a few hundred Spanish soldiers toppled two empires isn&rsquo;t AI news &mdash; but it&rsquo;s worth an hour. It&rsquo;s really about how a small technological edge compounds into total dominance when the other side can&rsquo;t adapt fast enough. Useful framing for this moment. <a href="https://www.dwarkesh.com/">dwarkesh.com</a></span></li>
+        <li><span class="tag money">Garry Tan / YC</span><span>Y Combinator announced two new General Partners on October&nbsp;1: Vivian Midha Shen (co-founder of Juni Learning, founder of AI tutoring company Acely) and Raphael Schaad (creator of Cron). Tan specifically called them examples of what lean, AI-native companies can now build. <a href="https://svpost.com/articles/vivian-midha-shen-yc-general-partner">Silicon Valley Post</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Decision models going from one startup&rsquo;s launch to four competing products in sixteen days is unusual even by this market&rsquo;s standards. It suggests a real gap existed: the routing and control layer of AI agents &mdash; the part that decides what to do next &mdash; has been handled by asking full language models to reason out loud. That&rsquo;s slow and expensive when all you actually need is a typed probability. HC-DLM arrives from a completely different direction and reaches a compatible conclusion: text generation was never supposed to be a left-to-right word-commitment machine. When you hold the internal state liquid until the last moment, the model can be globally consistent in a way token-by-token generation simply cannot. Both stories are about the same underlying question the field is slowly working out: words are the output, not the process. The sooner we stop treating them as the same thing, the better the tools get.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.sanity.io/glossary/jev-typesafe-ai-model">TypeSafe AI / Jev overview (Sanity)</a> &middot;
+        <a href="https://www.infoq.com/news/2026/10/typesafe-ai-jev-released/">TypeSafe Jev launch (InfoQ)</a> &middot;
+        <a href="https://cryptobriefing.com/cloudflare-clef-decision-models-workers-ai/">Cloudflare Clef (CryptoBriefing)</a> &middot;
+        <a href="https://aiweekly.co/alerts/perplexity-open-sources-27b-decider-edges-jev-on-11-test-panel">Perplexity Decider (AI Weekly)</a> &middot;
+        <a href="https://cellcog.ai/blog/jev-alternatives/">AWS Strands Decider (CellCog)</a> &middot;
+        <a href="https://www.licentium.io/post/connecticut-cart-act-public-act-26-15-signed-june-2026">Connecticut CART Act (Licentium)</a> &middot;
+        <a href="https://techstartups.com/2026/10/01/startup-funding-news-today-october-1-2026-armadin-foundational-frank-1club-osavul-more/">Armadin funding (TechStartups)</a> &middot;
+        <a href="https://arxiv.org/abs/2610.02193">HC-DLM paper (arXiv:2610.02193)</a> &middot;
+        <a href="https://github.com/rhfeiyang/HC-DLM">HC-DLM code (GitHub)</a> &middot;
+        <a href="https://www.dwarkesh.com/">Dwarkesh Podcast</a> &middot;
+        <a href="https://svpost.com/articles/vivian-midha-shen-yc-general-partner">YC new GPs (Silicon Valley Post)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Autoregressive</div>
+        <div>A way of generating a sequence one piece at a time, left to right, where each new piece depends on everything before it. It&rsquo;s how most language models write: pick a word, commit to it, pick the next. The analogy is a typist who can&rsquo;t erase &mdash; every keystroke is permanent, so getting a word wrong early limits all the words that follow.</div>
+      </div>
+      <dl>
+        <dt>Decision model</dt>
+        <dd>An AI model designed to answer structured, typed questions (is this billing or shipping? is this text toxic?) and return calibrated probabilities &mdash; not prose. Faster and cheaper than asking a language model to reason out loud.</dd>
+
+        <dt>Diffusion</dt>
+        <dd>A generation method borrowed from image models: start from pure noise and gradually &ldquo;denoise&rdquo; toward a coherent output. The whole output evolves together, not left to right.</dd>
+
+        <dt>Latent vector</dt>
+        <dd>The model&rsquo;s hidden, internal representation of meaning at a given step &mdash; a list of numbers encoding something like &ldquo;the meaning so far.&rdquo; In HC-DLM this stays continuous (never snapped to a specific word) all the way through generation.</dd>
+
+        <dt>RLCD</dt>
+        <dd>Reinforcement Learning for Calibrated Decisions &mdash; TypeSafe&rsquo;s training method for Jev. Instead of optimizing for text humans prefer (the usual approach), it optimizes for accurate probability estimates on structured decisions.</dd>
+
+        <dt>Perplexity</dt>
+        <dd>A measure of how surprised a language model is by a test sentence. Lower means the model assigns higher probability to real text &mdash; a proxy for how fluently it generates. Not a perfect measure of quality, but standard enough to compare methods.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
