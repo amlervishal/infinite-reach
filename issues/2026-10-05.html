@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №129 — The Appointed Hour · Infinite Reach</title>
+  <meta name="description" content="The United States named its first AI Czar on Sunday and set a 120-day clock. North Korea claimed a missile that steers itself. A robotics paper found that trusting machines to act without constant check-ins made both the work and the bill better." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №129 &middot; Monday, October 5, 2026</p>
+      <h1>The Appointed Hour</h1>
+      <p>The United States named its first AI Czar on Sunday and started a 120-day countdown — the most formal step the US government has taken toward coordinating its relationship with the technology. Elsewhere, North Korea claimed a missile that adjusts its own flight path by algorithm, and a paper out of Beijing found that robots work better, and cost half as much to run, when you trust them to handle the routine steps on their own.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On Sunday, President Trump signed an executive order creating a "Super Intelligence Force" — a White House task force on AI — and named Jay Clayton, the Director of National Intelligence, as its head, a title the order calls the "AI Czar." Clayton is joined by the FTC chairman, the head of the Office of Personnel Management, and the Pentagon's undersecretary for research. The group has 120 days to deliver a report on AI risks and opportunities and will act as the federal government's coordination point with AI companies, critical-infrastructure operators, and the public. This is not a regulatory body and has no enforcement powers — but it is the first time the US government has appointed a named individual to be responsible, across agencies, for the country's AI posture. The 120-day clock runs to early February.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Models</span><span>Google expanded Gemini 4 Argon access to paid API customers and Google AI Ultra subscribers, following its September 30 launch limited to vetted cyber defenders; general availability still has no confirmed date as Google continues safety review for cyberattack and CBRN risks. <a href="https://techwireasia.com/2026/10/google-gemini-4-argon-cybersecurity-access/">source</a></span></li>
+        <li><span class="tag money">Funding</span><span>Personal-AI-concierge startup Instinct closed a $1 billion Series C at a $10 billion valuation — a 4× markup from its Series B just weeks earlier — with Sequoia, Benchmark, and Coatue backing a product that texts and calls on your behalf to book trips, buy groceries, and cancel subscriptions. <a href="https://finance.yahoo.com/technology/ai/articles/ai-startup-instinct-raises-1bn-110953012.html">source</a></span></li>
+        <li><span class="tag tech">Tools</span><span>Anthropic opened Claude Code to a mod system: small TypeScript plugins that can rewrite prompts, intercept and retry tool calls, block permission requests, and add custom UI — installed with a single <code>/plugin</code> command, though mods are unsandboxed and run with full agent permissions. <a href="https://superpowerdaily.com/posts/anthropic-adds-claude-code-mods-that-can-rewrite-prompts-and-replace-built-in-features">source</a></span></li>
+        <li><span class="tag policy">Geopolitics</span><span>North Korean state media reported that Kim Jong Un oversaw the launch of a hypersonic missile it claims uses AI to autonomously adjust its trajectory at low altitude — the first public claim of AI-guided flight control in an operational ballistic missile test; South Korea's military disputed the "impossible to intercept" characterization. <a href="https://www.bloomberg.com/news/articles/2026-10-03/north-korea-s-kim-oversaw-hypersonic-missile-drill-kcna-says">source</a></span></li>
+        <li><span class="tag money">Finance</span><span>Broadcom's banking syndicate began assembling $60 billion in fresh financing for AI chip customers including Anthropic, continuing the wave of infrastructure capital flowing into frontier compute. <a href="https://www.theneuron.ai/digest/everything-that-happened-in-ai-today-friday-october-2-2026/">source</a></span></li>
+        <li><span class="tag tech">Models</span><span>Claude Sonnet 5.5 reached full general availability across AWS, Google Cloud, and Azure: 30% faster and 30% cheaper per task than Sonnet 5, scoring 70.6% on Terminal-Bench 4.0 (compared to 10.3% for Sonnet 5) while keeping the same $2/$10 per million token pricing. <a href="https://www.unite.ai/anthropic-releases-claude-sonnet-5-5-at-unchanged-sonnet-5-pricing/">source</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: The robot that stopped asking so many questions</h2>
+      <p class="kicker">PyRUA-Lean: Reducing Unnecessary Actions in Robot Agent Planning &middot; Si Ruiyang, Bi Jianxin, Yang Shunyu et al. &middot; Peking University, NUS, NVIDIA &middot; <a href="https://huggingface.co/papers/2610.01939">arXiv 2610.01939</a></p>
+
+      <p>Here is a counterintuitive result: if you make a robot ask an AI for help <em>less often</em>, the robot completes tasks <em>more reliably</em> — and costs <em>half as much to run</em>. That is the core finding of PyRUA-Lean, a paper from Peking University, the National University of Singapore, and NVIDIA submitted on October 1.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Robot agents that can navigate a kitchen, stock a warehouse shelf, or assemble parts typically work by calling a large vision-language model (VLM) — a powerful AI that can look at a camera feed and decide what to do next — at nearly every step. See the object, ask the model: should I pick it up? It moves an inch. Ask again: what now? This approach works, but it has two serious problems. First, it is expensive: each model call costs money and takes time, and a task involving dozens of micro-actions can require dozens of calls. Second, flooding the model with trivial questions — "the cup is now 2 centimetres closer, what do I do?" — actually <em>degrades</em> the quality of its decisions on the steps that actually matter, because the model has no way to distinguish a meaningful moment from a routine one.</p>
+      <p>Researchers have tried to fix this by having the agent skip unnecessary queries, but deciding <em>when</em> to skip and <em>when</em> to ask is itself a hard problem. Skip too much and the robot gets lost; ask too often and you are back where you started.</p>
+
+      <h3>How it works</h3>
+      <p>Think of the difference between a surgeon who consults a senior colleague after every suture versus one who writes a procedure plan at the start and only calls for help when something unexpected happens — a bleed, a rupture, an anomaly. The second surgeon gets better outcomes because the senior colleague's attention is reserved for the moments that actually need it. PyRUA-Lean does the same thing for robots.</p>
+      <p>Instead of asking the VLM what to do at each step, the agent asks the VLM once to write a short block of Python code covering several steps — a mini-program like "pick up the red cup, carry it to the sink, put it down." That code runs directly on the robot. If everything goes according to plan, the VLM is never queried again. Only when the robot encounters a genuine exception — the cup fell, the shelf is in the wrong place, the task state has changed unexpectedly — does it pause, report back, and ask the model for an updated plan.</p>
+      <p>The code blocks are not hand-written rules. The VLM generates them on the fly, conditional on what it sees. The key insight is that language models are actually quite good at writing short, reliable sequences of robot-control code for common household and industrial tasks; what they are not good at is answering the same trivial question forty-nine times in a row without getting confused. Separating "write the plan" from "execute the plan" lets each capability do what it is suited for.</p>
+      <p>The authors call this approach "lean orchestration": the agent is still AI-driven at the planning level, but it trusts its own execution more, and escalates less. The name PyRUA-Lean reflects both the Python-based rule-action architecture and the lean philosophy — do more with fewer interruptions.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team tested PyRUA-Lean against a standard baseline (per-step VLM querying) across 700 simulated task instances drawn from three benchmark suites: LIBERO-PRO (household object manipulation), RoboTwin 2.0 (bimanual robot coordination), and RoboCasa365 (a large-scale kitchen environment). Tasks ranged from setting a table to sorting objects by colour. They used GPT-6 Astra as the underlying VLM for most tests, with ablations across other models to confirm the approach is model-agnostic.</p>
+
+      <h3>What they found</h3>
+      <p>Overall task success went from 63.1% to 71.7% — a roughly 14% relative improvement. At the same time, the number of VLM or language-model calls per task dropped by 49%, and input tokens consumed fell by 65%. The cost per task dropped from $1.63 to $0.74 — less than half. The paper's own description calls this "a rare simultaneous win on accuracy and efficiency." The failure modes are mostly predictable: tasks with very unusual or ambiguous states — a counter covered in identical objects, a drawer that won't open — still tripped the system into over-querying or gave it code that broke. The improvement was largest on well-structured tasks with clear object identities and predictable physical states.</p>
+
+      <h3>The catch</h3>
+      <p>All 700 tests are in simulation, not physical hardware. Simulation is standard practice in robotics research and gives useful signal, but real-world environments have noise that simulators do not capture — slippery surfaces, varying lighting, imprecise motor control. The generated code blocks also only work as well as the VLM's physical-world understanding; a model that miscalibrates the size of an object will write code that fails silently. The paper does not test failure recovery: what happens when the exception-triggered re-plan itself produces bad code is not studied. And the cost numbers assume GPT-6 Astra pricing — change the model and the arithmetic changes too.</p>
+
+      <p><strong>If you remember one thing:</strong> Asking an AI fewer, better questions turns out to produce better answers — a principle that applies well beyond robots.</p>
+
+      <!-- SVG FIGURE: Traditional per-step querying vs. PyRUA-Lean code-block orchestration -->
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Two rows comparing traditional per-step VLM querying versus PyRUA-Lean code-block approach">
+          <!-- Background -->
+          <rect width="720" height="310" fill="#F7F6F2" rx="8"/>
+
+          <!-- Title -->
+          <text x="360" y="28" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="14" fill="#141413" font-weight="600">How often does the robot ask for help?</text>
+
+          <!-- Row 1: Traditional -->
+          <text x="16" y="68" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" font-weight="600">TRADITIONAL</text>
+
+          <rect x="16" y="78" width="68" height="32" rx="4" fill="#D97757" opacity="0.85"/>
+          <text x="50" y="99" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#fff">VLM call</text>
+
+          <rect x="104" y="78" width="68" height="32" rx="4" fill="#D1CFC5"/>
+          <text x="138" y="99" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#141413">action</text>
+
+          <rect x="192" y="78" width="68" height="32" rx="4" fill="#D97757" opacity="0.85"/>
+          <text x="226" y="99" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#fff">VLM call</text>
+
+          <rect x="280" y="78" width="68" height="32" rx="4" fill="#D1CFC5"/>
+          <text x="314" y="99" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#141413">action</text>
+
+          <rect x="368" y="78" width="68" height="32" rx="4" fill="#D97757" opacity="0.85"/>
+          <text x="402" y="99" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#fff">VLM call</text>
+
+          <rect x="456" y="78" width="68" height="32" rx="4" fill="#D1CFC5"/>
+          <text x="490" y="99" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#141413">action</text>
+
+          <rect x="544" y="78" width="68" height="32" rx="4" fill="#D97757" opacity="0.85"/>
+          <text x="578" y="99" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#fff">VLM call</text>
+
+          <text x="626" y="99" font-family="system-ui,sans-serif" font-size="13" fill="#D97757">…</text>
+
+          <line x1="84" y1="94" x2="104" y2="94" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="172" y1="94" x2="192" y2="94" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="260" y1="94" x2="280" y2="94" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="348" y1="94" x2="368" y2="94" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="436" y1="94" x2="456" y2="94" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="524" y1="94" x2="544" y2="94" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <text x="16" y="128" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">$1.63 avg cost · 49 VLM calls · 63.1% success</text>
+
+          <line x1="16" y1="148" x2="704" y2="148" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,4"/>
+
+          <!-- Row 2: PyRUA-Lean -->
+          <text x="16" y="172" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" font-weight="600">PyRUA-LEAN</text>
+
+          <rect x="16" y="182" width="80" height="32" rx="4" fill="#6A8CAF" opacity="0.9"/>
+          <text x="56" y="202" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#fff">VLM call</text>
+
+          <line x1="96" y1="198" x2="116" y2="198" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="116" y="178" width="290" height="40" rx="4" fill="#788C5D" opacity="0.85"/>
+          <text x="261" y="196" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9.5" fill="#fff">pick_up(cup) → carry(sink)</text>
+          <text x="261" y="210" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9.5" fill="#fff">→ place() → …  [runs on robot]</text>
+
+          <line x1="406" y1="198" x2="430" y2="198" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <polygon points="456,183 486,198 456,213 426,198" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="456" y="202" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#141413">exception?</text>
+
+          <line x1="486" y1="198" x2="530" y2="198" stroke="#788C5D" stroke-width="1.5" marker-end="url(#arr2)"/>
+          <text x="508" y="193" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#788C5D">no → done</text>
+          <rect x="530" y="182" width="56" height="32" rx="4" fill="#788C5D" opacity="0.7"/>
+          <text x="558" y="202" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#fff">✓ done</text>
+
+          <line x1="456" y1="213" x2="456" y2="240" stroke="#D97757" stroke-width="1.5" marker-end="url(#arr3)"/>
+          <text x="465" y="233" font-family="system-ui,sans-serif" font-size="9" fill="#D97757">yes → re-ask</text>
+          <line x1="456" y1="240" x2="56" y2="240" stroke="#D97757" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="56" y1="240" x2="56" y2="214" stroke="#D97757" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+          <text x="16" y="265" font-family="system-ui,sans-serif" font-size="10" fill="#6A8CAF">$0.74 avg cost · 25 VLM calls · 71.7% success</text>
+
+          <rect x="16" y="278" width="688" height="22" rx="4" fill="#6A8CAF" opacity="0.12"/>
+          <text x="360" y="293" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#141413">Fewer calls → clearer context → better decisions → lower bill</text>
+
+          <defs>
+            <marker id="arr" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+              <polygon points="0 0, 7 3.5, 0 7" fill="#87867F"/>
+            </marker>
+            <marker id="arr2" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+              <polygon points="0 0, 7 3.5, 0 7" fill="#788C5D"/>
+            </marker>
+            <marker id="arr3" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+              <polygon points="0 0, 7 3.5, 0 7" fill="#D97757"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>Traditional robot agents ask the AI model at nearly every step (top). PyRUA-Lean generates a code block covering multiple steps and only escalates to the model when something goes wrong (bottom). The result: 49% fewer model calls, 65% fewer tokens consumed, and a 14% higher task success rate.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>On October 2, Andrej Karpathy (now at Anthropic's pretraining research team) posted a framework he calls the "comprehension ladder" for getting clearer output from language models: start with ASD-STE100 — a controlled technical English originally developed for aircraft maintenance manuals — then SVG diagrams, then interactive HTML, escalating to custom explainer video only when the idea is genuinely hard to visualise. The post got wide traction and has already spawned several open-source Claude Code plugins. <a href="https://x.com/karpathy/status/2098811935114551617">post</a> · <a href="https://github.com/FutureAtoms/karpathy-ladder">plugin on GitHub</a></span></li>
+        <li><span class="tag tech">Garry Tan</span><span>YC president Garry Tan posted on October 3 that he "just deleted about a thousand lines of markdown" from GStack — Y Combinator's internal tooling — "because frontier models are good now and the old tricks generally you don't need anymore." A small signal, but worth watching: the elaborate prompt scaffolding developers spent years refining is now being stripped out as models learn to handle ambiguous instructions on their own. <a href="https://x.com/garrytan/status/2106298398441951497">post</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things happened this week that look unrelated but tell the same story. The US government named an "AI Czar" and gave him 120 days to figure out what the country's AI policy should be; North Korea claimed a missile that navigates itself. Both are responses to the same underlying shift: autonomous AI systems are now capable enough that nations feel they need formal stances toward them, not just company policies. The 120-day deadline is a clock. Whether a report actually changes anything depends on what comes after it — which the executive order does not specify.</p>
+      <p>Meanwhile, PyRUA-Lean, Karpathy's ladder post, and Garry Tan's deleted markdown all point toward a second shift: the engineering culture around AI is maturing from "call the model constantly" to "know when not to call it." The early instinct — throw everything at the most powerful model, ask it every question, let it make every decision — turns out to be neither the cheapest nor the most effective approach. Letting a system handle its own routine work, and reserving the expensive intelligence for genuine decision points, is a pattern you will see everywhere over the next year.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://siliconangle.com/2026/10/04/trump-launches-super-intelligence-force-with-jay-clayton-as-ai-czar/">SiliconAngle — Super Intelligence Force</a> ·
+        <a href="https://www.nbcnews.com/politics/trump-administration/trump-announces-members-ai-task-force-rcna601494">NBC News — AI task force members</a> ·
+        <a href="https://techwireasia.com/2026/10/google-gemini-4-argon-cybersecurity-access/">TechWire Asia — Gemini 4 Argon access</a> ·
+        <a href="https://finance.yahoo.com/technology/ai/articles/ai-startup-instinct-raises-1bn-110953012.html">Yahoo Finance — Instinct $1B raise</a> ·
+        <a href="https://superpowerdaily.com/posts/anthropic-adds-claude-code-mods-that-can-rewrite-prompts-and-replace-built-in-features">Superpower Daily — Claude Code Mods</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-10-03/north-korea-s-kim-oversaw-hypersonic-missile-drill-kcna-says">Bloomberg — North Korea missile</a> ·
+        <a href="https://www.unite.ai/anthropic-releases-claude-sonnet-5-5-at-unchanged-sonnet-5-pricing/">Unite.AI — Claude Sonnet 5.5</a> ·
+        <a href="https://huggingface.co/papers/2610.01939">Hugging Face Papers — PyRUA-Lean</a> ·
+        <a href="https://x.com/karpathy/status/2098811935114551617">X / Karpathy — comprehension ladder</a> ·
+        <a href="https://x.com/garrytan/status/2106298398441951497">X / Garry Tan — GStack cleanup</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Czar</div>
+        <div>In US government usage, a "czar" is an informal term for a senior official appointed to coordinate policy across multiple agencies on a specific topic — like the "drug czar" or "cyber czar." They are not elected, have no statutory authority of their own, and cannot make law. Their power comes from proximity to the president and their ability to convene agencies that would otherwise not talk to each other.</div>
+      </div>
+      <dl>
+        <dt>VLM</dt><dd>Vision-language model. An AI that can process both images (or camera feeds) and text at the same time — letting a robot "see" its environment and receive natural-language instructions in one system.</dd>
+        <dt>Token</dt><dd>The basic unit an AI model processes. Roughly three-quarters of a word. When a paper says it used "65% fewer tokens," it means the AI had 65% less text to read and process — a direct proxy for cost and speed.</dd>
+        <dt>ASD-STE100</dt><dd>Simplified Technical English — a writing standard originally created by the aerospace industry (ASD = AeroSpace and Defence) for aircraft maintenance manuals. It limits vocabulary and sentence structure to reduce ambiguity. Karpathy's insight is that asking an AI to write in STE produces cleaner, less hedged output.</dd>
+        <dt>Benchmark</dt><dd>A standardised test used to compare AI systems. Like a driving test that every new car must pass — the same track, the same obstacles — so you can compare one model against another fairly. Scores only reflect performance on the specific test; real-world behaviour can differ.</dd>
+        <dt>CBRN</dt><dd>Chemical, Biological, Radiological, and Nuclear — the four categories of weapons of mass destruction. When companies say they restrict a model's access over "CBRN risks," they mean they are worried the model could provide information that helps someone build or deploy such weapons.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
