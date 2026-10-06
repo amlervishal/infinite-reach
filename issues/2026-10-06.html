@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №130 — Before You Ask · Infinite Reach</title>
+  <meta name="description" content="A 4-billion-parameter model from Nanjing watches live video and speaks up without being prompted — while AI companies captured 64% of all global venture capital in Q3 2026. The technology has stopped waiting to be called." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №130 &middot; Tuesday, 6 October 2026</p>
+      <h1>Before You Ask</h1>
+      <p>A 4-billion-parameter model from Nanjing can now watch a live video stream, write its own running notes, and speak up &mdash; without being prompted &mdash; at exactly the right moment. The same week, venture capitalists placed 64 cents of every startup dollar they had into AI companies. Something has shifted: the technology is no longer waiting to be called on.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Crunchbase&rsquo;s Q3 2026 quarterly tally arrived Monday: global venture capital hit $159 billion across roughly 6,000 companies, and AI startups captured $102 billion of it &mdash; 64% of everything. This is not a sector pulling ahead; it is a near-monopoly on the world&rsquo;s risk capital. Twenty-seven companies raised $1 billion or more in a single quarter, and eight cleared $3 billion, including $5 billion each for Databricks and Safe Superintelligence, the safety-first lab founded by Ilya Sutskever. The same week, Anthropic issued an unusually frank warning to investors about the structural risks advanced AI poses &mdash; risks the company says it cannot fully control. Two-thirds of the world&rsquo;s startup bets, placed on a technology whose own builders openly call dangerous.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Tech</span><span>DeepSeek V4.1 Flash &mdash; released in September with 748 billion total parameters and a 1-million-token context window &mdash; scores 81.1 on LiveBench against Anthropic&rsquo;s leading model at 83.4. The US-China AI performance gap has shrunk from roughly 15% at the start of 2026 to under 3% today, the fastest sustained convergence in the field&rsquo;s history.</span></li>
+        <li><span class="tag policy">Policy</span><span>The UK government published its first AI Risk Management Toolkit for public-sector organisations, giving civil servants structured operational guidance on assessing and deploying AI systems safely &mdash; one of the first government-issued toolkits of its kind in Europe.</span></li>
+        <li><span class="tag money">Money</span><span>Reflection AI &mdash; valued at $25 billion with roughly $4.6 billion raised, backed heavily by Nvidia &mdash; is expected to ship its first open-weight frontier model before year-end. It would be the first serious Western challenger to DeepSeek and Qwen in the open-source tier. The company has not yet released a single public model.</span></li>
+        <li><span class="tag tech">Tech</span><span>Karpathy&rsquo;s <em>nanochat</em> repository (updated September 7) trains a complete GPT-2-quality language model &mdash; from raw text to a working chatbot &mdash; for roughly $48 on a single 8-GPU H100 node. The same capability cost $43,000 in 2019. Recent progress comes from AI agents automatically optimising the training recipe, a technique the project calls &ldquo;autoresearch.&rdquo;</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: the AI that decides when to speak</h2>
+      <p class="kicker"><em>OneStreamer: Unifying Perception, Memory, and Proactive Response in Streaming Video Interaction</em> &middot; Nanjing University &middot; arXiv, October 1, 2026 &middot; <a href="https://aiweekly.co/alerts/onestreamer-4b-model-tops-eight-streaming-video-benchmarks">source</a></p>
+
+      <p>This paper asks a question most video AI sidesteps: what should a model do when nobody is asking it anything? OneStreamer watches a live stream, writes its own running notes, and speaks up without a prompt &mdash; topping eight benchmarks at 4 billion parameters, a modest size. The hard part, it turns out, isn&rsquo;t understanding the video. It&rsquo;s knowing when.</p>
+
+      <h3>The problem, and why it&rsquo;s hard</h3>
+      <p>The best video-understanding models today are <em>reactive</em>: you give them a clip and ask a question. They scan everything, find the relevant moment, and answer. This works for recorded video. It doesn&rsquo;t work for a live feed &mdash; a security camera, a manufacturing line, a hospital ward &mdash; where there is no clip to hand over and no question to wait for. The model has to watch continuously and decide on its own when something is worth reporting.</p>
+
+      <p>Two things make this genuinely hard. First, <em>storage</em>: a live stream generates dozens of frames per second, far more than any model can hold in memory. You must decide what to keep. Second, <em>proactivity</em>: training a model to know when to interrupt requires labeled training data for every moment it should speak up. Annotating a &ldquo;respond now&rdquo; signal frame-by-frame across hours of footage is slow, expensive, and most of what you label is just silence.</p>
+
+      <p>Previous approaches either stored raw visual features in a context window that grew without bound &mdash; fine for short clips, impractical for hour-long streams &mdash; or relied on dense supervision, annotating every single candidate response moment in the training data. Both hit a wall as streams get longer.</p>
+
+      <h3>How it works</h3>
+      <p>OneStreamer&rsquo;s central move: <em>convert video to text as you watch</em>. Instead of accumulating raw visual frames in memory, the model writes time-stamped summary captions at each moment. These captions become the working memory &mdash; compact, fast to scan, structured enough to orient future responses.</p>
+
+      <p>Think of a sports reporter covering a football match from the press box without video replay. They don&rsquo;t record every play. They write brief, structured notes: <em>Q2, 3rd &amp; 8, snap fumbled, turnover on downs.</em> Small, precise records of what matters. When something genuinely changes the game &mdash; a score, a penalty, a momentum shift &mdash; they call it in. Not on every play. On the right play.</p>
+
+      <p>OneStreamer formalises this as two coupled mechanisms. The first, <strong>Proactive Hierarchical Caption Memory</strong>, produces time-grounded captions from each incoming clip segment. These captions are reusable: the model can skim high-level summaries to locate what&rsquo;s relevant and drill into detail only when needed, without replaying any raw visual features. The second, <strong>Proactive State Transition Learning</strong>, trains the model to recognise when the situation has meaningfully changed &mdash; a <em>state transition</em> &mdash; and to respond at those moments rather than at every frame.</p>
+
+      <p>Both components share a single training objective the authors call a &ldquo;shared proactive generation process.&rdquo; This matters because it forces the model to write captions that are useful for detecting transitions, not just generically accurate. The note-taker and the decision-maker learn together.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team assembled OneStreamer-1M &mdash; more than one million streaming video interaction records, each containing time-stamped video segments with paired query-response annotations drawn from natural live-stream scenarios. They trained a 4-billion-parameter model on this corpus and evaluated it on eight established streaming video benchmarks covering event detection, temporal question-answering during live playback, and proactive alerting tasks.</p>
+
+      <p>The key training experiment varied supervision density. At 100% annotation (label every candidate response moment), the model performed well. At 27.5% annotation (label only the most structurally important transitions), the model performed <em>better</em> on every benchmark.</p>
+
+      <h3>What they found</h3>
+      <p>OneStreamer topped all eight streaming video benchmarks at the 4-billion-parameter scale. The 27.5% result was the most surprising: providing <em>less</em> supervision, concentrated at structurally important state transitions, consistently outperformed exhaustive labeling. The researchers&rsquo; explanation is intuitive: dense supervision teaches a model to attend equally to all frames. Sparse supervision at transition points teaches it to look for <em>change</em>. Change is what matters in a live feed.</p>
+
+      <h3>The catch</h3>
+      <p>The eight benchmarks are structured: they define what counts as an event and when a model should respond. Real deployments involve noisier, more ambiguous inputs and much higher stakes when the model speaks at the wrong moment. The paper does not compare OneStreamer to models larger than 4 billion parameters in this setting, so it is unclear how the approach scales. And there is no treatment of adversarial inputs: what happens when someone tries to trigger proactive responses at the wrong time, or suppress them when something genuinely matters?</p>
+
+      <p><strong>If you remember one thing:</strong> You can teach a model to know when to speak up using less than a third of the labeled data you would expect &mdash; so long as you annotate the right moments, not all of them.</p>
+
+      <!-- SVG FIGURE -->
+      <figure>
+        <svg viewBox="0 0 720 290" role="img" aria-label="Two-row diagram comparing previous reactive video AI (stores all frames, waits for a question) with OneStreamer (converts frames to text captions, responds proactively at state transitions)">
+          <defs>
+            <marker id="arr-ink" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+              <path d="M0,0 L0,8 L8,4 z" fill="#141413"/>
+            </marker>
+            <marker id="arr-sky" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+              <path d="M0,0 L0,8 L8,4 z" fill="#6A8CAF"/>
+            </marker>
+          </defs>
+
+          <rect x="0" y="0" width="720" height="290" fill="#FAFAF8"/>
+
+          <!-- Row labels -->
+          <text x="12" y="26" font-family="ui-serif, Georgia, serif" font-size="12" fill="#87867F" font-style="italic">Previous approach — reactive</text>
+          <text x="12" y="162" font-family="ui-serif, Georgia, serif" font-size="12" fill="#141413" font-weight="bold">OneStreamer — proactive</text>
+
+          <!-- PREVIOUS: frames -->
+          <rect x="12" y="36" width="46" height="34" rx="3" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="35" y="57" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#87867F">frame</text>
+          <rect x="62" y="36" width="46" height="34" rx="3" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="85" y="57" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#87867F">frame</text>
+          <rect x="112" y="36" width="46" height="34" rx="3" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="135" y="57" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#87867F">frame…</text>
+
+          <line x1="163" y1="53" x2="198" y2="53" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr-ink)"/>
+
+          <!-- PREVIOUS: growing context -->
+          <rect x="202" y="34" width="118" height="38" rx="3" fill="#788C5D" fill-opacity="0.12" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="261" y="50" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#788C5D">visual context</text>
+          <text x="261" y="64" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#788C5D">grows every frame ↑↑</text>
+
+          <line x1="325" y1="53" x2="360" y2="53" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr-ink)"/>
+
+          <!-- PREVIOUS: wait box -->
+          <rect x="364" y="34" width="90" height="38" rx="3" fill="#F5F3EF" stroke="#87867F" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="409" y="50" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#87867F">waits for a</text>
+          <text x="409" y="64" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#87867F">question…</text>
+
+          <line x1="459" y1="53" x2="494" y2="53" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr-ink)"/>
+
+          <!-- PREVIOUS: answer -->
+          <rect x="498" y="34" width="90" height="38" rx="3" fill="#D97757" fill-opacity="0.18" stroke="#D97757" stroke-width="1.5"/>
+          <text x="543" y="57" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#D97757">answers</text>
+
+          <!-- DIVIDER -->
+          <line x1="0" y1="130" x2="720" y2="130" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="5,4"/>
+
+          <!-- ONESTREAMER: frames -->
+          <rect x="12" y="172" width="46" height="34" rx="3" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="35" y="193" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#87867F">frame</text>
+          <rect x="62" y="172" width="46" height="34" rx="3" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="85" y="193" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#87867F">frame</text>
+          <rect x="112" y="172" width="46" height="34" rx="3" fill="#D1CFC5" stroke="#87867F" stroke-width="1"/>
+          <text x="135" y="193" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#87867F">frame…</text>
+
+          <line x1="163" y1="189" x2="198" y2="189" stroke="#6A8CAF" stroke-width="1.5" marker-end="url(#arr-sky)"/>
+
+          <!-- ONESTREAMER: text captions -->
+          <rect x="202" y="170" width="118" height="38" rx="3" fill="#6A8CAF" fill-opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="261" y="186" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#6A8CAF">text captions</text>
+          <text x="261" y="200" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#6A8CAF">(compact, reusable)</text>
+
+          <line x1="325" y1="189" x2="360" y2="189" stroke="#6A8CAF" stroke-width="1.5" marker-end="url(#arr-sky)"/>
+
+          <!-- ONESTREAMER: state detector -->
+          <rect x="364" y="168" width="90" height="42" rx="3" fill="#6A8CAF" fill-opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="409" y="185" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#6A8CAF">state changed?</text>
+          <text x="409" y="200" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#6A8CAF">(27.5% labeled)</text>
+
+          <line x1="459" y1="189" x2="494" y2="189" stroke="#6A8CAF" stroke-width="1.5" marker-end="url(#arr-sky)"/>
+
+          <!-- ONESTREAMER: proactive response -->
+          <rect x="498" y="170" width="90" height="38" rx="3" fill="#D97757" fill-opacity="0.55" stroke="#D97757" stroke-width="1.5"/>
+          <text x="543" y="186" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#141413">speaks up</text>
+          <text x="543" y="200" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#141413">proactively</text>
+
+          <!-- Bottom caption -->
+          <line x1="0" y1="255" width="720" y2="255" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="360" y="274" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle" fill="#87867F">Previous models accumulate visual frames and wait to be asked; OneStreamer converts frames to text and responds at genuine state transitions.</text>
+        </svg>
+        <figcaption>A reactive model stores raw visual features and waits for a question; OneStreamer converts the stream to compact text captions and responds proactively when it detects a state transition &mdash; no prompt required.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>The <em>nanochat</em> repository &mdash; Karpathy&rsquo;s minimal end-to-end language model training framework &mdash; was updated September&nbsp;7. The project tracks the &ldquo;Time-to-GPT-2 Leaderboard&rdquo; (wall-clock time to train a GPT-2-quality model), and recent rounds powered by AI agents that automatically optimise the training recipe (&ldquo;autoresearch&rdquo;) have brought training time to under two hours at roughly $48 per run &mdash; down from $43,000 in 2019. <a href="https://github.com/karpathy/nanochat">github.com/karpathy/nanochat</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The pattern this week is a shift from reactive to proactive. The Q3 venture capital figure is striking not just as a number but as a posture: those bets were placed ahead of resolved questions about safety, governance, and societal impact. Money moved first, answers may follow. OneStreamer captures the same dynamic at the model level &mdash; a system built to initiate rather than respond, to speak when the situation warrants rather than when a user asks.</p>
+      <p>Both developments raise the same underlying question. A reactive system is easy to audit: a human asked, a model answered, you can read the log. A proactive system &mdash; whether it is an AI model scanning a live feed or a trillion dollars of capital accelerating a technology &mdash; generates decisions that are harder to trace. Why did it speak up here and not there? Who decided the situation had changed enough to warrant action? As AI moves further into continuous, real-time settings, answering those questions will matter at least as much as improving the benchmarks.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://aiweekly.co/alerts/crunchbase-logs-27-billion-dollar-rounds-in-q3-2026-as-ai-grabs-102b-or-64-of">Crunchbase Q3 2026, via AI Weekly</a> &middot;
+        <a href="https://propakistani.pk/2026/09/11/deepseek-v4-1-flash-launches-with-lower-prices-and-native-vision/">DeepSeek V4.1 Flash launch</a> &middot;
+        <a href="https://lmmarketcap.com/model/deepseek-v4-1-flash">DeepSeek V4.1 Flash benchmarks</a> &middot;
+        <a href="https://aiweekly.co/alerts/onestreamer-4b-model-tops-eight-streaming-video-benchmarks">OneStreamer, via AI Weekly</a> &middot;
+        <a href="https://www.tlt.com/insights-and-events/insight/tlts-ai-brief-october-2026">TLT AI Brief October 2026</a> &middot;
+        <a href="https://github.com/karpathy/nanochat">karpathy/nanochat (GitHub)</a> &middot;
+        <a href="https://turingpost.substack.com/p/inside-reflection-ai-the-20b-open">Turing Post: Reflection AI</a> &middot;
+        <a href="https://en.wikipedia.org/wiki/Safe_Superintelligence_Inc.">Safe Superintelligence Inc.</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Proactive AI</div>
+        <div>An AI that acts without being prompted &mdash; deciding on its own when the situation warrants a response. Like the difference between a smoke alarm that sounds when it detects smoke (proactive) and one that only beeps when you press the test button (reactive). The harder engineering challenge is knowing when <em>not</em> to speak up.</div>
+      </div>
+      <dl>
+        <dt>State transition</dt><dd>A moment in a stream when the situation meaningfully changes. Not every new video frame is a state transition &mdash; most frames in a security-camera feed look identical. A car entering the frame, a door opening, a crowd gathering: those are transitions. OneStreamer is trained to detect them and respond only then.</dd>
+        <dt>Dense supervision</dt><dd>Labeling every example in a training dataset. For teaching a model when to respond in a long video, that means annotating every second. Exhaustive but expensive &mdash; and the paper found it actually performs worse than labeling only the most structurally important moments.</dd>
+        <dt>LiveBench</dt><dd>A continuously updated benchmark that tests language models on current events and recent publications, so models cannot train on the answers in advance. The DeepSeek vs. Anthropic scores in this issue come from LiveBench.</dd>
+        <dt>Open-weight model</dt><dd>A model whose internal weights &mdash; the billions of numbers encoding what it has learned &mdash; are published for anyone to download and run. Unlike a closed API model, an open-weight model can run locally, be modified, and be studied. DeepSeek and Qwen are leading examples.</dd>
+        <dt>Autoresearch</dt><dd>Using AI agents to automatically run, evaluate, and improve their own training recipes without human intervention at each step. Karpathy&rsquo;s nanochat project uses it to optimise the training loop, recording the best results on a public leaderboard.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
