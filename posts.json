@@ -1,5 +1,12 @@
 [
   {
+    "num": 131,
+    "date": "2026-10-07",
+    "slug": "issues/2026-10-07.html",
+    "title": "The Qualifying Clause",
+    "blurb": "The four biggest AI labs rewrote their safety pledges so they only trigger if competitors pause first — a promise whose fine print makes it no promise at all. Plus: a 260-million-parameter image model beats one six times its size just by running its own layers in a loop."
+  },
+  {
     "num": 130,
     "date": "2026-10-06",
     "slug": "issues/2026-10-06.html",

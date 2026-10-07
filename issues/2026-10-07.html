@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №131 — The Qualifying Clause · Infinite Reach</title>
+  <meta name="description" content="The four biggest AI labs made their safety commitments conditional this week — pause only if competitors pause first — while a SenseTime paper shows a tiny model beating one seven times its size simply by running its own blocks in a loop." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №131 &middot; Wednesday, October 7, 2026</p>
+      <h1>The Qualifying Clause</h1>
+      <p>The four biggest AI labs have rewritten their safety pledges so they only trigger if competitors agree to pause too — a promise whose fine print makes it, for practical purposes, no promise at all. Meanwhile, a research team at SenseTime and Tsinghua found that a tiny 260-million-parameter image model can beat one seven times its size, not by growing, but by running its own layers in a loop. Two very different ideas about how far you can get by repeating yourself.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic, OpenAI, Google DeepMind, and Meta have each quietly changed the terms under which they would pause development of their most powerful models. Where they once committed to stopping unilaterally if internal tests found catastrophic risks, all four now attach a condition: they'll only pause if a comparable competitor pauses first. Anthropic's updated framework requires both that it holds a significant lead <em>and</em> that it identifies catastrophic risks before triggering a stop. Google DeepMind and Meta dropped their unilateral pause commitments entirely. The Future of Life Institute, which evaluated all the labs for its Summer 2026 AI Safety Index, described the shift as "moving the goalposts." Not one company received better than a C+ grade on safety; three labs — xAI, DeepSeek, and Mistral — received outright Fs. The best grade in the room was Anthropic's C+, with a score of 2.66 out of a possible 5.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Money</span><span>Lambda Labs raised up to $4 billion at a $14.5 billion valuation, led by Blackstone and Coatue, with a 2027 IPO penciled in — its unfilled order backlog for GPU cloud compute grew from $15B in June to roughly $50B by September. <a href="https://scouts.yutori.com/68f22e10-d5fe-4e94-b1c8-9c6218cfdb2c">source</a></span></li>
+        <li><span class="tag money">Money</span><span>Waymo expanded its first-ever private loan to $5 billion, with Pacific Investment Management, Blackstone, and Sixth Street Partners participating — funding is earmarked for custom silicon chips for its autonomous fleet. <a href="https://scouts.yutori.com/68f22e10-d5fe-4e94-b1c8-9c6218cfdb2c">source</a></span></li>
+        <li><span class="tag tech">Tech</span><span>October opened without a single frontier model launch — unusual for 2026. Instead: Cloudflare and Amazon released small open-weight decision models; Microsoft shipped new text-to-speech and streaming transcription tools; Tavus previewed a full-duplex video model (two-way real-time video conversation with a generated presenter). <a href="https://www.digitalapplied.com/blog/ai-model-releases-october-2026-tracker">source</a></span></li>
+        <li><span class="tag policy">Policy</span><span>The Trump administration announced the Genesis Mission — $5 billion to embed AI assistants into scientific research across more than 15 federal agencies, spanning healthcare, energy, and national security. <a href="https://welcome.ai/content/federal-developments-in-ai-regulation-and-funding-impacting-industries">source</a></span></li>
+        <li><span class="tag tech">Tech</span><span>GitHub's openTPU project shipped an AI-designed FPGA inference accelerator that runs Qwen3 and LFM2.5 on a Kintex-7 chip — small compute, but notable as an example of AI tooling that designs its own hardware. <a href="https://aiweekly.co/ai-news-today">source</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: the small model that wins by thinking twice</h2>
+      <p class="kicker">Looped Diffusion Transformer (Looped-DiT) &middot; Chng et al., SenseTime Research / Tsinghua University / Nanyang Technological University &middot; <a href="https://arxiv.org/abs/2609.40305">arXiv:2609.40305</a> &middot; September 30, 2026</p>
+
+      <p>A 260-million-parameter model beating a 1.7-billion-parameter model — while using less than a fifth of the compute — sounds like a benchmark trick. But the mechanism is simple enough to sketch on a napkin, and the results hold up across multiple standard tests. It's one of those papers where the idea itself is the interesting part.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>State-of-the-art image generation today uses a family of models called <em>diffusion models</em>. The basic idea: start from a picture of pure static — random noise — and progressively clean it up, step by step, until a coherent image emerges. Each cleaning step is handled by a large neural network (specifically a Transformer). The better that network is, the sharper and more accurate the final image.</p>
+
+      <p>The orthodox way to improve quality is to make the network bigger — add more layers and more parameters. Bigger networks cost more to run, more to train, and more to deploy. There's also a subtler problem: each denoising step runs the network exactly once, then passes its output to the next step. If the network made an error at step 1, step 2 has no way to know that. The mistake gets baked in.</p>
+
+      <p>Researchers have tried to fix this by adding more denoising steps (running the cleanup process more times), but each additional step still runs the same network exactly once. You get more passes, but no deeper thinking per pass. What if, instead of adding steps, you made each step think harder?</p>
+
+      <h3>How it works</h3>
+      <p>Imagine you're a first-year editor reading a manuscript. Standard diffusion is like reading every page once and writing your notes at the bottom. Looped diffusion is like reading the same page three times in a row, each time with everything you noticed in the previous read still fresh in your mind — but without being allowed to carry anything in writing between reads, only in memory. By the third pass, you've caught things you'd have missed on the first.</p>
+
+      <p>That's essentially what Looped-DiT does. Rather than running the Transformer blocks once per denoising step, it runs the <em>same</em> blocks two, three, or more times in a loop — the output of one pass feeds directly into the next, and the network's internal state carries forward. Crucially, the weights (the "knowledge" baked into the network) are shared across all loops. You're not adding more parameters, you're adding more passes through the same parameters.</p>
+
+      <p>Two things go wrong if you try this naively. First, the network gets no feedback about whether intermediate loops are correct — it only sees the final output, so it has no reason to improve during the middle loops (the researchers call this "weak supervision across intermediate loops"). Second, the self-attention mechanism — the part of the Transformer that decides what to focus on — gradually erodes as loops accumulate, losing track of local details in the image.</p>
+
+      <p>Looped-DiT's fix is two-pronged. They add what they call <em>deep supervision</em>: the network is required to produce a good prediction not just at the final loop, but at every intermediate loop. This gives it a training signal at each loop, not just the last one. And they add <em>self-modulating attention</em>: a lightweight mechanism that lets each loop's attention adapt based on what the previous loop attended to, preventing the gradual erosion of local information. Together these two fixes make the loops stable and productive.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 320" role="img" aria-label="Diagram comparing standard and looped diffusion transformer architecture">
+          <!-- Background -->
+          <rect width="720" height="320" fill="#FAFAF8" rx="8"/>
+
+          <!-- Standard side label -->
+          <text x="170" y="32" font-family="ui-serif, Georgia, serif" font-size="14" fill="#141413" text-anchor="middle" font-weight="bold">Standard Diffusion</text>
+          <text x="170" y="50" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">one pass per step</text>
+
+          <!-- Looped side label -->
+          <text x="540" y="32" font-family="ui-serif, Georgia, serif" font-size="14" fill="#141413" text-anchor="middle" font-weight="bold">Looped Diffusion (Looped-DiT)</text>
+          <text x="540" y="50" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" text-anchor="middle">multiple passes per step, same weights</text>
+
+          <!-- Divider -->
+          <line x1="360" y1="20" x2="360" y2="300" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,4"/>
+
+          <!-- Standard diagram -->
+          <rect x="90" y="70" width="100" height="40" rx="6" fill="#F0EDE8" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="140" y="95" font-family="system-ui, sans-serif" font-size="12" fill="#87867F" text-anchor="middle">Noise input</text>
+          <line x1="140" y1="110" x2="140" y2="135" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+          <rect x="75" y="135" width="130" height="44" rx="6" fill="#6A8CAF" opacity="0.85"/>
+          <text x="140" y="162" font-family="system-ui, sans-serif" font-size="12" fill="white" text-anchor="middle" font-weight="600">Transformer block</text>
+          <line x1="140" y1="179" x2="140" y2="204" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+          <rect x="90" y="204" width="100" height="40" rx="6" fill="#F0EDE8" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="140" y="229" font-family="system-ui, sans-serif" font-size="12" fill="#87867F" text-anchor="middle">Image output</text>
+          <text x="140" y="272" font-family="system-ui, sans-serif" font-size="11" fill="#D97757" text-anchor="middle">1 pass → done</text>
+
+          <!-- Looped diagram -->
+          <rect x="460" y="70" width="100" height="40" rx="6" fill="#F0EDE8" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="510" y="95" font-family="system-ui, sans-serif" font-size="12" fill="#87867F" text-anchor="middle">Noise input</text>
+          <line x1="510" y1="110" x2="510" y2="135" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+          <rect x="445" y="135" width="130" height="44" rx="6" fill="#788C5D" opacity="0.85"/>
+          <text x="510" y="155" font-family="system-ui, sans-serif" font-size="12" fill="white" text-anchor="middle" font-weight="600">Transformer block</text>
+          <text x="510" y="170" font-family="system-ui, sans-serif" font-size="10" fill="rgba(255,255,255,0.85)" text-anchor="middle">(shared weights)</text>
+          <path d="M 575 157 Q 620 157 620 175 Q 620 193 575 193 L 575 179" fill="none" stroke="#788C5D" stroke-width="2" stroke-dasharray="4,3"/>
+          <path d="M 575 179 L 580 171 M 575 179 L 570 171" fill="none" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="630" y="175" font-family="system-ui, sans-serif" font-size="10" fill="#788C5D" text-anchor="middle">loop</text>
+          <text x="630" y="188" font-family="system-ui, sans-serif" font-size="10" fill="#788C5D" text-anchor="middle">×3</text>
+          <line x1="510" y1="179" x2="510" y2="204" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+          <rect x="460" y="204" width="100" height="40" rx="6" fill="#F0EDE8" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="510" y="229" font-family="system-ui, sans-serif" font-size="12" fill="#87867F" text-anchor="middle">Image output</text>
+          <text x="510" y="272" font-family="system-ui, sans-serif" font-size="11" fill="#788C5D" text-anchor="middle">3 passes → deeper refinement</text>
+
+          <defs>
+            <marker id="arrowGray" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M1,1 L7,4 L1,7 Z" fill="#87867F"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>Left: a standard diffusion model runs its Transformer blocks once per denoising step. Right: Looped-DiT runs the same blocks multiple times per step, each pass refining what the previous pass produced — without adding any new parameters.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The team trained Looped-DiT models at several sizes on standard text-to-image benchmarks, then compared them against non-looped baseline models of matched parameter count and matched compute budget. The headline comparison: a 260M-parameter Looped-DiT was pit against a standard 1.7B-parameter baseline — six and a half times larger. On three separate text-to-image benchmarks (GenEval, T2I-CompBench, and DPG-Bench), the 260M looped model outperformed the 1.7B baseline while consuming 4.9 times less inference compute per image. They also tested whether more loops always help: the answer is yes, up to a point, and more loops per denoising step produced larger improvements than adding more denoising steps.</p>
+
+      <h3>What they found</h3>
+      <p>The looped models showed something unexpected: deeper loops progressively corrected errors made in earlier loops. In their words, the model exhibited "behaviors suggestive of latent reasoning" — the internal representations at the end of loop 3 were measurably better at handling compositional prompts (ones that ask for several specific things in specific relationships) than those at the end of loop 1. This is notable because diffusion models were never designed to reason; they were designed to denoise. Looping seems to accidentally give them a form of iterative refinement that plain denoising doesn't.</p>
+
+      <h3>The catch</h3>
+      <p>All the reported comparisons are against <em>standard</em> DiT baselines, not the best-in-class image generators available today (like Stable Diffusion 3.5 or Flux.1). The authors don't claim their 260M model produces the world's best images — only that it performs better than a non-looped model of the same size, and surprisingly well against the 1.7B baseline in structured evaluations. Qualitative results (how the images actually look to a human) may diverge from the benchmark scores. And the method adds training complexity: the deep supervision requires careful calibration, or the intermediate loops can interfere rather than help.</p>
+
+      <p><strong>If you remember one thing:</strong> making a neural network think about the same thing twice — with its own previous attempt still in memory — can be more efficient than making the network bigger.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy is now several months into his team at Anthropic, where he's running what he calls "Autoresearch" — a setup where a small AI coding agent runs unsupervised training experiments, checks results, and adjusts its next iteration, without a human in the loop. His earlier public run found 20 training optimizations across 700 experiments, cutting training time 11%. He's now scaling the same approach using Claude models to help design and evaluate pretraining experiments. No new public post yet, but it's the kind of long-horizon project worth watching as it moves toward results. <a href="https://www.implicator.ai/karpathy-joins-anthropic-as-claude-moves-into-its-own-training-room.md">background</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The safety pledge story is a preview of how the next few years of AI governance are likely to go. When every major lab makes its responsible-use commitments conditional on what competitors do, you get a classic coordination trap: each lab's rational response to the others' retreat is to retreat further. The FLI index grading every lab at C+ or below isn't a finding about a few bad actors — it's a finding about the structure of the situation. Nobody is willing to unilaterally slow down when the downside of doing so is losing the race to someone who didn't.</p>
+
+      <p>The Looped-DiT paper matters for a different reason: it's a reminder that architectural ideas can still compete with raw scale. Most of 2026 has been dominated by the story of ever-larger models — trillion-parameter systems, vast data centers, industrial training runs measured in months. Looped-DiT points in a different direction: same parameters, more passes, better results. If that efficiency curve compounds as researchers iterate on the idea, "bigger" becomes a less decisive advantage than it looks today.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2609.40305">Looped-DiT, arXiv</a> ·
+        <a href="https://alphasignal.ai/news/sensetime-s-looped-dit-beats-a-1-7b-model-using-just-260m-parameters">AlphaSignal on Looped-DiT</a> ·
+        <a href="https://www.axios.com/2026/07/07/report-ai-safety-pledges">Axios: AI companies retreat from safety pledges</a> ·
+        <a href="https://futureoflife.org/ai-safety-index-summer-2026/">FLI Summer 2026 AI Safety Index</a> ·
+        <a href="https://aiweekly.co/alerts/anthropic-tops-fli-summer-2026-ai-safety-index-at-c">AIWeekly: Anthropic tops FLI index at C+</a> ·
+        <a href="https://scouts.yutori.com/68f22e10-d5fe-4e94-b1c8-9c6218cfdb2c">Lambda $4B raise</a> ·
+        <a href="https://welcome.ai/content/federal-developments-in-ai-regulation-and-funding-impacting-industries">Genesis Mission, Welcome.AI</a> ·
+        <a href="https://www.implicator.ai/karpathy-joins-anthropic-as-claude-moves-into-its-own-training-room.md">Karpathy / Anthropic Autoresearch background</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Deep supervision</div>
+        <div>A training trick where a model is required to produce a correct-ish answer at multiple intermediate points, not just at the end. Like a teacher who grades every draft, not just the final paper — the student gets feedback earlier and learns faster. In Looped-DiT, each loop must produce a valid denoising prediction, so the network gets training signal throughout the loop rather than only from the final output.</div>
+      </div>
+      <dl>
+        <dt>Diffusion model</dt><dd>An image-generation method that starts from pure random noise and repeatedly applies a neural network to clean it up, step by step, until a recognizable image emerges. Stable Diffusion, DALL-E, and Flux all use this approach.</dd>
+        <dt>Inference compute</dt><dd>The processing power used when a model actually runs — when it answers a question or generates an image. Separate from the much-larger "training compute" needed to build the model in the first place.</dd>
+        <dt>Self-attention</dt><dd>The mechanism inside a Transformer that lets each part of the input look at every other part and decide what's relevant. It's what allows a language model to connect a pronoun back to the noun it refers to, or an image model to notice that the sky should relate to the clouds in color.</dd>
+        <dt>MoE (mixture of experts)</dt><dd>An architecture trick where a big model is actually made up of many smaller "expert" sub-networks, and each input only activates a fraction of them. You get the capacity of a large model at the cost of a small one per query. Mistral and GPT-4 both use this.</dd>
+        <dt>FPGA</dt><dd>Field-Programmable Gate Array — a chip whose circuit layout can be reprogrammed after manufacture, unlike a fixed chip like a GPU. Useful for building custom inference hardware cheaply before committing to a full chip design.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
