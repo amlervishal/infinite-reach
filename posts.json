@@ -1,5 +1,12 @@
 [
   {
+    "num": 133,
+    "date": "2026-10-09",
+    "slug": "issues/2026-10-09.html",
+    "title": "The Upper Story",
+    "blurb": "Mistral releases Europe's largest open model yet — a trillion parameters available as open weights by month's end — and a Meta paper argues the real reason robots fail at hard tasks is that they can only plan from one height at once."
+  },
+  {
     "num": 132,
     "date": "2026-10-08",
     "slug": "issues/2026-10-08.html",
