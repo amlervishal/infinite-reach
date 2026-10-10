@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №134 — What the Robot Remembered · Infinite Reach</title>
+  <meta name="description" content="OpenAI rolled GPT-6 out to every ChatGPT user with interactive responses, published 722 AI-generated math manuscripts, and a new paper shows robots improve most not from a bigger model but from a longer look at their own past." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №134 &middot; October 10, 2026</p>
+      <h1>What the Robot Remembered</h1>
+      <p>ChatGPT learned to answer with interactive charts and buttons this week — while a robot in a lab, given nothing but a longer look at its own past, doubled its success rate on tasks that stumped every rival.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On October 7, OpenAI began rolling GPT-6 out to every ChatGPT plan, paired with a new mode it calls <em>Intelligent UI</em>. Responses can now include tappable buttons, fillable forms, live charts, and mini-applications built right inside the conversation window. GPT-6 Sol powers paid tiers; GPT-6 Luna serves Free and Go users. Web queries start arriving 44% faster on average, OpenAI says. The company frames this as a step toward ChatGPT generating the interfaces people need on demand — not just text, but the tool itself.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Math</span><span>OpenAI published 722 AI-generated math manuscripts on GitHub — 372 topic families, roughly 42% machine-verified in the proof language Lean — from an internal model not yet publicly released. <a href="https://interestingengineering.com/ai-robotics/openai-largest-math-release-lean-proofs">Interesting Engineering</a></span></li>
+        <li><span class="tag tech">Open weights</span><span>Reflection AI, backed by Nvidia, released "Beam," its first open-weight model for coding, reasoning, and agent tasks — claims parity with GLM-5.2 at three to four times lower inference compute. Apache 2.0 licence. <a href="https://scmp.com/tech/tech-trends/article/3369885/nvidia-backed-reflection-ai-challenges-chinese-dominance-open-weight-models">SCMP</a></span></li>
+        <li><span class="tag tech">Models</span><span>Mistral's Large 4 — nicknamed "Le Chonk" — is in preview; the company says it rivals the best Chinese open models and will ship fully on October 27. <a href="https://www.cnbc.com/2026/10/06/mistral-ai-model-le-chonk.html">CNBC</a></span></li>
+        <li><span class="tag money">Pricing</span><span>Claude Haiku 5.5 launched at $0.10 input / $0.50 output per million tokens — roughly 75% cheaper than its predecessor Haiku 4.5. <a href="https://pricepertoken.com/news/model-releases">PricePerToken</a></span></li>
+        <li><span class="tag policy">Safety</span><span>A new report found Chinese AI developers published safety evaluations for just 3.6% of their model releases — 31 out of roughly 860 tracked releases since 2023. <a href="https://investing.com/news/stock-market-news/china-ai-developers-publish-safety-tests-for-just-36-of-model-releases-report-finds-4941141">Reuters</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: When a robot looks back further</h2>
+      <p class="kicker">Long-WAM: Long-Context World Action Model for Robot Learning &middot; NVIDIA, MIT, HKU, UCSD &middot; <a href="https://arxiv.org/abs/2610.10528">arXiv:2610.10528</a></p>
+      <p>A robotics paper posted this week asks the most direct question you could think of: what happens if we just show the robot more of its own past? The answer turned out to be larger than expected — and it has a catch that makes the result more interesting, not less.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Most robot learning systems work by feeding a second or two of recent video into a model, which then decides on the next movement. The short window is partly practical: video is expensive to process, and a physical robot needs decisions fast. But there is a subtler problem. A robot that only sees the last two seconds does not know where it is in a task. Is the cup gripped or about to be picked up? Is this the first pass or the fourth? Without that larger context, the robot has to guess, and guesses compound into failures.</p>
+      <p>Earlier attempts at extending the video window had uneven results — sometimes a longer history just added noise and made things worse. What was missing turned out to be a specific way of <em>training</em> the video model before connecting it to a robot at all.</p>
+
+      <h3>How it works</h3>
+      <p>Think of it like watching a cooking show. If you see only the last three seconds of a segment, you might not know whether the chef is starting to sauté or in the middle of frying. But if you have watched the last twenty seconds, you know exactly where they are in the recipe and can predict the next move with confidence. Long-WAM gives the robot that longer look — but the method matters as much as the length.</p>
+      <p>Training happens in two stages. In stage one, the team pretrained a video model on a large collection of robot footage and first-person human video, with no action labels at all. The model learned purely by prediction: given everything it had seen so far, what does the next frame look like? This is called <em>autoregressive</em> pretraining — the same principle behind language models that write word by word, each step informed by all the ones before. By the end of this stage, the model had built up a rich internal sense of "what tends to happen next" across a wide range of physical tasks.</p>
+      <p>In stage two, that pretrained video backbone was connected to a robot policy — a system that maps observations to movements — and the combined system learned to output two things at once: a prediction of future video frames and a sequence of concrete robot actions. The future-frame prediction is not used during deployment. It exists only to keep the long visual history "alive" in the model's activations, ensuring the full context shapes every action.</p>
+      <p>The autoregressive pretraining turned out to be essential. When the researchers tried the exact same extended context window with a video backbone pretrained bidirectionally — seeing past and future simultaneously, the way masked-image models work — the longer history provided zero net benefit. The long memory only helped when the model had specifically learned to predict the future from the past.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team tested on RoboCasa, a demanding household-task benchmark, using the GR-1 robot platform, sweeping visual context windows from 0 seconds up to 19.2 seconds. They also ran physical trials on a Unitree G1 humanoid robot in a real lab — stacking cups that were placed dynamically, meaning the cup positions changed mid-task. They compared against two strong baselines: π0.5 and Fast-WAM.</p>
+
+      <h3>What they found</h3>
+      <p>Extending visual context from 0 to 19.2 seconds raised the RoboCasa success rate from 63.3% to 78.7% — a gain of more than fifteen percentage points with no change to the model's size or training data. On the physical Unitree G1, Long-WAM succeeded on dynamic cup stacking 95% of the time. π0.5 and Fast-WAM each succeeded zero times in 20 trials. On LIBERO-Long, a benchmark built around tasks requiring a sustained plan, the score reached 99.5%. The whole system ran at about 107 milliseconds per action chunk on an RTX 5090 — fast enough for real-time control.</p>
+      <p>One notable caveat surfaced in the results: on DOMINO, a benchmark designed to test robustness to unfamiliar settings, Long-WAM scored a more modest 34.9%. The gains from extended memory do not transfer automatically to situations the training distribution did not cover.</p>
+
+      <h3>The catch</h3>
+      <p>These results come from controlled lab tasks. The 95% cup-stacking figure is striking, but it is a single domain with known objects. Deploying this in a real warehouse or home would expose it to far more unpredictable variation. The RTX 5090 compute requirement per robot is substantial — this is not yet a technology ready for low-cost commercial hardware. And 19.2 seconds is still a short window compared to the minutes or hours a human worker holds in mind. The paper doesn't explain to the robot why context matters; it simply provides more, and the network figures the rest out empirically.</p>
+
+      <p><strong>If you remember one thing:</strong> A robot that can see further back in time doesn't just react better — it knows where it is in a task, and that turns out to matter more than the size of its model.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 290" role="img" aria-label="Bar chart showing robot success rate rising from 63.3% with no visual memory to 78.7% with 19.2 seconds of context">
+          <rect x="0" y="0" width="720" height="290" fill="#FAF9F6" rx="6"/>
+          <text x="360" y="32" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="15" fill="#141413">Success rate rises with longer visual memory (RoboCasa GR-1)</text>
+          <text x="18" y="170" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F" transform="rotate(-90,18,170)">Task success (%)</text>
+          <line x1="85" y1="55" x2="85" y2="230" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="85" y1="230" x2="660" y2="230" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="85" y1="55" x2="660" y2="55" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4,3"/>
+          <text x="78" y="59" text-anchor="end" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">100%</text>
+          <line x1="85" y1="90" x2="660" y2="90" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4,3"/>
+          <text x="78" y="94" text-anchor="end" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">80%</text>
+          <line x1="85" y1="125" x2="660" y2="125" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4,3"/>
+          <text x="78" y="129" text-anchor="end" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">60%</text>
+          <line x1="85" y1="160" x2="660" y2="160" stroke="#D1CFC5" stroke-width="0.5" stroke-dasharray="4,3"/>
+          <text x="78" y="164" text-anchor="end" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">40%</text>
+          <rect x="165" y="119" width="120" height="111" fill="#D1CFC5" rx="3"/>
+          <text x="225" y="113" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="#141413">63.3%</text>
+          <text x="225" y="248" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#87867F">0 s context</text>
+          <text x="225" y="262" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">(no memory)</text>
+          <rect x="435" y="92" width="120" height="138" fill="#6A8CAF" rx="3"/>
+          <text x="495" y="86" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="#141413">78.7%</text>
+          <text x="495" y="248" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#87867F">19.2 s context</text>
+          <text x="495" y="262" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">(long memory)</text>
+          <defs>
+            <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#D97757"/>
+            </marker>
+          </defs>
+          <line x1="295" y1="145" x2="425" y2="115" stroke="#D97757" stroke-width="2" marker-end="url(#arrowhead)"/>
+          <text x="358" y="120" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#D97757" font-weight="bold">+15.4 pp</text>
+          <text x="358" y="135" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#D97757">same model · more memory</text>
+        </svg>
+        <figcaption>On RoboCasa, Long-WAM's success rate rose 15 percentage points when visual context extended from zero to 19.2 seconds — no change to model size or training data, only a longer look back.</figcaption>
+      </figure>
+
+      <h2>Why it matters</h2>
+      <p>Both of this week's biggest stories make the same quiet point. GPT-6's Intelligent UI is not a smarter model — it is a smarter <em>presentation layer</em>, one that lets the same underlying capability take a more useful form for the person receiving it. Long-WAM is not a larger robot brain — it is an extended <em>memory</em>, one that lets existing skill operate in context rather than in isolation. In both cases, the meaningful improvement came not from scaling the model itself but from changing what it is connected to and what it can see. If last year's theme was "bigger models," this year's quieter theme may be: better plumbing.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://openai.com/index/gpt-6-for-everyone/">OpenAI: GPT-6 for everyone</a> ·
+        <a href="https://yourstory.com/ai-story/gpt-6-intelligent-ui-chatgpt-answers">YourStory: GPT-6 Intelligent UI</a> ·
+        <a href="https://interestingengineering.com/ai-robotics/openai-largest-math-release-lean-proofs">Interesting Engineering: 722 math manuscripts</a> ·
+        <a href="https://hyper.ai/en/papers/2610.10528">hyper.ai: Long-WAM abstract</a> ·
+        <a href="https://ai-tldr.dev/releases/nvidia-long-wam/">AI-TLDR: Long-WAM summary</a> ·
+        <a href="https://scmp.com/tech/tech-trends/article/3369885/nvidia-backed-reflection-ai-challenges-chinese-dominance-open-weight-models">SCMP: Reflection AI Beam</a> ·
+        <a href="https://www.cnbc.com/2026/10/06/mistral-ai-model-le-chonk.html">CNBC: Mistral Large 4</a> ·
+        <a href="https://investing.com/news/stock-market-news/china-ai-developers-publish-safety-tests-for-just-36-of-model-releases-report-finds-4941141">Reuters: China safety disclosure rate</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Autoregressive</div>
+        <div>Predicting the next item in a sequence from everything that came before it. A language model is autoregressive when it writes word by word — each word shaped by all the ones before it. Long-WAM's video model works the same way with frames: it learned to say "given everything I have seen so far, here is what happens next." That habit of looking backward to predict forward turns out to be exactly what robots need.</div>
+      </div>
+      <dl>
+        <dt>Action chunk</dt><dd>A short burst of future robot movements predicted all at once, rather than one step at a time. Chunking makes motion smoother and reduces the hesitations that accumulate when a robot decides each tiny move individually.</dd>
+        <dt>Open-weight model</dt><dd>A model released with its trained parameters (the "weights") publicly available, so anyone can run, modify, or study it. Similar to open-source software, but careful to note that the training data and code are often not included.</dd>
+        <dt>Lean</dt><dd>A programming language for writing mathematical proofs that a computer can verify step by step. Unlike a human-written proof, a Lean proof cannot contain a logical gap the verifier fails to catch — which is why OpenAI used it to certify part of this week's 722 manuscripts.</dd>
+        <dt>Inference compute</dt><dd>The processing power a model uses after training — when it is answering questions or controlling a robot — as opposed to during the original learning phase. Reducing inference compute makes a model cheaper and faster to deploy at scale.</dd>
+        <dt>Bidirectional pretraining</dt><dd>Training a video or language model by giving it context from both before and after each position — useful for understanding, but, as Long-WAM showed, less useful for predicting what comes next than purely forward-looking training.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

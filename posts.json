@@ -1,5 +1,12 @@
 [
   {
+    "num": 134,
+    "date": "2026-10-10",
+    "slug": "issues/2026-10-10.html",
+    "title": "What the Robot Remembered",
+    "blurb": "OpenAI rolled GPT-6 out to every ChatGPT user with interactive 'Intelligent UI' responses, published 722 AI-generated math manuscripts, and a new paper shows robots improve most not from a bigger model but from a longer look at their own past."
+  },
+  {
     "num": 133,
     "date": "2026-10-09",
     "slug": "issues/2026-10-09.html",
