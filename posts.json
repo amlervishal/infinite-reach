@@ -1,5 +1,12 @@
 [
   {
+    "num": 135,
+    "date": "2026-10-11",
+    "slug": "issues/2026-10-11.html",
+    "title": "The One That Lives Here",
+    "blurb": "An open-source AI agent that runs on your own hardware — not a cloud company's — is the week's most-read research paper. Meanwhile Anthropic's smallest new model is the first to let you tune how hard it thinks."
+  },
+  {
     "num": 134,
     "date": "2026-10-10",
     "slug": "issues/2026-10-10.html",

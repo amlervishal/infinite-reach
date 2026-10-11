@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №135 — The One That Lives Here · Infinite Reach</title>
+  <meta name="description" content="An open-source AI agent that runs on your own hardware — not a cloud company's — is the week's most-read research paper. Meanwhile Anthropic's smallest new model is the first to let you tune how hard it thinks." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №135 &middot; Sunday, October 11, 2026</p>
+      <h1>The One That Lives Here</h1>
+      <p>Two things moved this week that point in the same direction: smaller, cheaper, more under your control. Anthropic's newest compact model is the first of its kind with an adjustable thinking level. And the week's most-upvoted research paper asks a different version of the same question — does your AI assistant have to live in a company's data center at all?</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Claude Haiku 5.5 arrived Tuesday — Anthropic's fastest model, and the first Haiku ever to ship with a variable <em>effort</em> setting. Dial it up and the model takes a moment to reason before answering; leave it at the default and it fires back immediately. The context window — how much text it can hold at once — jumped from 200 thousand tokens to one million. The price dropped to $0.10 per million input tokens, one-tenth of the model it replaces. It targets the kind of work that runs constantly in the background: summarising, classifying, piloting a browser, acting as a quick helper inside a larger pipeline. Benchmark scores on Anthropic's own computer-use test climbed from 15.7% to 72.4% against the prior Haiku, a substantial leap for such a small model. The effort dial is the first of its kind in the Haiku line, and lets developers calibrate thinking depth per request rather than picking a different model entirely.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Rollout</span><span>GPT-6 with "Intelligent UI" — which adds interactive charts, forms, and buttons inline to responses — completed its global rollout to all ChatGPT tiers including free accounts, having started with paid subscribers on October 7.</span></li>
+        <li><span class="tag tech">Open video</span><span>Kandinsky Lab released Kandinsky 6.0 under an MIT licence: an open-weights model family that generates five-second video clips with synchronized 44 kHz audio. A 29-billion-parameter Pro model and a 3-billion-parameter Lite are both available, built on a multimodal diffusion transformer with a Qwen2.5-VL text encoder for the visuals and a BigVGAN-style vocoder for the audio.</span></li>
+        <li><span class="tag money">Compute gap</span><span>SemiAnalysis published a datacenter model estimating China's operational AI compute at roughly 24 GW against the United States' 56 GW — a two-to-one ratio smaller than most analysts expected, and narrowing.</span></li>
+        <li><span class="tag tech">Small model week</span><span>Reka Edge 2603 (October 9) and Grok Imagine Video 1.5 Lite (October 8) both shipped, extending the steady cadence of compact and video-specialist releases that has become the background rhythm of the year.</span></li>
+        <li><span class="tag policy">Math and proofs</span><span>As of this weekend, about 42% of OpenAI's 372 claimed mathematical results — including a purported proof of the Unique Games Conjecture released October 6 — carry machine-checked Lean certificates. Human mathematicians are still working through the rest; no independent confirmation yet.</span></li>
+      </ul>
+
+      <h2>Paper, explained: your AI agent as a tenant, not a guest</h2>
+      <p class="kicker">"nanoMuse: An Open-Source Personal Agent for Every Device You Own" &middot; Guangyi Liu, Yong Liu, Jiangning Zhang &middot; <a href="https://arxiv.org/abs/2610.08699">arXiv 2610.08699</a></p>
+      <p>The most-upvoted paper on Hugging Face this week is not about a bigger model or a harder benchmark. It is about where your AI agent lives — and who decides what it can touch.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Every major AI assistant product today makes the same architectural choice: the agent runs on the company's servers, not yours. Your phone is a window into someone else's computer. That choice is understandable — running capable AI locally is expensive, and coordinating a conversation across a laptop, a phone, and a tablet is technically awkward. But it means every screenshot, every file the agent reads, and every action it takes is visible to the company running the cloud. The paper's direct example is Meta's Muse agent, whose logic runs in closed, vendor-hosted Linux virtual machines with only a small SDK opened to developers. nanoMuse's authors call this the "absent owner" model: the infrastructure belongs to someone else, and the user is a guest.</p>
+
+      <p>The harder problem, once you decide to put the agent on the user's devices, is <em>trust</em>. A personal agent that controls your screen, opens your files, and sends messages on your behalf needs to behave predictably even when you are not watching. That requires some principled way to decide, locally, what the agent is and is not allowed to do.</p>
+
+      <h3>How it works</h3>
+      <p>The architecture the paper proposes sits on a simple idea: put a doorman inside the building, not outside it. The doorman is a component called the <strong>Sentinel</strong>, which runs on the user's device and sits between the agent and anything it wants to touch — the screen, the file system, the microphone, outbound messages. Every action the agent proposes passes through Sentinel first.</p>
+
+      <p>Think of it like a hotel key system. In a regular hotel, the front desk (the cloud company) controls which doors open. In nanoMuse's model, you own a master key on your device, and the Sentinel is the physical lock on each door. The front desk is optional — or you can replace it entirely. Sentinel classifies each proposed action by risk level, checks it against a mode the user has set (cautious, standard, or permissive), and either proceeds, warns, or blocks. Approvals can be one-time, per conversation, or permanent for a trusted target. Crucially, everything is logged locally in plain text — not uploaded anywhere.</p>
+
+      <p>Memory works the same way. Instead of a user profile stored in a company's database, nanoMuse stores its memory of the user as a set of plain, editable text files on the device: a profile file, an identity file, routines. The user can open those files, read them, and change them directly. There is no hidden representation that would require the company's tools to inspect.</p>
+
+      <p>Coordination across devices goes through a <em>relay</em> — a small server that keeps one conversation thread consistent across a person's phone, laptop, and tablet. The relay can be self-hosted by anyone, and the paper provides a reference implementation. A free relay allowance covers users who do not want to run their own. The agent itself uses whichever model the user chooses: any cloud API key, or a locally-running model for users who want zero cloud involvement.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 340" role="img" aria-label="nanoMuse architecture: devices connect through a local Sentinel to the AI agent and memory, with an optional relay between devices">
+          <!-- Device boxes -->
+          <rect x="20" y="100" width="100" height="60" rx="8" fill="#788C5D" opacity="0.85"/>
+          <text x="70" y="126" font-family="system-ui,sans-serif" font-size="11" fill="white" text-anchor="middle">Your laptop</text>
+          <text x="70" y="143" font-family="ui-monospace,monospace" font-size="9" fill="white" text-anchor="middle">Sentinel ✔</text>
+          <rect x="20" y="200" width="100" height="60" rx="8" fill="#788C5D" opacity="0.85"/>
+          <text x="70" y="226" font-family="system-ui,sans-serif" font-size="11" fill="white" text-anchor="middle">Your phone</text>
+          <text x="70" y="243" font-family="ui-monospace,monospace" font-size="9" fill="white" text-anchor="middle">Sentinel ✔</text>
+
+          <!-- Relay -->
+          <rect x="165" y="150" width="100" height="50" rx="8" fill="#87867F" opacity="0.7"/>
+          <text x="215" y="171" font-family="system-ui,sans-serif" font-size="10" fill="white" text-anchor="middle">Optional relay</text>
+          <text x="215" y="187" font-family="ui-monospace,monospace" font-size="9" fill="#D1CFC5" text-anchor="middle">(self-hostable)</text>
+
+          <!-- Arrows device→relay -->
+          <line x1="120" y1="130" x2="165" y2="165" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="120" y1="230" x2="165" y2="185" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Sentinel (central gate on each device) -->
+          <rect x="310" y="105" width="140" height="130" rx="10" fill="#D97757" opacity="0.12" stroke="#D97757" stroke-width="2"/>
+          <text x="380" y="130" font-family="ui-serif,serif" font-size="14" fill="#D97757" text-anchor="middle" font-weight="bold">Sentinel</text>
+          <text x="380" y="148" font-family="system-ui,sans-serif" font-size="9.5" fill="#141413" text-anchor="middle">classify action by risk</text>
+          <text x="380" y="163" font-family="system-ui,sans-serif" font-size="9.5" fill="#141413" text-anchor="middle">check user's mode</text>
+          <text x="380" y="178" font-family="system-ui,sans-serif" font-size="9.5" fill="#141413" text-anchor="middle">allow / warn / block</text>
+          <text x="380" y="193" font-family="system-ui,sans-serif" font-size="9.5" fill="#141413" text-anchor="middle">log everything locally</text>
+          <text x="380" y="208" font-family="system-ui,sans-serif" font-size="9.5" fill="#D97757" text-anchor="middle" font-weight="bold">on your device</text>
+
+          <!-- Arrow relay→Sentinel -->
+          <line x1="265" y1="175" x2="310" y2="165" stroke="#D97757" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrd)"/>
+
+          <!-- Agent box -->
+          <rect x="510" y="90" width="120" height="55" rx="8" fill="#6A8CAF" opacity="0.85"/>
+          <text x="570" y="114" font-family="system-ui,sans-serif" font-size="11" fill="white" text-anchor="middle">AI agent</text>
+          <text x="570" y="131" font-family="ui-monospace,monospace" font-size="9" fill="#D1CFC5" text-anchor="middle">your model choice</text>
+
+          <!-- Memory box -->
+          <rect x="510" y="185" width="120" height="55" rx="8" fill="#6A8CAF" opacity="0.6"/>
+          <text x="570" y="209" font-family="system-ui,sans-serif" font-size="11" fill="white" text-anchor="middle">Memory</text>
+          <text x="570" y="226" font-family="ui-monospace,monospace" font-size="9" fill="#D1CFC5" text-anchor="middle">plain text files, yours</text>
+
+          <!-- Arrows Sentinel→agent/memory -->
+          <line x1="450" y1="148" x2="510" y2="118" stroke="#6A8CAF" stroke-width="1.5" marker-end="url(#arra)"/>
+          <line x1="450" y1="168" x2="510" y2="205" stroke="#6A8CAF" stroke-width="1.5" marker-end="url(#arra)"/>
+
+          <!-- "Cloud optional" label -->
+          <text x="640" y="280" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">Cloud: optional</text>
+          <line x1="570" y1="240" x2="635" y2="270" stroke="#87867F" stroke-width="1" stroke-dasharray="3,3"/>
+
+          <!-- Defs -->
+          <defs>
+            <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L6,3 z" fill="#D1CFC5"/>
+            </marker>
+            <marker id="arrd" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L6,3 z" fill="#D97757"/>
+            </marker>
+            <marker id="arra" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L6,3 z" fill="#6A8CAF"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>In nanoMuse, each device runs its own Sentinel — a local gate that approves or blocks actions before they execute. A self-hostable relay syncs the conversation across devices. The cloud is optional at every step.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The paper, arXiv 2610.08699, was released on October 6 alongside version 1.0.0 of working software. Apps are available for Android, macOS, Windows, Linux, and a web interface, with iOS and iPadOS in TestFlight beta (Apple's tighter sandboxing limits what the agent can control on iPhone). The project is GPL-3.0 open source, meaning anyone can read the code, modify it, and run their own version — but if they build on it, they have to open that derivative work too. The paper evaluates the Sentinel's accuracy at classifying action risk — specifically whether it correctly flags high-risk operations like sending email, deleting files, or granting new permissions. The authors report the classification results but did not publish a single headline benchmark score; the work is positioned as a design paper with a working artefact rather than a performance-comparison paper.</p>
+
+      <h3>What they found</h3>
+      <p>The paper's main claim is architectural: that you can build a cross-device personal agent with device-local control, user-auditable memory, and no mandatory cloud dependency, and ship it as consumer software in a single release. The Sentinel's risk-classification approach was evaluated against a set of simulated agent trajectories across each platform; the paper reports that destructive and permission-granting actions were correctly blocked in the majority of test cases, with the iOS version showing lower coverage due to sandboxing. Memory files were shown to remain consistent across devices within a relay session. The screen-control "hands" — the code that actually moves the pointer and types — are acknowledged as the weakest link: fragile across app updates, limited on iOS, and not yet evaluated on a standardised benchmark.</p>
+
+      <h3>The catch</h3>
+      <p>The paper itself is honest about several limits. First, screen control is brittle — app interfaces change, and the agent's ability to navigate them breaks in unpredictable ways. Second, running on-device does not mean safe: a user who grants the agent broad permissions is no safer than if the agent were in the cloud; the Sentinel just makes those permissions explicit. Third, the relay, even self-hosted, is a single point of failure for cross-device coordination. And fourth, none of this solves the model itself: a user who routes through a cloud API key is still sending their prompts to that provider, even if the Sentinel and memory stay local.</p>
+
+      <p><strong>If you remember one thing:</strong> Your AI agent does not have to live in a company's data center — this paper ships working code that proves the alternative is buildable today.</p>
+
+      <h2>Why it matters</h2>
+      <p>Claude Haiku 5.5 and nanoMuse are not the same kind of story, but they are pulling in the same direction. Haiku 5.5's effort dial means the capabilities once reserved for expensive flagship models are now available at the cheap, fast tier — the tier that gets deployed at volume in the background tasks ordinary people never see. nanoMuse points to a future where the agent itself, not just the model, can be moved onto hardware you control. Together they sketch a picture of a technology that is distributing its power downward and outward: not just cheaper per token, but more controllable, more local, and less dependent on a small number of infrastructure owners. That distribution is where the most interesting decisions about AI will be made in the next couple of years — not at the frontier, but in how far the frontier reaches.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://aicatchup.com/news/claude-haiku-5-5">AI Catchup — Claude Haiku 5.5</a> ·
+        <a href="https://letsdatascience.com/news/anthropic-releases-claude-haiku-55-with-lower-prices-and-eff-f698c663">Let's Data Science — Haiku 5.5 launch</a> ·
+        <a href="https://arxiv.org/abs/2610.08699">arXiv 2610.08699 — nanoMuse</a> ·
+        <a href="https://digg.com/ai/b0g81xc2">Digg — nanoMuse Sentinel details</a> ·
+        <a href="https://mer.vin/news/nanomuse-open-source-personal-agent-every-device/">mer.vin — nanoMuse summary</a> ·
+        <a href="https://comfyui-wiki.com/news/2026-10-06-kandinsky-6-0">ComfyUI Wiki — Kandinsky 6.0</a> ·
+        <a href="https://www.implicator.ai/openai-372-math-results-mathematicians-race-to-read/">Implicator — OpenAI math results</a> ·
+        <a href="https://quantamagazine.org/as-ai-closed-in-on-unique-games-proof-researchers-raced-to-beat-the-machines-20261007">Quanta — Unique Games Conjecture race</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Effort control</div>
+        <div>The ability to tell a model how hard to think before answering — low effort means a quick, direct reply; high effort means the model reasons through the problem before responding. Think of it like asking someone a question: you can ask for their first instinct or ask them to sleep on it. Haiku 5.5 is the first compact model to offer this as an adjustable dial per request, rather than requiring you to pick a different, slower model entirely.</div>
+      </div>
+      <dl>
+        <dt>Sentinel</dt><dd>In nanoMuse, a software gate that runs locally on your device and checks every action the AI agent proposes against rules you have set. Nothing the agent does to your screen, files, or messages passes without Sentinel's sign-off.</dd>
+        <dt>Relay</dt><dd>A lightweight server that keeps a single conversation consistent across multiple devices. In nanoMuse you can run your own relay — or use the project's free one — so your phone and laptop share the same context without involving a cloud provider.</dd>
+        <dt>GPL-3.0</dt><dd>A software licence that lets anyone use, copy, and modify code freely, but requires that any derivative work also be released under the same open terms. Used by nanoMuse; means neither a company nor a developer can take the code private.</dd>
+        <dt>Context window</dt><dd>How much text an AI model can hold in active attention at once. Haiku 5.5's jumped from 200 thousand to one million tokens — roughly the equivalent of going from holding one novel in mind to holding five.</dd>
+        <dt>Diffusion transformer</dt><dd>An architecture that starts from noise and gradually refines it into a finished output — video, image, or audio — using the same attention mechanism that powers language models. Kandinsky 6.0 uses one to jointly generate video frames and audio waveforms in a single pass.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
