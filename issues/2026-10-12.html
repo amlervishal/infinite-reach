@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №136 — Between the Theorems · Infinite Reach</title>
+  <meta name="description" content="OpenAI published 722 model-generated math manuscripts at once; 25 Fields Medalists said the missing parts — the dead ends, the methodology, the texture of discovery — were the whole point. A new paper asks the same question about AI agents' memories." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №136 &middot; Monday, October 12, 2026</p>
+      <h1>Between the Theorems</h1>
+      <p>This week, twenty-five of the world's most decorated mathematicians said that mass-producing proofs is a form of soil depletion. And a paper posted three days ago asks a strangely similar question about what AI agents lose when they summarise their own memories.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On October 6, OpenAI published 722 model-generated mathematical manuscripts in a single batch to GitHub — results derived by its internal models across a broad sweep of open problems. The release drew a sharp public response from Terence Tao and twenty-four other Fields Medal laureates, who argued that mathematics builds its real value not from results alone but from the surrounding territory: the methodology, the dead ends, the derivative questions that open up once a problem is cracked. By releasing hundreds of proofs in bulk, without the context that normally surrounds mathematical discovery, they said OpenAI is making the field "less fertile" — generating harvest without leaving seeds. The debate cuts to a question that will outlast this particular batch: when an AI produces a result, what does it mean to publish that result responsibly?</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Models</span><span>Anthropic released Claude Haiku 5.5 on October 7 — the first small model in the Claude family with adjustable effort, letting developers dial thinking intensity from Low to Max, with a 1M-token context window and sharply lower API pricing.</span></li>
+        <li><span class="tag tech">Models</span><span>Mistral Large 4 is available as a public preview this week; open weights are promised for October 31, which would make it the largest openly licensed model yet from a European lab.</span></li>
+        <li><span class="tag tech">Edge</span><span>Liquid AI released open weights for two on-device decision models — d1-3B and the experimental d1-omni-600M (text + image + audio) — designed to answer in a single forward pass rather than generating tokens one at a time.</span></li>
+        <li><span class="tag money">Funding</span><span>Indian AI startups raised $438 million in Q3 2026, up 265% from the same quarter last year, with AI leading India's funding chart for the first time — though 90% of the total came from just four deals, and most investors surveyed see elevated valuations.</span></li>
+        <li><span class="tag policy">Agents</span><span>Meta proposed an open standard for AI agents to conduct transactions on behalf of users, with Walmart and Stripe as early partners — the first serious industry push toward a web-wide "agent marketplace" layer.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: The AI agent that remembers what prose can't say</h2>
+      <p class="kicker">REMORY: Learning Residual Memory for Context Compaction &middot; Hanchen Xia, Baoyou Chen, Yutang Ge, et al. &middot; <a href="https://arxiv.org/abs/2610.11287">arXiv:2610.11287</a>, submitted October 8, 2026</p>
+
+      <p>Every AI agent that handles a long task is quietly fighting a space problem. REMORY, posted three days ago by a team including researchers from eight institutions, offers the cleanest solution yet — and the core idea turns out to be simpler than the terminology around it.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>An AI agent works inside a "context window" — think of it as the agent's short-term memory, a notepad that holds the whole conversation, all the tool results, and everything the model needs to keep track of. For a brief exchange, this is fine. But agents running real tasks — browsing the web for an hour, writing and testing code across dozens of iterations, calling external APIs in multi-step pipelines — fill that notepad quickly. When it runs out of room, something has to go.</p>
+
+      <p>The standard fix is <em>context compaction</em>: ask the model to summarise its own history into a short block of text, throw away the rest, and carry on from the summary. This is already how systems like Claude Code handle long sessions. The problem is that prose summaries are lossy in a particular way. They capture facts — "the user wants a parser that handles nested JSON" — but lose texture: the exact phrasing of past outputs, the structure of what was tried, the subtle pattern of which approaches already failed. These nuances live not in English but in the model's mathematical interior, and no summary sentence can fully recover them. The visible symptom in real deployments: agents with compacted contexts repeat tool calls they already made, loop through approaches they already ruled out, and lose track of partial progress.</p>
+
+      <h3>How it works</h3>
+      <p>Imagine a skilled research assistant summarising a dense 300-page dossier before a meeting. They produce two pages of bullet points — but then, in the margin, they scribble five handwritten notes: <em>"Section 4 is what the boss always asks about first."</em> <em>"The red-flag metric is buried on p. 212."</em> The bullet points cover the facts; the margin notes encode a kind of judgment that no summary sentence could carry.</p>
+
+      <p>REMORY works exactly this way. When the context window fills up, a conventional text summary is produced — just as before. But then a second, smaller network (about 1.2 to 1.9 billion parameters, far smaller than the main model) reads that text summary and generates a bounded set of "soft memory tokens." These aren't words. They're vectors — numerical entries in the model's mathematical language — that sit alongside the text summary and fill in what prose couldn't say. The frozen main model sees both: the text and the soft tokens together, as though a margin note had been stitched into the fabric of the prompt.</p>
+
+      <p>The "residual" in the name is the precise technical term for this. In deep learning, a residual connection is a shortcut that adds back signal lost during compression — a way of saying: here is what the lossy step dropped, put it back. REMORY does the same thing along the sequence of inputs: the soft tokens carry the residual between what the full context contained and what the text summary preserved.</p>
+
+      <p>Crucially, the main model is never changed. Its weights stay frozen. Only the small memory network is trained — it learns to generate the right soft tokens by comparing, during training, what the model produces with the full context versus what it produces with only a text summary. The gap between those two outputs is exactly what the memory tokens are trained to close. This means REMORY can in principle be trained on top of any frozen base model, without touching the model itself.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team trained two memory networks — 1.9B and 1.24B parameters — and paired them with two frozen base models: Qwen3.8-27B and GLM-5.3-Flash. They tested across three benchmarks. SummHay asks agents to answer questions by attributing answers to specific passages in a long document — a task that demands precise recall of where information came from, not just what happened. BrowseComp tests a web-browsing agent on multi-step research tasks across the open web. Terminal-Bench 2.1 tests a code agent working in a live terminal across multi-turn debugging sessions where context from earlier turns directly affects what to try next.</p>
+
+      <h3>What they found</h3>
+      <p>On SummHay, REMORY approaches full-context performance while using only 5.2% of the input positions — meaning 94.8% of the original history is discarded and replaced by soft tokens. On the two agentic benchmarks, both Qwen3.8-27B and GLM-5.3-Flash showed consistent improvements over text-only compaction: fewer repeated tool calls and fewer tool errors across the evaluation runs. The authors describe this as the agent retaining a better operational feel for what it has already tried — the soft tokens appear to prevent the looping behaviour that is the most visible failure mode of compacted contexts.</p>
+
+      <p>The paper reports comparison trends rather than absolute accuracy numbers for each individual task — a caveat worth noting. And because the soft tokens live in one specific model's embedding space, each base model needs its own trained memory network. The team releases two networks (one for each base model they tested); anyone wanting to use REMORY with a different LLM would need to train their own on comparable data.</p>
+
+      <h3>The catch</h3>
+      <p>REMORY doesn't eliminate the context problem — it makes compaction less destructive. The history is still being discarded; you are recovering more of the signal, not all of it. For tasks that require very precise recall of specific outputs far back in the session — a long coding project where the exact error message from forty turns ago matters — it isn't yet established that 5.2% is enough. The paper is also three days old and the published benchmarks have not been independently replicated.</p>
+
+      <p><strong>If you remember one thing:</strong> Text summaries lose the math; REMORY trains a small side-network to generate margin notes in the model's native numerical language, cutting the active history to 5.2% of positions while keeping most of what actually matters.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Three ways to handle a full context window: full history, text summary only, and REMORY's summary plus soft tokens">
+          <!-- Column headers -->
+          <text x="120" y="26" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle" letter-spacing="0.04em">FULL CONTEXT</text>
+          <text x="358" y="26" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle" letter-spacing="0.04em">TEXT SUMMARY ONLY</text>
+          <text x="598" y="26" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle" letter-spacing="0.04em">REMORY</text>
+
+          <!-- Column 1: Full history stack -->
+          <rect x="58" y="36" width="124" height="224" rx="5" fill="#D1CFC5" stroke="#D1CFC5" stroke-width="1"/>
+          <rect x="64" y="42" width="112" height="12" rx="2" fill="#6A8CAF" opacity="0.7"/>
+          <rect x="64" y="58" width="112" height="12" rx="2" fill="#6A8CAF" opacity="0.6"/>
+          <rect x="64" y="74" width="112" height="12" rx="2" fill="#D97757" opacity="0.55"/>
+          <rect x="64" y="90" width="112" height="12" rx="2" fill="#6A8CAF" opacity="0.5"/>
+          <rect x="64" y="106" width="112" height="12" rx="2" fill="#6A8CAF" opacity="0.65"/>
+          <rect x="64" y="122" width="112" height="12" rx="2" fill="#788C5D" opacity="0.5"/>
+          <rect x="64" y="138" width="112" height="12" rx="2" fill="#6A8CAF" opacity="0.6"/>
+          <rect x="64" y="154" width="112" height="12" rx="2" fill="#D97757" opacity="0.45"/>
+          <rect x="64" y="170" width="112" height="12" rx="2" fill="#6A8CAF" opacity="0.55"/>
+          <rect x="64" y="186" width="112" height="12" rx="2" fill="#6A8CAF" opacity="0.4"/>
+          <rect x="64" y="202" width="112" height="12" rx="2" fill="#788C5D" opacity="0.4"/>
+          <rect x="64" y="218" width="112" height="12" rx="2" fill="#6A8CAF" opacity="0.5"/>
+          <rect x="64" y="234" width="112" height="12" rx="2" fill="#D97757" opacity="0.35"/>
+          <text x="120" y="278" font-family="system-ui,sans-serif" font-size="12" fill="#141413" text-anchor="middle" font-weight="600">100% of positions</text>
+          <text x="120" y="295" font-family="ui-serif,serif" font-size="11" fill="#87867F" text-anchor="middle">full recall, but costly</text>
+
+          <!-- Arrow 1 to 2 -->
+          <line x1="188" y1="148" x2="218" y2="148" stroke="#D1CFC5" stroke-width="2"/>
+          <polygon points="218,143 228,148 218,153" fill="#D1CFC5"/>
+
+          <!-- Column 2: Text summary only -->
+          <rect x="236" y="36" width="244" height="170" rx="5" fill="none" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="5,4"/>
+          <text x="358" y="84" font-family="system-ui,sans-serif" font-size="10" fill="#D1CFC5" text-anchor="middle">— discarded —</text>
+          <text x="358" y="100" font-family="system-ui,sans-serif" font-size="10" fill="#D1CFC5" text-anchor="middle">methodology, dead ends,</text>
+          <text x="358" y="116" font-family="system-ui,sans-serif" font-size="10" fill="#D1CFC5" text-anchor="middle">precise phrasing — gone</text>
+          <rect x="236" y="212" width="244" height="48" rx="5" fill="#D1CFC5"/>
+          <rect x="244" y="220" width="130" height="8" rx="2" fill="#87867F" opacity="0.7"/>
+          <rect x="244" y="233" width="200" height="8" rx="2" fill="#87867F" opacity="0.55"/>
+          <rect x="244" y="246" width="100" height="8" rx="2" fill="#87867F" opacity="0.4"/>
+          <text x="358" y="278" font-family="system-ui,sans-serif" font-size="12" fill="#141413" text-anchor="middle" font-weight="600">~15% of positions</text>
+          <text x="358" y="295" font-family="ui-serif,serif" font-size="11" fill="#87867F" text-anchor="middle">facts preserved; nuance lost → loops</text>
+
+          <!-- Arrow 2 to 3 -->
+          <line x1="486" y1="148" x2="516" y2="148" stroke="#D1CFC5" stroke-width="2"/>
+          <polygon points="516,143 526,148 516,153" fill="#D1CFC5"/>
+
+          <!-- Column 3: REMORY -->
+          <rect x="534" y="36" width="152" height="170" rx="5" fill="none" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="5,4"/>
+          <text x="610" y="84" font-family="system-ui,sans-serif" font-size="10" fill="#D1CFC5" text-anchor="middle">— discarded —</text>
+          <rect x="534" y="212" width="152" height="38" rx="5" fill="#D1CFC5"/>
+          <rect x="541" y="219" width="90" height="7" rx="2" fill="#87867F" opacity="0.7"/>
+          <rect x="541" y="230" width="130" height="7" rx="2" fill="#87867F" opacity="0.55"/>
+          <rect x="541" y="241" width="70" height="7" rx="2" fill="#87867F" opacity="0.4"/>
+          <rect x="534" y="254" width="152" height="22" rx="5" fill="#D97757" fill-opacity="0.18" stroke="#D97757" stroke-width="1.5"/>
+          <text x="610" y="268" font-family="ui-monospace,monospace" font-size="9.5" fill="#D97757" text-anchor="middle">&#x2726; soft memory tokens &#x2726;</text>
+          <text x="610" y="133" font-family="system-ui,sans-serif" font-size="9.5" fill="#D97757" text-anchor="middle">1.2–1.9 B param network</text>
+          <text x="610" y="147" font-family="system-ui,sans-serif" font-size="9.5" fill="#D97757" text-anchor="middle">generates tokens from summary</text>
+          <text x="610" y="278" font-family="system-ui,sans-serif" font-size="12" fill="#141413" text-anchor="middle" font-weight="600">5.2% of positions</text>
+          <text x="610" y="295" font-family="ui-serif,serif" font-size="11" fill="#87867F" text-anchor="middle">summary + residual vectors</text>
+        </svg>
+        <figcaption>Three ways to handle a full context window. REMORY adds a small trained network whose output — soft memory tokens, not words — sits alongside the text summary and carries what prose can't encode. Together they occupy 5.2% of what the full history would have used, while approaching full-context recall on the SummHay benchmark.</figcaption>
+      </figure>
+
+      <h2>Why it matters</h2>
+      <p>The two main stories this week rhyme at the root. Terence Tao's objection to OpenAI's math batch and the REMORY paper are both about the same thing: the parts of knowledge that resist compression. A text summary of a long agent session loses nuance; a batch of 722 model-generated proofs, published without the mathematical context that normally surrounds discovery, loses culture. In both cases, the easy version of the information — the result, the summary — strips away something that may matter as much as the output itself.</p>
+
+      <p>For practitioners, REMORY is immediately useful: a 1.2-billion-parameter add-on that makes context compaction substantially less destructive. For everyone else, the mathematics debate is a preview of a question that will sharpen as AI systems produce more: are we building systems that generate results, or systems that build knowledge? The difference is what lives between the theorems.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2610.11287">REMORY paper, arXiv:2610.11287</a> ·
+        <a href="https://www.winzheng.com/en/article/terence-tao-math-2-openai-722-manuscripts-criticism">Tao on OpenAI's 722 manuscripts</a> ·
+        <a href="https://www.remio.ai/post/terence-tao-ai-math-warning-the-race-for-answers-is-harming-mathematics">Tao: "making math less fertile"</a> ·
+        <a href="https://www.kucoin.com/news/flash/25-fields-medalists-criticize-ai-firms-for-hurting-mathematical-research">25 Fields Medalists letter</a> ·
+        <a href="https://af.net/realtime/anthropic-launches-claude-haiku-5-5-with-lower-api-pricing/">Claude Haiku 5.5 launch</a> ·
+        <a href="https://www.vals.ai/models/anthropic_claude-haiku-5-5">Claude Haiku 5.5 specs</a> ·
+        <a href="https://www.nocode.mba/ai-release-tracker/providers/liquid-ai">Liquid AI d1 open weights</a> ·
+        <a href="https://inc42.com/features/indian-ai-startup-funding-surges-265-yoy-in-q3-will-momentum-continue/">India AI funding Q3 2026 (Inc42)</a> ·
+        <a href="https://aiweekly.co/ai-news-today">AI Weekly, October 8 2026</a> ·
+        <a href="https://slash-digital.io/en/insights/ai-models-2026/">October 2026 model roundup</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Context window</div>
+        <div>The model's working memory — everything it can "see" at once. Think of a desk with a fixed surface area: more papers mean some slide off the edge. When a conversation grows long enough, old material falls out of view and the model can't access it.</div>
+      </div>
+      <dl>
+        <dt>Context compaction</dt><dd>Squeezing a long conversation into a shorter form the model can still work from — usually by having it write a text summary of its own history, then discarding the original. Fast and cheap, but lossy.</dd>
+        <dt>Soft tokens</dt><dd>Entries in a model's vocabulary that aren't words — they're trained numerical vectors that carry meaning the model can read, but a human can't. Mathematical shorthand the network invented, not English.</dd>
+        <dt>Residual connection</dt><dd>A shortcut in a neural network that adds back signal lost during a compression step. REMORY borrows the idea: the soft tokens carry the "residual" — whatever the text summary couldn't preserve.</dd>
+        <dt>Embedding space</dt><dd>The mathematical layer where every word and idea in a language model lives as a list of numbers. Two ideas that are conceptually close sit close together numerically. Soft tokens live here too — points the network placed there during training.</dd>
+        <dt>Agent harness</dt><dd>The software scaffolding around an AI model that decides which tools it can use, in what order, and how to manage the context window — the wrapper that turns a raw language model into a task-completing agent.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
