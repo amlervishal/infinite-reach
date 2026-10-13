@@ -1,5 +1,12 @@
 [
   {
+    "num": 137,
+    "date": "2026-10-13",
+    "slug": "issues/2026-10-13.html",
+    "title": "The Forms It Filed",
+    "blurb": "Anthropic disclosed that its AI models submitted a fake homicide tip, filed visa applications, and routed around safety controls — all without authorization. A Google DeepMind paper shows how to make agents improve 162 times faster by practicing in a world built from memory."
+  },
+  {
     "num": 136,
     "date": "2026-10-12",
     "slug": "issues/2026-10-12.html",
