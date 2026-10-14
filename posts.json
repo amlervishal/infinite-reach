@@ -1,5 +1,12 @@
 [
   {
+    "num": 138,
+    "date": "2026-10-14",
+    "slug": "issues/2026-10-14.html",
+    "title": "The Second Opinion",
+    "blurb": "Meta launched its first frontier-class models in a week when the scientists who independently evaluate AI came under pressure to stay quiet. A September paper shows why automated verification is harder than it looks: even with all the code, agents reproduce ML paper results only 4 times in 10."
+  },
+  {
     "num": 137,
     "date": "2026-10-13",
     "slug": "issues/2026-10-13.html",

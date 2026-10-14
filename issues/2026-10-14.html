@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №138 — The Second Opinion · Infinite Reach</title>
+  <meta name="description" content="Meta launched its first frontier-class models in a week when the scientists who independently evaluate AI came under pressure to stay quiet. A September paper asks whether automated verification can fill the gap — and finds the answer is not yet." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №138 &middot; Wednesday, October 14, 2026</p>
+      <h1>The Second Opinion</h1>
+      <p>A benchmark published last month asked how often AI agents can independently confirm what a published paper actually claims. This week — as Meta stepped into the front row of the frontier — the same question came up at a larger scale: who gets to check what the biggest AI labs are actually doing, and can they say what they find?</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Meta launched Muse Wonder and Muse Wonder Full on Monday, calling them its first models capable of competing directly with Claude and ChatGPT. By Meta's own benchmarks, Wonder Full scores 79.0 on the DeepSWE 1.1 coding test, compared with around 74 for Anthropic's Opus 5.5. Meta has been building toward this for years — investing in chips, hiring researchers, running its Llama open-source series — and this week it arrived. Access to Wonder Full requires a $50–$200 monthly Muse Code subscription. Independent rankings put it a couple of points behind Claude Opus 5.5 on the Artificial Analysis Intelligence Index (56 versus 58), so the claim of full parity is close but not settled. Still: a four-way frontier race between Meta, Anthropic, OpenAI, and Google is a different thing from a two-way one, and the competition it brings should benefit anyone who uses these tools.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag policy">Accountability</span><span>Reuters reported that Anthropic and OpenAI have been pressing for the right to review — and potentially redact — what outside safety evaluators are allowed to publish about their models. More than 200 researchers signed a protest letter, including Geoffrey Hinton and Stuart Russell. <a href="https://thenextweb.com/news/anthropic-openai-ai-evaluators-publication-control">The Next Web</a></span></li>
+        <li><span class="tag policy">Firings</span><span>OpenAI dismissed three safety researchers — Tomek Korbak, Jasmine Wang, and Mikita Balesni — for "breach of trust," saying they violated policies on sensitive information. The researchers say the real reason was their communication with METR, the nonprofit OpenAI itself had hired to investigate last summer's Hugging Face incident. <a href="https://abcnews.com/Technology/wireStory/openai-fires-3-safety-researchers-dispute-ai-risks-137123277">ABC News</a></span></li>
+        <li><span class="tag policy">Access</span><span>The White House lifted a 17-day freeze on UK access to frontier models, restoring the UK AI Security Institute's ability to pre-test new releases from OpenAI, Anthropic, and Google DeepMind. The freeze had begun September 24; UK AI minister Kanishka Narayan's lobbying helped end it. <a href="https://aiweekly.co/alerts/white-house-restores-uk-aisi-access-after-17-day-model-freeze">AI Weekly</a></span></li>
+        <li><span class="tag money">Infrastructure</span><span>NTT Data Group is in final talks to build Anthropic's first dedicated Japanese data center in Osaka, with construction costs reportedly reaching up to 1 trillion yen (~$6.3 billion). Anthropic is also said to be moving toward a November IPO. <a href="https://lmmarketcap.com/llm-updates">LM Market Cap</a></span></li>
+        <li><span class="tag tech">Security</span><span>OpenAI said an employee planted a hidden recording device inside its offices; the FBI was called and the person arrested. The company says no model weights or customer data were improperly accessed. <a href="https://theneuron.ai/digest/everything-that-happened-in-ai-today-tuesday-october-13-2026">The Neuron</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~600-800 words -->
+      <h2>Paper, explained: can an agent read a paper and check whether it's true?</h2>
+      <p class="kicker">RECLAIM: Can Agents Reproduce the Claims of Machine Learning Papers? &middot; University of Illinois Urbana-Champaign / NCSA &middot; <a href="https://arxiv.org/abs/2609.28850">arXiv 2609.28850</a></p>
+
+      <p>Every year, thousands of machine learning papers get published, each announcing a new method, a better benchmark score, a claimed improvement on the previous state of the art. Most go unchecked. Peer review judges whether the method makes sense; it rarely tests whether the numbers are real. A team at the University of Illinois decided to find out how much work an AI agent could do in closing that gap — and their answer, delivered in this September paper, is a useful corrective to the rosier claims about AI as a scientific assistant.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Reproducibility is science's basic quality check: if you describe an experiment clearly enough, someone else should be able to run it and get the same result. In ML, this is a known weak spot. Researchers have found that many published results are difficult or impossible to reproduce, either because the code was never released, the training setup is described at too high a level, or subtle environmental differences (a different GPU, a different library version) shift the numbers. The conferences that matter most — NeurIPS, ICML, ICLR — receive tens of thousands of submissions a year. No reviewing process can catch everything.</p>
+      <p>The obvious dream is automation: AI agents that can read a paper, set up the environment, run the code, and report back whether the numbers match. Coding agents have gotten good enough at related tasks that the dream seems plausible. RECLAIM is one of the first serious attempts to measure how close to reality it is.</p>
+
+      <h3>How it works</h3>
+      <p>Think of the benchmark as a fact-checking task at three levels of difficulty, depending on how much the original researchers left behind. If they released everything — the code, the training data, and the pre-trained model weights — an agent can check the claim almost directly: run the provided code, compare the output to what the paper says. If they released only the code (no weights), the agent has to retrain the model, which takes time and judgment. If they released nothing, the agent has to read the paper, implement the method from scratch, and then run it. That last case is much closer to what a human researcher would face.</p>
+      <p>RECLAIM fixed 100 papers from NeurIPS 2025. For each, the team defined in advance the one number they would test — the central claim in the abstract — and the margin within which a reproduction would count as success. Four AI agents were then run against these papers, each given a fixed compute budget. The graded transcripts and the full rubric were released publicly, and the benchmark is designed to be rebuilt each year from the latest conference proceedings.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team ran 400 agent-paper pairings — four agents, one hundred papers each. The strongest agent was DeepSeek-V4-Flash. The compute budget for each run was fixed in advance, so the agents couldn't simply spend their way to a result; they had to be efficient.</p>
+
+      <h3>What they found</h3>
+      <p>When agents had access to everything — code, data, and weights — the best reproduction rate was 41%. That means, even with every tool the original authors used, agents confirmed the paper's main claim fewer than half the time. When agents had to rebuild the method purely from reading the paper, the rate fell to around 15%.</p>
+      <p>The gap between these two numbers is striking: from 41 to 15 percent is not a small step, it's a cliff. DeepSeek-V4-Flash, the top performer, fell from 41% to 12% when artifacts were stripped away. The agents also had an unexpected failure mode: they routinely left large portions of their allotted compute budget unused. They stopped working before the time ran out — often well before — suggesting they gave up on paths rather than exploring them.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Bar chart: AI agent reproduction rates for ML papers by artifact availability">
+          <rect width="720" height="310" fill="#FAFAF8"/>
+
+          <!-- Chart title -->
+          <text x="360" y="30" font-family="ui-serif" font-size="15" fill="#141413" text-anchor="middle" font-weight="600">How often agents reproduced the paper's central claim</text>
+          <text x="360" y="50" font-family="system-ui" font-size="11" fill="#87867F" text-anchor="middle">RECLAIM benchmark · best-performing agent (DeepSeek-V4-Flash) · 100 NeurIPS 2025 papers</text>
+
+          <!-- Gridlines and Y-axis labels -->
+          <line x1="88" y1="78"  x2="640" y2="78"  stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="88" y1="113" x2="640" y2="113" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="88" y1="148" x2="640" y2="148" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="88" y1="184" x2="640" y2="184" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="88" y1="219" x2="640" y2="219" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="88" y1="255" x2="640" y2="255" stroke="#141413" stroke-width="1.5"/>
+
+          <text x="84" y="82"  font-family="ui-monospace" font-size="10" fill="#87867F" text-anchor="end">50%</text>
+          <text x="84" y="117" font-family="ui-monospace" font-size="10" fill="#87867F" text-anchor="end">40%</text>
+          <text x="84" y="152" font-family="ui-monospace" font-size="10" fill="#87867F" text-anchor="end">30%</text>
+          <text x="84" y="188" font-family="ui-monospace" font-size="10" fill="#87867F" text-anchor="end">20%</text>
+          <text x="84" y="223" font-family="ui-monospace" font-size="10" fill="#87867F" text-anchor="end">10%</text>
+
+          <!-- Bar 1: Full artifacts — 41% -->
+          <rect x="130" y="110" width="120" height="145" fill="#D97757" rx="3"/>
+          <text x="190" y="104" font-family="ui-monospace" font-size="14" fill="#D97757" text-anchor="middle" font-weight="700">41%</text>
+          <text x="190" y="272" font-family="system-ui" font-size="12" fill="#141413" text-anchor="middle">Full artifacts</text>
+          <text x="190" y="286" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">code + data + weights</text>
+
+          <!-- Bar 2: PaperBench comparison — 21% -->
+          <rect x="300" y="181" width="120" height="74" fill="#D1CFC5" rx="3"/>
+          <text x="360" y="175" font-family="ui-monospace" font-size="14" fill="#87867F" text-anchor="middle" font-weight="700">21%</text>
+          <text x="360" y="272" font-family="system-ui" font-size="12" fill="#141413" text-anchor="middle">PaperBench ↗</text>
+          <text x="360" y="286" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">prior benchmark, from paper</text>
+
+          <!-- Bar 3: From paper only — 15% -->
+          <rect x="470" y="202" width="120" height="53" fill="#6A8CAF" rx="3"/>
+          <text x="530" y="196" font-family="ui-monospace" font-size="14" fill="#6A8CAF" text-anchor="middle" font-weight="700">15%</text>
+          <text x="530" y="272" font-family="system-ui" font-size="12" fill="#141413" text-anchor="middle">From paper only</text>
+          <text x="530" y="286" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">no artifacts, rebuild from scratch</text>
+
+          <!-- Annotation -->
+          <line x1="250" y1="182" x2="470" y2="228" stroke="#87867F" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr)"/>
+          <defs>
+            <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#87867F"/>
+            </marker>
+          </defs>
+          <text x="340" y="218" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle" transform="rotate(-18,340,218)">remove the code, lose 26 points</text>
+        </svg>
+        <figcaption>Reproduction rates from the RECLAIM benchmark. The 41% (full artifacts) and 15% (from paper only) figures are from the paper's reported results for DeepSeek-V4-Flash. The 21% PaperBench comparison (Claude 3.5 Sonnet, ICML 2025) tests a different paper set but gives useful context for the from-scratch tier.</figcaption>
+      </figure>
+
+      <h3>The catch</h3>
+      <p>Papers that release full code and model weights may be self-selecting: researchers most confident in their work are more likely to share everything. So Tier 1 may be testing the cleanest, most carefully prepared results in the field — not a representative sample. The 15% from-scratch figure also has a ceiling: the agents were still reading the paper, which is more information than a completely independent verification would start with. And the benchmark covers one conference (NeurIPS 2025); results may differ across subfields or venues where the norm of releasing code is weaker.</p>
+
+      <p><strong>If you remember one thing:</strong> Even when AI agents are handed all the code and data, they can reproduce a published result only 4 times in 10 — which means automated scientific fact-checking remains a tool to assist reviewers, not replace them.</p>
+
+      <h2>Why it matters</h2>
+      <p>Two stories this week circle the same question: who actually checks the claims of the most powerful actors in AI?</p>
+      <p>The RECLAIM paper asks it at the level of individual research results. The answer is that even with good tooling and the original code, agents succeed fewer than half the time. This is not a condemnation — it's a baseline, and future agents will do better. But it is a reason not to assume the verification problem is solved just because the tools exist.</p>
+      <p>The publication-rights story asks the same question about safety evaluation. The argument for allowing labs to review and redact safety reports is that some material is genuinely sensitive — security vulnerabilities, for instance, should not be announced publicly before patches exist. The argument against is that the same power used to protect genuine secrets can also protect uncomfortable findings. Two hundred researchers who've spent careers thinking about scientific integrity are saying the distinction between the two is very hard to police from the inside.</p>
+      <p>The pattern across both stories is that the infrastructure for independent verification — of research claims, of safety claims — is valuable precisely because it operates outside the interests of the people being checked. When that independence comes under pressure, it is worth noticing, whatever the stated reason.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://techcrunch.com/2026/10/12/meta-releases-its-first-frontier-model-muse-wonder">TechCrunch — Muse Wonder launch</a> ·
+        <a href="https://aiweekly.co/alerts/meta-releases-its-first-frontier-model-muse-wonder">AI Weekly — Muse Wonder overview</a> ·
+        <a href="https://androidauthority.com/meta-muse-wonder-ai-models-3722247">Android Authority — Wonder benchmarks</a> ·
+        <a href="https://abcnews.com/Technology/wireStory/openai-fires-3-safety-researchers-dispute-ai-risks-137123277">ABC News — OpenAI researchers fired</a> ·
+        <a href="https://aiweekly.co/alerts/white-house-restores-uk-aisi-access-after-17-day-model-freeze">AI Weekly — UK AISI access restored</a> ·
+        <a href="https://thenextweb.com/news/anthropic-openai-ai-evaluators-publication-control">The Next Web — evaluator publication rights</a> ·
+        <a href="https://arxiv.org/abs/2609.28850">arXiv 2609.28850 — RECLAIM</a> ·
+        <a href="https://proceedings.mlr.press/v267/starace25a.html">PaperBench — ICML 2025</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Reproducibility</div>
+        <div>A result is reproducible if someone else can follow the same method and get the same answer. Think of it as the difference between a recipe that actually works and one that only worked because a trained pastry chef quietly improvised. Science depends on the former; the ML field has more of the latter than it would like.</div>
+      </div>
+      <dl>
+        <dt>Frontier model</dt><dd>The most capable AI model available at a given time — the technical edge of what exists. Muse Wonder Full is claiming to join this tier. Four labs — Meta, Anthropic, OpenAI, and Google — now have credible claims on it.</dd>
+        <dt>Artifact (ML)</dt><dd>The materials released alongside a research paper: code, datasets, and trained model weights. A paper with no artifacts is like a recipe with no ingredient list — you know something went in, but good luck recreating it.</dd>
+        <dt>METR</dt><dd>A nonprofit that does independent safety evaluations of AI models — sending researchers into a lab for days to run tests and publish findings. Stands for Model Evaluation and Threat Research.</dd>
+        <dt>Benchmark</dt><dd>A standardized test for an AI model — fixed problems with known correct answers used to compare systems. Its usefulness depends on how well its questions represent real ability, which is why people argue about them constantly.</dd>
+        <dt>Active Memory</dt><dd>Meta's name for a feature in Muse Wonder that stores useful facts from past conversations and resurfaces them later, so the model remembers what you said last week without being re-told.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
