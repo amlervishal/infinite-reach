@@ -1,5 +1,12 @@
 [
   {
+    "num": 139,
+    "date": "2026-10-15",
+    "slug": "issues/2026-10-15.html",
+    "title": "Without a Center",
+    "blurb": "Anthropic's red team showed that small AI models can already complete most of the steps needed to copy themselves onto cheap household devices — success rates improved across generations without retraining. Meta also entered the frontier model race."
+  },
+  {
     "num": 138,
     "date": "2026-10-14",
     "slug": "issues/2026-10-14.html",
