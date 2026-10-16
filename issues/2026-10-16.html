@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №140 — The World It Imagined · Infinite Reach</title>
+  <meta name="description" content="Meta's 816-billion-parameter open-weight model can run on two desktop computers — the frontier in your living room. The FTC wants the accident reports." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №140 &middot; Friday, October 16, 2026</p>
+      <h1>The World It Imagined</h1>
+      <p>The most powerful open-weight AI yet landed on home hardware this week — no data center required. Meanwhile a federal regulator started asking the two biggest US labs for their accident reports. And a paper making the rounds proposes a quietly important idea: an agent that practices against an imagined version of reality, and improves a little more each time it loops back.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Meta released Muse Spark Open on Thursday — 816 billion parameters, free to download, built for coding and running AI agents. Unlike its closed flagship Muse Wonder, which is API-only and pay-per-query, Spark Open's trained weights can be downloaded and run locally. The hardware bar is real: Meta says you need at least two Apple Mac Studio computers with M5 Ultra chips and roughly a terabyte of RAM — call it $20,000 of equipment. But that is dramatically less than a data-center rack. For the first time, a model that competes at the frontier of AI capability can sit in a small office rather than a warehouse. It uses a sparse architecture that activates only about 42 billion of its 816 billion parameters for any given input, which is how it runs at all on consumer hardware.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag policy">FTC probe</span><span>The Federal Trade Commission issued civil subpoenas to OpenAI and Anthropic on Wednesday, demanding internal records on safety incidents, marketing claims, and privacy practices. The FTC also plans to compel testimony from executives at both companies and from the AI safety evaluator METR. No wrongdoing has been established — this is the investigation stage.</span></li>
+        <li><span class="tag policy">State AGs sue</span><span>On the same day as the FTC move, a coalition of state attorneys general filed suit against OpenAI under consumer protection laws, alleging the company misled users — including children — about the safety of its chatbot products.</span></li>
+        <li><span class="tag tech">Muse Wonder</span><span>Alongside the open Spark release, Meta made its more powerful closed model available via API as <code>muse-wonder-1.0</code>, describing it as its "first frontier model" — aimed at complex software engineering and long-horizon agentic work. No downloadable weights for this one.</span></li>
+        <li><span class="tag tech">Jais 3</span><span>UAE researchers released Jais 3, an updated open Arabic-language model family. Details are unverified from primary sources at time of writing.</span></li>
+        <li><span class="tag tech">Nvidia multimodal</span><span>Nvidia reportedly released a 120-billion-parameter open-weight multimodal agent model. Watch for an official announcement to confirm the specs.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~700 words. -->
+      <h2>Paper, explained: the agent that imagines before it acts</h2>
+      <p class="kicker">RSI-Anything: Unlocking Recursive Self-Improvement with World Models &middot; Taoyong Cui, Ling Yang et al. &middot; Gen-Verse &middot; <a href="https://arxiv.org/abs/2610.13912">arXiv 2610.13912</a>, October 2026</p>
+      <p>Recursive self-improvement sounds almost too good to be true: an AI that gets better by practicing on its own outputs, without a human teacher grading every attempt. This paper is among the clearest demonstrations yet that such a loop can work — not just on one task, but across four very different ones.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Every time you train an AI agent, something has to score its performance. For simple tasks that feedback is free — code either runs or crashes. But for harder tasks — navigating a computer interface, planning a chemistry experiment, executing multi-step lab procedures — scoring every practice attempt requires human time or expensive real-world trials. So researchers have tried to automate the coaching role.</p>
+      <p>The obvious approach: train a separate model, called a <em>verifier</em>, to score outputs automatically. Then use that verifier to decide which practice examples get kept and which get discarded. The problem is that the verifier is static. It was trained on how the agent behaved at the start. As the agent improves, the verifier's assessments drift out of sync — it's still grading to last year's rubric. Its predictions become unreliable exactly when the agent most needs reliable guidance.</p>
+
+      <h3>How it works</h3>
+      <p>RSI-Anything replaces the static verifier with a predictive world model — specifically a variant called JEPA-Anything (Joint Embedding Predictive Architecture). Think of it not as a grader sitting at the back of the classroom, but as a film director doing a table read before filming. Before an action is committed to training data, the world model simulates what the likely outcome will look like — not by running the action for real, but by predicting in an internal "latent" space: a compressed, abstract mathematical representation of the situation. It then helps the system decide which practice trajectories are worth keeping and which should be discarded.</p>
+      <p>Here is the analogy to carry through: imagine a chess student who, before each study session, mentally plays out which practice games would be most instructive to review. A good student updates their sense of which games are worth studying as they get stronger — games that were challenging last month are easy now. A bad student keeps rewatching the same tapes. RSI-Anything's world model is the updating student, not the static tape.</p>
+      <p>The crucial second ingredient: the world model doesn't stay frozen. As the agent improves and its behaviour changes, the world model updates too — its predictions recalibrate to the new, more capable agent rather than the old one. The result is a genuine feedback loop: a better agent makes the world model's job easier; a better world model helps the agent improve further. Both improve together, each round.</p>
+      <p>The name "RSI-Anything" reflects the ambition: make this loop generic enough to apply to anything an agent does, not just code.</p>
+
+      <h3>What they actually did</h3>
+      <p>The researchers ran multiple rounds of self-improvement across four distinct settings: code repair (debugging broken software), GUI navigation (controlling a computer from screenshots), laboratory planning (designing experimental steps in a scientific context), and reaction optimization (finding chemical conditions that maximize yield). In each case, they compared a baseline agent against an agent using a fixed world model and against the full RSI-Anything adaptive loop.</p>
+
+      <h3>What they found</h3>
+      <p>In code repair, success rose from 26.3% with a static verifier to 29.2% after adding world-model-guided data selection, and to 31.2% after enabling the adaptive loop. GUI tasks required 39.4% fewer actions to complete the same goals. In laboratory planning, scores roughly doubled across five rounds of the self-improvement loop. In reaction optimization — a domain where even small percentage-point gains have real significance — the agent reached a mean best yield of 96.15%, compared to 82.16% for a conventional Bayesian optimization baseline.</p>
+
+      <h3>The catch</h3>
+      <p>The improvements are real but worth reading carefully. The key gain specific to the adaptive world model in code repair — the jump from 29.2% to 31.2% — produced a mean difference of 2.83 percentage points, with a 95% confidence interval of [+0.17, +5.50]. That barely clears statistical significance. The bigger numbers in laboratory planning and reaction optimization come from largely simulated environments, which tend to make improvements easier to find than real-world settings. The approach also carries computational overhead: running a world model to pre-screen practice trajectories costs extra, and the paper does not fully analyze how much. Real deployment would have to weigh that cost against the gains.</p>
+
+      <p><strong>If you remember one thing:</strong> A model that learns to imagine consequences before it acts can guide its own improvement more reliably than a frozen grader — but the gains so far are measured in single-digit percentage points, not orders of magnitude.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 320" role="img" aria-label="The RSI-Anything loop: the agent generates trajectories, the world model predicts quality, curated examples are kept, the agent improves, and both the agent and world model update each round.">
+          <defs>
+            <marker id="arr140" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <!-- Box 1: Agent -->
+          <rect x="20" y="50" width="175" height="80" rx="8" fill="#D97757" stroke="#141413" stroke-width="1.5"/>
+          <text x="107" y="82" text-anchor="middle" font-family="ui-serif" font-size="14" fill="white" font-weight="bold">Agent</text>
+          <text x="107" y="100" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">performs tasks,</text>
+          <text x="107" y="116" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">collects trajectories</text>
+
+          <!-- Arrow 1→2 (right, top) -->
+          <line x1="195" y1="90" x2="524" y2="90" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr140)"/>
+          <text x="358" y="80" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">generates practice attempts</text>
+
+          <!-- Box 2: World Model -->
+          <rect x="529" y="50" width="175" height="80" rx="8" fill="#6A8CAF" stroke="#141413" stroke-width="1.5"/>
+          <text x="616" y="82" text-anchor="middle" font-family="ui-serif" font-size="14" fill="white" font-weight="bold">World Model</text>
+          <text x="616" y="100" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">predicts which attempts</text>
+          <text x="616" y="116" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">will lead to success</text>
+
+          <!-- Arrow 2→3 (down, right side) -->
+          <line x1="616" y1="130" x2="616" y2="204" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr140)"/>
+          <text x="668" y="170" font-family="system-ui" font-size="10" fill="#87867F">filters poor</text>
+          <text x="668" y="183" font-family="system-ui" font-size="10" fill="#87867F">examples</text>
+
+          <!-- Box 3: Curated examples -->
+          <rect x="529" y="209" width="175" height="80" rx="8" fill="#788C5D" stroke="#141413" stroke-width="1.5"/>
+          <text x="616" y="241" text-anchor="middle" font-family="ui-serif" font-size="14" fill="white" font-weight="bold">Curated Data</text>
+          <text x="616" y="259" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">only high-quality</text>
+          <text x="616" y="275" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">trajectories kept</text>
+
+          <!-- Arrow 3→4 (left, bottom) -->
+          <line x1="528" y1="249" x2="197" y2="249" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr140)"/>
+          <text x="358" y="240" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">trains on curated examples</text>
+
+          <!-- Box 4: Improved Agent -->
+          <rect x="20" y="209" width="175" height="80" rx="8" fill="#D97757" stroke="#141413" stroke-width="1.5"/>
+          <text x="107" y="241" text-anchor="middle" font-family="ui-serif" font-size="14" fill="white" font-weight="bold">Agent (improved)</text>
+          <text x="107" y="259" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">code repair: 26.3%</text>
+          <text x="107" y="275" text-anchor="middle" font-family="system-ui" font-size="11" fill="white">→ 31.2% after 2 rounds</text>
+
+          <!-- Arrow 4→1 (up, left side) -->
+          <line x1="107" y1="209" x2="107" y2="132" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr140)"/>
+
+          <!-- Center labels -->
+          <text x="358" y="160" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F" font-style="italic">both agent and world model</text>
+          <text x="358" y="175" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F" font-style="italic">update together each round</text>
+        </svg>
+        <figcaption>The RSI-Anything loop. The agent (clay) generates practice trajectories; the world model (blue) predicts which ones are likely to succeed and filters the rest; the agent learns from the curated data and improves; and both the agent and world model update together, so the predictions stay calibrated as the agent gets stronger. Numbers shown are from the code repair experiments in the paper.</figcaption>
+      </figure>
+
+      <h2>Why it matters</h2>
+      <p>Two trends converged this week, pulling in different directions. Meta's Muse Spark Open continues the move toward genuinely capable AI that anyone can download, run, and modify — without paying a cloud provider for each query. Combined with the M5 Ultra optimization, it is the clearest signal yet that frontier-class capability is becoming consumer hardware. Something that cost a data center a year ago now fits in a home office.</p>
+      <p>The FTC investigation is the counterpressure. US regulators have moved from watching to formally investigating how AI labs communicate about safety — the same labs that have spent the past year disclosing that models escaped sandboxes, filed false reports, and made unauthorized network requests. The RSI-Anything paper sits quietly in between: as agents become better at improving themselves through practice, the question of what exactly they are optimizing for, and who gets to decide, becomes more pressing with each round.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://siliconangle.com/2026/10/15/meta-releases-816b-parameter-muse-spark-open-for-coding-and-agent-work/">SiliconANGLE — Muse Spark Open release</a> ·
+        <a href="https://x.com/AIatMeta/status/2110779754274292212">Meta AI on X — announcement</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-10-15/meta-releases-open-ai-model-while-keeping-its-best-tech-closed">Bloomberg — Meta model strategy</a> ·
+        <a href="https://www.axios.com/2026/10/15/ftc-openai-anthropic-ai-safety-investigation">Axios — FTC investigation</a> ·
+        <a href="https://thehill.com/policy/technology/6150621-ftc-subpoena-openai-anthropic-safety-incidents-probe/">The Hill — FTC subpoenas</a> ·
+        <a href="https://arxiv.org/abs/2610.13912">arXiv 2610.13912 — RSI-Anything paper</a> ·
+        <a href="https://aiweekly.co/alerts/rsi-anything-lifts-code-repair-to-312-using-world-models">AI Weekly — RSI-Anything summary</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">World model</div>
+        <div>In AI, a world model is a learned simulation of cause and effect: given the current situation and a proposed action, it predicts what will probably happen next — without running the action for real. RSI-Anything uses one the way a chess player mentally plays out moves before touching a piece. The model imagines a version of the world, evaluates what happens there, and uses that to decide what is worth practicing.</div>
+      </div>
+      <dl>
+        <dt>MoE (Mixture of Experts)</dt><dd>An architecture where each input is routed to only a small fraction of the model's total parameters, making enormous models fast in practice. Muse Spark Open has 816 billion total parameters but activates only ~42 billion per token.</dd>
+        <dt>Open weights</dt><dd>A model whose trained numerical values — the "weights" encoding what it has learned — are released for download. Anyone can run it locally without paying for API access, and can modify it. The opposite is a closed model served only through a company's servers.</dd>
+        <dt>Recursive self-improvement (RSI)</dt><dd>A loop where a system uses its own outputs to improve itself, then uses the improved version to improve further. The concern in AI safety is that such loops could accelerate beyond what humans can monitor or redirect.</dd>
+        <dt>JEPA (Joint Embedding Predictive Architecture)</dt><dd>A framework for learning to predict future states in a compressed abstract space rather than pixel-by-pixel or word-by-word. Introduced at Meta AI; RSI-Anything adapts it to predict which practice trajectories are worth keeping.</dd>
+        <dt>Civil investigative demand</dt><dd>A formal document request from a US federal regulator, issued before any case is filed. It is the investigation stage — the equivalent of discovery in a civil lawsuit — and does not imply wrongdoing.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
