@@ -1,5 +1,12 @@
 [
   {
+    "num": 141,
+    "date": "2026-10-17",
+    "slug": "issues/2026-10-17.html",
+    "title": "The Address You Never Moved To",
+    "blurb": "Microsoft finishes pre-training a 2.8-trillion-parameter model using a quarter of GPT-5.6's compute — and a paper names the memory error that makes AI assistants store your plans as your facts."
+  },
+  {
     "num": 140,
     "date": "2026-10-16",
     "slug": "issues/2026-10-16.html",
