@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №142 — What You Learn Before · Infinite Reach</title>
+  <meta name="description" content="Microsoft finished pre-training a 2.8-trillion-parameter model no one can use yet. A NeurIPS paper asks what agents should do with the time before their first real task — and finds the answer is: practice on puzzles they make for themselves." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №142 &middot; Sunday, October 18, 2026</p>
+      <h1>What You Learn Before</h1>
+      <p>Microsoft completed pre-training on its largest model yet — a 2.8-trillion-parameter system that is not yet available to anyone. Meanwhile a new paper accepted to NeurIPS 2026 asks a different question about preparation: what should an AI agent do with the time before its first real task? The answer turns out to be: give it a practice room and let it make its own homework.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On October 15, Microsoft AI announced it had finished the first stage of building its biggest model ever: MAI-Base-2, a mixture-of-experts system with 2.8 trillion total parameters and 80 billion active per token. It ran for 38 days on 16,000 of Nvidia's newest server-grade chips. Microsoft claims the recipe is 4 to 12 times more efficient than a comparable model from DeepSeek — but that figure comes from projecting a mathematical curve, not from racing the two models side-by-side on the same budget. Pre-training is done; post-training (the step that turns a raw text-predictor into something useful) is still under way. Nobody can try it yet, and Microsoft has not announced pricing, licensing, or a release date. What the announcement actually confirms is that Microsoft can build a model at this scale and is making strong claims about doing it cheaply. The evidence for those claims deserves a closer look.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Open model</span><span>Nvidia released Nemotron 3.5 Super VL on October 15 — a 120-billion-parameter open-weight multimodal model that accepts text, images, documents, GUI screenshots, and video, with a 1-million-token context window. Only 12 billion of its parameters activate per token, keeping inference costs down. Weights are on Hugging Face.</span></li>
+        <li><span class="tag tech">Access</span><span>Google's Gemini 4 Argon — the model it launched in restricted access only for vetted cybersecurity defenders — is now available to any developer through the paid Gemini API and Google Cloud. The wider access comes with no public change to how it handles sensitive requests.</span></li>
+        <li><span class="tag money">Elections</span><span>AI safety groups spent $48 million in the 2026 US election cycle buying ads and backing candidates on both sides of the aisle, according to new Axios figures. OpenAI president Greg Brockman separately withdrew a planned $25 million donation from Leading the Future, a pro-AI super PAC backed by tech investors.</span></li>
+        <li><span class="tag policy">Research</span><span>EMNLP 2026 — the field's main natural-language-processing conference — opens in Budapest on October 24 with 5,252 accepted papers, nearly double the count from 2024. Almost every abstract uses the word "agents." The gap between research output and the public's understanding of it has never been wider.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: building memory before any task arrives</h2>
+      <p class="kicker">PREPING: Building Agent Memory without Tasks &middot; Choi, Park, Kang, Baek &amp; Hwang (KAIST) &middot; NeurIPS 2026 &middot; <a href="https://neurips.cc/virtual/2026/poster/153705">NeurIPS page</a></p>
+
+      <p>Most AI agents are only as good as their on-the-job experience. They arrive at deployment knowing how to follow instructions in general, but they have no knowledge of the particular tools, apps, or workflows they will be asked to navigate. The knowledge builds up the hard way: by doing real tasks, failing, noting what went wrong, and updating an internal playbook. This paper asks whether any of that work has to happen during real deployment at all — and concludes that most of it does not.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When an AI agent is given access to, say, a company's calendar and email system, it needs more than general intelligence. It needs a <em>procedural memory</em> — a library of useful patterns: how to reschedule a meeting when a conflict appears, what the error message means when a calendar invite fails, how to cross-reference two inboxes at once. Agents usually build this library live, while doing real tasks — but live deployment is expensive. Every failure is a live failure. Every learning step costs compute and, potentially, the trust of the person the agent is supposed to help. The alternative — building the library offline, from human-written examples — is painstaking and never complete. What nobody had tried in a clean, general way was asking the agent to build the library itself, before it ever saw a real task from the target environment.</p>
+
+      <h3>How it works</h3>
+      <p>The researchers built a loop with three roles, each one feeding the next. Think of it as a chef preparing to open a new restaurant. She doesn't arrive on opening night knowing nothing — she works through the new cuisine's techniques in the test kitchen first. But she isn't just cooking randomly. She has a notebook, and every session she consults it: <em>what have I already mastered, where are the gaps, what's the most useful thing to practice next?</em> That notebook is what the authors call the <strong>proposer memory</strong>.</p>
+
+      <p>Here's how the loop runs. The <strong>Proposer</strong> reads the proposer memory — a maintained summary of what the agent has practiced and what it still needs — and writes a new synthetic task. Not an arbitrary task: one that is novel (not repeating what the agent already knows), feasible (solvable in principle), and targeted (closing a real gap). The <strong>Solver</strong> then executes the task exactly as it would in real deployment: calling tools, reading responses, making decisions, step by step. The <strong>Validator</strong> checks whether the Solver's trajectory is actually worth keeping. If the solution is correct and the steps are general enough to reuse, the trajectory goes into the agent's long-term procedural memory, and the Validator feeds back into the Proposer what it learned: what worked, what to explore next, what the agent still doesn't know. The loop runs many times before deployment starts. By the time the agent faces its first real user, it has already practiced hundreds of scenarios — none of them real, all of them useful.</p>
+
+      <p>The subtlety is that the volume of practice is not what matters. An agent that generates thousands of redundant variations of the same scenario learns very little. The Proposer's job is to keep pushing toward new territory while the Validator's job is to keep out noisy or misleading trajectories. This is what separates PREPING from simply prompting an agent to "generate more examples."</p>
+
+      <!-- SVG figure: the Proposer/Solver/Validator loop -->
+      <figure>
+        <svg viewBox="0 0 720 280" role="img" aria-label="PREPING loop diagram: Proposer Memory feeds the Proposer, which makes a synthetic task; the Solver runs it; the Validator checks it and updates memory">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#87867F" />
+            </marker>
+          </defs>
+          <!-- Proposer Memory box at top centre -->
+          <rect x="255" y="16" width="210" height="50" rx="8" fill="#D97757" fill-opacity="0.15" stroke="#D97757" stroke-width="1.5"/>
+          <text x="360" y="37" font-family="ui-serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="600">Proposer Memory</text>
+          <text x="360" y="56" font-family="system-ui" font-size="11" fill="#87867F" text-anchor="middle">what's been learned &amp; what's still needed</text>
+
+          <!-- Proposer box bottom-left -->
+          <rect x="60" y="140" width="160" height="50" rx="8" fill="#6A8CAF" fill-opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="140" y="161" font-family="ui-serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="600">Proposer</text>
+          <text x="140" y="178" font-family="system-ui" font-size="11" fill="#87867F" text-anchor="middle">writes a new synthetic task</text>
+
+          <!-- Solver box bottom-centre -->
+          <rect x="280" y="140" width="160" height="50" rx="8" fill="#788C5D" fill-opacity="0.15" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="360" y="161" font-family="ui-serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="600">Solver</text>
+          <text x="360" y="178" font-family="system-ui" font-size="11" fill="#87867F" text-anchor="middle">runs it step by step</text>
+
+          <!-- Validator box bottom-right -->
+          <rect x="500" y="140" width="160" height="50" rx="8" fill="#D97757" fill-opacity="0.15" stroke="#D97757" stroke-width="1.5"/>
+          <text x="580" y="161" font-family="ui-serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="600">Validator</text>
+          <text x="580" y="178" font-family="system-ui" font-size="11" fill="#87867F" text-anchor="middle">admits &amp; updates memory</text>
+
+          <!-- Memory to Proposer -->
+          <line x1="280" y1="66" x2="190" y2="140" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)" stroke-dasharray="4,3"/>
+          <!-- Proposer to Solver -->
+          <line x1="220" y1="165" x2="280" y2="165" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Solver to Validator -->
+          <line x1="440" y1="165" x2="500" y2="165" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Validator to Memory -->
+          <line x1="572" y1="140" x2="450" y2="66" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)" stroke-dasharray="4,3"/>
+
+          <!-- Long-term memory label at bottom -->
+          <text x="360" y="245" font-family="system-ui" font-size="11" fill="#87867F" text-anchor="middle">Accepted trajectories go into long-term procedural memory</text>
+          <line x1="580" y1="190" x2="580" y2="235" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="360" y1="235" x2="580" y2="235" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="360" y1="235" x2="360" y2="255" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="3,3"/>
+
+          <!-- Label: before deployment -->
+          <rect x="60" y="234" width="150" height="26" rx="5" fill="#F7F4F0"/>
+          <text x="135" y="251" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">all of this runs BEFORE deployment</text>
+        </svg>
+        <figcaption>The PREPING loop runs before a single real task arrives. The Proposer reads a maintained summary of what the agent knows and doesn't know, writes a practice task, the Solver executes it, and the Validator decides what's worth keeping. Each accepted trajectory updates the memory that steers the next round of practice.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The team tested PREPING on three benchmarks: AppWorld (a simulated smartphone environment where the agent uses tools to manage calendars, files, and apps), BFCL v3 (a benchmark that tests how accurately an agent calls software functions), and MCP-Universe (a set of tasks that use the Model Context Protocol, a standard that lets agents connect to external tools). They ran the pre-deployment practice loop on each environment and then measured how the agent performed at deployment time, comparing against two baselines: no memory at all, and the standard approach of building memory during live deployment (called "online memory construction"). For each environment, they measured both task success and deployment cost — meaning how much compute was needed at inference time.</p>
+
+      <h3>What they found</h3>
+      <p>On all three benchmarks, PREPING closed most of the gap between the no-memory baseline and the live-learning approach — while spending far less compute during actual deployment. Deployment cost was 2.99 times lower on AppWorld and 2.23 times lower on BFCL v3 than online memory construction. Performance was competitive with the live-learning approach, not identical to it: the agent had slightly less context-specific knowledge than one that had actually seen real tasks. But the trade-off is favourable. An agent that does most of its learning before work starts imposes a fraction of the runtime cost. The authors also ran an ablation — a test where they removed the Proposer's control and just generated random synthetic tasks — and found performance dropped substantially, confirming that it's not the volume of practice that helps but the Proposer's ability to steer toward what matters.</p>
+
+      <h3>The catch</h3>
+      <p>All three benchmark environments are simulated. AppWorld, BFCL, and MCP-Universe are designed to be testable; they have clean success signals that the Validator can use. Real deployment environments — an actual company's API, a real user's filesystem — are messier: tasks fail in unpredictable ways, success is ambiguous, and the Validator's job becomes much harder. The paper also doesn't disclose the compute cost of the pre-deployment practice phase itself, only the savings at deployment time. Whether the upfront practice is cheap enough to justify in every context is left as future work. The other limitation is that the proposer memory needs some initial description of the target environment to know what to practice — it can't generate useful tasks from absolutely nothing.</p>
+
+      <p><strong>If you remember one thing:</strong> Agents can build most of their task-specific knowledge before they ever meet a real user — by practicing on puzzles they made for themselves — and this turns out to be substantially cheaper than learning on the job.</p>
+
+      <h2>Why it matters</h2>
+      <p>The Microsoft and PREPING stories have something in common: both are about the work that happens before anything is usable. MAI-Base-2 completed pre-training but isn't ready; PREPING runs before deployment. The reason this matters is that the field has spent years competing on the quality of deployed models. The next frontier is the cost of operating them. An agent that needs to run thousands of expensive live-learning steps on real infrastructure, for every new tool it is given access to, is not economically viable at scale. A pre-deployment practice phase that is guided, selective, and efficient is a meaningful step toward making agentic systems practical for organizations that can't afford to run expensive live experiments on their real systems. PREPING is one paper, and a small one in the grand scheme — but it points at a direction the whole field needs to go.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://pasqualepillitteri.it/en/news/24354/microsoft-mai-base-2-trillion-parameters">Microsoft MAI-Base-2 overview</a> ·
+        <a href="https://www.winzheng.com/en/article/microsoft-mai-base-2-moe-pretraining-2026">MAI-Base-2 efficiency details</a> ·
+        <a href="https://neurips.cc/virtual/2026/poster/153705">PREPING at NeurIPS 2026</a> ·
+        <a href="https://www.opentrain.ai/papers/preping-building-agent-memory-without-tasks--arxiv-2605.13880/">PREPING summary</a> ·
+        <a href="https://lmstudio.ai/models/nemotron-3.5-super-vl">Nemotron 3.5 Super VL</a> ·
+        <a href="https://letsdatascience.com/news/nvidia-expands-nemotron-35-with-super-vl-and-bolt-ff81d36b">NVIDIA Nemotron release</a> ·
+        <a href="https://www.axios.com/2026/10/14/ai-safety-regulation-election-spending-50-million">Axios: AI safety election spending</a> ·
+        <a href="https://digg.com/tech/5xgwr5hu">EMNLP 2026 acceptances</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Pre-training</div>
+        <div>The first and largest stage of building a language model: feeding it vast amounts of text (trillions of words) so it learns to predict what comes next. Think of it as teaching someone to read every book in the library before giving them any particular job. Pre-training produces a "base model" — highly capable, but not yet useful to anyone until a second phase of training shapes its behaviour. What Microsoft finished this week was the first phase. The useful product is still months away.</div>
+      </div>
+      <dl>
+        <dt>Mixture of Experts (MoE)</dt><dd>A model architecture where the network is divided into many specialist sub-networks ("experts"), but only a small fraction of them activates for any given word or token. MAI-Base-2 has 2.8 trillion total parameters but only 80 billion active per token — it is large but not expensive to run per query.</dd>
+        <dt>Active parameters</dt><dd>The subset of a model's total parameters that actually get used for each input. In a mixture-of-experts model this can be a small fraction of the total; the rest are dormant for that particular token.</dd>
+        <dt>Procedural memory</dt><dd>In AI agents, the store of learned procedures — "to reschedule a meeting, first check for conflicts, then send the notification" — as distinct from factual knowledge. PREPING is specifically about building this kind of memory before deployment.</dd>
+        <dt>Scaling laws</dt><dd>Mathematical relationships showing that model capability improves predictably with more compute, data, and parameters. Microsoft's efficiency claims rest on extrapolating these curves — projecting where a rival's model would need to reach the same score — rather than directly comparing training runs.</dd>
+        <dt>Ablation</dt><dd>A standard test in ML research where you remove one part of a system to confirm it's actually doing something useful. PREPING's ablation removed the Proposer's guidance and found random synthetic practice was much less effective — confirming that steering the practice, not just doing more of it, is what matters.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

@@ -1,5 +1,12 @@
 [
   {
+    "num": 142,
+    "date": "2026-10-18",
+    "slug": "issues/2026-10-18.html",
+    "title": "What You Learn Before",
+    "blurb": "Microsoft finished pre-training a 2.8-trillion-parameter model no one can use yet, while a NeurIPS paper shows agents can build their own task-specific memory before deployment — by practicing on puzzles they made for themselves."
+  },
+  {
     "num": 141,
     "date": "2026-10-17",
     "slug": "issues/2026-10-17.html",
