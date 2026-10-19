@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №143 — What Goes Unspoken · Infinite Reach</title>
+  <meta name="description" content="The US Department of Energy is reviving dormant nuclear plants to power AI data centers, as a new paper shows AI agents can cut their own costs in half by knowing when to think in silence rather than words." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №143 &middot; Monday, 19 October 2026</p>
+      <h1>What Goes Unspoken</h1>
+      <p>The Department of Energy is lending $4.4 billion to restart three dormant nuclear plants — specifically to power the data centers behind AI. Meanwhile, a paper published last week argues the smarter move is to make those systems think more quietly in the first place.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>The US Department of Energy announced a $4.4 billion loan guarantee to revive three nuclear power stations that had been taken offline, dedicating their output to AI data centers. This is the clearest sign yet that AI's electricity appetite has moved from an accounting line to a national infrastructure problem. Data center operators have been warning for two years that the grid cannot keep pace with compute demand; now a federal agency is treating the shortfall as an emergency worth billions in direct lending. The three plants haven't been publicly named. DOE described this as the first tranche of a broader programme pairing government-owned energy assets with private-sector AI compute.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">DeepSeek</span><span>DeepSeek pushed a minor update to its V4.1 Flash model on Saturday — slightly faster, slightly leaner — available free as open weights via its API. No architectural changes; the version string changed to V4.1-Flash-1017.</span></li>
+        <li><span class="tag money">Anthropic</span><span>Anthropic's research arm published its Economic Scenarios framework: in the most aggressive case, AI could lift US GDP to $44 trillion by 2030 (roughly 50% above a no-AI baseline). Researchers were careful to call these illustrative scenarios, not predictions — and co-founder Jack Clark warned policymakers to "get ready to spend."</span></li>
+        <li><span class="tag policy">Meta</span><span>Meta quietly removed language from its commercial terms that had allowed it to use third-party web content — including news publisher material — for AI training. The change followed months of industry backlash and ongoing legal scrutiny.</span></li>
+        <li><span class="tag tech">OpenAI + Simons</span><span>OpenAI and the Simons Foundation announced a $5 million collaboration to help mathematicians examine and extend the AI-generated mathematics corpus published earlier this month — an attempt to build a bridge between the machine-produced results and the humans who would verify them.</span></li>
+        <li><span class="tag tech">OpenAI</span><span>Three undocumented model identifiers — aurora-red-alpha, aurora-green-alpha, aurora-blue-alpha — appeared briefly in OpenAI's API on Sunday. One returned capacity errors (suggesting a live backend connection); the others returned not-found. No official announcement. Treat as unconfirmed.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: when AI agents learn to think in silence</h2>
+      <p class="kicker">"Hybrid Reasoning Agents" &middot; Jiaru Zou et al. (Stanford &amp; Together AI) &middot; arXiv 2610.18861 &middot; 13 October 2026 &middot; <a href="https://arxiv.org/abs/2610.18861">source</a> · code: <a href="https://github.com/togethercomputer/HybridAgent">github.com/togethercomputer/HybridAgent</a></p>
+
+      <p>A new paper from Stanford and Together AI asks whether AI agents really need to write out all their thinking — and finds that letting them go quiet for the hard parts makes them faster, cheaper, and more accurate at the same time. The result is one of the clearest efficiency gains published this year: the same work, at a third of the cost.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When AI assistants and agents tackle a complex problem, they almost always <em>write out their reasoning</em> step by step — "First, let me consider… then I'll check… finally, I'll conclude…" This pattern is called chain-of-thought reasoning, and it genuinely helps. Spelling out intermediate steps keeps a model on track and makes its logic easier to audit. The catch: every word it writes costs money and takes time. A single difficult task can consume hundreds or thousands of extra tokens (roughly: words) just in thinking, before the actual answer arrives.</p>
+
+      <p>There's an alternative called <em>latent reasoning</em> — where a model does its thinking entirely inside its own mathematical machinery, producing no text output until the final answer. This is fast and cheap: the work gets done without filling a page with prose. The problem is that latent reasoning can't easily interact with the outside world. A model reasoning silently can't call a web search tool or run a database query, because those tools need a text command. You can't whisper an API call.</p>
+
+      <p>So the field has been stuck at a fork: text reasoning is flexible but expensive; latent reasoning is efficient but isolated. Most real-world agents have defaulted to text, because the isolation penalty of going fully silent is too high. The paper asks: what if an agent could do both, switching between modes as the task demands?</p>
+
+      <h3>How it works</h3>
+      <p>Think of a surgeon operating in a busy theatre. Most of the time, they work in focused silence — eyes and hands moving, decisions made internally, no narration needed. But when they need a tool from the tray, they say so out loud: "clamp, please." The rest of the team hears that one word and responds. The surgeon doesn't narrate every incision — only the moments that require external coordination.</p>
+
+      <p>HybridAgent works on the same principle. A small component called <strong>HybridLink</strong> sits at the boundary between the agent's internal thought process and its text output. Most of the time, the agent thinks silently — processing the problem in abstract internal states, burning far fewer tokens. When it needs to act in the world (call a tool, request information, surface an intermediate result), HybridLink shifts the agent into text mode for that step alone. Once the response comes back, HybridLink switches it back to silence for the next stretch of reasoning.</p>
+
+      <p>The trick is getting the agent to learn <em>when</em> to switch — and to do it correctly. The team built two training stages on top of a standard base model. The first, called HybridSFT, uses supervised fine-tuning (teaching by example) to show the model how to work with HybridLink's switching signals. The second, HybridRL, uses reinforcement learning — the model tries things, gets a reward when they work, and gradually internalises the rule: think silently when possible, speak only when you must. Neither stage requires a different base model; HybridSFT and HybridRL are trained on top of whatever foundation you start with.</p>
+
+      <p>The continuous working memory that persists across these mode switches is worth noting. When the agent goes silent, it doesn't lose the context of what it's been working on; HybridLink carries it forward through each transition. This is what separates HybridAgent from simpler "think first, then act" pipelines, where the agent commits to a plan up front and can't revise it mid-task based on tool responses.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team ran all experiments on Qwen3-Base models (a family of open-weight language models developed by Alibaba's Qwen team) at three sizes: 4 billion, 8 billion, and 14 billion parameters. They evaluated on 11 benchmarks spanning five categories: mathematics, science, medicine, web search, and agentic reasoning. The comparisons were against: (a) full-text agents using the same base model, trained with standard methods; and (b) full-latent agents, also using the same base. They specifically chose to test at all three scales to check whether the gains were a size-specific artifact or held broadly.</p>
+
+      <h3>What they found</h3>
+      <p>On average across all 11 benchmarks and all three model sizes, HybridAgent outperformed the best baseline by 10.4 percentage points. It used 35.5%–54.7% fewer tokens — roughly half, depending on the task. Inference (generating a response) ran 1.8x–2.6x faster. Total compute cost was 2.7x–3.7x lower. The gains held at 4B, 8B, and 14B, which is reassuring: this isn't a trick that only works at one scale.</p>
+
+      <p>One specific benchmark is worth naming. On GAIA — a widely-used test for agentic reasoning that requires an agent to plan, search, and combine information across multiple steps — the 14-billion-parameter HybridAgent scored 52.4, compared with 43.7 for the text-only version of the same model trained with the best available technique (ARPO). That's nearly a nine-point lift on a benchmark that researchers have found genuinely hard to move. Agentic tasks also saw the largest cost reductions, which makes sense: agents that run many tool calls have more opportunities to stay silent between them.</p>
+
+      <p>The failure modes are modest but worth naming. On tasks that are almost entirely text-generation — where there's little silent reasoning to do and most of the work is writing — HybridAgent's efficiency advantage narrows. The benefit is largest when reasoning steps outnumber output steps, which is the agentic pattern.</p>
+
+      <h3>The catch</h3>
+      <p>HybridAgent needs two rounds of additional training (HybridSFT, then HybridRL) on top of the base model. That's not free: compute and data for those stages cost something, even if each one is lighter than full pre-training. More importantly, the experiments ran entirely on Qwen3-Base. The authors claim the approach is architecture-agnostic, but it hasn't been independently tested on other model families yet. And like all benchmark results, real-world gains in deployed agents may vary — tasks in production are messier than curated benchmarks, and the mix of silent vs. active steps differs application by application. Finally, this is a preprint: the results have not been peer-reviewed.</p>
+
+      <p><strong>If you remember one thing:</strong> An agent that knows when to think silently and when to write it out does better work, at a third of the cost — the efficiency gain from matching your cognitive mode to the task is larger than almost anyone expected.</p>
+
+      <!-- SVG diagram -->
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Diagram comparing a text-only agent (all steps produce tokens) to HybridAgent (only tool calls produce tokens; thinking is silent)">
+          <!-- Left panel: Text Agent -->
+          <rect x="20" y="16" width="310" height="268" rx="8" fill="#FAF9F6" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="175" y="40" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="600">Text agent (standard)</text>
+          <rect x="50" y="54" width="250" height="40" rx="5" fill="#D97757" fill-opacity="0.15" stroke="#D97757" stroke-width="1.5"/>
+          <text x="175" y="70" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Think step 1 — writes it all out</text>
+          <text x="175" y="85" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9.5" fill="#D97757">&#x2248; 280 tokens</text>
+          <rect x="50" y="106" width="250" height="40" rx="5" fill="#6A8CAF" fill-opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="175" y="122" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Call tool — text command</text>
+          <text x="175" y="137" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9.5" fill="#6A8CAF">&#x2248; 40 tokens</text>
+          <rect x="50" y="158" width="250" height="40" rx="5" fill="#D97757" fill-opacity="0.15" stroke="#D97757" stroke-width="1.5"/>
+          <text x="175" y="174" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Think step 2 — writes it all out</text>
+          <text x="175" y="189" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9.5" fill="#D97757">&#x2248; 260 tokens</text>
+          <rect x="50" y="210" width="250" height="40" rx="5" fill="#6A8CAF" fill-opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="175" y="226" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Final answer</text>
+          <text x="175" y="241" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9.5" fill="#6A8CAF">&#x2248; 80 tokens</text>
+          <text x="175" y="272" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="#87867F" font-weight="600">Total &#x2248; 660 tokens</text>
+
+          <!-- Divider arrow -->
+          <text x="360" y="162" text-anchor="middle" font-family="system-ui,sans-serif" font-size="26" fill="#D1CFC5">&#x2192;</text>
+
+          <!-- Right panel: HybridAgent -->
+          <rect x="390" y="16" width="310" height="268" rx="8" fill="#FAF9F6" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="545" y="40" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="600">HybridAgent (new)</text>
+          <rect x="420" y="54" width="250" height="40" rx="5" fill="#788C5D" fill-opacity="0.12" stroke="#788C5D" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="545" y="70" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Think step 1 — stays silent (latent)</text>
+          <text x="545" y="85" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9.5" fill="#788C5D">0 tokens</text>
+          <rect x="497" y="98" width="96" height="18" rx="3" fill="#D97757" fill-opacity="0.88"/>
+          <text x="545" y="111" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8.5" fill="#fff" font-weight="600">HybridLink &#x2193; text</text>
+          <rect x="420" y="120" width="250" height="40" rx="5" fill="#6A8CAF" fill-opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="545" y="136" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Call tool — text command</text>
+          <text x="545" y="151" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9.5" fill="#6A8CAF">&#x2248; 40 tokens</text>
+          <rect x="497" y="165" width="96" height="18" rx="3" fill="#D97757" fill-opacity="0.88"/>
+          <text x="545" y="178" text-anchor="middle" font-family="ui-monospace,monospace" font-size="8.5" fill="#fff" font-weight="600">HybridLink &#x2191; silent</text>
+          <rect x="420" y="186" width="250" height="40" rx="5" fill="#788C5D" fill-opacity="0.12" stroke="#788C5D" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="545" y="202" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Think step 2 — stays silent (latent)</text>
+          <text x="545" y="217" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9.5" fill="#788C5D">0 tokens</text>
+          <rect x="420" y="234" width="250" height="34" rx="5" fill="#6A8CAF" fill-opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="545" y="255" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Final answer  &#x2248; 80 tokens</text>
+          <text x="545" y="272" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="#788C5D" font-weight="600">Total &#x2248; 120 tokens (&#x2212;82%)</text>
+        </svg>
+        <figcaption>A text agent writes out every reasoning step, burning tokens throughout. HybridAgent keeps its reasoning silent (dashed), surfacing into text only when a tool call demands it. The HybridLink module handles each switch. Result: far fewer tokens for the same work — and, in the paper's experiments, better accuracy too.</figcaption>
+      </figure>
+
+      <h2>Why it matters</h2>
+      <p>The DOE nuclear story and the HybridAgent paper sit at opposite ends of the same problem. AI's current generation of systems consumes electricity at a scale that is reshaping infrastructure planning: dormant power stations are being revived, trillion-dollar grid investment programmes are being accelerated, and federal loan guarantees are being written for compute facilities. That is the demand side.</p>
+
+      <p>HybridAgent addresses the supply side — not by building bigger plants, but by asking whether the systems themselves are burning more than they need to. If agents can think efficiently by matching their cognitive mode to the task, each data center can do more with the power it already has. Efficiency gains inside the model compound with the infrastructure investments outside it.</p>
+
+      <p>Anthropic's economic scenarios are useful context here. The scenarios range from modest to extreme — $34 trillion to $44 trillion in US GDP by 2030 — but all of them assume continued improvements in what AI can do per watt. Research like HybridAgent is part of the mechanism that makes the optimistic scenarios plausible; without it, the energy and compute requirements of the most ambitious cases become unworkable. The two stories this week are, underneath, the same story: what will it actually take to run this technology at scale, and who pays?</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://aiweekly.co/ai-news-today">AI Weekly, Oct 19 2026</a> ·
+        <a href="https://arxiv.org/abs/2610.18861">arXiv:2610.18861 (HybridAgent)</a> ·
+        <a href="https://cryptobriefing.com/hybrid-reasoning-agents-cut-compute-costs/">CryptoBriefing on HybridAgent</a> ·
+        <a href="https://www.energy.gov/nnsa/articles/nnsa-selects-amentum-ai-data-center-and-energy-project-savannah-river-site">DOE / NNSA (energy.gov)</a> ·
+        <a href="https://www.stlpr.org/npr/2026-09-09/a-new-anthropic-model-seeks-to-test-how-ai-could-impact-the-u-s-economy">Anthropic Economic Scenarios (NPR / St. Louis Public Radio)</a> ·
+        <a href="https://finance.yahoo.com/technology/ai/articles/deepseek-pushes-updated-ai-model-134714989.html">DeepSeek update (Yahoo Finance)</a> ·
+        <a href="https://github.com/togethercomputer/HybridAgent">HybridAgent code (GitHub)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">latent reasoning</div>
+        <div>When an AI model does its thinking entirely inside its own mathematical machinery — no text written, no steps shown — before producing an output. "Latent" means hidden. It's the difference between doing mental arithmetic in your head and writing each step on paper. Faster and cheaper, but traditionally unable to use external tools.</div>
+      </div>
+      <dl>
+        <dt>token</dt><dd>The unit an AI model reads and writes in — roughly a word or short word fragment. "Running" is one token; "unbelievable" might be two. More tokens used means more time and more cost.</dd>
+        <dt>chain-of-thought</dt><dd>A style of AI reasoning where the model writes out its intermediate steps ("First, let me…") before giving an answer. Improves accuracy on hard problems but consumes many extra tokens.</dd>
+        <dt>inference</dt><dd>The act of a trained model generating a response. Separate from training — inference is the cost you pay every time you send a message or run an agent task.</dd>
+        <dt>reinforcement learning (RL)</dt><dd>A training method where a model learns by trying things and getting rewarded for correct outcomes, rather than copying labeled examples. Used here to teach HybridAgent when to switch between silent and text modes.</dd>
+        <dt>loan guarantee</dt><dd>A government promise to cover a loan if the borrower defaults, making a project financeable that a commercial lender alone would refuse. DOE's $4.4B here isn't a direct payment — it's a guarantee that lowers the borrowing cost for the nuclear plant operators.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
