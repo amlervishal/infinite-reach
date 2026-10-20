@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №144 — Blueprints That Learn · Infinite Reach</title>
+  <meta name="description" content="OpenAI added parallel workers to GPT-6 Pro in ChatGPT, DeepSeek refreshed its open-weight Flash model, and a Google paper showed how an AI harness can rewrite its own instructions — sharper with every task it touches." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №144 &middot; Monday, October 20, 2026</p>
+      <h1>Blueprints That Learn</h1>
+      <p>OpenAI's most capable model learned to split work among multiple agents running at the same time. DeepSeek refreshed its open-weight Flash model under a fully permissive licence. And a Google paper published this month quietly asked a question worth sitting with: what if an AI system's operating instructions could rewrite themselves, getting a little better with every task they touch?</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On October 16, OpenAI added parallel agents to GPT-6 Pro in ChatGPT. Instead of one agent working through a task from start to finish, Pro subscribers can now watch multiple agents tackle different subtasks simultaneously — each reporting back when done, each inspectable. Users can open a completed subtask and read its work. OpenAI describes this as multiple agents working on different parts of a problem at once, with progress shown live. It's the first time a mainstream consumer product has made multi-agent execution not just usable but <em>visible</em>: you're watching a team work, not reading a finished report. The company has not published figures on speed or quality gains from the feature.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Open source</span><span>DeepSeek updated V4.1-Flash on October 17 with open weights under the MIT licence — roughly 763 billion parameters total, but only around 8 billion active at once, with a 1-million-token context window and native image input. <a href="https://www.llmreference.com/model/deepseek-v4.1-flash">LLM Reference</a></span></li>
+        <li><span class="tag tech">Tooling</span><span>Claude Code version 2.1.295 added hooks that can block actions entirely when they fail — a step beyond the previous warning-only mode. Version 2.1.296 followed with code-settings sync across Claude Desktop and the gateway. <a href="https://www.havoptic.com/releases/claude-code/2026/10">Havoptic</a></span></li>
+        <li><span class="tag tech">Research</span><span>Ai2 (the Allen Institute) released AstaBrief 8B, an open-weight model that takes a research question and retrieved literature and produces a cited scientific report in one pass. <a href="https://www.evertune.ai/resources/ai-model-tracker">Evertune tracker</a></span></li>
+        <li><span class="tag money">Funding</span><span>Instinct raised a $1 billion Series C led by Sequoia, Benchmark, and Coatue — one of the larger infrastructure rounds this month, joining a stretch where AI startups have raised roughly $74 billion across 77 disclosed rounds in October. <a href="https://af.net/realtime/ai-startups-raise-74-1-billion-across-77-funding-rounds-by-october-2026/">AF.net</a></span></li>
+        <li><span class="tag policy">Safety</span><span>Reka published a research preview of Rho-1, a 19-billion-parameter model that handles text, images, and video within a single system — a rare example of a smaller lab competing on multimodal breadth rather than raw scale. <a href="https://www.evertune.ai/resources/ai-model-tracker">Evertune tracker</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~700 words -->
+      <h2>Paper, explained: the wrapper that teaches itself</h2>
+      <p class="kicker">Harness²: Recursive Agent Harnessing for an Open World &middot; Ruiyao Xu, Yanfei Chen, et al. (Google Cloud AI Research &amp; Northwestern University) &middot; <a href="https://arxiv.org/abs/2610.14224">arXiv 2610.14224</a>, Oct 9, 2026 &middot; <a href="https://github.com/google-research/harness2">github.com/google-research/harness2</a></p>
+
+      <p>Issue №1 of this magazine used the word "harness" in its very last sentence. It has come up in almost every issue since. This week a team at Google published a paper that might change how harnesses are built — by letting them build themselves.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When an AI agent is sent to do a job — research a topic, help debug a codebase, manage a workflow — it arrives with a set of instructions baked in. Which tools to call, how to break a big task into steps, how to handle errors and dead ends. This wrapper of rules and logic is the harness. Engineers write it by hand, before any real tasks have been run. The trouble is that open-world tasks — the actual things users send — weren't in the room when the harness was designed. A task about something that emerged last month, or a codebase that never existed before, can strain the harness in ways its authors didn't anticipate. And there is a deeper snag: how do you know which edits to the harness would actually help? In a closed benchmark you have a right answer to check against. In the open world, there's no ground-truth teacher watching. So you can't simply try variations and keep the best one, because "best" has no definition yet.</p>
+
+      <h3>How it works</h3>
+      <p>Think of a visiting chef arriving at a kitchen they've never worked in before. They read the house recipe (the harness), start cooking, and immediately run into small mismatches: the oven runs a little hot, the ingredient labeling is inconsistent, one step assumes equipment that's stored elsewhere. They don't rewrite the recipe from scratch — that would lose everything that already works. Instead, they note what caused friction, make targeted adjustments, and leave a slightly better recipe at the end of service, ready for the next chef. Harness² runs exactly this loop, but twice over — one inside the other.</p>
+      <p>The <strong>inner loop</strong> runs at the task level. When a new task arrives, the system <em>proposes</em> several candidate edits to the current harness — small adjustments to instructions, tool-call sequences, or error-handling logic. It then <em>probes</em> each candidate by actually running it on part of the task and collecting execution traces. Finally, it <em>composes</em> — picks the elements that worked best across those runs and assembles them into an improved harness for finishing this task. This Propose-Probe-Compose sequence can repeat multiple times within one task, with each pass building on the last.</p>
+      <p>The <strong>outer loop</strong> runs at the harness level. This is the chef writing up revised kitchen notes to take home for next week. After each task, the lessons from the inner loop get folded into a persistent harness that becomes the starting point for all future tasks. No task has to start from a blank slate; every completed job makes the baseline a little more capable for the next one.</p>
+
+      <h3>What they actually did</h3>
+      <p>The researchers tested Harness² on two frozen language models — GLM-5 and Gemini 3.5 Flash — across three benchmarks: WorkBuddy-Bench (office-style tasks: scheduling, summarising, data lookup), JobBench (longer multi-step work tasks), and LAB (lab research assistant tasks, the hardest of the three). "Frozen" is the critical detail: the underlying model weights were never changed. Only the harness was allowed to evolve. This rules out the explanation that gains came from fine-tuning; the improvement is entirely in the wrapper, not the engine.</p>
+
+      <h3>What they found</h3>
+      <p>Harness² improved both models on all three benchmarks. The numbers: +11.5 percentage points on WorkBuddy-Bench, +4.5 on JobBench, and +11.8 on LAB — with the largest gains on the hardest tasks. Performance kept climbing as the budget for task-level recursion steps increased, suggesting the system hadn't hit a ceiling within the tested range. The outer loop also worked: a harness shaped by earlier tasks consistently outperformed one reset to the original, confirming that lessons genuinely carry over rather than cancelling out.</p>
+      <p>The system ran in both sequential and parallel modes — you can test candidates one after another, or run them all at once if compute is available, with parallel being faster and reaching the same quality.</p>
+
+      <h3>The catch</h3>
+      <p>The benchmarks are tidy, closed environments with clear success signals — the opposite of the "open world" the title promises. In real deployment, you rarely have a reliable way to measure whether a harness edit was an improvement, which is exactly the problem the paper was motivated by but doesn't fully solve. The comparisons are also self-referential: Harness² is measured against each model's own baseline harness, not against a hand-crafted specialist harness built by a dedicated engineering team. The compute cost of running multiple probes per task is noted but not quantified for production use.</p>
+
+      <p><strong>If you remember one thing:</strong> A model can get measurably better at its job — double-digit improvements on hard tasks — without any change to the model itself. The lever is the instructions wrapped around it.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 275" role="img" aria-label="Diagram of the Harness² Propose-Probe-Compose loop with a harnessing-level outer loop">
+          <defs>
+            <marker id="h2-arr" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto">
+              <polygon points="0,0 8,4 0,8" fill="#87867F"/>
+            </marker>
+            <marker id="h2-arr-sky" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto">
+              <polygon points="0,0 8,4 0,8" fill="#6A8CAF"/>
+            </marker>
+          </defs>
+
+          <!-- "New task" label + arrow -->
+          <text x="75" y="58" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">New task</text>
+          <line x1="75" y1="64" x2="75" y2="100" stroke="#87867F" stroke-width="1.5" marker-end="url(#h2-arr)"/>
+
+          <!-- Initial Harness box -->
+          <rect x="22" y="100" width="106" height="52" rx="6" fill="#F5F3EE" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="75" y="121" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413">Initial</text>
+          <text x="75" y="139" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413">Harness</text>
+
+          <!-- Arrow: Initial → Propose -->
+          <line x1="128" y1="126" x2="162" y2="126" stroke="#87867F" stroke-width="1.5" marker-end="url(#h2-arr)"/>
+
+          <!-- Propose box -->
+          <rect x="162" y="100" width="108" height="52" rx="6" fill="#D97757" fill-opacity="0.13" stroke="#D97757" stroke-width="1.5"/>
+          <text x="216" y="120" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#141413">Propose</text>
+          <text x="216" y="139" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">draft candidate edits</text>
+
+          <!-- Arrow: Propose → Probe -->
+          <line x1="270" y1="126" x2="304" y2="126" stroke="#87867F" stroke-width="1.5" marker-end="url(#h2-arr)"/>
+
+          <!-- Probe box -->
+          <rect x="304" y="100" width="108" height="52" rx="6" fill="#D97757" fill-opacity="0.13" stroke="#D97757" stroke-width="1.5"/>
+          <text x="358" y="120" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#141413">Probe</text>
+          <text x="358" y="139" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">run &amp; trace each edit</text>
+
+          <!-- Arrow: Probe → Compose -->
+          <line x1="412" y1="126" x2="446" y2="126" stroke="#87867F" stroke-width="1.5" marker-end="url(#h2-arr)"/>
+
+          <!-- Compose box -->
+          <rect x="446" y="100" width="108" height="52" rx="6" fill="#D97757" fill-opacity="0.13" stroke="#D97757" stroke-width="1.5"/>
+          <text x="500" y="120" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#141413">Compose</text>
+          <text x="500" y="139" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">keep the best elements</text>
+
+          <!-- Arrow: Compose → Improved Harness -->
+          <line x1="554" y1="126" x2="588" y2="126" stroke="#87867F" stroke-width="1.5" marker-end="url(#h2-arr)"/>
+
+          <!-- Improved Harness box -->
+          <rect x="588" y="90" width="112" height="72" rx="6" fill="#788C5D" fill-opacity="0.13" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="644" y="116" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413">Improved</text>
+          <text x="644" y="134" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413">Harness</text>
+          <text x="644" y="152" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">task complete ✓</text>
+
+          <!-- Inner loop bracket label -->
+          <line x1="162" y1="88" x2="554" y2="88" stroke="#D97757" stroke-width="0.8" stroke-dasharray="4,3"/>
+          <text x="358" y="82" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#D97757">Inner loop — task-level recursion</text>
+
+          <!-- Outer loop arc (harnessing-level) -->
+          <path d="M644,162 Q644,220 358,232 Q160,232 75,210 L75,152" stroke="#6A8CAF" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#h2-arr-sky)"/>
+          <text x="358" y="252" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6A8CAF">Outer loop — lessons feed every future task (harnessing-level recursion)</text>
+        </svg>
+        <figcaption>The two nested loops in Harness². Each new task runs the inner Propose-Probe-Compose cycle (clay), improving the harness for <em>this</em> task. The outer loop (sky) folds those lessons into the baseline harness carried forward to all future tasks — so the starting point keeps improving without touching the model.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh</span><span>On October 15, Dwarkesh Patel was the guest on the New York Times <em>Interesting Times</em> podcast with Tyler Cowen — a rare hour in which he talked about researchers leaving AI labs, whether machines could become conscious, and what it would look like if things actually went well. Cowen called him "the most essential chronicler" of this moment. <a href="https://dnyuz.com/2026/10/15/inside-the-mind-of-a-i-s-most-essential-chronicler/">DNYUZ / NYT</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The GPT-6 Pro parallel agents feature and the Harness² paper are both pointing at the same thing from different angles. One is a product decision — let users watch multiple agents run at once. The other is a research result — let the harness itself improve with each task, automatically. Together they suggest that the limiting factor for what AI agents can usefully do is shifting away from the model's raw capability and toward the <em>design of the system around the model</em>: how tasks are decomposed, what instructions are given, how failures are handled. Engineers currently maintain those systems by hand, updating them slowly based on observation. If that process can be made recursive — if the wrapper can tighten itself task by task — agents could grow specialised far faster than any team could manually maintain them. That's not a product announcement. It's a change in how the thing improves.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://runtimewire.com/article/openai-gpt-6-pro-chat-multi-agent-upgrade">RuntimeWire — GPT-6 Pro parallel agents</a> ·
+        <a href="https://www.llmreference.com/model/deepseek-v4.1-flash">LLM Reference — DeepSeek V4.1-Flash</a> ·
+        <a href="https://www.havoptic.com/releases/claude-code/2026/10">Havoptic — Claude Code release notes</a> ·
+        <a href="https://www.evertune.ai/resources/ai-model-tracker">Evertune — AI model tracker</a> ·
+        <a href="https://af.net/realtime/ai-startups-raise-74-1-billion-across-77-funding-rounds-by-october-2026/">AF.net — funding roundup</a> ·
+        <a href="https://arxiv.org/abs/2610.14224">arXiv 2610.14224 — Harness²</a> ·
+        <a href="https://github.com/google-research/harness2">GitHub — google-research/harness2</a> ·
+        <a href="https://dnyuz.com/2026/10/15/inside-the-mind-of-a-i-s-most-essential-chronicler/">DNYUZ / NYT — Dwarkesh Patel interview</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Harness</div>
+        <div>In AI, a harness is the scaffolding around a model: the system prompt, tool definitions, memory setup, error-handling logic, and workflow rules that shape how it behaves. If the model is the engine, the harness is the car — the thing you actually drive to a destination. A better engine helps, but the right car matters too.</div>
+      </div>
+      <dl>
+        <dt>Propose-Probe-Compose</dt>
+        <dd>The three-step inner loop in Harness²: draft candidate edits to the harness (<em>propose</em>), test each one on the actual task (<em>probe</em>), then combine the best-performing elements into a new harness (<em>compose</em>).</dd>
+        <dt>Mixture of experts (MoE)</dt>
+        <dd>A model architecture with many specialist sub-networks ("experts"), where only a few activate for any given input. DeepSeek V4.1-Flash has roughly 763 billion total parameters but only about 8 billion active at once — far cheaper to run than a dense model of the same total size.</dd>
+        <dt>Context window</dt>
+        <dd>The maximum text a model can hold in working memory at once. One million tokens is roughly 750,000 words — about ten full novels — which is why a 1M-token window is considered very large.</dd>
+        <dt>Open weight</dt>
+        <dd>A model whose trained parameters are published for anyone to download, run, or fine-tune. Not the same as open source, which usually also means the training code and data are public. DeepSeek V4.1-Flash ships under the MIT licence — the most permissive category.</dd>
+        <dt>Parallel agents</dt>
+        <dd>Multiple AI instances running simultaneously on separate subtasks, coordinated by a central system. Faster than a single agent working step by step, and now a live feature in GPT-6 Pro.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

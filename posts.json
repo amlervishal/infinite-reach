@@ -1,5 +1,12 @@
 [
   {
+    "num": 144,
+    "date": "2026-10-20",
+    "slug": "issues/2026-10-20.html",
+    "title": "Blueprints That Learn",
+    "blurb": "OpenAI added parallel workers to GPT-6 Pro in ChatGPT, DeepSeek refreshed its open-weight Flash model under a fully permissive licence, and a Google paper showed how an AI harness can rewrite its own instructions — sharper with every task it touches."
+  },
+  {
     "num": 143,
     "date": "2026-10-19",
     "slug": "issues/2026-10-19.html",
