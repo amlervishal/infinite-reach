@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №145 — The Structure Behind the Picture · Infinite Reach</title>
+  <meta name="description" content="A new model teaches robots to predict not just what a scene will look like, but exactly where every point in it will travel in 3D space. Plus: Anthropic pledges a fifth of its ownership to the public good before its November IPO." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №145 &middot; Wednesday, October 21, 2026</p>
+      <h1>The Structure Behind the Picture</h1>
+      <p>A new paper teaches robots to predict not just what a scene will look like — but exactly where every point in it will travel through three-dimensional space. That extra layer of understanding turns out to make real robotic arms significantly more reliable. Elsewhere, Anthropic pledged a fifth of its ownership to the public good before its November IPO.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic announced on October 18 that it will give 5% of its shares — worth roughly $48 billion at current private-market valuations — to a new public benefit fund before its planned November IPO. With co-founders already committed to donating 80% of their personal holdings and an employee equity-match programme in place, roughly one dollar in five of the company's total value will eventually be steered toward purposes unrelated to profit. The fund is structured as an LLC (not a charity), it cannot be used for lobbying, and its eventual recipients haven't been named — the pledge still needs shareholder approval. For all its caveats, it is the most concrete attempt yet by a frontier AI lab to build public accountability into its ownership structure before, rather than after, going public.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag policy">Policy</span><span>The US Department of Homeland Security ordered federal civilian agencies to remove all DeepSeek products — and any third-party tools built on its models — citing "multiple threat vectors" including potential data transfer to China. The order, citing the Federal Acquisition Supply Chain Security Act of 2018, was published in the Federal Register on October 20.</span></li>
+        <li><span class="tag tech">Tech</span><span>OpenAI announced on October 19 that GPT-6.1 Sol is now significantly better at COBOL, Fortran, and other low-resource programming languages. About 800 billion lines of COBOL are estimated to still be running in production worldwide — most of it at banks and insurers, written decades ago and kept running because no one has yet replaced it.</span></li>
+        <li><span class="tag tech">Open weights</span><span>Three new models released under permissive licences this week: Mercury 3 (Inception), MiniMax M3.1 Flash (MiniMax), and Jais-ASR (IFM), a speech-recognition model jointly trained on Arabic and English.</span></li>
+        <li><span class="tag money">Money</span><span>AI safety groups and individual donors have spent $48 million on US election campaigns this cycle, backing candidates on both sides of the aisle. OpenAI president Greg Brockman withdrew a planned $25 million donation to one AI-aligned super PAC.</span></li>
+        <li><span class="tag tech">Research</span><span>DeepSeek pushed a minor update to its V4.1 Flash model — slightly faster, slightly leaner — on Saturday under the open-weight version string V4.1-Flash-1017. No architectural changes; the update appears to improve inference efficiency at the margin.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~550-850 words -->
+      <h2>Paper, explained: giving robots a sixth sense for space and time</h2>
+      <p class="kicker">Learning the 4D World through Point Trajectory Forecasting &middot; Byungwoo Jeon et al. &middot; <a href="https://arxiv.org/abs/2610.28594">arXiv:2610.28594</a>, October 2026</p>
+
+      <p>A robot arm picking up a coffee cup doesn't just need to see the cup — it needs to know where the cup will be as the arm approaches, where the table surface sits in three dimensions, and how every part of the scene is moving right now. Video models have gotten very good at predicting what a scene will <em>look</em> like next. This paper asks whether a model can also predict where every thing in the scene will <em>be</em> next — in full three-dimensional space. The answer, and what it does for robots, is the subject of today's paper.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Modern AI video models are trained to predict pixels: given a sequence of frames, forecast what the next frames will look like. This works impressively well for generating future video. But a pixel grid is flat — it has no depth. A model trained purely on pixel prediction knows that the coffee cup will be in the upper-left region of the next frame, but it doesn't know how far away it is, or which direction it's moving in 3D. For a robot arm, flat pixel predictions create a structural gap: the robot must separately infer the three-dimensional position and trajectory of objects from a 2D picture, which introduces error at every step.</p>
+
+      <p>The alternative — explicit 3D modelling — traditionally requires depth sensors, stereo cameras, or expensive hand-labelled data. The gap between rich 3D understanding and scalable video-based training has been a persistent constraint in robot learning.</p>
+
+      <h3>How it works</h3>
+      <p>The Video-Point Model (VPM) closes this gap by adding a second kind of output to a standard video world model. Alongside the usual forecast of future video frames, VPM simultaneously predicts the three-dimensional paths — called <em>point trajectories</em> — of a set of tracked surface points in the scene. Think of motion-capture dots on a dancer: a video camera records what the dance looks like; the capture dots record where each joint is in 3D space at every frame. VPM learns to produce both outputs at once, from regular multi-view video, without requiring a separate depth sensor.</p>
+
+      <p>The model is built on top of Cosmos 3 (a large pretrained video world model), with two additions. First, a <em>trajectory head</em>: a component that takes the model's internal representation of the scene and outputs predicted 3D coordinates for each tracked point at each future timestep. Second, <em>multi-view conditioning</em>: the model ingests video from several camera angles at once rather than a single view, giving it the geometric cues it needs to triangulate depth. For the robot-control version, robot actions are added as a third type of token — text, video, and action all get denoised together in the same diffusion process — so the model can both simulate what will happen if the robot makes a particular move and recommend actions based on the predicted outcome.</p>
+
+      <p>The training data is a new corpus the authors call VPM-Data: simulated multi-view videos in which the 3D positions of surface points are tracked precisely through time. This is far cheaper to generate in simulation than to capture in the real world, and the VPM paper is partly a bet that simulation-derived 3D supervision transfers to real scenes.</p>
+
+      <h3>What they actually did</h3>
+      <p>The authors evaluated VPM in three ways. First, on VP-WorldBench, a new benchmark they built covering both simulated and real environments, measuring how accurately the model forecasts future video and 3D point locations. Second, on a standard set of robotic manipulation tasks in simulation, checking how often an action-conditioned version of VPM successfully completes tasks versus a video-only baseline. Third — and most importantly — on real physical robots performing pick-and-place tasks, where the gap between a simulation benchmark and actual success is largest.</p>
+
+      <h3>What they found</h3>
+      <p>Adding point trajectory supervision improved both video fidelity and 3D motion accuracy over the video-only counterpart on VP-WorldBench. More concretely, the action-enabled VPM model achieved higher manipulation success rates in both simulation and real-robot tests than the baseline trained without point supervision. The real-robot results are the key claim: it's relatively easy to improve simulation metrics, and harder to show that the improvement carries over to physical arms on physical objects. The paper reports it does.</p>
+
+      <p>The failure modes are predictable. The model struggles most when scene points are occluded — when one object passes in front of another, blocking the camera — because the point tracks simply aren't visible for those frames. Highly deformable objects (cloth, liquids) are also harder than rigid ones; the point-tracking assumption holds best when the tracked surface stays intact.</p>
+
+      <h3>The catch</h3>
+      <p>The big open question is generalisation. VPM-Data was generated in simulation, and simulation has a well-known gap from the real world: lighting, surface textures, physics details all differ. The real-robot experiments are promising, but they were conducted on a limited set of object types and task configurations. It's not yet clear whether the 3D supervision signal remains useful across the full diversity of real-world manipulation — cluttered scenes, novel objects, dynamic environments. The paper is a strong proof of concept; the harder work of closing the sim-to-real gap is still ahead.</p>
+
+      <p><strong>If you remember one thing:</strong> Teaching a robot's world model to predict not just pixels but 3D positions — to see the structure behind the picture — turns video prediction from a flat snapshot into a spatial map the robot can actually use.</p>
+
+      <!-- SVG figure: cross-section showing video model vs. VPM's dual output -->
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Diagram comparing a standard video model (outputs future frames only) with VPM (outputs future frames plus 3D point trajectories). Both receive multi-view video and a language instruction as input. VPM additionally outputs 3D point paths used by the robot policy." xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arr145b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <!-- ── LEFT PANEL: standard video model ── -->
+          <rect x="18" y="20" width="310" height="270" rx="8" fill="#fafaf8" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="173" y="46" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#87867F" font-style="italic">Standard video model</text>
+
+          <!-- input -->
+          <rect x="42" y="62" width="262" height="40" rx="5" fill="#eaeff5" stroke="#6A8CAF" stroke-width="1.2"/>
+          <text x="173" y="87" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413">Multi-view video + language instruction</text>
+          <!-- arrow down -->
+          <line x1="173" y1="102" x2="173" y2="132" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr145b)"/>
+          <!-- model box -->
+          <rect x="68" y="134" width="210" height="50" rx="6" fill="#D1CFC5" opacity="0.5"/>
+          <text x="173" y="164" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413" font-weight="600">Video world model</text>
+          <!-- arrow down -->
+          <line x1="173" y1="184" x2="173" y2="214" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr145b)"/>
+          <!-- output: future frames only -->
+          <rect x="52" y="216" width="242" height="40" rx="5" fill="#D97757" fill-opacity="0.15" stroke="#D97757" stroke-width="1.2"/>
+          <text x="173" y="241" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413">Future video frames only (2D pixels)</text>
+
+          <text x="173" y="278" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F" font-style="italic">No depth. The robot must infer 3D position separately.</text>
+
+          <!-- ── RIGHT PANEL: VPM ── -->
+          <rect x="392" y="20" width="310" height="270" rx="8" fill="#fafaf8" stroke="#788C5D" stroke-width="2"/>
+          <text x="547" y="46" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#788C5D" font-style="italic">Video-Point Model (VPM)</text>
+
+          <!-- input -->
+          <rect x="416" y="62" width="262" height="40" rx="5" fill="#eaeff5" stroke="#6A8CAF" stroke-width="1.2"/>
+          <text x="547" y="87" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413">Multi-view video + language instruction</text>
+          <!-- arrow down -->
+          <line x1="547" y1="102" x2="547" y2="132" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr145b)"/>
+          <!-- model box -->
+          <rect x="428" y="134" width="238" height="50" rx="6" fill="#788C5D" fill-opacity="0.2" stroke="#788C5D" stroke-width="1.2"/>
+          <text x="547" y="157" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413" font-weight="600">Video world model</text>
+          <text x="547" y="175" text-anchor="middle" font-family="system-ui" font-size="10" fill="#788C5D">+ trajectory head + action tokens</text>
+          <!-- arrow to frame output -->
+          <line x1="500" y1="184" x2="470" y2="214" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr145b)"/>
+          <!-- arrow to point output -->
+          <line x1="594" y1="184" x2="624" y2="214" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr145b)"/>
+          <!-- output: future frames -->
+          <rect x="416" y="216" width="118" height="40" rx="5" fill="#D97757" fill-opacity="0.15" stroke="#D97757" stroke-width="1.2"/>
+          <text x="475" y="234" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">Future video</text>
+          <text x="475" y="249" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413">frames (2D)</text>
+          <!-- output: 3D trajectories -->
+          <rect x="558" y="216" width="130" height="40" rx="5" fill="#788C5D" fill-opacity="0.18" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="623" y="234" text-anchor="middle" font-family="system-ui" font-size="10" fill="#141413" font-weight="600">3D point paths</text>
+          <text x="623" y="249" text-anchor="middle" font-family="system-ui" font-size="10" fill="#788C5D">NEW: spatial depth</text>
+
+          <text x="547" y="278" text-anchor="middle" font-family="system-ui" font-size="10" fill="#788C5D" font-style="italic">Robot knows where each surface point will be in 3D space.</text>
+
+          <!-- divider / vs label -->
+          <text x="360" y="160" text-anchor="middle" font-family="ui-serif" font-size="16" fill="#D1CFC5" font-weight="700">vs</text>
+        </svg>
+        <figcaption>Left: a standard video model predicts future frames — flat pixels with no depth. Right: VPM adds a trajectory head that simultaneously predicts where tracked surface points will be in 3D space (green box). That spatial output is what the robot policy uses to plan and execute precise manipulation.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>On October 15, Patel appeared as a guest on the New York Times "Interesting Times" podcast — hosted for this episode by Tyler Cowen — discussing why prominent AI researchers are resigning, whether AI could become conscious, and what the frontier labs know that they're not saying publicly. One of his sharpest public appearances outside his own show in months. <a href="https://dnyuz.com/2026/10/15/what-the-frontier-labs-know-that-we-dont/">Transcript and audio links</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The VPM paper is part of a broader shift in how the field thinks about robot learning. For years the default approach was "teach the robot with lots of demonstrations." That works, but it's slow to scale and brittle — a robot trained on picking up red cups often fails with blue ones. World models offer a different path: learn how physics and objects work from video, then let the robot plan inside that learned model. The key bottleneck has always been that video is flat. VPM's contribution is showing that you can inject 3D depth into a video world model using tracked surface points — a richer signal than pixels alone, cheaper to generate in simulation than real depth data, and apparently transferable to physical arms on physical objects.</p>
+      <p>The ownership story runs in a different direction. Anthropic's benefit fund, the DHS's DeepSeek ban, and $48 million in AI-related political spending are all attempts to steer this technology — through ownership structures, procurement rules, and electoral pressure respectively. None is close to settled, and none is clearly the right instrument. But that all three are happening before the frontier labs go public is itself new: a year ago, the argument was mostly theoretical. Now it's being written into legal structures and federal regulations, for better or worse.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2610.28594">arXiv:2610.28594 — Learning the 4D World through Point Trajectory Forecasting</a> ·
+        <a href="https://abcnews.com/Technology/wireStory/anthropic-commits-5-stock-new-public-benefit-fund-137368440">ABC News — Anthropic public benefit fund</a> ·
+        <a href="https://dealroom.co/news/163719-anthropic-pledges-5-of-shares-to-public-benefit-fund-as-it-eyes-record-i/">Dealroom — Anthropic pledge details</a> ·
+        <a href="https://www.cyberscoop.com/dhs-bans-deepseek-federal-agencies/">CyberScoop — DHS DeepSeek ban</a> ·
+        <a href="https://aiweekly.co/alerts/dhs-orders-deepseek-stripped-from-us-civilian-federal-it-systems">AI Weekly — Federal Register order</a> ·
+        <a href="https://cryptobriefing.com/openai-upgrades-model-cobol-fortran-legacy-code/">CryptoBriefing — GPT-6.1 Sol legacy code</a> ·
+        <a href="https://www.axios.com/2026/10/14/ai-safety-regulation-election-spending-50-million">Axios — AI safety election spending</a> ·
+        <a href="https://dnyuz.com/2026/10/15/what-the-frontier-labs-know-that-we-dont/">NYT Interesting Times — Dwarkesh Patel episode</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Point trajectory</div>
+        <div>A path that a specific physical point takes through space over time — like the arc a finger traces as a hand opens and closes. In robotics and computer vision, tracking many such paths simultaneously gives a model a skeleton of how the scene is moving in 3D, not just how it looks from one angle.</div>
+      </div>
+      <dl>
+        <dt>World model</dt><dd>A model trained to simulate how environments change over time, rather than just answer questions. A robot equipped with a world model can "imagine" what will happen if it makes a move before it makes it — like a chess player planning ahead.</dd>
+        <dt>Diffusion model</dt><dd>A type of generative model that learns to remove noise from data iteratively, turning pure static into a meaningful signal. VPM and most modern video generators are diffusion models: they start from noise and refine it into coherent frames over many steps.</dd>
+        <dt>Sim-to-real gap</dt><dd>The performance drop that happens when a model trained in simulation is deployed on real hardware. Physics, textures, lighting, and sensor noise all differ; a robot that performs well in a digital twin often struggles with physical objects.</dd>
+        <dt>Multi-view</dt><dd>Using several cameras simultaneously to capture a scene from different angles. Multiple views let a model triangulate depth — inferring how far things are — without a dedicated depth sensor, because the geometry of two images taken from different positions contains 3D information.</dd>
+        <dt>Manipulation</dt><dd>In robotics, the technical term for tasks involving picking up, placing, pushing, or otherwise physically handling objects. "Manipulation success rate" measures how often a robot arm completes a given task correctly.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

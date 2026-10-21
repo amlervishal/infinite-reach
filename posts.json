@@ -1,5 +1,12 @@
 [
   {
+    "num": 145,
+    "date": "2026-10-21",
+    "slug": "issues/2026-10-21.html",
+    "title": "The Structure Behind the Picture",
+    "blurb": "A new model teaches robots to predict not just what a scene will look like, but where every surface point in it will travel in 3D space — turning flat video into a spatial map the arm can use. Anthropic pledged a fifth of its ownership to the public good before its November IPO."
+  },
+  {
     "num": 144,
     "date": "2026-10-20",
     "slug": "issues/2026-10-20.html",
