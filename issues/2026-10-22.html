@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №146 — A Different Kind of Memory · Infinite Reach</title>
+  <meta name="description" content="A 74-researcher team shows AI models can hold their working memory in a fixed-size internal state — 66 times less storage at full context length — while Anthropic hands lawmakers a draft bill requiring courts, not agencies, to halt dangerous AI." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №146 &middot; Thursday, October 22, 2026</p>
+      <h1>A Different Kind of Memory</h1>
+      <p>Two things arrived this week that pull at the same thread from opposite ends: a research team showed that AI models can hold their working memory in a compact, fixed-size state — not a pile that keeps growing — while a lab asked Washington to write clear rules for when someone finally gets to pull the plug.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic circulated a draft federal bill to US lawmakers that would set strict rules for how dangerous AI models can be stopped. Under the proposal, only the Commerce Department could bring a case to court — and only a federal judge could actually order a halt to a model's release or use. The trigger threshold is deliberately narrow: an imminent risk of killing or injuring more than 50 people, or causing over $1 billion in damage, from a bioweapon, cyberattack, or a model escaping its creator's control. No other agency could act on its own. Independent evaluators registered with Commerce would periodically assess frontier labs and flag risks within 72 hours of discovering them. Critics call the thresholds too high. Anthropic says it wants a bright legal line that prevents political overreach from silencing research. Either way, it's the most detailed attempt by any major AI lab to draft its own safety rules before Washington does.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Models</span><span>Reflection AI released Beam, its first open-weight model — 501 billion total parameters, but only 23 billion active per query, under an Apache 2.0 licence. It's available on Amazon SageMaker JumpStart. The company claims it matches rival reasoning models at three to four times less inference compute. <a href="https://thehill.com/policy/technology/6130496-reflection-ai-releases-beam-model/">The Hill</a></span></li>
+        <li><span class="tag tech">Research</span><span>MemT-1.0, a memory-native language model family from MemTensor, posted to Hugging Face on October 19. Its headline: 66× less persistent storage than a standard context cache at 128,000 tokens. More on this below. <a href="https://arxiv.org/abs/2610.26825">arXiv</a></span></li>
+        <li><span class="tag money">Industry</span><span>Germany and NVIDIA signed a Joint Declaration of Intent at the Invest in Germany Summit on October 19, committing to a national push in industrial and physical AI — robotics and factory systems that sense and act in the real world. Siemens and Audi are among the named partners. <a href="https://blogs.nvidia.com/blog/germany-wants-to-lead-the-world-in-industrial-ai-how-nvidia-will-help/">NVIDIA blog</a></span></li>
+        <li><span class="tag tech">Housekeeping</span><span>OpenAI retired GPT-5.5 from ChatGPT and Codex on October 14, moving users toward GPT-6 Pro. API access is unchanged for now. <a href="https://help.openai.com/en/articles/9624314-model-release-notes">OpenAI</a></span></li>
+        <li><span class="tag policy">Regulation</span><span>A competing bill in Congress, the FRONTIER Act (Representatives Trahan and Obernolte), would give the government broader authority to halt dangerous AI — a sharper contrast to Anthropic's court-only, narrow-threshold approach. The debate over which model is right is just beginning. <a href="https://runtimewire.com/article/anthropic-ai-safety-bill-commerce-release-blocks">Runtime Wire</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: Teaching a model to remember, not hoard</h2>
+      <p class="kicker">MemT-1.0: Towards Memory-Native Evolution &middot; Zhiyu Li et al. (MemTensor, 74 authors) &middot; <a href="https://arxiv.org/abs/2610.26825">arXiv:2610.26825</a></p>
+      <p>Every long conversation you have with an AI is secretly a filing problem. The model isn't "remembering" your earlier messages the way you do — it's re-reading everything from the beginning, every time you say something new. MemT-1.0, published on October 19 by a team of 74 researchers at MemTensor, proposes a fundamentally different approach, and the paper trended on Hugging Face within days of release.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When you send a message to a language model, the model re-processes the entire prior conversation on every reply. The structure that stores all that text is called the <strong>KV cache</strong> (short for key-value cache). Think of it as a growing stack of sticky notes that the model must re-read from page one each time you ask a question — the notes never get filed away, they just keep stacking up.</p>
+
+      <p>That works fine for short exchanges. But at 128,000 tokens — roughly the length of a substantial novel — the KV cache becomes enormous. It consumes a large amount of GPU memory, it's slow to load, and for anyone running AI in production — customer service systems, long-horizon coding agents, research assistants — the cost adds up fast. Earlier attempts to shrink the cache (pruning low-importance tokens, summarising old text) work partially but lose precision, especially on tasks that demand verbatim recall of something specific buried deep in the conversation. The core tension: you can store everything precisely, or you can be efficient. Standard KV caches choose the former.</p>
+
+      <h3>How it works</h3>
+      <p>MemT-1.0's central argument is that a model can learn to compress memory <em>as it reads</em> — rather than accumulating raw text verbatim. The best analogy: think of the difference between a filing cabinet and a skilled detective. The filing cabinet keeps every piece of paper ever received, in order. The detective, having read the case file once, holds a mental summary — who matters, what was said, what to watch for — and answers questions from that summary without re-reading the file. MemT-1.0 is trying to build the detective.</p>
+
+      <p>The core mechanism is called <strong>Gated DeltaNet-2</strong>. As the model processes each new word (or word-piece, in technical parlance: each "token"), Gated DeltaNet-2 writes a small, carefully computed update to a <em>memory state</em> — a fixed-size matrix of numbers that represents everything processed so far. Crucially, this matrix doesn't grow: it has a fixed number of slots, and new information overwrites or blends into what's already there, rather than adding new rows. The "gating" part means the model learns to decide, for each new token, how aggressively it should rewrite each slot versus preserve existing knowledge — a bit like the detective deciding whether a new clue changes the whole theory or is just a minor detail.</p>
+
+      <p>The second mechanism is <strong>Mixture-of-Storage</strong>. A single fixed-size notebook would eventually saturate if you're compressing a very long document. Mixture-of-Storage extends the idea by routing different categories of information into separate, specialised storage compartments — like the detective keeping distinct notebooks for suspects, timelines, and physical evidence. This lets the total effective memory capacity scale without the storage growing linearly the way a KV cache does. Together, Gated DeltaNet-2 and Mixture-of-Storage form the backbone of the MemT architecture.</p>
+
+      <p>The team released two models. <strong>MemT-1.0 Nano</strong> is built on top of Qwen3.6-35B-A3B, a 35-billion-parameter mixture-of-experts base model, and has 36 billion total parameters with about 3 billion active per token. <strong>MemT-1.0 Flash</strong> is built on DeepSeek-V4-Flash and has 288 billion total parameters, with 17 billion active. Both were trained in two stages: first, continued pre-training on 34 billion tokens to get the memory mechanisms calibrated; then post-training (instruction following and alignment) to make them useful for everyday tasks.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 290" role="img" aria-label="Diagram comparing a growing KV cache with MemT-1.0's fixed memory state">
+          <defs>
+            <marker id="arr-red" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#D97757"/>
+            </marker>
+          </defs>
+
+          <!-- Left panel: KV cache -->
+          <rect x="20" y="15" width="310" height="255" rx="10" fill="#F8F7F4" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="175" y="42" font-family="ui-serif,Georgia,serif" font-size="14" fill="#141413" text-anchor="middle" font-weight="bold">Standard KV Cache</text>
+
+          <rect x="60" y="55" width="210" height="24" rx="5" fill="#6A8CAF" opacity="0.75"/>
+          <text x="165" y="72" font-family="system-ui,sans-serif" font-size="11" fill="white" text-anchor="middle">tokens 1 – 1,000</text>
+          <rect x="60" y="84" width="210" height="24" rx="5" fill="#6A8CAF" opacity="0.75"/>
+          <text x="165" y="101" font-family="system-ui,sans-serif" font-size="11" fill="white" text-anchor="middle">tokens 1,000 – 8,000</text>
+          <rect x="60" y="113" width="210" height="24" rx="5" fill="#6A8CAF" opacity="0.75"/>
+          <text x="165" y="130" font-family="system-ui,sans-serif" font-size="11" fill="white" text-anchor="middle">tokens 8,000 – 32,000</text>
+          <rect x="60" y="142" width="210" height="24" rx="5" fill="#6A8CAF" opacity="0.75"/>
+          <text x="165" y="159" font-family="system-ui,sans-serif" font-size="11" fill="white" text-anchor="middle">tokens 32,000 – 128,000</text>
+
+          <line x1="165" y1="172" x2="165" y2="196" stroke="#D97757" stroke-width="2" marker-end="url(#arr-red)"/>
+          <text x="175" y="218" font-family="system-ui,sans-serif" font-size="12" fill="#D97757" text-anchor="middle" font-weight="600">Grows with context length</text>
+          <text x="175" y="238" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">Re-read in full on every reply</text>
+
+          <!-- Right panel: MemT memory state -->
+          <rect x="390" y="15" width="310" height="255" rx="10" fill="#F8F7F4" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="545" y="42" font-family="ui-serif,Georgia,serif" font-size="14" fill="#141413" text-anchor="middle" font-weight="bold">MemT Memory State</text>
+
+          <rect x="430" y="55" width="230" height="110" rx="8" fill="#788C5D" opacity="0.85"/>
+          <text x="545" y="83" font-family="system-ui,sans-serif" font-size="12" fill="white" text-anchor="middle" font-weight="600">Fixed-size state matrix</text>
+          <text x="545" y="103" font-family="system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,0.85)" text-anchor="middle">Updated in-place via</text>
+          <text x="545" y="119" font-family="system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,0.85)" text-anchor="middle">Gated DeltaNet-2</text>
+          <text x="545" y="138" font-family="ui-monospace,monospace" font-size="10" fill="rgba(255,255,255,0.7)" text-anchor="middle">+ Mixture-of-Storage routing</text>
+
+          <line x1="545" y1="172" x2="545" y2="196" stroke="#788C5D" stroke-width="2"/>
+          <text x="545" y="218" font-family="system-ui,sans-serif" font-size="12" fill="#788C5D" text-anchor="middle" font-weight="600">Size stays constant</text>
+          <text x="545" y="238" font-family="system-ui,sans-serif" font-size="11" fill="#87867F" text-anchor="middle">66× less storage at 128K tokens</text>
+        </svg>
+        <figcaption>A standard KV cache grows with every token the model reads, and must be re-loaded on each reply. MemT-1.0's memory state is fixed in size and updated in-place — the model compresses what it learns rather than accumulating it.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The team ran both Nano and Flash on eleven memory benchmarks, chosen to stress-test different kinds of recall: retrieving a specific fact buried late in a long document, following multi-step instructions across an extended context, and completing agentic tasks that require tracking what was tried and learned in earlier steps of the same session. The suite covers both short-range precision (find the exact sentence) and long-range structure (summarise the arc of the whole document).</p>
+
+      <p>The headline infrastructure results come from MemT-1.0 Nano at a 128,000-token history: a 66× reduction in persistent storage compared to a full-context KV cache, and a 1.86× end-to-end inference speedup — meaning the model replies about twice as fast at that context length. These figures come from the paper's abstract; they haven't yet been independently replicated.</p>
+
+      <h3>What they found</h3>
+      <p>On the eleven benchmarks, MemT-1.0 Flash averaged 50.6 and Nano averaged 47.0. The authors report those as 12.5 and 8.9 points above the strongest "parametric memory" baselines — systems that try to compress memory entirely into the model's weights rather than keeping any kind of external state. Both models also stayed competitive with retrieval-augmented generation (RAG) systems, which offload memory to an external database. One genuine surprise: internalising retrieved experience improved performance on agentic tasks above what pure retrieval achieved, suggesting that memory baked into the model's own state is more flexible for multi-step planning than memory fetched from outside it.</p>
+
+      <p>The honest failure modes are instructive too. The fixed-size state struggles on tasks demanding verbatim recall of exact strings — a specific phone number, a line of code, a precise figure. When the task is "quote the document word for word," the compression model falls behind a KV-cache baseline. The detective analogy breaks down when you need to read from the file directly.</p>
+
+      <h3>The catch</h3>
+      <p>Several important caveats. These are the authors' own numbers, without independent verification. Nano and Flash are built on top of existing foundation models (Qwen3.6-35B-A3B and DeepSeek-V4-Flash), so some benchmark performance may reflect those base models rather than the memory architecture itself. The 66× storage figure is measured at 128K tokens; at shorter contexts, the advantage is smaller and less dramatic. And the paper doesn't yet demonstrate strong results on multilingual memory tasks or on domains far outside the training distribution.</p>
+
+      <p><strong>If you remember one thing:</strong> Memory in language models doesn't have to scale with conversation length — MemT-1.0 shows it can be held in a fixed-size state updated continuously, the way a skilled reader holds a mental model of a book rather than re-reading it from page one every time someone asks a question.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>On October 11, Andrej Karpathy posted about what he calls the "capability funnel" — the observation that vanishingly few people use frontier AI agents at the level of capability they actually offer, and what that gap tells us about where real progress is happening. He joined Anthropic in May to work on pretraining; the thread is worth finding on his X. <a href="https://karpathy.bearblog.dev">karpathy.bearblog.dev</a></span></li>
+        <li><span class="tag tech">Dwarkesh</span><span>Dwarkesh Patel was the featured guest on the New York Times' "Interesting Times" series on October 15, talking with Tyler Cowen about why AI researchers are resigning their posts, whether AI could develop consciousness, and what the next few years actually look like from inside the labs. <a href="https://dnyuz.com/2026/10/15/inside-the-mind-of-a-i-s-most-essential-chronicler/">DNYUZ repost</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The MemT-1.0 paper and Anthropic's draft bill are, at a distance, about the same underlying question: what does it mean to hold knowledge responsibly? MemT-1.0 asks that at the hardware level — can a model internalise what it's learned rather than hoarding raw text? Anthropic's bill asks it at the governance level — who holds the authority to decide when a model is too dangerous to release, and what standard of evidence do they need? Neither question has a settled answer. But both represent the field moving from "build it and see" toward something more deliberate — which, given the pace of the last few years, counts as real change. The models are getting more efficient at remembering. The laws around them are trying to catch up.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2610.26825">arXiv:2610.26825 (MemT-1.0)</a> ·
+        <a href="https://github.com/MemTensor/MemT-1.0/">MemTensor GitHub</a> ·
+        <a href="https://techspot.com/news/114252-anthropic-wants-ai-models-blocked-only-if-they.html">TechSpot — Anthropic draft bill</a> ·
+        <a href="https://runtimewire.com/article/anthropic-ai-safety-bill-commerce-release-blocks">Runtime Wire — bill details</a> ·
+        <a href="https://arynews.tv/anthropic-proposes-law-regulating-ai-us-lawmakers">ARY News — Anthropic bill</a> ·
+        <a href="https://thehill.com/policy/technology/6130496-reflection-ai-releases-beam-model/">The Hill — Reflection AI Beam</a> ·
+        <a href="https://blogs.nvidia.com/blog/germany-wants-to-lead-the-world-in-industrial-ai-how-nvidia-will-help/">NVIDIA — Germany partnership</a> ·
+        <a href="https://theaiinsider.tech/2026/10/19/germany-signs-agreement-with-nvidia-to-develop-advanced-industrial-and-physical-ai/">AI Insider — signing</a> ·
+        <a href="https://help.openai.com/en/articles/9624314-model-release-notes">OpenAI — release notes</a> ·
+        <a href="https://dnyuz.com/2026/10/15/inside-the-mind-of-a-i-s-most-essential-chronicler/">DNYUZ — Dwarkesh profile</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">KV cache</div>
+        <div>Short for <em>key-value cache</em>: the block of GPU memory a language model uses to store every word it has already read in a conversation, so it doesn't re-process them from scratch on each reply. Grows linearly with conversation length — the exact cost MemT-1.0 targets.</div>
+      </div>
+      <dl>
+        <dt>Memory-native</dt><dd>A model that internalises its working memory — storing it in a compact learned state rather than in a growing cache that must be re-read on every request.</dd>
+        <dt>Mixture-of-Experts (MoE)</dt><dd>A model architecture where only a fraction of the total parameters activates for each input — keeping the model large in capacity but efficient to run. Beam (501B total / 23B active) and MemT-1.0 Flash (288B / 17B) both use this.</dd>
+        <dt>Gated DeltaNet-2</dt><dd>The core memory-update mechanism in MemT-1.0. For each new word, it computes a small update to a fixed-size state matrix, with a learned gate deciding how much to overwrite versus preserve existing knowledge.</dd>
+        <dt>Physical AI</dt><dd>AI designed to sense its surroundings and act in the physical world — factory robots, autonomous vehicles, inspection drones — rather than processing text or generating content. The focus of the Germany–NVIDIA partnership.</dd>
+        <dt>Parametric memory</dt><dd>Knowledge baked into a model's weights during training, as opposed to context it reads at query time. MemT-1.0 tries to compress recent conversation into a compact parametric-like state rather than maintaining a full cache.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

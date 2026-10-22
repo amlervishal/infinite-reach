@@ -1,5 +1,12 @@
 [
   {
+    "num": 146,
+    "date": "2026-10-22",
+    "slug": "issues/2026-10-22.html",
+    "title": "A Different Kind of Memory",
+    "blurb": "A 74-researcher team shows AI models can hold their working memory in a fixed-size internal state — 66 times less storage at full context length — while Anthropic hands lawmakers a draft bill requiring courts, not agencies, to halt dangerous AI."
+  },
+  {
     "num": 145,
     "date": "2026-10-21",
     "slug": "issues/2026-10-21.html",
