@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №147 — What the Panel Decided · Infinite Reach</title>
+  <meta name="description" content="A peer-reviewed study in Science shows an AI diagnostic panel hitting 85.5% accuracy on medicine’s hardest teaching cases — four times the rate of generalist physicians. Recursive ships Flint, a 40B coding model built mostly by AI. Anthropic’s Claude Duet lands as a proactive agent." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №147 &middot; Friday, October 23, 2026</p>
+      <h1>What the Panel Decided</h1>
+      <p>The hardest cases in medicine — the puzzles the <em>New England Journal</em> has published as teaching exercises for more than a century — have a new solver. A study out yesterday in <em>Science</em> tested an AI panel against physicians on 304 of those cases. The results were not close.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Microsoft’s MAI-DxO is a diagnostic orchestrator: a system that assembles a simulated panel of AI specialists, has them argue over a patient’s symptoms, propose competing diagnoses, and order tests cost-consciously. Published Wednesday in <em>Science</em>, the study ran it against 304 of the <em>New England Journal of Medicine</em>’s clinicopathological conference cases — the most deliberately difficult teaching cases in medicine. MAI-DxO reached 85.5% accuracy in its maximum configuration. Generalist physicians averaged 20.3%. The system is model-agnostic: it works with GPT, Gemini, Claude, Grok, DeepSeek, and Llama, suggesting the gain comes from the structure — the deliberation — not from any one model’s raw capability. It also ordered fewer and cheaper tests: 20% less costly than physicians, 70% less costly than running a frontier model alone.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Flint</span><span>Recursive — a $4.65B startup led by ex-Salesforce chief scientist Richard Socher — released Flint: a 40B mixture-of-experts coding model that runs locally on Apple Silicon or an RTX card, Apache 2.0, with a 262K-token context window. The model was built largely by Recursive’s own “Eureka Machine” automated research system in under four months. It needs more hand-holding than cloud models, but the weights are free and fully yours.</span></li>
+        <li><span class="tag tech">Claude Duet</span><span>Anthropic opened a US research-preview waitlist for Claude Duet, a proactive agent for Pro and Max subscribers. It monitors email and calendars, sends a morning brief on what matters, and checks in every few hours — messaging you only when something needs attention. It asks for approval before consequential actions (payments, sent messages, deleted files). Powered by Opus 5.5.</span></li>
+        <li><span class="tag tech">JOLT</span><span>Perplexity published JOLT, a training technique where the teacher model receives verified solutions before writing feedback for the student. It reported gains across math, coding, and agent tasks — the idea being that better feedback, not a bigger teacher, is what student models actually need.</span></li>
+        <li><span class="tag money">Model Garden</span><span>OpenAI’s GPT-6 Astra, Sol, and Luna are joining Google Cloud’s Model Garden — the first time OpenAI is distributing through Google’s infrastructure. The companies are increasingly customers of each other, not just competitors.</span></li>
+        <li><span class="tag tech">Wait</span><span>An HKUST paper finds that the “wait” token in reasoning models — which tells the model to keep thinking before answering — is learned primarily from training-data patterns rather than from reinforcement learning. Implication: this useful trick may be teachable to almost any model cheaply, without a long RL training run.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: the AI doctor panel that outdiagnoses physicians</h2>
+      <p class="kicker">“Sequential Diagnosis with Language Models” &middot; Microsoft Research &middot; <em>Science</em>, October 22, 2026 &middot; <a href="https://arxiv.org/abs/2506.22405">arXiv:2506.22405</a></p>
+
+      <p>When a peer-reviewed study in <em>Science</em> reports a fourfold accuracy improvement over physicians, the honest question is: improvement over which physicians, on which cases, under which conditions? The answer matters — and this paper is unusually clear about it.</p>
+
+      <h3>The problem, and why it’s hard</h3>
+      <p>Medical diagnosis is an information-retrieval problem played under time pressure, cost constraints, and genuine uncertainty. Most cases are straightforward. The ones that aren’t tend to be rare, ambiguous, or deceptively ordinary-looking. For a century, the <em>New England Journal of Medicine</em> has published clinicopathological conferences — CPCs — as weekly teaching exercises. Each CPC presents a patient’s history, lab results, and imaging in stages; the reader tries to name the diagnosis before the answer appears. They’re chosen to be hard. Physicians at academic grand rounds typically get about 20% right. That isn’t a failure rate; it reflects how deliberately unusual these cases are. But it makes them a useful stress test.</p>
+
+      <p>The standard way to test AI on medical questions is to hand it the entire case file and ask for an answer. That’s not medicine. Real clinical reasoning is sequential: you learn something, decide what to ask next, get more information, revise your thinking, and repeat — while keeping an eye on what each extra test costs the patient. Microsoft’s paper builds a benchmark that captures this. A gatekeeper model holds all the information and releases it only when the diagnostic system asks for it. The score reflects both diagnostic accuracy and the cost of the investigation: how many tests you ordered, how expensive they were.</p>
+
+      <h3>How it works</h3>
+      <p>Think of MAI-DxO as a simulated medical grand rounds — the weekly hospital meeting where clinicians from different specialties review a case that one team couldn’t crack. Each agent in the panel plays a distinct role: one proposes the most likely diagnoses given what’s known so far; another pushes back and names what would rule each hypothesis out; a third considers which available test has the highest information value per dollar; a fourth monitors whether the group is anchoring too strongly on its leading candidate. The orchestrator — the part that earns the name — runs the meeting: it decides when the group has learned enough to order a test, when to ask the gatekeeper for a result, and when to call a final diagnosis.</p>
+
+      <p>The analogy that runs through the paper: every round is like asking a panel of consultants to argue before you commit to the next test. The question is never simply “what do we think the diagnosis is?” It’s “what’s the cheapest piece of information that would most change our leading hypothesis?” That is not how a single language model behaves when you hand it a case file and ask it to answer. It’s how a careful diagnostician reasons. The key insight is that the panel structure forces cost-conscious sequential reasoning — and that turns out to matter more than the underlying model’s raw capability, because the gains held across every model family the researchers tried.</p>
+
+      <!-- SVG diagram -->
+      <figure>
+        <svg viewBox="0 0 720 230" role="img" aria-label="MAI-DxO diagnostic loop: patient case feeds into a panel of specialist agents, which orders a test, the gatekeeper releases a result, the panel revises and loops, until a final diagnosis is reached">
+
+          <!-- Patient case box -->
+          <rect x="14" y="90" width="100" height="52" rx="6" fill="none" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="64" y="111" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="11" fill="#141413">Patient</text>
+          <text x="64" y="127" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="11" fill="#141413">case</text>
+
+          <!-- Arrow: case to panel -->
+          <line x1="114" y1="116" x2="148" y2="116" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Panel box -->
+          <rect x="152" y="46" width="240" height="140" rx="8" fill="#faf9f7" stroke="#D97757" stroke-width="1.8"/>
+          <text x="272" y="68" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#D97757" letter-spacing="0.5">MAI-DxO PANEL</text>
+
+          <!-- Three agent circles inside -->
+          <circle cx="208" cy="116" r="26" fill="#fff" stroke="#6A8CAF" stroke-width="1.2"/>
+          <text x="208" y="112" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#6A8CAF">Diagnose</text>
+          <text x="208" y="124" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#6A8CAF">agent</text>
+
+          <circle cx="272" cy="104" r="26" fill="#fff" stroke="#788C5D" stroke-width="1.2"/>
+          <text x="272" y="100" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#788C5D">Challenge</text>
+          <text x="272" y="112" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#788C5D">agent</text>
+
+          <circle cx="336" cy="116" r="26" fill="#fff" stroke="#87867F" stroke-width="1.2"/>
+          <text x="336" y="112" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">Cost</text>
+          <text x="336" y="124" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">agent</text>
+
+          <!-- connector lines between agents -->
+          <line x1="234" y1="111" x2="246" y2="107" stroke="#D1CFC5" stroke-width="1"/>
+          <line x1="298" y1="107" x2="310" y2="111" stroke="#D1CFC5" stroke-width="1"/>
+
+          <text x="272" y="170" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F" font-style="italic">debate → choose test</text>
+
+          <!-- Arrow: panel to gatekeeper -->
+          <line x1="392" y1="116" x2="430" y2="116" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <text x="411" y="109" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">order</text>
+          <text x="411" y="130" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">test</text>
+
+          <!-- Gatekeeper box -->
+          <rect x="432" y="90" width="110" height="52" rx="6" fill="none" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="487" y="111" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="11" fill="#141413">Gatekeeper</text>
+          <text x="487" y="127" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">reveals result</text>
+
+          <!-- Loop-back curved arrow under diagram -->
+          <path d="M 487 142 Q 487 195 272 195 Q 152 195 152 145" fill="none" stroke="#87867F" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+          <text x="335" y="208" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F" font-style="italic">repeat 3–8 rounds</text>
+
+          <!-- Arrow: gatekeeper to diagnosis -->
+          <line x1="542" y1="116" x2="578" y2="116" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Diagnosis box -->
+          <rect x="580" y="90" width="126" height="52" rx="6" fill="#D97757" stroke="none"/>
+          <text x="643" y="111" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="11" fill="#fff">Final diagnosis</text>
+          <text x="643" y="127" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="rgba(255,255,255,.85)">85.5% accuracy</text>
+
+          <!-- Top label -->
+          <text x="487" y="76" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F" font-style="italic">when confident enough →</text>
+
+          <!-- Arrowhead markers -->
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#87867F"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>MAI-DxO diagnostic loop. The panel’s three agents debate in rounds, ordering one test at a time from a gatekeeper that releases information sequentially — the way real clinical reasoning works. The loop runs until the panel has enough confidence to commit. The structure, not the underlying model, is the intervention.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The team converted 304 NEJM clinicopathological conference cases into a structured benchmark. A gatekeeper model holds all clinical details — history, exam findings, lab results, imaging — and releases them only when asked for specifically. The diagnostic system starts with a short abstract and must request information in rounds, just as a physician would. For comparison, 95 generalist physicians worked through the same benchmark under the same rules and the same information-release mechanism.</p>
+
+      <p>MAI-DxO at maximum settings, running on OpenAI’s o3, reached 85.5% diagnostic accuracy. In a standard configuration it reached 80.3%. Physicians averaged 20.3%. The system also kept costs down: it ordered 20% less in tests than physicians and spent 70% less than running o3 alone without the orchestrator structure. The researchers ran the same framework on six model families — OpenAI, Gemini, Claude, Grok, DeepSeek, Llama — and saw consistent improvement over using any of those models directly. The panel structure works regardless of which model powers it.</p>
+
+      <h3>What they found</h3>
+      <p>The most important finding isn’t the accuracy number — it’s that the gain comes from the structure. When the researchers removed the panel and ran the same model directly against the benchmark (a technique called ablation — see Decoder), accuracy dropped sharply. The deliberation — the specialists arguing before committing to a test — is what’s doing the work. This also explains the cost reduction: a system that reasons carefully about information value orders fewer tests. A single model handed a case file tends to over-order, the way a worried junior doctor might.</p>
+
+      <p>The failure modes were instructive. The system struggled most when the key diagnostic clue lived in a subtlety of physical examination — something described ambiguously in text that a real physician might have noticed at the bedside. It also struggled when the correct diagnosis required connecting an obscure drug interaction to an unexpected finding. In both cases the difficulty is less about knowledge and more about what the benchmark format can and cannot convey.</p>
+
+      <h3>The catch</h3>
+      <p>These are curated teaching cases, not a random slice of clinical practice. NEJM CPCs are chosen precisely because they’re rare, surprising, or instructively atypical; everyday medicine is mostly not. The benchmark used generalist physicians rather than specialists — the gap against, say, a subspecialty infectologist or a rare-disease consultant would likely be smaller. No patients were treated. The authors are explicit: MAI-DxO “needs clinical validation” before it is anywhere near a clinical tool. The study is a proof of concept for a reasoning architecture, not a clearance for deployment.</p>
+
+      <p><strong>If you remember one thing:</strong> The architecture of reasoning — a panel of agents arguing before committing — mattered more than the raw capability of the underlying model, and it made the system both more accurate <em>and</em> cheaper.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh</span><span>Dwarkesh Patel appeared on Tyler Cowen’s <em>Interesting Times</em> on October 15, discussing researcher resignations at AI labs and whether any current model is close to consciousness. Worth 45 minutes if you want one of the clearest thinkers in this space pressed on the hardest questions. <a href="https://dnyuz.com/2026/10/15/inside-the-mind-of-a-i-s-most-essential-chronicler/">link</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The striking number from the MAI-DxO paper isn’t 85.5%. It’s that the gap between the orchestrated system and the raw model is larger than the gap between the raw model and human physicians. The architecture is contributing more than the intelligence. That pattern is increasingly visible across the frontier: the most significant recent gains aren’t coming from larger models but from better coordination — better ways of sequencing and checking what models already know. Medicine is just where the benchmark is clearest, because the ground truth (the correct diagnosis) is eventually unambiguous. If deliberation over a case file works this well in medicine, the question worth asking is where else the same structure might be waiting.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.microsoft.com/en-us/research/publication/sequential-diagnosis-with-language-models/">Microsoft Research: Sequential Diagnosis with Language Models</a> ·
+        <a href="https://arxiv.org/abs/2506.22405">arXiv:2506.22405</a> ·
+        <a href="https://gizmodo.com/microsoft-says-its-new-ai-is-more-than-twice-as-good-at-diagnosing-diseases-as-doctors-2000829562">Gizmodo: Microsoft’s MAI-DxO</a> ·
+        <a href="https://pbxscience.com/microsofts-mai-dxo-diagnoses-83-of-complex-cases-in-science-study-but-real-world-tests-are-still-ahead/">PBX Science: MAI-DxO key limits</a> ·
+        <a href="https://techcrunch.com/2026/10/21/recursive-launches-flint-a-laptop-coding-model-it-says-was-largely-built-by-ai/">TechCrunch: Recursive Flint</a> ·
+        <a href="https://runtimewire.com/article/recursive-flint-local-coding-model-eureka-machine">RuntimeWire: Recursive Flint details</a> ·
+        <a href="https://macrumors.com/2026/10/21/anthropic-claude-duet/">MacRumors: Claude Duet</a> ·
+        <a href="https://theneuron.ai/digest/everything-that-happened-in-ai-today-thursday-october-22-2026">The Neuron: October 22 digest</a> ·
+        <a href="https://dnyuz.com/2026/10/15/inside-the-mind-of-a-i-s-most-essential-chronicler/">NYT Interesting Times: Dwarkesh Patel</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Orchestrator</div>
+        <div>A system that coordinates multiple AI components the way a conductor coordinates an orchestra. The conductor doesn’t play an instrument — it tells the players when to come in, how loud to play, and when to stop. MAI-DxO is an orchestrator: it runs the panel, decides when to ask the gatekeeper for a result, and calls the final diagnosis. The instruments are the underlying language models.</div>
+      </div>
+      <dl>
+        <dt>Differential diagnosis</dt><dd>The working list of conditions a doctor — or AI — considers as possible explanations for a patient’s symptoms. It gets narrowed down as more information comes in. A physician who only considers one diagnosis is dangerous; one who can’t narrow a list of fifty is useless.</dd>
+        <dt>Clinicopathological conference (CPC)</dt><dd>A medical teaching case, published by the <em>NEJM</em> and others, where the patient’s history and test results are revealed gradually and the reader is invited to name the diagnosis before the answer appears. The cases are chosen to be genuinely difficult.</dd>
+        <dt>Ablation</dt><dd>A research method where you remove one component of a system and measure how much performance drops — used to prove that component is doing useful work, rather than just sitting there. MAI-DxO’s ablations show the panel structure, not the model, is responsible for most of the accuracy gain.</dd>
+        <dt>Mixture of experts (MoE)</dt><dd>An architecture where a model is divided into specialist sub-networks. For any given input, only a small subset of those “experts” activates — so the model can be large in total but lean in what it actually computes per token. Flint’s 40B parameters activate only about 2.5B at a time, which is why it can run on a laptop.</dd>
+        <dt>Model-agnostic</dt><dd>A system that works regardless of which underlying AI model powers it. MAI-DxO is model-agnostic because its value is in the deliberation structure, not the specific model choice. It works with GPT, Gemini, Claude, Grok, DeepSeek, and Llama.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

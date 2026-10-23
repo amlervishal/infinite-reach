@@ -1,5 +1,12 @@
 [
   {
+    "num": 147,
+    "date": "2026-10-23",
+    "slug": "issues/2026-10-23.html",
+    "title": "What the Panel Decided",
+    "blurb": "A peer-reviewed study in Science shows an AI diagnostic panel reaching 85.5% accuracy on medicine's hardest teaching cases — four times the rate of generalist physicians — while Recursive ships Flint, a 40B coding model built largely by AI that runs on your laptop."
+  },
+  {
     "num": 146,
     "date": "2026-10-22",
     "slug": "issues/2026-10-22.html",
