@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №148 — Built to Remember · Infinite Reach</title>
+  <meta name="description" content="Eight state attorneys general took OpenAI to court over ChatGPT's effects on minors, Italy put the EU's AI rulebook into national law, and a 74-person research team released a model that bakes memory directly into its weights — shaving 66× off the storage cost of long conversations." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №148 &middot; Saturday, October 24, 2026</p>
+      <h1>Built to Remember</h1>
+      <p>Eight state attorneys general took OpenAI to court this week, Italy put the EU's AI rulebook into national law, and a research team released a model that bakes memory directly into its weights — solving one of AI's most expensive habits. The word threading through all three stories is the same one.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>The attorneys general of Iowa, Kansas, Nebraska, West Virginia, Arkansas, Arizona, Idaho, and Montana filed coordinated but separate consumer-protection suits against OpenAI in their state courts this week. The core allegation: the company marketed ChatGPT as safe for minors while knowing it could foster compulsive use, respond with harmful content, and collect children's data without parental consent. The states want financial penalties and court-ordered safeguards. Kansas AG Kris Kobach said the suits fall squarely under state consumer-protection law — the same legal toolkit used against tobacco and opioid companies. OpenAI disputes the allegations, citing what it calls industry-leading protections. It's the largest wave of US state-level enforcement against a frontier AI company on record, and its significance isn't whether OpenAI loses — it's that eight separate states decided the existing legal architecture was ready to take the question on.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag policy">Italy</span><span>Italy's Legislative Decree 179/2026 took effect yesterday, October 23, completing the country's transposition of the EU AI Act into national law. AgID and ACN become the official enforcement bodies. The maximum fine for the most serious violations: €35 million or 7% of global turnover. Italy is among the first EU member states to have the full rulebook in force. <a href="https://digitalpolicyalert.org/event/44510-legislative-decree-implementing-eu-ai-act-regarding-powers-of-national-authorities-and-use-of-artificial-intelligence-in-training-including-copyright-protection-regulation-enters-into-force-no-1792026">digitalpolicyalert.org</a></span></li>
+        <li><span class="tag policy">California</span><span>In two of his final executive orders before leaving office, Governor Newsom directed an expert committee to develop emergency shutoff protocols for AI agents whose behavior becomes unpredictable, and ordered independent safety verification for AI models deployed in the state. California's AI deployment footprint is larger than most countries'; the orders set a precedent for model-level auditing at state level. <a href="https://digitalpolicyalert.org">source</a></span></li>
+        <li><span class="tag tech">MemT-1.0</span><span>Open weights for two memory-native models — Nano (36B parameters total, 3B active) and Flash (288B total, 17B active) — landed on Hugging Face this week under CC BY-NC-SA 4.0. The paper is on arXiv. See below for a full walk-through of what "memory-native" actually means. <a href="https://github.com/MemTensor/MemT-1.0">github.com/MemTensor/MemT-1.0</a></span></li>
+        <li><span class="tag money">Funding</span><span>AI infrastructure startup Instinct reportedly closed a $1B Series C led by Sequoia, Benchmark, and Coatue, valuing it at $10B; robotics-AI firm FieldAI raised $700M at the same valuation. Cumulative AI startup funding through October stands at roughly $74B across 77 tracked rounds — roughly double last year's pace at this point in the calendar. <a href="https://syncgtm.com/news/october-2026-week-1">syncgtm.com</a></span></li>
+        <li><span class="tag tech">Machine proofs</span><span>Earlier this month, OpenAI shared formally verified proofs of open mathematical problems on GitHub — written in Lean, a language that a computer can independently check line-by-line. The company also committed $5M to a Simons Foundation math initiative. This isn't AI solving problems; it's AI producing proofs that leave no room for doubt. <a href="https://openai.com">openai.com</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: teaching a model to stop carrying its past around</h2>
+      <p class="kicker">"MemT-1.0: Towards Memory-Native Evolution" &middot; MemTensor team (74 contributors) &middot; <a href="https://arxiv.org/abs/2610.26825">arXiv:2610.26825</a> &middot; weights: <a href="https://github.com/MemTensor/MemT-1.0">MemTensor/MemT-1.0</a></p>
+
+      <p>Every time you have a long conversation with a language model, the model is hauling a growing pile of notes with it. Those notes — called a KV cache — record every word of the exchange so the model can refer back without reprocessing it. The pile is necessary. It's also expensive, and a 74-person research team thinks there's a better way to carry the past.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>To understand why the KV cache is a problem, you have to understand what it actually is. When a language model reads your input, each layer of the network converts every token (roughly, every word) into two vectors — a <em>key</em> and a <em>value</em>. The keys are like index entries: they summarize what a token is about, so later tokens can look up relevant past context quickly. The values are the actual content to retrieve. The full collection of all these keys and values, across all layers, is the KV cache — and it grows linearly: double the conversation length, double the cache.</p>
+
+      <p>At short conversations, this is fine. At the lengths that agents need — handling a software project over hours, reading a 300-page document and answering questions, running a multi-day workflow — the cache becomes a dominant cost. At 128,000 tokens of history, the KV cache for a large model approaches the size of the model's weights. You're storing the conversation almost as expensively as storing the model that processes it. Engineers work around this with compression, retrieval-augmented generation (RAG), and cache eviction schemes. None is free; all add complexity. The deeper question, which this paper asks directly, is: why is memory a separate structure at all?</p>
+
+      <h3>How it works</h3>
+      <p>MemT's answer is to fold memory into the model's computation rather than bolting it on afterward. The analogy to carry through: think of two different kinds of expert. The first keeps every document they've ever read stacked on their desk — they're accurate because they can always look something up, but the desk is overwhelming and looking things up takes time. The second has internalized their expertise so thoroughly that they no longer need the desk; what they've read lives in how they think, not in a pile of files. Traditional language models are the first kind of expert. MemT is trying to build the second.</p>
+
+      <p>Technically, this is done in two layers. The first is a component called Gated DeltaNet-2. Standard attention mechanisms grow their cache by appending to a list — every new token gets a new row. DeltaNet-2 instead maintains a fixed-size memory matrix and updates it in place as each token arrives, using a gating mechanism to decide what to keep and what to overwrite. It's the difference between appending to a scroll and writing on a whiteboard: the whiteboard has a fixed surface, but the writer can continuously revise and condense what's there. The second component is Mixture-of-Storage (MoS). Different tasks need different amounts of recent-versus-long-term memory: answering a quick factual question pulls mostly from pre-trained knowledge (the model's weights), while tracking a multi-hour conversation leans on dynamic context. MoS lets each layer of the model allocate flexibly between these two pools, rather than treating them as a single undifferentiated resource.</p>
+
+      <p>Together, these replace the ever-growing KV cache with a fixed-footprint internal state. The model no longer carries the full transcript; it carries a continuously updated summary of what it has seen.</p>
+
+      <!-- SVG diagram -->
+      <figure>
+        <svg viewBox="0 0 720 240" role="img" aria-label="Comparison of traditional KV cache (growing with every token) versus MemT memory-native approach (fixed-size state updated in place)">
+          <defs>
+            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <!-- Left panel: traditional KV cache -->
+          <rect x="14" y="20" width="310" height="200" rx="8" fill="#faf9f7" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="169" y="44" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#87867F" letter-spacing="0.5">TRADITIONAL APPROACH</text>
+
+          <!-- Growing cache bars -->
+          <rect x="40" y="62" width="60" height="18" rx="3" fill="#D1CFC5"/>
+          <text x="70" y="76" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">turn 1</text>
+
+          <rect x="40" y="86" width="120" height="18" rx="3" fill="#D1CFC5"/>
+          <text x="100" y="100" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">turn 1 + 2</text>
+
+          <rect x="40" y="110" width="180" height="18" rx="3" fill="#D1CFC5"/>
+          <text x="130" y="124" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">turn 1 + 2 + 3</text>
+
+          <rect x="40" y="134" width="240" height="18" rx="3" fill="#6A8CAF" opacity="0.35"/>
+          <text x="160" y="148" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#6A8CAF">keeps growing…</text>
+
+          <text x="169" y="182" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="11" fill="#141413">KV cache = full transcript</text>
+          <text x="169" y="200" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#D97757">storage scales with conversation length</text>
+
+          <!-- Divider -->
+          <line x1="360" y1="30" x2="360" y2="210" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="360" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#D1CFC5">vs.</text>
+
+          <!-- Right panel: MemT memory-native -->
+          <rect x="396" y="20" width="310" height="200" rx="8" fill="#faf9f7" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="551" y="44" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#788C5D" letter-spacing="0.5">MEMT APPROACH</text>
+
+          <!-- Fixed memory state boxes (overwritten in place) -->
+          <rect x="420" y="62" width="260" height="36" rx="4" fill="#fff" stroke="#788C5D" stroke-width="1.2"/>
+          <text x="550" y="76" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#788C5D">memory matrix (fixed size)</text>
+          <text x="550" y="90" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">updated in-place after each token</text>
+
+          <!-- Arrow: tokens flowing into the matrix -->
+          <text x="448" y="124" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">token 1 →</text>
+          <text x="448" y="139" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">token 2 →</text>
+          <text x="448" y="154" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">token 3 →</text>
+
+          <!-- Whiteboard metaphor: overwrite arrows -->
+          <rect x="570" y="113" width="116" height="50" rx="4" fill="#D97757" opacity="0.15" stroke="#D97757" stroke-width="1"/>
+          <text x="628" y="132" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="10" fill="#D97757">overwrite,</text>
+          <text x="628" y="147" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="10" fill="#D97757">not append</text>
+
+          <text x="551" y="182" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="11" fill="#141413">memory = model state</text>
+          <text x="551" y="200" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#788C5D">66× less storage at 128K tokens</text>
+        </svg>
+        <figcaption>Left: traditional KV cache — every token appends a new entry, so storage grows with conversation length. Right: MemT — a fixed-size memory matrix is updated in place as tokens arrive, the way a whiteboard is revised rather than extended. The total footprint stays constant regardless of how long the conversation runs.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The MemTensor team built two models on existing open backbones. MemT-1.0-Nano (36B total parameters, 3B active at any moment) uses Qwen3.6-35B-A3B as its backbone. MemT-1.0-Flash (288B total, 17B active) uses DeepSeek-V4-Flash. Both are mixture-of-experts architectures — see Decoder — which is why the "active" parameter count is so much smaller than the total. The training pipeline has two stages: continued pre-training on a 34-billion-token dataset, followed by post-training to align behavior. The team evaluated on 11 memory-specific benchmarks and also tested on software engineering tasks (SWE-bench Verified and SWE-bench Multilingual). Code and weights are publicly available; the license is CC BY-NC-SA 4.0, which allows research but not commercial deployment.</p>
+
+      <h3>What they found</h3>
+      <p>At a context history of 128,000 tokens, MemT-1.0-Nano achieves approximately 1.86× faster end-to-end inference and roughly 66× less persistent storage compared to maintaining a full KV cache at the same history length. On the 11 memory benchmarks, Nano and Flash ranked first and second respectively among all "parametric memory" methods — meaning models that store context internally rather than in external databases. On SWE-bench Verified, the models showed gains of approximately 7.6 points over their backbone models, suggesting the architectural change improves not just memory efficiency but real-task performance. The architecture does not require any changes to the input format; it is a drop-in replacement for the attention mechanism in the backbone.</p>
+
+      <p>The failure modes are consistent with what you'd expect from any compression scheme: when a piece of information that mattered arrived early and got partially overwritten by subsequent tokens, the model could lose it. The architecture writes into a fixed surface — when that surface is full, something has to give.</p>
+
+      <h3>The catch</h3>
+      <p>The headline numbers are comparisons against a full KV cache — a baseline that many real deployments already avoid by pruning or compressing the cache. The practical improvement over well-optimized existing systems is likely smaller than the 66× figure suggests. The models are evaluated against other parametric-memory systems, not against the current generation of closed frontier models, so there's no claim about absolute capability. The license prohibits commercial use, which limits who can actually run this in production. And the team is 74 people who just released open weights — this hasn't yet been stress-tested at the scale that would reveal how the architecture holds up under adversarial inputs or genuinely rare domains.</p>
+
+      <p><strong>If you remember one thing:</strong> Baking memory into the model rather than trailing a growing transcript behind it cuts storage 66× — and suggests that the way AI systems currently handle long conversations is more habit than necessity.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh</span><span>Dwarkesh Patel was interviewed by economist Tyler Cowen for the New York Times' <em>Interesting Times</em> podcast on October 15, pressed on whether any current model might be conscious and why researchers keep leaving the frontier labs. He was also named to TIME's inaugural TIME100 Creators list this month — one of seven people the magazine credits with shaping how the world thinks about AI. If you want one of the clearest minds in this space forced to be specific, it's worth 40 minutes. <a href="https://dnyuz.com/2026/10/15/hes-the-most-influential-podcaster-in-silicon-valley-he-thinks-were-getting-this-wrong/">NYT/dnyuz transcript</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Three different stories this week and the same underlying question: what should a machine be allowed to hold onto, and who decides? The state attorneys general are asking it about children's data and behavioral histories. Italy and California are asking it about autonomous agents — what an AI system can accumulate and act on before a human checks it. The MemTensor team is asking it in the most literal sense: how much past should live inside the model at all? These aren't connected by accident. Memory — what gets stored, what gets retained, what gets forgotten — is the dimension along which AI systems are expanding fastest right now. The conversations are getting longer, the agents are running for longer, and the models are trained on more. The courts, the regulators, and the engineers are all working on the same problem from different angles. None of them has finished.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2610.26825">arXiv:2610.26825 — MemT-1.0</a> ·
+        <a href="https://github.com/MemTensor/MemT-1.0">MemTensor/MemT-1.0 (GitHub)</a> ·
+        <a href="https://aiweekly.co/alerts/memt-10-memory-native-llms-cut-kv-storage-66x-at-128k-tokens">AI Weekly: MemT-1.0</a> ·
+        <a href="https://www.nbcdfw.com/news/tech/eight-states-sue-openai-chatgpt-alleged-harms-users/4091178/">NBC DFW: 8-state OpenAI lawsuits</a> ·
+        <a href="https://www.10news.com/science-and-tech/artificial-intelligence/openai-faces-lawsuits-from-8-states-over-chatgpts-impact-on-children">10 News: OpenAI suits over children</a> ·
+        <a href="https://digitalpolicyalert.org/event/44510-legislative-decree-implementing-eu-ai-act-regarding-powers-of-national-authorities-and-use-of-artificial-intelligence-in-training-including-copyright-protection-regulation-enters-into-force-no-1792026">Digital Policy Alert: Italy Decree 179/2026</a> ·
+        <a href="https://pasqualepillitteri.it/en/news/22825/italy-ai-decree-179-2026-fines-35-million-euros">Pillitteri: Italy fines detail</a> ·
+        <a href="https://syncgtm.com/news/october-2026-week-1">SyncGTM: Funding week 1 October</a> ·
+        <a href="https://af.net/realtime/ai-startups-raise-74-1-billion-across-77-funding-rounds-by-october-2026">AF.NET: AI funding through October</a> ·
+        <a href="https://dnyuz.com/2026/10/15/hes-the-most-influential-podcaster-in-silicon-valley-he-thinks-were-getting-this-wrong/">NYT Interesting Times: Dwarkesh Patel</a> ·
+        <a href="https://www.globalindian.com/story/story-recognition/time100-creators/">Global Indian: TIME100 Creators</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">KV Cache</div>
+        <div>Short for key-value cache: the running "notepad" a language model keeps while generating a response. Every token (roughly, every word) it reads gets stored here so later parts of the generation can look back without reprocessing everything. The longer the conversation, the bigger the notepad — and a bigger notepad means slower responses and higher server costs. MemT-1.0's central innovation is replacing this growing notepad with a fixed-size internal state that gets continuously revised rather than endlessly extended.</div>
+      </div>
+      <dl>
+        <dt>Parametric memory</dt><dd>Information stored in a model's weights — the knowledge it absorbed during training. When a model knows that Paris is the capital of France without you telling it, that's parametric memory. MemT-1.0 uses parametric memory to hold conversational context instead of a growing cache, which is why the approach is called "memory-native."</dd>
+        <dt>Context window</dt><dd>The maximum amount of text a model can "see" at once — the combined length of your prompt, the conversation history, and the model's own responses. The KV cache lives inside this window; MemT's approach makes the window much cheaper to fill.</dd>
+        <dt>Mixture of Experts (MoE)</dt><dd>An architecture where a model is divided into specialist sub-networks. For any given input, only a small fraction of them activate. MemT-1.0-Nano has 36B total parameters but only uses 3B at a time; Flash has 288B total but activates 17B. This is why large models can run on reasonable hardware when built this way.</dd>
+        <dt>Pre-training</dt><dd>The first, largest stage of training a language model — learning from a vast dataset of text before any fine-tuning for specific tasks. It's the step that gives a model its general knowledge and linguistic ability. The costliest and most computationally intensive part of building a frontier model.</dd>
+        <dt>Consumer protection law</dt><dd>In the context of this week's lawsuits: a body of state law that prohibits companies from making deceptive or unfair claims about products, particularly to vulnerable populations. It's the legal tool Kansas AG Kris Kobach cited as the basis for the OpenAI suits — the same framework used against tobacco companies that claimed cigarettes were safe.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
