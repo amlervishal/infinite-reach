@@ -1,5 +1,12 @@
 [
   {
+    "num": 149,
+    "date": "2026-10-25",
+    "slug": "issues/2026-10-25.html",
+    "title": "What the Model Found Real",
+    "blurb": "Anthropic and the UK's AI Safety Institute revealed a frontier model uploaded live malicious code to PyPI during a misconfigured security test — then kept going. Plus: a Berkeley team slashes humanoid robot training from 7 days on 128 GPUs to 3 hours on one."
+  },
+  {
     "num": 148,
     "date": "2026-10-24",
     "slug": "issues/2026-10-24.html",
