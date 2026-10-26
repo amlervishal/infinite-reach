@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №150 — The Infrastructure Underneath · Infinite Reach</title>
+  <meta name="description" content="OpenAI's models arrived on Google Cloud this week — a competitor's own platform. A new NeurIPS paper asks an uncomfortable question about AI-as-infrastructure: what happens when the tools an agent relies on break?" />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №150 &middot; Monday, October 26, 2026</p>
+      <h1>The Infrastructure Underneath</h1>
+      <p>OpenAI's best models arrived on Google Cloud this week — a competitor's infrastructure — while a new research paper asked a question that becomes more important the more we treat AI as plumbing: when the tools an agent uses break, does a bigger, smarter AI cope better? The answer is no, and the reasons are worth understanding.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>OpenAI and Google announced that GPT-6 Astra, Sol, and Luna are now in private preview on Google Cloud's Model Garden — the marketplace where Google sells AI tools to enterprise customers. Google and Microsoft are each other's fiercest competitors, and Microsoft has been OpenAI's main partner since 2019, so this is genuinely unusual: like Coca-Cola agreeing to distribute through Pepsi's vending machines. Customers can now buy OpenAI's models on their Google Cloud bill, with data staying inside Google's servers. Microsoft remains OpenAI's primary partner, but the announcement signals something larger: frontier AI models are becoming commodity infrastructure — the kind of thing companies expect to be available everywhere, like a payment processor or a cloud database. General availability is expected in weeks.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Models</span><span>Moonshot's Kimi K3.1 Pro launched across its apps and API on roughly October 23, with full open weights promised by November 4; early benchmarks put it ahead of DeepSeek V4.1-Flash on reasoning.</span></li>
+        <li><span class="tag money">Acquisition</span><span>Amazon is reportedly in early talks to acquire Decart — the fast-simulation and world-model startup — for approximately $7 billion, according to sources cited by Reuters. Unconfirmed by either company.</span></li>
+        <li><span class="tag money">Deals</span><span>Replit, the browser-based coding environment used by millions of developers, reportedly signed a deal worth over $100 million a year with OpenAI, shifting most of its AI spend away from Anthropic. (The Information.)</span></li>
+        <li><span class="tag policy">Finance</span><span>The Financial Stability Board — the international body that watches for threats to the global banking system — issued a formal warning that over-reliance on a small number of AI providers is a systemic financial risk, alongside weak model governance and poor explainability.</span></li>
+        <li><span class="tag tech">Open weights</span><span>Chinese lab Nanbeige released a 33-billion-parameter coding model under Apache 2.0, with a 512,000-token context window and reasoning mode on by default; self-reported benchmarks show it beating Qwen3.8-27B on standard tests.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~650 words -->
+      <h2>Paper, explained: The bigger the model, the worse the crash</h2>
+      <p class="kicker">The Scaling Paradox of Tool-Calling LLM Agents Under Realistic MCP Faults &middot; Iannillo et al. &middot; NeurIPS 2026 &middot; <a href="https://neurips.cc/virtual/2026/poster/151564">NeurIPS poster</a> &middot; <a href="https://arxiv.org/abs/2610.32555">arXiv 2610.32555</a></p>
+
+      <p>As AI agents become infrastructure — plugged into tools, databases, and services the way apps plug into payment APIs — a question becomes pressing: when one of those connections breaks, does a more capable model handle it better? This paper ran the experiment and got an uncomfortable answer.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Modern AI agents don't just answer questions; they <em>call tools</em>. A research agent might query a database, run a code interpreter, and check a web search engine — all within a single task. The standard way these tools are connected is through a protocol called MCP (Model Context Protocol), originally developed by Anthropic and now widely adopted. When tools work perfectly, today's agents perform impressively. But tools don't always work perfectly. Servers time out. APIs return garbled data. A tool that worked yesterday is updated and its output format changes. These are the mundane realities of production software.</p>
+
+      <p>Most AI agent benchmarks ignore this entirely. They test agents in clean environments where every tool call succeeds. This is like testing a car only on a closed track, never on a road with potholes. The question the paper asks: what actually happens to agents when tools fail in the real ways they fail in the wild?</p>
+
+      <h3>How it works</h3>
+      <p>The researchers built something called MCP-Injector — think of it as a controlled fault machine that sits between an AI agent and its tools. Before building it, they did something clever: they mined 57,240 issue threads and pull requests from 1,774 real, open-source MCP tool repositories to catalog exactly how those tools actually fail in practice. From this they distilled six failure modes — including permanent tool unavailability, transient errors (it fails, then recovers), stale or outdated responses, and silent wrong answers (the tool returns something plausible but incorrect).</p>
+
+      <p>Here is the everyday analogy: imagine a new employee who has to use a filing system that occasionally gives them the wrong document with no warning, or a phone that sometimes doesn't ring, or a search tool that returns yesterday's results. The new employee has to notice these failures and route around them. MCP-Injector puts AI agents in this position, at controlled severity levels, with reproducible random seeds so experiments can be replicated.</p>
+
+      <h3>What they actually did</h3>
+      <p>The study ran 1,350 cells — crossing two backbone model sizes (a 20-billion-parameter model and a 120-billion-parameter model), three different agent harness configurations, and three fault-severity conditions (no faults, moderate faults, and heavy faults), each over multiple trials. The task suite covered practical multi-step tool-use scenarios: web research, code execution, document retrieval.</p>
+
+      <h3>What they found</h3>
+      <p>Under fault-free conditions, the 120B model outperformed the 20B model on task completion, as expected. But under realistic fault conditions, the 120B model's completion rate collapsed by roughly 60%, while the 20B model degraded less severely. The larger model ended up completing <em>fewer</em> tasks under faults than the smaller one, despite being more capable in ideal conditions. The researchers traced the cause to reasoning chain length: the 120B model, given its greater capability, generates longer, more elaborate reasoning steps before calling a tool. More steps means more opportunities for a mid-chain tool failure to corrupt the whole trace before the model notices and recovers. The smaller model, reasoning more tersely, is exposed to the fault window for less time.</p>
+
+      <p>The more important finding: across both model sizes, the agent harness — the framework code that wraps the model and handles tool calls — mattered more for fault tolerance than model scale. Harnesses with explicit retry logic and error-state handling recovered far better from faults than those without, regardless of the model inside.</p>
+
+      <h3>The catch</h3>
+      <p>The 1,350-cell study is substantial, but it covers two model sizes and three harnesses — not a comprehensive survey of the landscape. The six failure modes were mined from open-source MCP repositories; proprietary enterprise tooling may fail differently. And the task suite, while practical, is not exhaustive. The paper does not claim to explain every failure mode, only to establish that the problem is real and that naive assumptions (bigger model = more robust) are wrong.</p>
+
+      <p><strong>If you remember one thing:</strong> A more capable AI agent is not automatically a more resilient one — when the tools it depends on break, longer reasoning chains can make failures worse, and the wrapper code around the model matters more than the model itself.</p>
+
+      <!-- SVG diagram: MCP fault injection setup -->
+      <figure>
+        <svg viewBox="0 0 720 240" role="img" aria-label="Diagram showing an AI agent calling tools through MCP, with MCP-Injector sitting in between injecting faults, and the performance paradox: larger models score better without faults but worse with faults than smaller models.">
+          <defs>
+            <marker id="arrowG" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#87867F"/>
+            </marker>
+            <marker id="arrowC" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#D97757"/>
+            </marker>
+            <marker id="arrowS" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#6A8CAF"/>
+            </marker>
+          </defs>
+
+          <!-- Agent box -->
+          <rect x="18" y="70" width="148" height="64" rx="8" fill="#EBF0F6" stroke="#6A8CAF" stroke-width="2"/>
+          <text x="92" y="99" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="bold">AI Agent</text>
+          <text x="92" y="118" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">120B: longer chains</text>
+
+          <!-- Arrow agent to injector -->
+          <line x1="166" y1="102" x2="228" y2="102" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowG)"/>
+          <text x="197" y="95" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">tool call</text>
+
+          <!-- MCP-Injector box -->
+          <rect x="230" y="62" width="154" height="80" rx="8" fill="#FBF0EB" stroke="#D97757" stroke-width="2"/>
+          <text x="307" y="90" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="12" fill="#141413" font-weight="bold">MCP-Injector</text>
+          <text x="307" y="108" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">6 fault modes</text>
+          <text x="307" y="124" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#D97757">timeout · stale data · silent error</text>
+
+          <!-- Arrow injector to tool -->
+          <line x1="384" y1="102" x2="448" y2="102" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowG)"/>
+          <text x="416" y="95" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">response</text>
+
+          <!-- Tool box -->
+          <rect x="450" y="70" width="140" height="64" rx="8" fill="#EFF3EA" stroke="#788C5D" stroke-width="2"/>
+          <text x="520" y="99" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="bold">External tool</text>
+          <text x="520" y="118" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">MCP server</text>
+
+          <!-- Fault injection arrow (downward) -->
+          <line x1="307" y1="40" x2="307" y2="60" stroke="#D97757" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowC)"/>
+          <text x="307" y="35" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#D97757">inject fault</text>
+
+          <!-- Performance comparison (bar chart-style) -->
+          <rect x="600" y="20" width="108" height="188" rx="6" fill="#FAFAF7" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="654" y="38" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">Task completion</text>
+
+          <!-- No-fault bars -->
+          <text x="614" y="58" font-family="system-ui,sans-serif" font-size="8" fill="#87867F">No faults</text>
+          <rect x="614" y="62" width="36" height="12" rx="2" fill="#6A8CAF" opacity="0.6"/>
+          <text x="652" y="72" font-family="system-ui,sans-serif" font-size="8" fill="#141413">20B</text>
+          <rect x="614" y="78" width="56" height="12" rx="2" fill="#6A8CAF" opacity="0.9"/>
+          <text x="672" y="88" font-family="system-ui,sans-serif" font-size="8" fill="#141413">120B</text>
+
+          <!-- Divider -->
+          <line x1="608" y1="100" x2="700" y2="100" stroke="#D1CFC5" stroke-width="0.8"/>
+
+          <!-- With-fault bars -->
+          <text x="614" y="116" font-family="system-ui,sans-serif" font-size="8" fill="#D97757">With faults</text>
+          <rect x="614" y="120" width="28" height="12" rx="2" fill="#6A8CAF" opacity="0.6"/>
+          <text x="644" y="130" font-family="system-ui,sans-serif" font-size="8" fill="#141413">20B</text>
+          <rect x="614" y="136" width="18" height="12" rx="2" fill="#6A8CAF" opacity="0.9"/>
+          <text x="634" y="146" font-family="system-ui,sans-serif" font-size="8" fill="#D97757">120B ↓60%</text>
+
+          <text x="654" y="178" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8" fill="#D97757">paradox:</text>
+          <text x="654" y="190" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8" fill="#D97757">120B &lt; 20B</text>
+          <text x="654" y="202" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8" fill="#D97757">under faults</text>
+        </svg>
+        <figcaption>The experimental setup: MCP-Injector sits between an AI agent and its tools, injecting realistic fault conditions mined from 57,240 real MCP repository issues. The bar chart shows the scaling paradox: the 120B model outperforms the 20B without faults, but its completion rate collapses further when faults are injected — ending up below the smaller model.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>Named to TIME100 Creators 2026. His October appearance on the NYT's "Interesting Times" (guest-hosted by Tyler Cowen) — discussing why AI safety researchers are quietly leaving their labs — is worth a listen. <a href="https://dwarkesh.com">dwarkesh.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two of this week's biggest stories point in the same direction, and the paper points at what neither announcement addresses. OpenAI distributing through Google Cloud, Replit switching its AI spend, Kimi open-weighting its flagship model — all of it treats AI capability as a commodity that flows freely between platforms. That is probably the right direction. But the paper on MCP fault tolerance is a reminder that "AI as infrastructure" carries the same failure modes as all infrastructure: the more tightly it is woven into other systems, the more quietly things can go wrong when one thread breaks. The Financial Stability Board named concentration risk this week; the researchers named a different risk — resilience to the inevitable faults in any complex networked system. As agents grow more capable, the wrapper around them matters just as much as what's inside.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://neurips.cc/virtual/2026/poster/151564">NeurIPS 2026 poster — Scaling Paradox</a> ·
+        <a href="https://arxiv.org/abs/2610.32555">arXiv 2610.32555</a> ·
+        <a href="https://thenextweb.com/news/openai-models-codex-google-cloud">The Next Web — OpenAI on Google Cloud</a> ·
+        <a href="https://scalevise.com/resources/openai-models-google-cloud-model-garden/">Scalevise — OpenAI Model Garden</a> ·
+        <a href="https://aigovernance.com/news">AI Governance — FSB systemic risk report</a> ·
+        <a href="https://aiweekly.co/ai-news-today">AI Weekly — model releases roundup</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">MCP (Model Context Protocol)</div>
+        <div>The standard "plug" that connects an AI agent to external tools — databases, web browsers, code runners, APIs. Originally created by Anthropic, now widely adopted. Think of it as the USB standard for AI tools: any tool that speaks MCP can work with any agent that also speaks MCP. The paper this issue explains what happens when the plug sparks.</div>
+      </div>
+      <dl>
+        <dt>Fault injection</dt><dd>A testing technique where you deliberately cause a failure — a timeout, a wrong answer, an unavailable server — to see how a system responds. Engineers use it to find brittle assumptions before real failures do.</dd>
+        <dt>Reasoning chain</dt><dd>The internal step-by-step working a language model produces before giving a final answer. Longer chains mean more thorough reasoning but also more steps at which something can go wrong — the paper's core finding.</dd>
+        <dt>Harness</dt><dd>The framework code that wraps an AI model and manages its interactions with tools, memory, and other agents. Two models with the same weights but different harnesses can behave very differently — especially under failures.</dd>
+        <dt>Scaling paradox</dt><dd>When a larger, more capable model performs worse than a smaller one on the same task due to an unexpected side effect of its extra capability. Here: longer reasoning chains create more exposure to tool failures.</dd>
+        <dt>Fault tolerance</dt><dd>A system's ability to keep working despite individual component failures. The internet was designed this way from the start — traffic reroutes around broken links automatically. AI agent frameworks mostly were not.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
