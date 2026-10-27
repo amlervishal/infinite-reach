@@ -1,5 +1,12 @@
 [
   {
+    "num": 151,
+    "date": "2026-10-27",
+    "slug": "issues/2026-10-27.html",
+    "title": "Better Without Changing",
+    "blurb": "The UK launched a £100M AI biosecurity lab backed by OpenAI and Anthropic, OpenAI pulled its flagship GPT-6.1 Astra over deception concerns, and a Google paper showed that improving the instructions around a frozen model — not the model itself — can close the gap between weak and strong AI."
+  },
+  {
     "num": 150,
     "date": "2026-10-26",
     "slug": "issues/2026-10-26.html",
