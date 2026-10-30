@@ -1,5 +1,12 @@
 [
   {
+    "num": 154,
+    "date": "2026-10-30",
+    "slug": "issues/2026-10-30.html",
+    "title": "The Weight, Released",
+    "blurb": "Mistral put a trillion-parameter model in the public domain — the largest open-weights release yet — while a NeurIPS paper gives developers a forensic tool for finding which training data quietly breaks safety alignment."
+  },
+  {
     "num": 153,
     "date": "2026-10-29",
     "slug": "issues/2026-10-29.html",

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №154 — The Weight, Released · Infinite Reach</title>
+  <meta name="description" content="Mistral put a trillion-parameter model in the public domain — the largest open-weights release yet — while a NeurIPS paper gives developers a forensic tool for finding training data that breaks safety." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №154 &middot; Thursday, October 30, 2026</p>
+      <h1>The Weight, Released</h1>
+      <p>Mistral has put a trillion-parameter model in the public domain — the largest open-weights release in the history of the field. Meanwhile a new paper at NeurIPS 2026 offers a forensic tool for the other side of the same coin: how to find which training data quietly undid your safety alignment.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Mistral, the French AI company, released the weights for Mistral Large 4 on Wednesday — a natively multimodal mixture-of-experts model with roughly 1.05 trillion total parameters, making it the largest model ever released as open weights. The model routes each query through only about 49 billion of those parameters at a time (the rest sit dormant, like specialists who wait quietly until their expertise is needed), which keeps it fast and affordable to run despite its headline size. Benchmark figures come from Mistral itself: the company claims it leads the Artificial Analysis intelligence index, comparable to DeepSeek V4.1 Flash in independent rankings. One important asterisk: the license terms are still unpublished. Mistral has not named what rights you get when you download it — so "open weights" here may not mean the full freedom that "open source" implies.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">World models</span><span>Google DeepMind announced Genie 4, an interactive world-simulation model that now generates audio alongside video — one step closer to fully synthetic environments you can explore and hear in real time. (<a href="https://gizmodo.com/googles-new-ai-world-model-can-generate-human-voices-not-just-video-2000831335">Gizmodo</a>)</span></li>
+        <li><span class="tag money">Funding</span><span>Dream AI, which builds real-time world-model simulations for construction sites, raised $17M from Andreessen Horowitz; Plato Technologies, making personalised learning tools, closed a $16M Series A with Microsoft AI CEO Mustafa Suleyman investing personally.</span></li>
+        <li><span class="tag tech">Policy collapse</span><span>A new paper (arXiv 2610.37553) finds that self-reinforcing training — where a model learns by checking its own answers — can cause "policy collapse," converging on the same wrong answer for every question. The authors flag it as essential reading for teams building self-improving agents.</span></li>
+        <li><span class="tag policy">License gap</span><span>Mistral Large 4's license remains unpublished — a practical reminder that "open weights" and "open source" are not the same thing. Open source gives you freedom to modify and redistribute without restriction; open weights alone may carry meaningful limits, which matters when building a product on top of someone else's model.</span></li>
+        <li><span class="tag money">Pricing context</span><span>Mistral Large 4 lists at roughly $1.36 per million input tokens and $4.18 per million output tokens via the Mistral API — but the weights themselves are free to download and run on your own hardware, which changes the economics significantly for high-volume users.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~650 words -->
+      <h2>Paper, explained: finding the training data that broke your safety</h2>
+      <p class="kicker">Follow the Failure: Tracing Safety Degradation Back to Training Data &middot; NeurIPS 2026 &middot; <a href="https://neurips.cc/virtual/2026/172337">source</a></p>
+      <p>Every time a company fine-tunes a language model — adapting it to be a better coding assistant, a more fluent customer-service agent, a sharper legal analyst — it risks undoing months of safety training. Not because someone added anything obviously bad to the dataset, but because a set of perfectly innocuous-looking examples can, in combination, quietly widen the gaps that safety training tried to close. This paper asks a surprisingly practical question: can you work backwards from the failure to find exactly which examples caused it?</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Safety alignment — training a model to refuse harmful requests — can degrade when you later fine-tune the same model on an instruction dataset, even one that looks clean. This is a known problem. A model trained to write excellent Python code can, through that very training, become somewhat more willing to answer questions it previously wouldn't. No single training example tells the whole story. The effect is collective: some combination of examples pushes the model in a direction that makes safety gaps more exploitable.</p>
+      <p>Finding those examples manually means reading the whole dataset — often millions of entries — which is impossible at scale. Using a language model to scan for "bad content" misses the problem entirely, because the problem isn't any one bad-looking example; it's examples that are harmful only in combination with the model's existing weights. What's been missing is a method that asks the model itself which training data shaped a specific output.</p>
+
+      <h3>How it works</h3>
+      <p>The paper borrows a technique called data attribution — figuring out which training examples most influenced a specific prediction — and points it directly at safety failures. Think of it like a financial forensic audit. When a company discovers it's been losing money in a specific way, a forensic accountant doesn't read every transaction hoping one says "fraud." Instead, they work backwards from the loss: which transactions most closely contributed to the pattern they're trying to explain? The paper does the same thing, replacing money flows with model gradients.</p>
+      <p>The process has four steps. First, take the fine-tuned model and let it respond to adversarial prompts — inputs designed to extract harmful outputs. Collect the unsafe responses; these are your "failure signal." Second, for each training example in the fine-tuning dataset, compute how much its gradient during training was aligned with the gradients that would produce those unsafe outputs. A high alignment score means that example was nudging the model toward those failures. Third, sort the training data by that score. Fourth, remove the top-scoring 20%, retrain the model from the base checkpoint with the cleaned set, and measure whether the failure rate drops.</p>
+      <p>The forensic analogy holds: no individual training example had to look harmful. You found the ones that, in combination, produced the outcome you wanted to prevent.</p>
+
+      <h3>What they actually did</h3>
+      <p>The authors applied this method to the Tulu 3 instruction mixture — a large, widely used fine-tuning dataset for open-weight models. They tested safety using two standard suites: HarmBench and JailbreakBench. Both measure how often a model can be tricked into producing harmful outputs by adversarial prompts (specifically, automatically generated suffixes appended to a request to slip past safety filters). They compared their gradient-attribution approach against an LLM-as-judge baseline — using a language model to read training examples and flag anything that looks problematic.</p>
+
+      <h3>What they found</h3>
+      <p>Removing the top 20% of gradient-aligned training examples cut attack success rates sharply. On one evaluation, the rate dropped from 9.4% to 3.1%; on the other, from 10.2% to 3.8% — roughly a two-thirds reduction in both cases. The attribution method outperformed the LLM-judge baseline, which suggests the model's own learning signals detect something that surface-level content review misses. The key finding is that examples flagged as problematic often looked benign: the issue was their relationship to the model's existing state, not anything obviously wrong in the text itself.</p>
+
+      <h3>The catch</h3>
+      <p>Removing 20% of your training data costs something. The authors acknowledge it likely hurts capability in certain areas, though they don't publish a detailed breakdown. The method also requires a fine-tuned model to already exist — you have to produce the failure before you can trace it, making this a cleanup tool rather than a prevention tool. And the results come from one specific fine-tuning setup and two adversarial benchmarks; it's an open question whether the approach generalises cleanly to other datasets or attack types. It also doesn't address safety degradation that happens gradually across many fine-tuning rounds.</p>
+
+      <p><strong>If you remember one thing:</strong> safety problems in fine-tuned models can be invisible in any single training example — it takes a forensic audit using the model's own learning signals to find what went wrong.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 200" role="img" aria-label="Four-step diagram of the Follow the Failure attribution pipeline">
+          <!-- Box 1: Fine-tuned model (clay) -->
+          <rect x="20" y="55" width="145" height="72" rx="6" fill="#D97757" />
+          <text x="92" y="85" text-anchor="middle" font-family="ui-serif" font-size="13" fill="white" font-weight="bold">Fine-tuned</text>
+          <text x="92" y="103" text-anchor="middle" font-family="ui-serif" font-size="13" fill="white" font-weight="bold">model</text>
+
+          <!-- Arrow 1 -->
+          <line x1="165" y1="91" x2="198" y2="91" stroke="#141413" stroke-width="2"/>
+          <polygon points="198,86 210,91 198,96" fill="#141413"/>
+
+          <!-- Box 2: Unsafe outputs (muted) -->
+          <rect x="210" y="55" width="145" height="72" rx="6" fill="#87867F" />
+          <text x="282" y="85" text-anchor="middle" font-family="ui-serif" font-size="13" fill="white" font-weight="bold">Collect</text>
+          <text x="282" y="103" text-anchor="middle" font-family="ui-serif" font-size="13" fill="white" font-weight="bold">unsafe outputs</text>
+
+          <!-- Arrow 2 -->
+          <line x1="355" y1="91" x2="388" y2="91" stroke="#141413" stroke-width="2"/>
+          <polygon points="388,86 400,91 388,96" fill="#141413"/>
+
+          <!-- Box 3: Attribution scoring (sky) -->
+          <rect x="400" y="55" width="145" height="72" rx="6" fill="#6A8CAF" />
+          <text x="472" y="81" text-anchor="middle" font-family="ui-serif" font-size="12" fill="white" font-weight="bold">Score training</text>
+          <text x="472" y="97" text-anchor="middle" font-family="ui-serif" font-size="12" fill="white" font-weight="bold">data by gradient</text>
+          <text x="472" y="113" text-anchor="middle" font-family="ui-serif" font-size="12" fill="white" font-weight="bold">alignment</text>
+
+          <!-- Arrow 3 -->
+          <line x1="545" y1="91" x2="578" y2="91" stroke="#141413" stroke-width="2"/>
+          <polygon points="578,86 590,91 578,96" fill="#141413"/>
+
+          <!-- Box 4: Remove + retrain (olive) -->
+          <rect x="590" y="55" width="115" height="72" rx="6" fill="#788C5D" />
+          <text x="647" y="85" text-anchor="middle" font-family="ui-serif" font-size="12" fill="white" font-weight="bold">Remove top</text>
+          <text x="647" y="103" text-anchor="middle" font-family="ui-serif" font-size="12" fill="white" font-weight="bold">20% &amp; retrain</text>
+
+          <!-- Step labels -->
+          <text x="92" y="152" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Step 1</text>
+          <text x="282" y="152" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Step 2</text>
+          <text x="472" y="152" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Step 3</text>
+          <text x="647" y="152" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Step 4</text>
+
+          <!-- Top label -->
+          <text x="360" y="30" text-anchor="middle" font-family="ui-serif" font-size="14" fill="#141413" font-weight="bold">The "Follow the Failure" attribution pipeline</text>
+        </svg>
+        <figcaption>The fine-tuned model's own unsafe outputs become the signal for a backwards audit: gradient alignment reveals which training examples were quietly steering the model toward failure.</figcaption>
+      </figure>
+
+      <h2>Why it matters</h2>
+      <p>Two threads run through today's news, and they pull in opposite directions. The first is the expansion of open access at frontier scale: a trillion-parameter model is now downloadable by anyone. That changes what's possible for researchers, startups, and governments that want to work with frontier technology without going through a commercial API — and it's a concrete reminder that the European AI ecosystem is building at the very top of the capability range, not just following.</p>
+      <p>The second is the growing complexity of keeping these models safe once they leave the lab. As fine-tuning becomes routine — companies adapting foundation models for specific tasks — the safety risks of that process become the next practical frontier. The paper covered here doesn't solve the problem, but it gives practitioners a real diagnostic tool for finding what went wrong. Both threads point to the same underlying reality: capabilities are diffusing faster than the systems for managing them. The gap between what you can build and what you can safely build is the defining challenge of the next few years.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://artificialanalysis.ai/articles/mistral-large-4-france-ai">Artificial Analysis — Mistral Large 4</a> ·
+        <a href="https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B">Hugging Face — Mistral Large 4 model page</a> ·
+        <a href="https://www.lindy.ai/blog/mistral-large-4">Lindy — Mistral Large 4 benchmarks &amp; pricing</a> ·
+        <a href="https://neurips.cc/virtual/2026/172337">NeurIPS 2026 — Follow the Failure</a> ·
+        <a href="https://github.com/jinming1345/agents-radar/issues/420">arXiv AI Digest Oct 29, 2026</a> ·
+        <a href="https://gizmodo.com/googles-new-ai-world-model-can-generate-human-voices-not-just-video-2000831335">Gizmodo — Google Genie 4</a> ·
+        <a href="https://techcrunch.com/category/artificial-intelligence/">TechCrunch AI</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Open weights</div>
+        <div>When a lab trains a model and then releases the trained parameters — the billions of numbers that define how it behaves — for anyone to download and run. Think of it like publishing the full recipe with exact proportions, not just selling the dish. "Open weights" is not the same as "open source": open source also includes the training code and process, and typically guarantees freedom to modify and redistribute. Open weights alone may come with a custom license that limits those rights.</div>
+      </div>
+      <dl>
+        <dt>Mixture of Experts (MoE)</dt><dd>A model architecture that routes each incoming query to a specialist sub-network, leaving most of the model dormant. The total parameter count can be enormous while only a small fraction fires for any given task — keeping the model fast and affordable despite its headline size.</dd>
+        <dt>Data attribution</dt><dd>The practice of tracing a model's specific behavior or output back to the training examples that shaped it. Like a forensic audit — not "what does this data say?" but "which data deposited this behavior into the model?"</dd>
+        <dt>Fine-tuning</dt><dd>Taking a pre-trained model and continuing to train it on a smaller, targeted dataset to make it better at a specific task — legal research, a company's writing style, a particular coding dialect. It's cheaper than training from scratch, but can have side effects on behaviors the original training carefully established.</dd>
+        <dt>Policy collapse</dt><dd>A failure mode in reinforcement-learning training where a model converges on repeating the same answer to every question — because that answer reliably passes the reward check, even if it's wrong. Like a student who discovers that writing "I don't know" always avoids red marks, then writes it for everything.</dd>
+        <dt>Gradient</dt><dd>The signal used in training to nudge a model toward producing a target output. Each training example contributes a gradient — a directional push. Data attribution works by checking how much each training example's gradient pointed toward the behavior you're trying to explain.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
