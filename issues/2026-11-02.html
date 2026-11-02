@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №157 — A Scientist Without a Name · Infinite Reach</title>
+  <meta name="description" content="A Google AI system claims it runs scientific research end-to-end — no human in the loop — and beats researchers on 80% of frontier benchmarks. Also: a British chip startup raises £540M to build hardware outside of Nvidia, and China’s largest open-weight model drops Thursday." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №157 &middot; November 2, 2026</p>
+      <h1>A Scientist Without a Name</h1>
+      <p>A new paper from Google’s cloud research team describes an AI pipeline that takes a research problem and returns, fully on its own, a finished paper and working code — no human in the loop. The team claims it beats human researchers on 80% of benchmark problems. The claim is self-reported and unverified, which makes it exactly the kind of thing worth reading carefully.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>British chip startup Fractile raised £540 million (around $720 million) in a Series C round that closed last week, backed by Lightspeed, Redpoint, Thrive Capital, and the UK government’s Sovereign AI Fund. This comes five months after the company raised $220 million — and just months after securing a $250 million chip supply agreement with Anthropic. Fractile is building AI inference chips designed to run large models faster and more cheaply than Nvidia’s hardware. The chips won’t ship until 2027, but the pace of investment signals something real: the idea that one company’s hardware should dominate the AI stack has started to feel like a risk, and serious money is moving to address it.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Open weights</span><span>Moonshot’s Kimi K3.1 Pro drops as a free download on Thursday. The model builds on K3’s 2.8-trillion-parameter mixture-of-experts architecture and targets coding, agentic tasks, and long-context work. It will be the largest open-weight model from a Chinese lab yet made freely downloadable. <a href="https://letsdatascience.com/news/moonshot-releases-kimi-k31-pro-api-open-weights-due-nov-4-786e160c">Source</a></span></li>
+        <li><span class="tag tech">Apple / China</span><span>Apple begins developer testing of its China-specific AI features on Thursday, ahead of a December rollout with iOS 27.3. The features run on Alibaba’s Qwen model. The new agentic Siri is not part of this phase. <a href="https://www.theneuron.ai/digest/everything-that-happened-in-ai-today-monday-november-2-2026/">Source</a></span></li>
+        <li><span class="tag tech">Benchmark</span><span>SemiAnalysis launched GDPx, a frontier benchmark spanning 11 high-value real-world domains — an attempt to measure model usefulness on hard practical tasks rather than on standardized academic tests. <a href="https://www.theneuron.ai/digest/everything-that-happened-in-ai-today-monday-november-2-2026/">Source</a></span></li>
+        <li><span class="tag tech">Infrastructure</span><span>LG CNS completed a 30-megawatt AI data center in Jakarta, built for a joint venture between Indonesia’s Sinar Mas Group and Korea Investment Real Asset Management. Southeast Asia’s data center build-out is accelerating. <a href="https://www.theneuron.ai/digest/everything-that-happened-in-ai-today-monday-november-2-2026/">Source</a></span></li>
+        <li><span class="tag policy">Security</span><span>Microsoft’s annual threat intelligence report finds that North Korean state hackers are now routinely using AI tools for social engineering and code generation in cyberattack campaigns, making their operations cheaper and more scalable. <a href="https://www.theneuron.ai/digest/everything-that-happened-in-ai-today-monday-november-2-2026/">Source</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~550-850 words -->
+      <h2>Paper, explained: Can a machine do frontier science on its own?</h2>
+      <p class="kicker">ScientistTwo: Pioneering the Human Knowledge Frontier with Autonomous AI &middot; Google Cloud AI Research &middot; <a href="https://arxiv.org/abs/2609.19644">arXiv:2609.19644</a></p>
+      <p>Yesterday’s issue covered a study showing that AI accelerates science without creating new research directions. ScientistTwo makes a more confrontational claim: that AI can now <em>be</em> the researcher — not just the assistant who runs your searches and formats your citations, but the agent that poses the problem, designs the test, runs the code, reviews the draft, and submits the finished work. No human turn required.</p>
+
+      <h3>The problem, and why it’s hard</h3>
+      <p>Writing a publishable scientific paper is not one task — it is six or seven tasks strung together, each depending on the last. You need to understand what’s already been done (so your contribution is actually new), generate an idea that’s plausible but not obvious, design an experiment that could prove or disprove it, run code that works, interpret what went wrong when it doesn’t, keep iterating, and write it all up clearly enough that a skeptical peer reviewer doesn’t throw it out. Earlier AI research systems — including the original “AI Scientist” from 2024 and ScientistOne from Google’s own team in mid-2026 — could automate individual pieces of this chain. The problem was the handoffs. When a code execution step failed, or when the generated hypothesis turned out to be trivially solved by existing methods, the system would often continue anyway, producing confident-looking papers full of quiet errors. The chain kept breaking at the joints.</p>
+
+      <h3>How it works</h3>
+      <p>Think of a relay race where each runner is a specialist, and there’s a checkpoint judge at every baton pass who can send the runner back to the start if something looks wrong. ScientistTwo runs through seven stages: <strong>limitation analysis</strong> (what is currently weak or missing in this area?), <strong>idea generation</strong> (which approaches might address that gap?), <strong>experiments</strong> (design and run the code to test the best idea), <strong>ablation studies</strong> (remove parts of the system one by one to see what’s actually doing the work), <strong>peer review</strong> (a separate AI component critiques the draft as a reviewer would), <strong>rebuttal</strong> (respond to those critiques), and finally <strong>manuscript refinement</strong>. The key innovation is what the team calls consequence-aware verification: at each handoff, the receiving agent checks whether the output it was handed is internally consistent before accepting it. If the experiment results don’t support the claims in the draft, that discrepancy is flagged and the relevant stage is re-run. Earlier systems ran the stages sequentially without these checks, which is why errors accumulated silently. Here, a broken link in the chain triggers a repair, not a handoff.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 220" role="img" aria-label="ScientistTwo’s seven-stage autonomous research pipeline">
+          <defs>
+            <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L6,3 z" fill="#87867F"/>
+            </marker>
+          </defs>
+          <!-- Stage boxes -->
+          <!-- Stage 1: Limitation Analysis -->
+          <rect x="10" y="80" width="88" height="54" rx="6" fill="#D97757" opacity="0.85"/>
+          <text x="54" y="101" font-family="system-ui,sans-serif" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="600">Limitation</text>
+          <text x="54" y="114" font-family="system-ui,sans-serif" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="600">Analysis</text>
+          <text x="54" y="126" font-family="system-ui,sans-serif" font-size="8" fill="#fff" text-anchor="middle" opacity="0.85">① What’s missing?</text>
+          <!-- Arrow 1→2 -->
+          <line x1="99" y1="107" x2="109" y2="107" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Stage 2: Idea Generation -->
+          <rect x="110" y="80" width="88" height="54" rx="6" fill="#788C5D" opacity="0.85"/>
+          <text x="154" y="101" font-family="system-ui,sans-serif" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="600">Idea</text>
+          <text x="154" y="114" font-family="system-ui,sans-serif" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="600">Generation</text>
+          <text x="154" y="126" font-family="system-ui,sans-serif" font-size="8" fill="#fff" text-anchor="middle" opacity="0.85">② Which approach?</text>
+          <!-- Arrow 2→3 -->
+          <line x1="199" y1="107" x2="209" y2="107" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Stage 3: Experiments -->
+          <rect x="210" y="80" width="88" height="54" rx="6" fill="#6A8CAF" opacity="0.85"/>
+          <text x="254" y="101" font-family="system-ui,sans-serif" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="600">Experiments</text>
+          <text x="254" y="126" font-family="system-ui,sans-serif" font-size="8" fill="#fff" text-anchor="middle" opacity="0.85">③ Run the code</text>
+          <!-- Arrow 3→4 -->
+          <line x1="299" y1="107" x2="309" y2="107" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Stage 4: Ablations -->
+          <rect x="310" y="80" width="88" height="54" rx="6" fill="#D97757" opacity="0.85"/>
+          <text x="354" y="101" font-family="system-ui,sans-serif" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="600">Ablation</text>
+          <text x="354" y="114" font-family="system-ui,sans-serif" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="600">Studies</text>
+          <text x="354" y="126" font-family="system-ui,sans-serif" font-size="8" fill="#fff" text-anchor="middle" opacity="0.85">④ What mattered?</text>
+          <!-- Arrow 4→5 -->
+          <line x1="399" y1="107" x2="409" y2="107" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Stage 5: Peer Review -->
+          <rect x="410" y="80" width="88" height="54" rx="6" fill="#788C5D" opacity="0.85"/>
+          <text x="454" y="101" font-family="system-ui,sans-serif" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="600">Peer</text>
+          <text x="454" y="114" font-family="system-ui,sans-serif" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="600">Review</text>
+          <text x="454" y="126" font-family="system-ui,sans-serif" font-size="8" fill="#fff" text-anchor="middle" opacity="0.85">⑤ AI critique</text>
+          <!-- Arrow 5→6 -->
+          <line x1="499" y1="107" x2="509" y2="107" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Stage 6: Rebuttal -->
+          <rect x="510" y="80" width="88" height="54" rx="6" fill="#6A8CAF" opacity="0.85"/>
+          <text x="554" y="101" font-family="system-ui,sans-serif" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="600">Rebuttal</text>
+          <text x="554" y="126" font-family="system-ui,sans-serif" font-size="8" fill="#fff" text-anchor="middle" opacity="0.85">⑥ Respond</text>
+          <!-- Arrow 6→7 -->
+          <line x1="599" y1="107" x2="609" y2="107" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- Stage 7: Manuscript -->
+          <rect x="610" y="80" width="98" height="54" rx="6" fill="#D97757" opacity="0.85"/>
+          <text x="659" y="101" font-family="system-ui,sans-serif" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="600">Manuscript</text>
+          <text x="659" y="126" font-family="system-ui,sans-serif" font-size="8" fill="#fff" text-anchor="middle" opacity="0.85">⑦ Finished paper</text>
+          <!-- Verification feedback arc label -->
+          <text x="360" y="165" font-family="system-ui,sans-serif" font-size="9" fill="#87867F" text-anchor="middle">↩ Consequence-aware verification at each handoff — broken links trigger repair, not continuation</text>
+          <!-- Title -->
+          <text x="360" y="32" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="600">ScientistTwo pipeline — seven stages, no human in the loop</text>
+          <!-- Subtitle -->
+          <text x="360" y="50" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">Google Cloud AI Research · arXiv:2609.19644</text>
+        </svg>
+        <figcaption>The ScientistTwo pipeline runs from problem specification through limitation analysis, idea generation, experiments, and ablation studies, to peer review, rebuttal, and a finished manuscript — with consistency checks at every handoff. The full cycle runs without human input.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The team tested ScientistTwo on 107 frontier benchmark problems, drawn from 38 papers accepted at NeurIPS 2025 and 5 papers accepted at ICLR 2026. These aren’t simple question-answering challenges: they are the specific problems those research teams solved to get published — the kind of tasks that, when done by humans, result in contributions to the field. For each problem, the system had to match or exceed the performance that the human research team reported in the original paper.</p>
+
+      <h3>What they found</h3>
+      <p>The authors report that ScientistTwo surpassed human state-of-the-art performance on 86 of the 107 problems — a success rate of about 80%. Papers produced by the system passed the internal AI review stage at a rate of 91.9%. Ablation tests found the consequence-aware verification layer was critical: removing it caused a substantial drop in performance, suggesting the repair-on-failure mechanism is doing real work, not just adding complexity.</p>
+
+      <h3>The catch</h3>
+      <p>These numbers are entirely self-reported and come from a preprint that was posted in September 2026. No independent group has replicated the results. The “peer review” step used to measure the 91.9% acceptance rate is itself an AI system — not a human, not a journal, not a conference programme committee. So what that figure actually measures is how well ScientistTwo writes papers that look good to another AI model, which is a meaningfully different thing from producing science that holds up. There’s also a data contamination risk: the benchmark problems come from papers published in 2025 and early 2026, and ScientistTwo was trained on data that may include those papers — meaning the system might have seen the answers during training. The authors do not address this. Treat these results as interesting and worth watching, not as settled facts.</p>
+
+      <p><strong>If you remember one thing:</strong> ScientistTwo claims to run the full research cycle autonomously and beat human researchers on 80% of benchmark problems — but the numbers are self-reported, the “review” is AI-graded, and the benchmark overlaps with the model’s training window.</p>
+
+      <h2>Why it matters</h2>
+      <p>Two things happened in parallel this week that point at the same underlying shift. A startup raised the better part of a billion dollars to build AI chips that don’t come from Nvidia — because the dependency on a single hardware supplier has started to feel like a structural vulnerability. And a research team published a paper claiming AI can now run the scientific method on its own — because the dependency on human researchers as the bottleneck in knowledge production has started to feel like a constraint worth removing. Both stories are about what happens when a technology matures enough that people start optimizing around its edges. The software is no longer the bottleneck, so attention moves to the silicon. The model is no longer the bottleneck, so attention moves to the research process that builds the next one. The question in both cases is the same: are we removing a constraint, or just moving it?</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2609.19644">ScientistTwo preprint (arXiv:2609.19644)</a> &middot;
+        <a href="https://www.alphaxiv.org/abs/2609.19644">alphaXiv summary</a> &middot;
+        <a href="https://sifted.eu/articles/exclusive-fractile-series-c/">Sifted: Fractile Series C</a> &middot;
+        <a href="https://www.bloomberg.com/news/articles/2026-05-13/ai-startup-fractile-raises-220-million-for-chip-production">Bloomberg: Fractile Series B</a> &middot;
+        <a href="https://www.vktr.com/ai-news/uk-chip-startup-fractile-nears-65-billion-valuation-after-landing-250-million-anthropic-deal/">Fractile / Anthropic deal</a> &middot;
+        <a href="https://letsdatascience.com/news/moonshot-releases-kimi-k31-pro-api-open-weights-due-nov-4-786e160c">Moonshot Kimi K3.1 Pro</a> &middot;
+        <a href="https://www.theneuron.ai/digest/everything-that-happened-in-ai-today-monday-november-2-2026/">The Neuron: November 2 digest</a> &middot;
+        <a href="https://scientist-one.github.io/">ScientistOne (predecessor)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Ablation study</div>
+        <div>A test where researchers remove one piece of a system at a time to see how much each part contributes to the overall result. Like taking ingredients out of a recipe one by one to figure out which one was making it taste good.</div>
+      </div>
+      <dl>
+        <dt>Multi-agent system</dt>
+        <dd>A pipeline of specialized AI components — each handling one task — that hand work between each other to accomplish a larger goal no single component could manage alone.</dd>
+        <dt>Inference (hardware)</dt>
+        <dd>Running a trained AI model to generate outputs — as distinct from training it. Inference is what happens every time you use ChatGPT. Fractile’s chips are designed specifically for this step.</dd>
+        <dt>Open weights</dt>
+        <dd>A model whose trained parameters (the numbers that define what it knows) are released for anyone to download and run. Contrast with a closed model, where you can only access it through an API.</dd>
+        <dt>State-of-the-art</dt>
+        <dd>The current best-known result on a given task or benchmark — the number a new paper has to beat to claim it has made progress.</dd>
+        <dt>Preprint</dt>
+        <dd>A research paper posted publicly before it has been peer-reviewed or formally accepted at a conference. Most arXiv papers are preprints. They can be read and cited, but their claims haven’t been independently checked yet.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
