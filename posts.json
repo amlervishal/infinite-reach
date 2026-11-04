@@ -1,5 +1,12 @@
 [
   {
+    "num": 159,
+    "date": "2026-11-04",
+    "slug": "issues/2026-11-04.html",
+    "title": "The Weight of Proof",
+    "blurb": "Anthropic releases FlashProve, an open-source system using cryptographic math to prove which model generated a reply; OpenAI trims its funding round to $20B amid a tech selloff; and a 27B model learns to match a 400B one on computer-use tasks."
+  },
+  {
     "num": 158,
     "date": "2026-11-03",
     "slug": "issues/2026-11-03.html",
