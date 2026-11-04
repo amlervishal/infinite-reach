@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №159 — The Weight of Proof · Infinite Reach</title>
+  <meta name="description" content="Anthropic releases an open-source system that uses cryptographic math to prove which AI model generated a reply — a first step toward verifiable AI accountability. Plus: OpenAI trims its funding round, and a 27B model that learns to match a 400B one." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №159 &middot; Tuesday, November 4, 2026</p>
+      <h1>The Weight of Proof</h1>
+      <p>What if you could prove, with mathematical certainty, that the reply you got came from the model you think it did — and not some cheaper substitute? Anthropic released an open-source prototype this week that makes this possible for the first time, at scale. Elsewhere, investor nerves sent OpenAI trimming its latest fund-raise.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On Sunday, Anthropic published <strong>FlashProve</strong>, a research prototype that generates a cryptographic receipt — a mathematical proof — alongside a model's reply. The proof lets anyone verify that the response came from a specific, committed set of model weights, not a cheaper or secretly different version. Anthropic demonstrated it running on a 400-billion-parameter model at roughly 110 tokens per second — fast enough to be practical, though still far more expensive than normal inference. It is open-source under Apache 2.0, and it may be the most consequential piece of AI infrastructure no one is talking about yet.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Funding</span><span>OpenAI quietly cut its current fundraising target from $30 billion to $20 billion, at a $1.25 trillion valuation, after a tech-stock selloff knocked the Nasdaq 100 down 3.5%. The round is still open. <a href="https://techcrunch.com/2026/10/31/openai-reportedly-lowers-funding-target-for-new-round/">TechCrunch</a></span></li>
+        <li><span class="tag policy">IPO</span><span>Anthropic's stock-market listing is expected as early as the week of November 9, targeting a valuation of $1.8–2 trillion — which would make it one of the largest technology IPOs ever. <a href="https://www.newsbytesapp.com/news/business/anthropic-eyes-november-ipo-at-2-trillion-valuation/story">NewsBytes</a></span></li>
+        <li><span class="tag policy">Data</span><span>OpenAI, Google, Microsoft, and Anthropic jointly agreed to honor a single new <code>robots.txt</code> token — <code>__usage_ai-training</code> — that lets any website block all four companies' training crawlers with one line. It is a small but concrete step toward publisher control. <a href="https://aiweekly.co/alerts/openai-google-microsoft-anthropic-back-one-ai-opt-out-token">AI Weekly</a></span></li>
+        <li><span class="tag tech">Agents</span><span>Chinese researchers released CUA-Master, an open-weight 27-billion-parameter model that matches or beats a 400-billion-parameter rival on computer-use benchmarks — operating your screen, clicking, filling forms — by training through recursive self-improvement loops. <a href="https://arxiv.org/abs/2611.03126">arXiv</a></span></li>
+        <li><span class="tag tech">Finance</span><span>Alphabet shares fell roughly 13% after its Q3 capital-expenditure figures came in below analyst estimates, echoing a broader market concern that the return on AI infrastructure spending remains hard to see clearly. <a href="https://www.verdict.co.uk/openai-cuts-funding-goal-20bn/">Verdict</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: Proving which model you're actually talking to</h2>
+      <p class="kicker">FlashProve: an open-source library for provable inference &middot; Anthropic Frontier Red Team, with EPFL and MIT collaborators &middot; <a href="https://www.anthropic.com/research/provable-inference">anthropic.com</a></p>
+
+      <p>Imagine paying a restaurant for a Michelin-starred chef's meal and having no way to know whether the food was made by that chef or outsourced to a diner down the street. For AI, this has been the status quo: a company tells you it is running a particular model, and you have to take its word for it. FlashProve is the first open-source, production-scale attempt to give you the receipt.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When you send a message to an AI service, the reply passes through servers you cannot inspect. The company could serve you a cheaper or weaker model, substitute a competitor's model in a routing system, or be compromised without anyone noticing. This matters most in regulated settings — legal research, clinical decisions, financial audits — where knowing <em>which</em> model produced an output could soon be a legal requirement. The technical challenge is making the proof cheap enough to actually use. Earlier work in "zkML" (zero-knowledge machine learning) could verify tiny models at about 0.02 tokens per second — roughly the pace of a thoughtful typist, far too slow for a conversation. Scaling to frontier models looked prohibitive.</p>
+
+      <h3>How it works</h3>
+      <p>Think of it like a notary seal on a document. Before FlashProve can be used, the model provider runs an <strong>offline phase</strong> that takes about 39 minutes: it publishes a short cryptographic <em>commitment</em> to its model's weights — a kind of fingerprint that pins down exactly one set of weights without revealing them. This is the equivalent of sealing the document and registering it with the notary.</p>
+
+      <p>Then, every time the model answers a query, it runs an <strong>online phase</strong>: it generates a proof alongside the reply. The proof says, in mathematical language, "the committed model — the same one whose fingerprint you have — produced these exact output tokens from this prompt." The proof is about 19 megabytes. Anyone who has the fingerprint, the prompt, and the reply can then verify the proof on a laptop CPU in roughly 17 to 21 seconds, with no GPU required.</p>
+
+      <p>The underlying mechanism is called a <em>zkSNARK</em> (explained in the Decoder). The key engineering insight is that FlashProve takes advantage of the fact that most large models are structured as <em>mixture-of-experts</em> (MoE): only about 17 billion of the model's 400 billion parameters are active for any given token. The prover only has to prove computations over the active slice, not all 400 billion weights, which is what makes the speed feasible. It runs entirely on one H100 GPU by streaming weight segments from memory, without needing to hold the whole model in GPU RAM at once.</p>
+
+      <h3>What they actually did</h3>
+      <p>Anthropic demonstrated FlashProve on the public 4-bit version of Llama 4 Maverick, a 400-billion-parameter MoE model — not a Claude model, because Claude's weights are not public. The commitment phase runs once per model deployment and takes 39 minutes. The online proving phase handles a batch of 24 requests in roughly 223 seconds total, or about 110 tokens per second across the batch. Each proof is 18.78 MB, and verification runs in 17 seconds on 24 CPU cores (21 seconds on a single core). The overhead compared to ordinary model serving is 70–95 times slower per GPU, which is significant but not prohibitive for high-value or regulated use cases.</p>
+
+      <h3>What they found</h3>
+      <p>The numbers represent a roughly 5,000-fold improvement over prior open-source zkML work on a model of comparable size. The commitment expires after about 16 million requests and must be renewed, which is a manageable operational burden. The Lean formal-verification component — the mathematical proof that the system is correct — passes all checks, though Anthropic notes the executable C++ code has not been formally verified against the protocol spec, so human audits are still needed.</p>
+
+      <!-- SVG figure: FlashProve flow -->
+      <figure>
+        <svg viewBox="0 0 720 260" role="img" aria-label="FlashProve four-step verification flow" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;font-family:system-ui,sans-serif;">
+          <!-- Background -->
+          <rect width="720" height="260" fill="#FAF9F6" rx="8"/>
+
+          <!-- Step boxes -->
+          <!-- Box 1: Offline phase -->
+          <rect x="20" y="80" width="140" height="90" rx="8" fill="#D97757" fill-opacity="0.15" stroke="#D97757" stroke-width="1.5"/>
+          <text x="90" y="108" text-anchor="middle" font-size="11" fill="#141413" font-weight="600">Offline phase</text>
+          <text x="90" y="124" text-anchor="middle" font-size="10" fill="#87867F">Provider commits</text>
+          <text x="90" y="138" text-anchor="middle" font-size="10" fill="#87867F">to model weights</text>
+          <text x="90" y="155" text-anchor="middle" font-size="10" fill="#D97757" font-weight="600">~39 min · once</text>
+
+          <!-- Arrow 1 -->
+          <line x1="162" y1="125" x2="195" y2="125" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <!-- Box 2: User query -->
+          <rect x="197" y="80" width="140" height="90" rx="8" fill="#6A8CAF" fill-opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="267" y="108" text-anchor="middle" font-size="11" fill="#141413" font-weight="600">User sends prompt</text>
+          <text x="267" y="124" text-anchor="middle" font-size="10" fill="#87867F">Model replies +</text>
+          <text x="267" y="138" text-anchor="middle" font-size="10" fill="#87867F">generates proof</text>
+          <text x="267" y="155" text-anchor="middle" font-size="10" fill="#6A8CAF" font-weight="600">~110 tok/s · 19 MB</text>
+
+          <!-- Arrow 2 -->
+          <line x1="339" y1="125" x2="372" y2="125" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <!-- Box 3: Proof delivered -->
+          <rect x="374" y="80" width="140" height="90" rx="8" fill="#788C5D" fill-opacity="0.15" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="444" y="108" text-anchor="middle" font-size="11" fill="#141413" font-weight="600">Proof delivered</text>
+          <text x="444" y="124" text-anchor="middle" font-size="10" fill="#87867F">Reply + 19 MB proof</text>
+          <text x="444" y="138" text-anchor="middle" font-size="10" fill="#87867F">sent to user</text>
+          <text x="444" y="155" text-anchor="middle" font-size="10" fill="#87867F">alongside response</text>
+
+          <!-- Arrow 3 -->
+          <line x1="516" y1="125" x2="549" y2="125" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <!-- Box 4: Verify -->
+          <rect x="551" y="80" width="150" height="90" rx="8" fill="#6A8CAF" fill-opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="626" y="108" text-anchor="middle" font-size="11" fill="#141413" font-weight="600">User verifies</text>
+          <text x="626" y="124" text-anchor="middle" font-size="10" fill="#87867F">CPU-only, no GPU</text>
+          <text x="626" y="138" text-anchor="middle" font-size="10" fill="#87867F">needed to check</text>
+          <text x="626" y="155" text-anchor="middle" font-size="10" fill="#6A8CAF" font-weight="600">~17 s · any laptop</text>
+
+          <!-- Labels under flow -->
+          <text x="90" y="195" text-anchor="middle" font-size="10" fill="#87867F">Weights hidden.</text>
+          <text x="90" y="208" text-anchor="middle" font-size="10" fill="#87867F">Fingerprint public.</text>
+
+          <text x="444" y="195" text-anchor="middle" font-size="10" fill="#87867F">Reply and proof travel</text>
+          <text x="444" y="208" text-anchor="middle" font-size="10" fill="#87867F">together to the user.</text>
+
+          <!-- Title -->
+          <text x="360" y="38" text-anchor="middle" font-size="13" font-weight="700" fill="#141413">How FlashProve works</text>
+          <text x="360" y="55" text-anchor="middle" font-size="10" fill="#87867F">Zero-knowledge inference verification · Anthropic, Nov 2026</text>
+
+          <!-- Arrowhead marker -->
+          <defs>
+            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#87867F"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>FlashProve's four-step flow: the provider commits to its weights once (offline), then every reply ships with a cryptographic proof. Anyone can verify the proof on a laptop CPU — no special hardware needed.</figcaption>
+      </figure>
+
+      <h3>The catch</h3>
+      <p>Several important limits. First, FlashProve proves an <em>integer</em> approximation of the model under <em>greedy decoding</em> (always picking the single most likely next word). Real-world AI responses use floating-point arithmetic and sampling — which means the proved computation and the actual response can legitimately differ slightly. Second, the system does not hide the model's architecture, only its weights — so the layout of the model is still visible to a verifier. Third, the 70–95× overhead means a service would need roughly 70–95 times as many GPUs to prove every reply, making it economically meaningful only for high-value or regulated queries. Fourth, the context window is currently limited to 1,024 tokens — a fraction of what modern models can handle. And fifth, Anthropic explicitly calls this a research prototype, not a finished product; the codebase is described as unmaintained for now.</p>
+
+      <p><strong>If you remember one thing:</strong> FlashProve proves that the reply you received came from a specific model, using math rather than trust — but only for a short, integer-approximated version of the response, at significant compute cost.</p>
+
+      <h2>Why it matters</h2>
+      <p>Trust has always been the unresolved question in AI deployment. Companies make claims about which model serves their products; regulators are starting to require audit trails; and the gap between "we used GPT-5" and "we can prove we used GPT-5" has been a soft spot in every accountability framework. FlashProve does not close that gap entirely — the integer-and-greedy-decoding limitation is real — but it establishes that closing it is physically possible without destroying the economics entirely. The 5,000-fold speed improvement over prior open-source work suggests the field can keep improving. When courts, hospitals, or financial regulators start requiring auditable AI provenance — and that day is coming — the infrastructure conversation will start here.</p>
+
+      <p>The week's other signal is the market turbulence around AI infrastructure. OpenAI's trimmed fundraising round, the Alphabet selloff, and the broader Nasdaq decline reflect a growing investor question: when does the AI spending pay off in revenue? The labs themselves have no clean answer yet. The honest version of this week is a split-screen: extraordinary technical progress in the lab, real uncertainty about the economics outside it.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.anthropic.com/research/provable-inference">Anthropic — FlashProve announcement</a> ·
+        <a href="https://www.marktechpost.com/2026/11/03/anthropic-flashprove-provable-inference-zksnark/">MarkTechPost — FlashProve coverage</a> ·
+        <a href="https://arxiv.org/abs/2611.03126">arXiv — CUA-Master paper</a> ·
+        <a href="https://techcrunch.com/2026/10/31/openai-reportedly-lowers-funding-target-for-new-round/">TechCrunch — OpenAI funding round</a> ·
+        <a href="https://www.newsbytesapp.com/news/business/anthropic-eyes-november-ipo-at-2-trillion-valuation/story">NewsBytes — Anthropic IPO timing</a> ·
+        <a href="https://aiweekly.co/alerts/openai-google-microsoft-anthropic-back-one-ai-opt-out-token">AI Weekly — Unified robots.txt opt-out</a> ·
+        <a href="https://finance.biggo.com/news/8366ebd0-f097-488e-8fb1-e15d4dfdbed6">BigGo Finance — FlashProve detail</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">zkSNARK</div>
+        <div>Short for "zero-knowledge succinct non-interactive argument of knowledge." It is a way to prove that you did a computation correctly — without revealing the inputs. Like proving you solved a puzzle without showing your working. "Zero-knowledge" means the verifier learns nothing beyond "the claim is true." "Succinct" means the proof is small. "Non-interactive" means you send the proof once; no back-and-forth needed.</div>
+      </div>
+      <dl>
+        <dt>Provable inference</dt><dd>The goal of mathematically proving that a specific model — not a substitute — generated a given response. FlashProve is a prototype for this.</dd>
+
+        <dt>Commitment scheme</dt><dd>A cryptographic technique where you "lock in" a value (here: model weights) by publishing a short fingerprint, then later prove that some computation used exactly the locked-in value. The weights stay hidden; the fingerprint is public.</dd>
+
+        <dt>Greedy decoding</dt><dd>A way of generating text where the model always picks the single most probable next word at each step, with no randomness. Deterministic and fast to prove, but tends to produce blander, more repetitive text than sampled outputs.</dd>
+
+        <dt>Mixture-of-experts (MoE)</dt><dd>A model architecture where the neural network is split into many specialist "expert" sub-networks, and only a small subset — typically 1–8% — activates for any given input. It allows a large total parameter count with manageable per-token compute cost. Llama 4 Maverick and many frontier models use this design.</dd>
+
+        <dt>robots.txt</dt><dd>A simple text file that websites have used since 1994 to tell web crawlers what they may or may not index. The new <code>__usage_ai-training</code> token extends this convention to cover AI training crawlers specifically — the same mechanism, but a new instruction the major labs have agreed to respect.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

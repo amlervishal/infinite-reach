@@ -1,5 +1,40 @@
 [
   {
+    "num": 159,
+    "date": "2026-11-04",
+    "slug": "issues/2026-11-04.html",
+    "title": "The Weight of Proof",
+    "blurb": "Anthropic releases FlashProve, an open-source system using cryptographic math to prove which model generated a reply; OpenAI trims its funding round to $20B amid a tech selloff; and a 27B model learns to match a 400B one on computer-use tasks."
+  },
+  {
+    "num": 158,
+    "date": "2026-11-03",
+    "slug": "issues/2026-11-03.html",
+    "title": "A Threshold in the Fine Print",
+    "blurb": "Anthropic's IPO amendment adds unprecedented language saying it may soon hit its promised capability stop; meanwhile, fifty AI agents in Minecraft couldn't solve a food crisis."
+  },
+  {
+    "num": 157,
+    "date": "2026-11-02",
+    "slug": "issues/2026-11-02.html",
+    "title": "A Scientist Without a Name",
+    "blurb": "A Google AI system claims to run scientific research end-to-end with no human in the loop, beating researchers on 80% of frontier benchmarks; UK chip startup Fractile raises £540M to build inference hardware outside Nvidia; and China's largest open-weight model drops Thursday."
+  },
+  {
+    "num": 156,
+    "date": "2026-11-01",
+    "slug": "issues/2026-11-01.html",
+    "title": "The Known Frontier",
+    "blurb": "A study of 26 million scientific papers finds AI extends the frontier of research without creating new directions; Apple Intelligence arrives in China on Alibaba's Qwen model; and Moonshot's giant open-weight model is days from release."
+  },
+  {
+    "num": 155,
+    "date": "2026-10-31",
+    "slug": "issues/2026-10-31.html",
+    "title": "Before the Bell",
+    "blurb": "Anthropic files for a Nasdaq IPO with its co-founders pledging 80% of their equity to philanthropy; OpenAI quietly trims its own fundraising target; and a new open-weight video world model from Tencent lets you direct a scene through conversation."
+  },
+  {
     "num": 154,
     "date": "2026-10-30",
     "slug": "issues/2026-10-30.html",
