@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №155 — Before the Bell · Infinite Reach</title>
+  <meta name="description" content="Anthropic files for a Nasdaq IPO with its co-founders pledging most of their equity to philanthropy, while OpenAI quietly trims its own fundraising target — and a new video world model from Tencent lets you direct a scene through conversation." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №155 &middot; Saturday, November 1, 2026</p>
+      <h1>Before the Bell</h1>
+      <p>Anthropic is heading for a public stock listing, its founders pledging most of their personal equity to philanthropy. A few miles away, OpenAI has quietly dialled back the ambition of its own fundraising round. The money is still arriving — it just wants more transparency now.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic has filed to list on Nasdaq under the ticker symbol ANT, with a financing package reportedly worth $63 billion arranged by Broadcom to help the company buy the custom AI chips it needs to keep training frontier models. The same filing revealed that each of Anthropic's co-founders has pledged 80% of their personal equity in the company to philanthropic causes — an unusual and public commitment for a startup at this stage. Going public means quarterly disclosures, institutional shareholders, and analysts picking through every cost. That kind of scrutiny is a very different pressure from the private funding rounds that have sustained Anthropic so far. It is also a signal: the lab that has been most vocal about the risks of its own technology is now betting that public accountability will make it more trustworthy, not less.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Fundraising</span><span>OpenAI trimmed its fundraising target from a $1.4 trillion valuation to $1.25 trillion after private-wealth investors pushed back on the higher price; the round, which could raise up to $30 billion, had a commitment deadline of October 30. The $150 billion reduction sounds dramatic but still puts OpenAI's implied value well above any prior technology IPO.</span></li>
+        <li><span class="tag tech">Cyber AI</span><span>Google announced Gemini 4 Carbon, a frontier model it is initially releasing only to cybersecurity defenders — not to the public. Google claims it scored 88.2% on SEC-bench Pro (finding vulnerabilities in code) and 71% on CWE-bench (patching them). Independent validation hasn't happened yet; these are Google's own numbers.</span></li>
+        <li><span class="tag tech">Agent oversight</span><span>OpenAI and Anthropic each published research this week on using one AI to watch another: OpenAI built a system to flag unauthorized actions by autonomous agents; Anthropic described a method for Claude to review its own conversation history for signs of misuse. Both approaches treat AI oversight as itself an AI task.</span></li>
+        <li><span class="tag money">Capex</span><span>Meta raised its full-year capital expenditure guidance to $135–145 billion — up again from earlier guidance. At the same time, S&amp;P analysts questioned whether Meta is converting its AI investments into revenue fast enough.</span></li>
+        <li><span class="tag tech">Open weights</span><span>Moonshot AI published the full weights for its Kimi K3 model on Hugging Face, adding another large open-weights option to a crowded field that already includes Llama, Mistral, and Qwen.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: teaching a video model to take directions</h2>
+      <p class="kicker">Hy-Nomas: Towards Free-form Interactive World Generation &middot; Tencent Hunyuan Visual Generation Team &middot; <a href="https://arxiv.org/abs/2610.36729">arXiv 2610.36729</a></p>
+
+      <p>Most video generators work like a vending machine: you insert a text description, you collect a short clip. Hy-Nomas is a different kind of machine — one you can hold a conversation with. You can tell it to pan the camera, add rain, or make the character turn around, and each instruction builds on the scene it has already created. That capability turns out to require solving several hard problems at once, and the paper is a methodical account of how the team cracked them.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Generating a single video clip from a text prompt is now well-understood. What remains difficult is <em>interactive</em> generation: letting a user steer the scene across multiple steps while keeping the world internally consistent. The challenge has two parts. First, a model has to track causality across time — what happened in frame 100 must still be logically true in frame 500, even if the user asked for a camera move in between. Second, it has to follow instructions that are genuinely "free-form": natural language like "make it more misty" is much harder to map to pixel changes than a precise API call. Before this work, interactive video models either locked the camera to fixed motion modes (left, right, zoom) or kept the scene so short that continuity wasn't really tested. Hy-Nomas tackles multi-turn, free-form interaction at a clip length that starts to resemble a real scene.</p>
+
+      <h3>How it works</h3>
+      <p>Think of it like a theatre director working with a troupe that has a very good visual memory. The director (you) says "it's a misty valley at dawn." The troupe improvises the opening scene. You say "pan right and show the village." They smoothly continue the scene — they remember what the valley looked like, they extend it. You say "now it starts to rain." They add rain consistently, without re-drawing the mountains. The "visual memory" that makes this work in Hy-Nomas is a design called <strong>action-aware causal attention</strong>. Standard video generators treat every frame equally; causal attention means each new frame can only look <em>back</em> at what came before, never forward, so the model is always extending a running history rather than revising it wholesale. The "action-aware" part means the model has been taught to connect specific kinds of instructions — camera moves, scene changes, object actions — to how pixels should shift. The training then happened in four stages: the model first learned to generate coherent video without any instruction (just visual causality); then it learned to follow text prompts; then it learned camera-control commands; finally it trained on its own outputs — video it had already generated — to get better at extending long sequences. This last stage, called <em>diffusion distillation</em>, is also what let the team shrink the final model enough to run on a single consumer GPU.</p>
+
+      <h3>What they actually did</h3>
+      <p>The base model is an 8-billion-parameter diffusion transformer built on top of HunyuanVideo 1.5, a Tencent video model that was already capable of high-quality single-shot generation. The team built a structured captioning pipeline — essentially a way to automatically annotate training videos with both what is happening and how the camera is moving — so the model could learn from large-scale unlabelled video rather than expensively hand-annotated clips. They then ran the four-stage curriculum above and, at the end, distilled the model into a lighter version that the paper says runs on a single RTX 4090 GPU with INT8-precision weights. They evaluated it on human preference studies comparing it to existing interactive video models, measuring whether outputs looked temporally consistent and whether the scene obeyed the user's instructions.</p>
+
+      <h3>What they found</h3>
+      <p>The team reports that Hy-Nomas outperformed existing interactive world models on their human-preference evaluation across both consistency and instruction-following metrics. The distilled model retained most of that quality at a fraction of the compute. One pattern worth noting: camera control commands worked more reliably than abstract scene-change instructions ("make it more cinematic" was harder than "pan left 30 degrees"). This aligns with what other researchers have found — geometric commands map more cleanly to pixel transformations than aesthetic ones.</p>
+
+      <h3>The catch</h3>
+      <p>The human-preference evaluation was conducted by the authors, not a third party, so the benchmark comparisons should be treated as preliminary until replicated. More practically: the paper demonstrates free-form interaction in relatively contained scenes. It is not yet clear how well the model handles very long interaction sequences (dozens of turns), rapid subject changes, or scenes with many distinct moving characters. The consistency that impressed evaluators in short sequences may degrade in longer ones. "Runs on an RTX 4090" is also relative — at INT8 precision, inference is slow enough that real-time interactive generation is not yet possible.</p>
+
+      <p><strong>If you remember one thing:</strong> A video world model you can <em>direct through conversation</em>, rather than generate with a single prompt, is a meaningfully new kind of tool — and this is one of the first credible open-weight versions of it.</p>
+
+      <!-- SVG diagram -->
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Multi-turn interaction with Hy-Nomas: each user instruction extends the running video history">
+          <!-- Background -->
+          <rect width="720" height="310" fill="#FAF9F6" rx="8"/>
+
+          <!-- Title -->
+          <text x="360" y="28" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#141413" font-weight="600">How Hy-Nomas builds a scene across conversation turns</text>
+
+          <!-- Turn 1 -->
+          <rect x="30" y="50" width="150" height="44" rx="6" fill="#6A8CAF" opacity="0.18"/>
+          <text x="105" y="68" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413">Turn 1</text>
+          <text x="105" y="84" text-anchor="middle" font-family="system-ui" font-size="10" fill="#6A8CAF">"A valley at dawn, foggy"</text>
+
+          <!-- Arrow 1 -->
+          <line x1="180" y1="72" x2="230" y2="72" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- World model box -->
+          <rect x="230" y="44" width="110" height="56" rx="6" fill="#D97757" opacity="0.13" stroke="#D97757" stroke-width="1.2"/>
+          <text x="285" y="68" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#141413" font-weight="600">World</text>
+          <text x="285" y="84" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#141413" font-weight="600">Model</text>
+
+          <!-- Arrow out 1 -->
+          <line x1="340" y1="72" x2="390" y2="72" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Frame 1 -->
+          <rect x="390" y="50" width="130" height="44" rx="6" fill="#788C5D" opacity="0.18"/>
+          <text x="455" y="68" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413">Frame sequence 1</text>
+          <text x="455" y="84" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">misty valley generated</text>
+
+          <!-- Feedback arrow back to model (history) -->
+          <path d="M455 94 Q455 120 285 120 Q230 120 230 100" stroke="#D97757" stroke-width="1" fill="none" stroke-dasharray="4 3" opacity="0.6"/>
+          <text x="360" y="115" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#D97757">running history</text>
+
+          <!-- Turn 2 -->
+          <rect x="30" y="150" width="150" height="44" rx="6" fill="#6A8CAF" opacity="0.18"/>
+          <text x="105" y="168" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413">Turn 2</text>
+          <text x="105" y="184" text-anchor="middle" font-family="system-ui" font-size="10" fill="#6A8CAF">"Pan right — show the village"</text>
+
+          <line x1="180" y1="172" x2="230" y2="172" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="230" y="144" width="110" height="56" rx="6" fill="#D97757" opacity="0.13" stroke="#D97757" stroke-width="1.2"/>
+          <text x="285" y="168" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#141413" font-weight="600">World</text>
+          <text x="285" y="184" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#141413" font-weight="600">Model</text>
+
+          <line x1="340" y1="172" x2="390" y2="172" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="390" y="150" width="130" height="44" rx="6" fill="#788C5D" opacity="0.18"/>
+          <text x="455" y="168" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413">Frame sequence 2</text>
+          <text x="455" y="184" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">smooth pan, village appears</text>
+
+          <path d="M455 194 Q455 220 285 220 Q230 220 230 200" stroke="#D97757" stroke-width="1" fill="none" stroke-dasharray="4 3" opacity="0.6"/>
+          <text x="360" y="215" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#D97757">running history</text>
+
+          <!-- Turn 3 -->
+          <rect x="30" y="248" width="150" height="44" rx="6" fill="#6A8CAF" opacity="0.18"/>
+          <text x="105" y="266" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413">Turn 3</text>
+          <text x="105" y="282" text-anchor="middle" font-family="system-ui" font-size="10" fill="#6A8CAF">"Now it starts to rain"</text>
+
+          <line x1="180" y1="270" x2="230" y2="270" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="230" y="244" width="110" height="56" rx="6" fill="#D97757" opacity="0.13" stroke="#D97757" stroke-width="1.2"/>
+          <text x="285" y="266" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#141413" font-weight="600">World</text>
+          <text x="285" y="282" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#141413" font-weight="600">Model</text>
+
+          <line x1="340" y1="270" x2="390" y2="270" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="390" y="248" width="130" height="44" rx="6" fill="#788C5D" opacity="0.18"/>
+          <text x="455" y="266" text-anchor="middle" font-family="system-ui" font-size="11" fill="#141413">Frame sequence 3</text>
+          <text x="455" y="282" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">rain consistent with scene</text>
+
+          <!-- Arrow marker -->
+          <defs>
+            <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#D1CFC5"/>
+            </marker>
+          </defs>
+
+          <!-- Legend note -->
+          <text x="560" y="112" text-anchor="middle" font-family="system-ui" font-size="9" fill="#87867F">Each model call</text>
+          <text x="560" y="124" text-anchor="middle" font-family="system-ui" font-size="9" fill="#87867F">receives full</text>
+          <text x="560" y="136" text-anchor="middle" font-family="system-ui" font-size="9" fill="#87867F">prior history</text>
+          <line x1="527" y1="120" x2="522" y2="120" stroke="#D97757" stroke-width="1" stroke-dasharray="3 2"/>
+        </svg>
+        <figcaption>Hy-Nomas feeds each user instruction into the same world model, which always receives the full running history of prior frames — so "now make it rain" can be consistent with the valley and the village the model already created.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>Patel was the guest on Tyler Cowen's <em>Interesting Times</em> show this month — a role-reversal for one of the most influential interviewers in the AI space. He talked about what makes a great question and why the best researchers he's spoken to all share the same trait. <a href="https://dnyuz.com/2026/10/15/inside-the-mind-of-a-i-s-most-essential-chronicler/">Read the conversation →</a></span></li>
+        <li><span class="tag tech">Garry Tan / YC</span><span>Y Combinator's current batch has reportedly crossed 800 active startups for the first time, with the majority building AI-native products. A record batch is a trailing indicator — it tells you where a lot of smart, hungry people thought it was worth putting their time three months ago. <a href="https://www.thetechedvocate.org/835-yc-ai-startups-just-launched-the-shocking-truth-behind-this-explosive-batch/">More →</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things are happening at once this week. The first is about money: the frontier AI labs are moving from private funding — where you can avoid hard questions — to public scrutiny, where you can't. Anthropic going public on Nasdaq means quarterly earnings calls, analyst days, and investors who want to know how soon "safety-first AI" turns a profit. OpenAI dialling back its own fundraising is a subtler version of the same pressure: the market is finally starting to ask for evidence alongside ambition. The second thing is about capability: models are beginning to simulate and steer persistent environments, not just answer questions. Hy-Nomas is one example; the cybersecurity focus of Gemini 4 Carbon is another. The tools are becoming less like calculators and more like environments you can step inside. Those two trajectories — public accountability, persistent AI environments — are going to collide in interesting ways over the next twelve months.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://bloomberg.com/news/articles/2026-10-31/openai-funding-goal-cut-by-10-billion-as-ai-stocks-dip-ft-says">Bloomberg — OpenAI funding cut</a> ·
+        <a href="https://digg.com/tech/9irienle">Digg / FT — OpenAI valuation target</a> ·
+        <a href="https://github.com/diclogic/ai-daily-digest/issues/198">AI Daily Digest (Oct 30)</a> ·
+        <a href="https://windowsreport.com/?p=1513595">Windows Report — Gemini 4 Carbon benchmarks</a> ·
+        <a href="https://androidauthority.com/google-announces-gemini-4-carbon-3729367">Android Authority — Gemini 4 Carbon</a> ·
+        <a href="https://www.besthub.dev/articles/how-anthropic-and-openai-monitor-frontier-ai-agent-behavior-a-comprehensive-review-d92a1d3a28e7">BestHub — agent monitoring</a> ·
+        <a href="https://arxiv.org/abs/2610.36729">arXiv 2610.36729 — Hy-Nomas paper</a> ·
+        <a href="https://www.llmreference.com/model/hy-nomas">LLM Reference — Hy-Nomas overview</a> ·
+        <a href="https://dnyuz.com/2026/10/15/inside-the-mind-of-a-i-s-most-essential-chronicler/">DNYUZ — Dwarkesh Patel interview</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">World model</div>
+        <div>A system that has learned enough about how things work to <em>simulate</em> what would happen next, rather than just pattern-matching what has happened before. A chess engine that runs ahead by ten moves has a world model for chess. Hy-Nomas has a world model for how scenes look and change. The term comes from robotics, where robots need to plan actions by imagining consequences.</div>
+      </div>
+      <dl>
+        <dt>Causal attention</dt><dd>A design where each element in a sequence can only look at what came before it — not what comes after. It makes generation consistent across time: frame 200 can see frame 100, but not the other way around.</dd>
+        <dt>Diffusion distillation</dt><dd>Taking a slow, high-quality AI model and training a smaller, faster version to mimic it. The big model generates examples; the small model learns to match them, cutting compute without losing much quality.</dd>
+        <dt>INT8</dt><dd>A way of storing numbers that uses 8 bits instead of the usual 16 or 32. Models run in INT8 are roughly half the size and faster, at a small cost in precision — useful for fitting large models onto consumer hardware.</dd>
+        <dt>Frontier model</dt><dd>The current state-of-the-art — the most capable models that exist at a given moment, typically built by a handful of well-resourced labs. The frontier moves; what is frontier today is mid-tier in a year.</dd>
+        <dt>IPO</dt><dd>Initial public offering — the first time a private company sells shares to the general public. It creates public shareholders, quarterly reporting requirements, and a market price anyone can look up. For an AI lab, it also means disclosing far more about your financials and governance than you had to before.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

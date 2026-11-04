@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №156 — The Known Frontier · Infinite Reach</title>
+  <meta name="description" content="A study of 26 million scientific papers finds AI extends the frontier of research without creating new directions. Plus: Apple Intelligence arrives in China on Alibaba's Qwen model, and Moonshot's giant open-weight model is days from release." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №156 &middot; November 1, 2026</p>
+      <h1>The Known Frontier</h1>
+      <p>On the same day Apple confirmed its iPhone AI will run on Alibaba's model in China, a new study of 26 million scientific papers reveals exactly where machines still can't go: genuinely uncharted territory.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Apple confirmed on October 31st that Alibaba's Qwen model will power Apple Intelligence features for Chinese iPhones, with developer testing starting November 4th and a public rollout planned in December's iOS 27.3. This is the first time Apple has shipped its own-brand AI on another company's foundation model — and notably, that company is a Chinese lab. The significance runs both ways: for Apple, it's a pragmatic workaround to China's restrictions on US AI systems; for Alibaba, it's a validation at the highest possible scale. Hundreds of millions of iPhones in China stand to get the feature.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Open weights</span><span>Moonshot AI's Kimi K3.1 Pro — a 2.8-trillion-parameter mixture-of-experts model — is live on the API at $2/$10 per million tokens (roughly half the price of Claude Opus 5.5), with full open weights releasing November 4th. <a href="https://letsdatascience.com/news/moonshot-releases-kimi-k31-pro-api-open-weights-due-nov-4-786e160c">Source</a></span></li>
+        <li><span class="tag tech">Life sciences</span><span>OpenAI's GPT-Rosalind, its biology and drug-discovery model named after Rosalind Franklin, moved out of restricted preview and is now available to eligible organisations globally; partners include Amgen, Moderna, and the Allen Institute. <a href="https://thenextweb.com/news/openai-gpt-rosalind-life-sciences-drug-discovery-ai-model">Source</a></span></li>
+        <li><span class="tag money">Financials</span><span>Anthropic's now-public S-1 filing shows first-half 2026 revenues of $16.3 billion — up from $1.2 billion a year earlier. The eye-catching $80.7 billion headline loss is dominated by accounting adjustments on convertible notes, not cash spending. <a href="https://www.guru3d.com/story/anthropic-ipo-filing-shows-billion-first-half-accounting-loss/">Source</a></span></li>
+        <li><span class="tag policy">Safety terms</span><span>Moonshot says the open-weight version of Kimi K3.1 Pro will deliberately omit capabilities that would "extend the absolute frontier of cyber attack" — the first major open-weight release to write this restriction explicitly into its launch terms. <a href="https://www.vktr.com/ai-platforms/kimi-k31-pro-nears-top-proprietary-models-as-moonshot-limits-its-cyber-skills/">Source</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: do machines discover, or only extend?</h2>
+      <p class="kicker">"Large Language Models Extend Known Research But Do Not Create New Research Directions" &middot; Liu, Butler, Machlanski, Bueno &amp; Tsaftaris &middot; <a href="https://arxiv.org/abs/2610.17439">arXiv:2610.17439</a> (12 October 2026)</p>
+
+      <p>We keep being told that AI is going to transform science. This paper ran the most rigorous test of that claim yet — and found the answer splits in two.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>The philosopher Thomas Kuhn drew a line between two kinds of scientific work. "Normal science" is the majority: filling in detail, running the next experiment, extending what's already known. A paradigm shift is something rarer: a new framework that reorganises an entire field. Most AI-and-science coverage conflates the two. If language models can generate useful hypotheses, it's tempting to say they'll accelerate discovery. But there's a harder question: can they do more than normal science? Can they point toward genuinely new territory, or do they just go further down roads that humans already marked out?</p>
+
+      <p>The difficulty is that "novelty" is slippery. A hypothesis can be new in the sense that nobody wrote it down before, while still being a small step inside an existing tradition. To measure this properly, you need a way to locate ideas in a shared conceptual space — and then distinguish between <em>distance</em> (how far from existing work) and <em>direction</em> (whether you're heading somewhere nobody has gone before).</p>
+
+      <h3>How it works</h3>
+      <p>Imagine you're making a map of all ideas in a scientific field. You take a pretrained model that reads papers and converts them into coordinates — so papers about similar topics cluster together and papers about very different things end up far apart. That's the underlying machinery here. The team used a pretrained scientific-embedding model to place every paper in a shared coordinate space.</p>
+
+      <p>Their key analogy is walking in an unfamiliar landscape. A human scientist who discovers a paradigm-shifting idea is like someone who turns from the established trail, finds a ridge, and describes a valley that nobody knew existed. A model that extends known research is like someone who walks further along the same trail than any prior explorer — still impressive, still useful, but not the same thing.</p>
+
+      <p>To capture both, the team built a metric they call the Originality-Novelty Score (ONS). It rewards ideas that sit far from the existing literature AND that sit at the edge of an unexplored direction, not just at the end of a well-worn one. A hypothesis that's a long way from known work but heads in a familiar direction scores less than one that points toward a genuinely new conceptual region, even if the raw distance is smaller.</p>
+
+      <h3>What they actually did</h3>
+      <p>The authors embedded 26.9 million human-authored papers spanning 1,325 research topics across six natural-science fields (biology, chemistry, materials science, physics, medicine, and computer science). Then they generated 524,308 hypotheses from eight large language models — both frontier-class and open-weight variants — on the same topics, and embedded those too. For each of the 1,325 topics, they compared the distribution of LLM hypotheses against the distribution of real papers on the same topic, running statistical tests across all six fields and all eight models.</p>
+
+      <h3>What they found</h3>
+      <p>The results split cleanly along the distance/direction line. On raw distance from the existing literature, LLMs were competitive with humans — sometimes pushing further from the known edge of a field than published papers do. But on the direction dimension, human papers reliably won. The median human paper had an ONS score 15–23% higher than the median LLM-generated hypothesis, across all six fields and all eight models (P&lt;0.001). In head-to-head comparisons within the same research topic, the human paper had the higher ONS in 72–82% of draws.</p>
+
+      <p>The authors put it plainly: current LLMs function as "engines of normal science." They extend established research directions — occasionally further than published papers — but direct a smaller share of their output toward genuinely new paradigmatic territory. The failure mode isn't laziness or lack of ambition; it's that models seem to optimise for plausibility, and new directions are inherently implausible-looking before they're proven right.</p>
+
+      <h3>The catch</h3>
+      <p>This is a preprint, not yet peer-reviewed. The ONS metric is the team's own invention, and operationalising "new research direction" through geometric distance in embedding space is a reasonable proxy — not the same thing a domain scientist would call a paradigm shift. The study also doesn't test the augmented case: can LLMs help human scientists discover new directions, even if they can't do it alone? That's arguably the more important question for practice, and it goes unanswered here.</p>
+
+      <p><strong>If you remember one thing:</strong> AI is already science's best extender of existing paths. Whether it can open genuinely new ones — or needs a human to do that — is still an open question, and this paper is the best evidence yet that the answer is not a simple yes.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 340" role="img" aria-label="Diagram showing the difference between LLM hypothesis extensions (further along known paths) and human paradigm-shifting papers (pointing in new directions)" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrow-llm" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#D97757"/>
+            </marker>
+            <marker id="arrow-human" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#788C5D"/>
+            </marker>
+          </defs>
+
+          <rect width="720" height="340" fill="#faf9f7" rx="6"/>
+
+          <circle cx="220" cy="180" r="6" fill="#D1CFC5"/>
+          <circle cx="240" cy="165" r="5" fill="#D1CFC5"/>
+          <circle cx="255" cy="185" r="6" fill="#D1CFC5"/>
+          <circle cx="230" cy="200" r="5" fill="#D1CFC5"/>
+          <circle cx="265" cy="170" r="4" fill="#D1CFC5"/>
+          <circle cx="210" cy="160" r="5" fill="#D1CFC5"/>
+          <circle cx="248" cy="200" r="4" fill="#D1CFC5"/>
+          <circle cx="270" cy="190" r="5" fill="#D1CFC5"/>
+          <circle cx="225" cy="215" r="4" fill="#D1CFC5"/>
+          <circle cx="285" cy="175" r="5" fill="#D1CFC5"/>
+          <circle cx="260" cy="155" r="5" fill="#D1CFC5"/>
+          <circle cx="235" cy="150" r="4" fill="#D1CFC5"/>
+          <circle cx="275" cy="205" r="4" fill="#D1CFC5"/>
+
+          <line x1="285" y1="175" x2="350" y2="130" stroke="#D97757" stroke-width="2" marker-end="url(#arrow-llm)" stroke-dasharray="4,3"/>
+          <line x1="265" y1="170" x2="335" y2="120" stroke="#D97757" stroke-width="2" marker-end="url(#arrow-llm)" stroke-dasharray="4,3"/>
+          <circle cx="355" cy="127" r="5" fill="#D97757" opacity="0.7"/>
+          <circle cx="340" cy="117" r="5" fill="#D97757" opacity="0.7"/>
+
+          <line x1="275" y1="205" x2="365" y2="200" stroke="#D97757" stroke-width="2" marker-end="url(#arrow-llm)" stroke-dasharray="4,3"/>
+          <line x1="285" y1="175" x2="370" y2="165" stroke="#D97757" stroke-width="2" marker-end="url(#arrow-llm)" stroke-dasharray="4,3"/>
+          <circle cx="370" cy="198" r="5" fill="#D97757" opacity="0.7"/>
+          <circle cx="375" cy="162" r="5" fill="#D97757" opacity="0.7"/>
+
+          <line x1="220" y1="180" x2="110" y2="85" stroke="#788C5D" stroke-width="2.5" marker-end="url(#arrow-human)"/>
+          <circle cx="100" cy="78" r="8" fill="#788C5D" opacity="0.8"/>
+          <text x="65" y="58" font-family="system-ui" font-size="11" fill="#788C5D" font-weight="600">New direction</text>
+
+          <text x="200" y="242" font-family="system-ui" font-size="12" fill="#87867F" text-anchor="middle">Known literature</text>
+          <text x="360" y="88" font-family="system-ui" font-size="12" fill="#D97757" text-anchor="middle">LLM hypotheses</text>
+          <text x="355" y="100" font-family="system-ui" font-size="11" fill="#D97757" text-anchor="middle">(further along same paths)</text>
+
+          <text x="570" y="130" font-family="ui-serif" font-size="13" fill="#141413" font-style="italic">Distance ≠ Direction</text>
+
+          <line x1="430" y1="270" x2="460" y2="270" stroke="#D97757" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-llm)"/>
+          <text x="470" y="274" font-family="system-ui" font-size="11" fill="#87867F">LLM extension (higher distance, same direction)</text>
+          <line x1="430" y1="295" x2="460" y2="295" stroke="#788C5D" stroke-width="2.5" marker-end="url(#arrow-human)"/>
+          <text x="470" y="299" font-family="system-ui" font-size="11" fill="#87867F">Human paradigm shift (new direction)</text>
+
+          <text x="36" y="320" font-family="system-ui" font-size="10" fill="#D1CFC5">conceptual space</text>
+        </svg>
+        <figcaption>LLMs (clay arrows) push further along established research directions than published papers typically do — but stay oriented along known paths. Human breakthroughs (olive arrow) head toward genuinely new conceptual territory. The study finds real papers win on "direction novelty" 72–82% of the time in head-to-head comparisons.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>A Tyler Cowen profile this month called him "the most influential podcaster in Silicon Valley" — and noted that he thinks the AI industry is misreading its own trajectory. Worth reading if you want the contrarian framework. <a href="https://dnyuz.com/2026/10/15/hes-the-most-influential-podcaster-in-silicon-valley-he-thinks-were-getting-this-wrong/">Read</a></span></li>
+        <li><span class="tag tech">Andrej Karpathy</span><span>His <a href="https://github.com/karpathy/autoresearch">autoresearch</a> project — which lets AI agents run machine-learning experiments autonomously on a single GPU — crossed 1,800 stars and 200 forks earlier this year. If you work in ML, it's a practical ramp into self-directed research loops.</span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things happened this week that reinforce each other in an unexpected way. The paper on AI and scientific discovery says machines are very good at extending what's already known, but that the person who opens the next frontier is still probably a human. Meanwhile, the geography of AI — which models run where, and whose infrastructure they run on — is shifting faster than most people track. Apple's decision to use a Chinese model in China isn't a curiosity; it's a sign that the field has multiplied. There is no single frontier anymore. Moonshot releasing a near-frontier open-weight model from Beijing, priced at half of what Western providers charge, is another signal in the same direction. The question of who "discovers" what — in science and in industry — is being decided in more places simultaneously than it has been since the early internet.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2610.17439">arXiv:2610.17439 (Liu et al.)</a> &middot;
+        <a href="https://hwbusters.com/news/apple-intelligence-clears-china-and-its-running-on-alibabas-qwen/">Apple Intelligence / Qwen (HWBusters)</a> &middot;
+        <a href="https://letsdatascience.com/news/moonshot-releases-kimi-k31-pro-api-open-weights-due-nov-4-786e160c">Kimi K3.1 Pro (letsdatascience)</a> &middot;
+        <a href="https://www.vktr.com/ai-platforms/kimi-k31-pro-nears-top-proprietary-models-as-moonshot-limits-its-cyber-skills/">Kimi K3.1 Pro cyber limits (VKTR)</a> &middot;
+        <a href="https://thenextweb.com/news/openai-gpt-rosalind-life-sciences-drug-discovery-ai-model">GPT-Rosalind (The Next Web)</a> &middot;
+        <a href="https://www.guru3d.com/story/anthropic-ipo-filing-shows-billion-first-half-accounting-loss/">Anthropic S-1 (guru3d)</a> &middot;
+        <a href="https://dnyuz.com/2026/10/15/hes-the-most-influential-podcaster-in-silicon-valley-he-thinks-were-getting-this-wrong/">Dwarkesh Patel profile (Dnyuz)</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Normal science</div>
+        <div>Thomas Kuhn's term for the everyday work of a field: solving puzzles within an accepted framework, not questioning the framework itself. Most science — and, now, most AI-generated hypotheses — is normal science. A paradigm shift is the rare exception that rewrites the rules.</div>
+      </div>
+      <dl>
+        <dt>ONS</dt>
+        <dd>Originality-Novelty Score — the paper's invented metric. It rewards hypotheses that are far from existing literature AND pointing in a new direction, not just further along an existing one.</dd>
+        <dt>Embedding</dt>
+        <dd>Converting text into a list of numbers so that a computer can measure how similar two ideas are. Similar ideas get similar numbers; distant ideas get different ones. Used here to map 26 million papers into a single conceptual space.</dd>
+        <dt>Mixture of Experts (MoE)</dt>
+        <dd>A model design where only a fraction of the full network activates per query. Kimi K3.1 Pro has 2.8 trillion total parameters but uses only ~104 billion for any given request — cheaper to run than a dense model of equivalent size.</dd>
+        <dt>Open weight</dt>
+        <dd>A model whose mathematical parameters are published. Anyone can download and run it. Different from open source, which also requires publishing training code and data.</dd>
+        <dt>Paradigm shift</dt>
+        <dd>Kuhn's term for a rare scientific moment when an entire field's underlying framework is replaced — not extended, but replaced. Einstein's relativity is the textbook example. The paper finds AI is not yet doing this.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
