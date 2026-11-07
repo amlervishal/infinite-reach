@@ -1,5 +1,12 @@
 [
   {
+    "num": 162,
+    "date": "2026-11-07",
+    "slug": "issues/2026-11-07.html",
+    "title": "Before the Picture Clears",
+    "blurb": "An independent evaluator found Anthropic's AI progress is now running at roughly twice the historical pace, mostly driven by AI itself; a new paper asks whether the methods used to train helpful models are structurally blind to long-term harms."
+  },
+  {
     "num": 161,
     "date": "2026-11-06",
     "slug": "issues/2026-11-06.html",

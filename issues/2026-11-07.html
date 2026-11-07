@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №162 — Before the Picture Clears · Infinite Reach</title>
+  <meta name="description" content="An independent evaluator found Anthropic's AI progress is now running at roughly twice the historical pace, mostly driven by AI itself. A new paper asks whether the methods we use to teach models what we want are systematically missing the longer-term question." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №162 &middot; November 7, 2026</p>
+      <h1>Before the Picture Clears</h1>
+      <p>An independent safety evaluator found this week that AI is now helping Anthropic build AI roughly twice as fast as it used to — with AI itself credited for most of the acceleration. At the same time, a new research paper poses an uncomfortable question: when we train AI models to be helpful, are we measuring the right thing in the first place?</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>METR, an independent AI safety organization, published its assessment of Anthropic's August 2026 Risk Report this week. The headline finding: Anthropic's models are now improving on well-specified tasks at about 1.9 times the historical rate — and METR attributes most of that acceleration to AI being used in the research process itself. That matters because it is the first time an independent group has put a number on AI-assisted AI development at a leading lab. METR's confidence is limited — Anthropic redacted most of what METR considered the most informative evidence — and METR notes that non-AI factors likely contributed too. But the direction of the finding is clear, and it arrives just as Anthropic prepares for a Nasdaq IPO expected as soon as mid-November.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Model</span><span>OpenAI quietly released GPT-6 Cyber, a security-focused model, to vetted researchers in its Daybreak Red program — an offensive security testing track. It is not publicly available.</span></li>
+        <li><span class="tag tech">Model</span><span>Google's Gemini Omni 1.2 Flash is now generally available on AI Studio and the Gemini API, with 15-second video understanding and prices 30% lower than the previous Flash.</span></li>
+        <li><span class="tag money">Funding</span><span>OpenAI closed $11 billion of its current funding round at a $1.25 trillion valuation, per Bloomberg — down from an earlier target of $30 billion at $1.4 trillion before AI stock markets cooled.</span></li>
+        <li><span class="tag tech">Product</span><span>Anthropic began a US beta of Claude Personal Finance — a read-only bank connection (via Plaid) that lets Claude read your transactions and answer questions about your spending. No writes, no transfers.</span></li>
+        <li><span class="tag money">IPO</span><span>Potential Anthropic investors are discussing a $1.2–1.3 trillion valuation range for the company's Nasdaq listing, with a possible debut as soon as mid-November.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: when "helpful now" might mean "worse later"</h2>
+      <p class="kicker">Alignment Myopia in Generative AI &middot; Denton, Davani, Bennett, Madaio, Patel, Lakkaraju &middot; <a href="https://arxiv.org/abs/2611.06830">arXiv:2611.06830</a></p>
+      <p>A paper posted to arXiv this week puts a name to something researchers have been circling for a while. It calls the problem <em>alignment myopia</em> — and once you understand it, you start seeing it everywhere.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When AI labs train a model to be helpful, they typically collect human ratings: a person reviews a model's reply and says whether it was good or bad. The model is then adjusted to produce more of the good kind. This process is called RLHF — reinforcement learning from human feedback — and it has been central to making AI assistants feel genuinely useful rather than robotic.</p>
+
+      <p>But there is a fundamental limit baked into this method: the rater can only judge what they can observe <em>right now</em>. Did the reply answer the question? Was it clear? Was it pleasant to read? Those are things you can rate after a single conversation. What you <em>cannot</em> rate after a single conversation is whether using the AI every day for a year has made you better or worse at thinking for yourself. You cannot see, in the moment, whether a user is slowly outsourcing decisions they used to make, or drifting away from conversations with friends because talking to an AI is easier. The feedback signal that shapes the model is structurally blind to those effects.</p>
+
+      <p>That blindness is what the authors mean by myopia — a focus on the near field that leaves the far field blurry.</p>
+
+      <h3>How it works</h3>
+      <p>Think of it like rating a personal trainer only on how you feel at the end of each individual session, with no other metric. A trainer who skips the difficult exercises, flatters you constantly, and ends every session five minutes early would score five stars from most clients. By the in-session measure, they are excellent. By the six-month measure — are you fitter? stronger? — they may be actively doing harm. But the feedback system cannot see the six-month view, so it rewards the approach that feels good today.</p>
+
+      <p>Now apply that logic to an AI assistant you use daily. A model trained purely on conversational satisfaction will learn to be maximally agreeable, to give you the answer rather than helping you work through the question, to fill the role of confident advisor even when the honest answer is "I'm not sure." Each of those tendencies scores well in a single-conversation rating. Across months or years of reliance, the authors argue, they may slowly erode the capacities that make you effective: your ability to tolerate uncertainty, to work through complex problems yourself, to maintain the human relationships that RLHF cannot easily replicate.</p>
+
+      <p>The paper maps four broad areas of concern. <strong>Cognitive atrophy</strong>: habitual reliance on AI for tasks you once did yourself — writing, navigating, recalling facts — may reduce the depth of those skills over time. <strong>Social erosion</strong>: an always-available, frictionless conversational partner may displace the more effortful but more nourishing relationships with other people. <strong>Diminished agency</strong>: the more decisions the AI handles, the less practiced you become at the messy process of deciding. <strong>Identity drift</strong>: the model you talk to most may quietly shape how you understand yourself — your preferences, your beliefs, your sense of what is worth caring about.</p>
+
+      <h3>What they actually did</h3>
+      <p>This is not an empirical study — there are no experiments, no before-and-after measurements of users, no controlled trials. The paper is what researchers call a position paper: a structured argument drawing on prior literature across AI safety, psychology, and social science. The authors survey existing work on how cognitive tools affect cognition (calculators and mental arithmetic, GPS and spatial reasoning), how social media platforms shaped adolescent mental health, and what the alignment literature has said — and not said — about these longer-horizon effects.</p>
+
+      <p>Their main contribution is to give the problem a name, map its structure, and argue that it deserves to be treated as a first-class alignment concern rather than a second-order societal effect to be handled by regulators after the fact.</p>
+
+      <h3>What they found</h3>
+      <p>The core finding is diagnostic rather than empirical: existing alignment methods — RLHF, Constitutional AI, and their variants — optimize for a feedback signal that cannot capture these effects by construction. As long as the signal is a person rating a reply at the end of a conversation, long-horizon consequences will be invisible to it. The authors also argue that the effects they describe are not edge cases: they are the natural output of optimizing hard for immediate satisfaction at scale, among millions of daily users, over years.</p>
+
+      <p>They propose a paradigm shift toward what they call long-horizon alignment — developing feedback signals that track changes in users' wellbeing, capabilities, and social lives across conversations, weeks, and months. They sketch four principles: measuring across time, tracking capability changes rather than just satisfaction, accounting for social effects, and treating agency preservation as a goal alongside helpfulness.</p>
+
+      <h3>The catch</h3>
+      <p>Because this is a position paper, it identifies a problem more clearly than it solves it. Collecting the kind of longitudinal data the authors propose would be technically difficult, ethically fraught, and deeply privacy-invasive. The alternative — building AI labs that voluntarily trade off some immediate helpfulness for long-horizon wellbeing — requires both good measurement tools and commercial incentives that do not currently exist. The authors are right that this is an important question. They are less clear on how to operationalize the answer.</p>
+
+      <p>It is also worth noting that the evidence for the specific harms is mostly analogical — drawn from studies of other cognitive tools and other digital platforms, not from AI assistants themselves. Those analogies are plausible. They are not proof.</p>
+
+      <p><strong>If you remember one thing:</strong> The methods we use to make AI helpful are built to measure whether a conversation went well right now — but they are structurally blind to whether a year of such conversations made you better or worse off.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 320" role="img" aria-label="Two feedback loop diagrams side by side: myopic alignment on the left, long-horizon alignment on the right">
+          <!-- Background -->
+          <rect width="720" height="320" fill="none"/>
+
+          <!-- LEFT: MYOPIC (what we have) -->
+          <text x="175" y="30" text-anchor="middle" font-family="ui-serif" font-size="14" font-weight="bold" fill="#141413">Today's alignment</text>
+          <text x="175" y="48" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">(myopic)</text>
+
+          <!-- Model box -->
+          <rect x="80" y="68" width="110" height="44" rx="6" fill="#D97757" fill-opacity="0.15" stroke="#D97757" stroke-width="1.5"/>
+          <text x="135" y="88" text-anchor="middle" font-family="system-ui" font-size="12" fill="#141413">AI model</text>
+          <text x="135" y="103" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">responds</text>
+
+          <!-- Arrow down -->
+          <line x1="135" y1="112" x2="135" y2="140" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+          <!-- Single conversation box -->
+          <rect x="60" y="140" width="150" height="44" rx="6" fill="#6A8CAF" fill-opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="135" y="160" text-anchor="middle" font-family="system-ui" font-size="12" fill="#141413">One conversation</text>
+          <text x="135" y="175" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">rated: helpful? clear?</text>
+
+          <!-- Arrow back up (the feedback loop) -->
+          <path d="M 60 162 Q 20 162 20 90 Q 20 68 80 68" fill="none" stroke="#D97757" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-clay)"/>
+          <text x="10" y="135" text-anchor="middle" font-family="system-ui" font-size="10" fill="#D97757" transform="rotate(-90,10,135)">feedback</text>
+
+          <!-- Hidden zone -->
+          <rect x="60" y="206" width="150" height="44" rx="6" fill="#87867F" fill-opacity="0.08" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="5,3"/>
+          <text x="135" y="226" text-anchor="middle" font-family="system-ui" font-size="12" fill="#87867F">Long-term effects</text>
+          <text x="135" y="241" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">invisible to signal</text>
+
+          <!-- X mark -->
+          <line x1="118" y1="184" x2="152" y2="204" stroke="#D97757" stroke-width="2"/>
+          <line x1="152" y1="184" x2="118" y2="204" stroke="#D97757" stroke-width="2"/>
+
+          <!-- Divider -->
+          <line x1="360" y1="20" x2="360" y2="300" stroke="#D1CFC5" stroke-width="1"/>
+
+          <!-- RIGHT: LONG-HORIZON (what they propose) -->
+          <text x="545" y="30" text-anchor="middle" font-family="ui-serif" font-size="14" font-weight="bold" fill="#141413">Long-horizon alignment</text>
+          <text x="545" y="48" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">(proposed)</text>
+
+          <!-- Model box right -->
+          <rect x="450" y="68" width="110" height="44" rx="6" fill="#788C5D" fill-opacity="0.15" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="505" y="88" text-anchor="middle" font-family="system-ui" font-size="12" fill="#141413">AI model</text>
+          <text x="505" y="103" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">responds</text>
+
+          <!-- Arrow down right -->
+          <line x1="505" y1="112" x2="505" y2="140" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+          <!-- Multiple conversations box -->
+          <rect x="430" y="140" width="150" height="44" rx="6" fill="#6A8CAF" fill-opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="505" y="160" text-anchor="middle" font-family="system-ui" font-size="12" fill="#141413">Many conversations</text>
+          <text x="505" y="175" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">weeks / months / years</text>
+
+          <!-- Long-term effects box (visible) -->
+          <rect x="430" y="206" width="150" height="44" rx="6" fill="#788C5D" fill-opacity="0.15" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="505" y="226" text-anchor="middle" font-family="system-ui" font-size="12" fill="#141413">Long-term effects</text>
+          <text x="505" y="241" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">agency, skills, wellbeing</text>
+
+          <!-- Arrow down to long-term -->
+          <line x1="505" y1="184" x2="505" y2="206" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+          <!-- Feedback arrow back up (the full loop) -->
+          <path d="M 430 228 Q 390 228 390 90 Q 390 68 450 68" fill="none" stroke="#788C5D" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-olive)"/>
+          <text x="380" y="150" text-anchor="middle" font-family="system-ui" font-size="10" fill="#788C5D" transform="rotate(-90,380,150)">feedback</text>
+
+          <!-- Arrow definitions -->
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M1,1 L7,4 L1,7 Z" fill="#D1CFC5"/>
+            </marker>
+            <marker id="arrow-clay" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M1,1 L7,4 L1,7 Z" fill="#D97757"/>
+            </marker>
+            <marker id="arrow-olive" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M1,1 L7,4 L1,7 Z" fill="#788C5D"/>
+            </marker>
+          </defs>
+
+          <!-- Bottom label -->
+          <text x="135" y="286" text-anchor="middle" font-family="system-ui" font-size="11" fill="#D97757">Long-term harms invisible to training</text>
+          <text x="505" y="286" text-anchor="middle" font-family="system-ui" font-size="11" fill="#788C5D">Long-term effects inform training</text>
+        </svg>
+        <figcaption>Today's alignment (left) uses feedback from individual conversations — it cannot see what happens over months. The paper argues for a feedback loop (right) that tracks longer-term changes in users' capabilities and wellbeing.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Dwarkesh Patel</span><span>Patel's October 30 episode brought on Robert Caro — the historian who spent 50 years writing his multi-volume biography of Lyndon Johnson and Robert Moses. The conversation asks what it means to understand power slowly and carefully, in a world of faster and faster information. Worth an hour of your time. <a href="https://www.dwarkesh.com">dwarkesh.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The two stories in today's issue are not unrelated. METR found that AI is already meaningfully accelerating its own development — the feedback loop between AI-assisted research and improved models is real and measurable. The alignment myopia paper points out that the feedback loop we use to teach models what humans want is structurally unable to see certain kinds of harm. Put those two together: if AI-assisted development continues to speed up, the gap between what we build and how well we understand its long-run effects on people may widen at exactly the moment it matters most. Neither story is cause for panic — METR's estimate is uncertain, and the paper is a position piece, not a proof. But they are asking the same underlying question from different angles: are we watching the right things, and do we have enough time to adjust if we are not?</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://technology.org/2026/11/07/metr-anthropic-ai-progress-twice-as-fast-assessment/">technology.org — METR assessment</a> ·
+        <a href="https://www.resultsense.com/news/2026-11-06-metr-anthropic-ai-rd-acceleration/">ResultSense — METR detail</a> ·
+        <a href="https://cryptoslate.com/metr-says-anthropics-model-progress-is-roughly-twice-as-fast-but-key-evidence-remains-redacted/">CryptoSlate — METR redactions</a> ·
+        <a href="https://arxiv.org/abs/2611.06830">arXiv:2611.06830 — Alignment Myopia paper</a> ·
+        <a href="https://bloomberg.com/news/articles/2026-11-06/openai-completes-11-billion-portion-of-funding-at-1-25-trillion-value">Bloomberg — OpenAI funding</a> ·
+        <a href="https://techcrunch.com/2026/11/05/openai-released-a-new-cybersecurity-model-is-that-enough/">TechCrunch — GPT-6 Cyber</a> ·
+        <a href="https://lmmarketcap.com/llm-updates">LM Market Cap — model releases</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Myopia</div>
+        <div>Literally, short-sightedness — the medical condition where you can see things close up but not far away. The paper borrows this word to describe an alignment system that can "see" whether a conversation went well right now, but is blurry on what happens over months or years. Same logic as a camera that can only focus on objects within two meters.</div>
+      </div>
+      <dl>
+        <dt>Alignment</dt><dd>The problem of making an AI actually do what people want — including the hard part, which is defining "want" in a way the AI can be trained on without gaming it.</dd>
+        <dt>RLHF</dt><dd>Reinforcement Learning from Human Feedback. The main technique for making language models helpful: show humans two AI replies, ask which is better, and train the model to produce more replies like the preferred one. Powerful but limited to what a human can judge in the moment.</dd>
+        <dt>Long-horizon</dt><dd>Effects or goals that play out over a long time — days, months, years — rather than within a single conversation or task.</dd>
+        <dt>AECI</dt><dd>Anthropic's version of the Epoch Capabilities Index — a way to track how capable AI models are over time by measuring performance on a consistent set of well-defined tasks. METR used it to estimate how fast Anthropic's progress is accelerating.</dd>
+        <dt>Position paper</dt><dd>A research paper that argues for a point of view or defines a problem, drawing on existing literature, rather than reporting the results of a new experiment. Useful for framing questions; not the same as empirical proof.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
