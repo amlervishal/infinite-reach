@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №163 — Before It Reaches the Page · Infinite Reach</title>
+  <meta name="description" content="Thinking Machines Lab — Mira Murati's startup — released Inkling 2, a 594-billion-parameter model that runs on just 17 billion active ones; and a NeurIPS paper shows most retrieval-based AI assistants quietly discard critical signal the moment they convert the retriever's judgment to text." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №163 &middot; Monday, November 9, 2026</p>
+      <h1>Before It Reaches the Page</h1>
+      <p>A startup built by OpenAI's former CTO ships a model with 594 billion parameters that only activates 17 billion of them at a time — and a new paper finds that most AI assistants running today lose critical information at a step that nobody thought to check.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Thinking Machines Lab, the startup founded by Mira Murati (OpenAI's former chief technology officer), released Inkling 2 Small on November 5. It is a mixture-of-experts model: 594 billion parameters in total, but only 17 billion are active for any given prompt. The model routes each request through 8 of its 384 specialist sub-networks, keeping compute costs low while keeping quality high. It accepts text and images, supports a one-million-token context window, and is live on the lab's Tinker platform; full open weights under the permissive Apache 2.0 licence are due after external safety testing. It scored 31 on the Artificial Analysis Intelligence Index — up from 13 for its predecessor — closing fast on models from labs with far more resources. Thinking Machines Lab has also reportedly hit a $100 million annualised revenue run rate on Tinker, an unusual milestone this early for a lab that also builds and ships its own consumer product.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Image models</span><span>OpenAI's Images 2.6 (released November 4) adds two new things that image generators have never done natively: animated GIF output and SVG export. It also runs 50% faster than its predecessor and comes in two variants — Flare for speed, Sunburst for precision — available on every ChatGPT plan tier. <a href="https://openai.com/index/introducing-images-2-6/">openai.com</a></span></li>
+        <li><span class="tag tech">Agent protocols</span><span>Google marked its A2A (Agent-to-Agent) protocol stable in ADK 2.14.0, shipping November 7. A2A is the open standard that lets AI agents built by different companies talk to each other; "stable" means the API won't change without a versioning commitment, making it safer to build on.</span></li>
+        <li><span class="tag money">Talent churn</span><span>Thinking Machines Lab has seen two co-founders and at least one early researcher return to OpenAI since the lab launched. The departures follow a pattern that is increasingly common as frontier labs compete for the same few hundred people who have trained models at this scale.</span></li>
+        <li><span class="tag tech">Physical simulation</span><span>A research paper highlighted November 9 describes a single AI model capable of simulating the physical behaviour of radically different substances — from granular materials like sand to folding proteins — without being retrained between domains. <a href="https://technology.org/2026/11/09/a-single-ai-model-simulates-the-behavior-of-many-substances-from-sliding-sand-to-folding-proteins/">technology.org</a></span></li>
+      </ul>
+
+      <h2>Paper, explained: the hidden information leak in AI assistants</h2>
+      <p class="kicker">ShiftRAG: Bypassing the Textual Bottleneck via Decoupled Learning and Continuous Soft Tokens &middot; Ko, Jeong &amp; Kim &middot; NeurIPS 2026 &middot; <a href="https://arxiv.org/abs/2611.00871">arXiv:2611.00871</a></p>
+      <p>Nearly every AI assistant that "looks things up" before answering you uses a technique called retrieval-augmented generation, or RAG. This paper argues they all share the same invisible design flaw — and proposes a fix that is quietly elegant.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When you ask an AI assistant a fact-dependent question — "what did the ECB decide last week?" or "what does this contract clause mean?" — most systems run two steps in sequence. First, a <em>retrieval</em> component searches a database and ranks the most relevant documents. Second, a <em>generation</em> component reads those documents and writes your answer. The connector between these two steps is plain text: the retriever passes document passages to the generator as ordinary words.</p>
+
+      <p>Here is the problem: the retriever did careful, nuanced work to judge which documents were relevant and how relevant they were. It computed mathematical signals — embeddings, similarity scores, relevance weights. The moment it converts those judgments into plain text, most of that precision is gone. The generator receives a transcription of the evidence, not the evidence itself. ShiftRAG's authors call this the <strong>textual bottleneck</strong>, and they argue it is not a minor inefficiency — it is a structural flaw that makes answers systematically worse than they need to be.</p>
+
+      <p>The reason this problem persisted is that text looked like the natural handoff medium. Both the retriever and the generator understand language; passing text between them seemed obvious. The cost of that choice has simply not been measured until now.</p>
+
+      <h3>How it works</h3>
+      <p>Think of a detective who has examined a crime scene thoroughly — measuring distances, noting temperature gradients, cataloguing trace evidence — and then has to hand off to a writer who will prepare the case summary. If the detective can only write prose, the nuances of the measurements collapse into vague phrases like "the room was cold" or "the stain was near the window." But if the detective can hand over the actual sensor readings alongside the prose, the writer has far more to work with.</p>
+
+      <p>ShiftRAG works exactly this way. Instead of forcing the retriever's judgment into text, it projects that judgment directly into <strong>continuous soft tokens</strong>: compact mathematical vectors that sit in the same representational space the language model uses internally. Each question-document pair generates 5 soft tokens that encode both what the document is "about" (the embedding) and how well it matches the question (the relevance score). The generator reads these soft tokens alongside the retrieved text, getting both the transcription and the original precision signal.</p>
+
+      <p>The system runs on a single language model backbone — no separate retrieval model needed — but its training objective is split in two. The retrieval head is trained to maximally distinguish relevant from irrelevant evidence. The generation head is trained to produce good answers. A third ingredient, called a <strong>soft orthogonality objective</strong>, prevents a failure mode called rank collapse, where the soft token representations drift toward each other and become too similar to carry distinct signals. Think of it as a rule that forces the sensor readings to stay on different scales so they don't all end up saying roughly the same thing.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Comparison of traditional RAG pipeline with textual bottleneck versus ShiftRAG with continuous soft tokens">
+          <!-- Background -->
+          <rect width="720" height="310" fill="#F5F4F0" rx="6"/>
+
+          <!-- Labels -->
+          <text x="20" y="58" font-family="ui-serif, Georgia, serif" font-size="13" fill="#87867F" font-weight="bold">TRADITIONAL RAG</text>
+          <text x="20" y="183" font-family="ui-serif, Georgia, serif" font-size="13" fill="#87867F" font-weight="bold">SHIFTRAG</text>
+
+          <!-- === Row 1: Traditional RAG === -->
+          <!-- Query box -->
+          <rect x="20" y="68" width="90" height="38" rx="5" fill="#D97757" opacity="0.85"/>
+          <text x="65" y="91" font-family="system-ui, sans-serif" font-size="12" fill="white" text-anchor="middle">Query</text>
+
+          <!-- Arrow 1 -->
+          <line x1="110" y1="87" x2="148" y2="87" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Retriever box -->
+          <rect x="148" y="68" width="110" height="38" rx="5" fill="#6A8CAF" opacity="0.85"/>
+          <text x="203" y="91" font-family="system-ui, sans-serif" font-size="12" fill="white" text-anchor="middle">Retriever</text>
+
+          <!-- Arrow 2 (bottleneck) -->
+          <line x1="258" y1="87" x2="296" y2="87" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Textual Bottleneck -->
+          <rect x="296" y="62" width="110" height="50" rx="5" fill="#D1CFC5" stroke="#D97757" stroke-width="2" stroke-dasharray="4,3"/>
+          <text x="351" y="84" font-family="system-ui, sans-serif" font-size="11" fill="#141413" text-anchor="middle">Plain text</text>
+          <text x="351" y="100" font-family="system-ui, sans-serif" font-size="10" fill="#D97757" text-anchor="middle">⚠ signal lost here</text>
+
+          <!-- Arrow 3 -->
+          <line x1="406" y1="87" x2="444" y2="87" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Generator box -->
+          <rect x="444" y="68" width="110" height="38" rx="5" fill="#788C5D" opacity="0.85"/>
+          <text x="499" y="91" font-family="system-ui, sans-serif" font-size="12" fill="white" text-anchor="middle">Generator</text>
+
+          <!-- Arrow 4 -->
+          <line x1="554" y1="87" x2="592" y2="87" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Answer box -->
+          <rect x="592" y="68" width="100" height="38" rx="5" fill="#D97757" opacity="0.5"/>
+          <text x="642" y="91" font-family="system-ui, sans-serif" font-size="12" fill="#141413" text-anchor="middle">Answer</text>
+
+          <!-- === Divider === -->
+          <line x1="20" y1="140" x2="700" y2="140" stroke="#D1CFC5" stroke-width="1"/>
+
+          <!-- === Row 2: ShiftRAG === -->
+          <!-- Query box -->
+          <rect x="20" y="193" width="90" height="38" rx="5" fill="#D97757" opacity="0.85"/>
+          <text x="65" y="216" font-family="system-ui, sans-serif" font-size="12" fill="white" text-anchor="middle">Query</text>
+
+          <!-- Arrow 1 -->
+          <line x1="110" y1="212" x2="148" y2="212" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Retriever box -->
+          <rect x="148" y="193" width="110" height="38" rx="5" fill="#6A8CAF" opacity="0.85"/>
+          <text x="203" y="216" font-family="system-ui, sans-serif" font-size="12" fill="white" text-anchor="middle">Retriever</text>
+
+          <!-- Arrow 2 (soft tokens) -->
+          <line x1="258" y1="212" x2="296" y2="212" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Soft Tokens box — positive highlight -->
+          <rect x="296" y="187" width="110" height="50" rx="5" fill="#D1CFC5" stroke="#788C5D" stroke-width="2"/>
+          <text x="351" y="209" font-family="system-ui, sans-serif" font-size="11" fill="#141413" text-anchor="middle">Soft tokens</text>
+          <text x="351" y="225" font-family="system-ui, sans-serif" font-size="10" fill="#788C5D" text-anchor="middle">✓ signal preserved</text>
+
+          <!-- Arrow 3 -->
+          <line x1="406" y1="212" x2="444" y2="212" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Generator box -->
+          <rect x="444" y="193" width="110" height="38" rx="5" fill="#788C5D" opacity="0.85"/>
+          <text x="499" y="216" font-family="system-ui, sans-serif" font-size="12" fill="white" text-anchor="middle">Generator</text>
+
+          <!-- Arrow 4 -->
+          <line x1="554" y1="212" x2="592" y2="212" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Answer box -->
+          <rect x="592" y="193" width="100" height="38" rx="5" fill="#788C5D" opacity="0.5"/>
+          <text x="642" y="216" font-family="system-ui, sans-serif" font-size="12" fill="#141413" text-anchor="middle">Answer</text>
+
+          <!-- Bottom caption strip -->
+          <rect x="20" y="260" width="680" height="30" rx="4" fill="#D1CFC5" opacity="0.5"/>
+          <text x="360" y="280" font-family="system-ui, sans-serif" font-size="11" fill="#141413" text-anchor="middle">Traditional RAG converts to text between steps, discarding the retriever's precision signal. ShiftRAG passes it as mathematical vectors instead.</text>
+
+          <!-- Arrowhead marker -->
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#141413"/>
+            </marker>
+          </defs>
+        </svg>
+        <figcaption>In traditional RAG, the retriever's nuanced relevance signals are compressed to plain text before the generator reads them (top). ShiftRAG replaces that step with continuous soft tokens that keep the original mathematical precision intact (bottom).</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>Ko, Jeong, and Kim tested ShiftRAG on standard open-domain question-answering benchmarks and retrieval accuracy tasks. Their main comparison was against existing state-of-the-art RAG systems. They also ran an ablation study that replaced the continuous soft tokens with a verbalized relevance score inserted into the prompt — the closest equivalent to what current systems do — and measured the gap. The soft-token approach outperformed the verbalized version across all tested settings. The team also confirmed that ShiftRAG preserves the backbone model's performance on general tasks, meaning the technique doesn't trade retrieval gains for regression elsewhere.</p>
+
+      <h3>What they found</h3>
+      <p>Significant improvements on both retrieval accuracy and downstream QA, relative to current baselines. The soft orthogonality objective measurably prevented rank collapse — without it, the soft tokens drifted toward redundancy during training, hurting performance. The ablation results are particularly striking: simply putting a relevance score into the text prompt, as many systems already do, closed only a fraction of the gap. The structured signal in a soft token is not just a number attached to a passage; the continuous representation carries richer information than the number alone.</p>
+
+      <h3>The catch</h3>
+      <p>Soft tokens are inherently uninterpretable. You cannot read them the way you can read a retrieved document passage. This makes it harder to audit why a system gave a particular answer — a meaningful concern in medical, legal, or financial deployments where explainability matters. The method also requires training (or fine-tuning) a combined model; it is not a drop-in improvement for existing deployed RAG pipelines without retraining. The paper does not report results at large scale, so it remains to be seen whether the gains hold as model size and retrieval corpus size increase.</p>
+
+      <p><strong>If you remember one thing:</strong> Every AI assistant that looks things up before answering you currently discards the retriever's confidence signal the moment it converts to text — ShiftRAG plugs that gap by staying in the mathematical domain rather than converting to language and back.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>A new video (early November 2026) finds Andrej Karpathy discussing why he thinks we're entering a decade of agents, the limits of reinforcement learning, and why education is his primary focus now. His Eureka Labs project — an AI-native school — has nanochat (his open-source chat model) as the capstone course, and his three educational nano* repos have collectively cleared 120,000 GitHub stars. <a href="https://getcoai.com/video/andrej-karpathy-on-the-decade-of-agents-the-limits-of-rl-and-why-education-is-his-next-mission/">getcoai.com</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Inkling 2 Small is a signal about the direction of model design. The raw parameter count of a model is becoming a less informative number; what matters increasingly is how efficiently those parameters are routed. A 594-billion-parameter model that runs at 17-billion-parameter cost per prompt is a different kind of statement about efficiency than a dense 70-billion-parameter model — both have similar serving costs, but the MoE architecture gives the model access to far more specialised knowledge. As these techniques mature, the useful question will shift from "how big is this model?" to "how well does it decide which parts of itself to use?"</p>
+
+      <p>ShiftRAG points at a less visible problem: the information architecture of deployed AI systems. Most organisations that have rolled out AI assistants have built them on the textual RAG pattern that the paper critiques. The bottleneck ShiftRAG identifies is systematic, not incidental — it's the natural consequence of designing a two-stage pipeline where the handoff medium is text. The paper doesn't suggest current systems are broken; it suggests they are leaving performance on the table that is now within reach to recover.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://thinkingmachines.ai/news/inkling-2-small/">Thinking Machines Lab</a> ·
+        <a href="https://www.marktechpost.com/2026/11/05/thinking-machines-inkling-2-small-release/">MarkTechPost</a> ·
+        <a href="https://alphasignal.ai/news/thinking-machines-releases-inkling-2-small-a-594b-agent-first-model">AlphaSignal</a> ·
+        <a href="https://aimagazine.com/news/thinking-machines-lab-hits-a-us-100m-run-rate-on-tinker">AI Magazine</a> ·
+        <a href="https://www.eweek.com/news/thinking-machines-lab-staff-exodus/">eWeek</a> ·
+        <a href="https://openai.com/index/introducing-images-2-6/">OpenAI Images 2.6</a> ·
+        <a href="https://arxiv.org/abs/2611.00871">ShiftRAG (arXiv)</a> ·
+        <a href="https://neurips.cc/virtual/2026/poster/150524">ShiftRAG at NeurIPS 2026</a> ·
+        <a href="https://technology.org/2026/11/09/a-single-ai-model-simulates-the-behavior-of-many-substances-from-sliding-sand-to-folding-proteins/">Technology.org physical simulation</a> ·
+        <a href="https://getcoai.com/video/andrej-karpathy-on-the-decade-of-agents-the-limits-of-rl-and-why-education-is-his-next-mission/">CO/AI — Karpathy video</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Mixture of experts</div>
+        <div>A model architecture where instead of running all the neural network's "neurons" on every task, you have hundreds of specialist sub-networks (the experts) and a small router that picks the most relevant few. Inkling 2 Small uses 594 billion parameters in total but routes each prompt to just 8 of its 384 expert groups — keeping compute costs similar to a much smaller dense model. Think of it as a large company where most departments stay at their desks while only the right team joins each meeting.</div>
+      </div>
+      <dl>
+        <dt>RAG</dt><dd>Retrieval-augmented generation. An AI technique where the system searches a database for relevant documents before writing its answer, rather than relying only on what it learned during training. Most AI assistants connected to the web or a company knowledge base use RAG.</dd>
+        <dt>Textual bottleneck</dt><dd>ShiftRAG's term for the information loss that happens when a RAG system converts the retriever's nuanced relevance signals into plain text before passing them to the generator. Like photocopying a colour photograph in black and white.</dd>
+        <dt>Soft tokens</dt><dd>Compact mathematical vectors that a language model reads as if they were words, but which cannot be decoded as human-readable text. ShiftRAG's retriever generates them to pass a richer signal to the generator than text alone can carry.</dd>
+        <dt>Rank collapse</dt><dd>A training failure where learned vector representations drift toward each other and become too similar, losing the distinctions that make them useful. ShiftRAG uses a soft orthogonality objective to prevent it.</dd>
+        <dt>Embedding</dt><dd>A mathematical vector that captures the meaning or relevance of a piece of text — placing semantically similar passages close together in a high-dimensional space. Retrievers use them to judge which documents are relevant to a query.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

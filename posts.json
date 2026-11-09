@@ -1,5 +1,12 @@
 [
   {
+    "num": 163,
+    "date": "2026-11-09",
+    "slug": "issues/2026-11-09.html",
+    "title": "Before It Reaches the Page",
+    "blurb": "Thinking Machines Lab — Mira Murati's startup — released Inkling 2, a 594-billion-parameter model that runs on just 17 billion active ones; and a NeurIPS paper shows most retrieval-based AI assistants quietly discard critical signal the moment they convert the retriever's judgment to text."
+  },
+  {
     "num": 162,
     "date": "2026-11-07",
     "slug": "issues/2026-11-07.html",
