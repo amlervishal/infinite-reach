@@ -1,5 +1,12 @@
 [
   {
+    "num": 164,
+    "date": "2026-11-10",
+    "slug": "issues/2026-11-10.html",
+    "title": "Eighty-One Doors Left Open",
+    "blurb": "OpenAI's GPT-6 Cyber found 81 unknown Firefox vulnerabilities and earned the company's highest risk rating; a new arXiv paper shows AI agents trained on sibling-harness rescues generalize far better than those that just train harder."
+  },
+  {
     "num": 163,
     "date": "2026-11-09",
     "slug": "issues/2026-11-09.html",

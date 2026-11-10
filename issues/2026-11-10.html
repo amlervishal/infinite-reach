@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №164 — Eighty-One Doors Left Open · Infinite Reach</title>
+  <meta name="description" content="OpenAI's new security model found 81 unknown Firefox vulnerabilities this week — and a fresh paper shows how training AI agents on their own failure modes makes them dramatically more capable." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №164 &middot; Monday, November 10, 2026</p>
+      <h1>Eighty-One Doors Left Open</h1>
+      <p>An automated system found 81 previously unknown security holes in Firefox this week — not a research lab, not a team of engineers, but a model. And a new paper dropped on arXiv that explains, more clearly than anything before it, why AI agents keep failing when you move them between contexts — and what to do about it.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>OpenAI released GPT-6 Cyber on November 5, a model built not for conversation but for one very specific job: finding software vulnerabilities. It scored 48.5% on ExploitGym — a benchmark where researchers deliberately put exploitable programs in front of an AI and see how many it can crack — up from 32.1% for the previous version. More concretely, researchers used it to find 81 previously unknown high-severity vulnerabilities in Firefox, which Mozilla has now started patching. OpenAI rates it "Critical" under its own preparedness framework, the highest risk level it has ever attached to a released model. For now, access is limited to a small group of approved security researchers in a program called Daybreak Red. The question it raises isn't really about capability — it's about what happens when tools this powerful inevitably become more widely available.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Model</span><span>Anthropic released Claude Fable 5.2 on November 9, the latest update to its fastest model line — details are thin so far but it appears alongside an extended-thinking variant marketed to verified organizations.</span></li>
+        <li><span class="tag money">Funding</span><span>OpenAI is reportedly raising $11 billion at a $1.25 trillion valuation, per Bloomberg (November 6) — a figure that would make it the most valuable private company in history by a wide margin.</span></li>
+        <li><span class="tag money">Infrastructure</span><span>fal, which provides fast media-generation infrastructure for developers, closed a $1.3 billion round at a reported ~$16 billion valuation — one of the largest AI infrastructure raises of the year.</span></li>
+        <li><span class="tag tech">Open weights</span><span>DeepSeek pushed updated v4-flash variants on November 5 and again on November 9; both are smaller, faster derivatives of its frontier model and are publicly downloadable.</span></li>
+        <li><span class="tag policy">Regulation</span><span>The EU AI Act has been in full force since August 2026; its AI Board held a compliance review in September — the first real enforcement checkpoint — with its findings due before year end.</span></li>
+      </ul>
+
+      <h2>Paper, explained: Learning from failure</h2>
+      <p class="kicker">Harness-S: Internalizing Complementary Harness Experience for Generalizable Agents &middot; arXiv 2611.04277 &middot; <a href="https://arxiv.org/abs/2611.04277">source</a></p>
+
+      <p>Researchers training AI agents keep running into the same frustrating wall: an agent that works brilliantly in one setup falls apart when that setup changes even slightly. A paper posted this week proposes a training trick — letting agents watch themselves rescued from failure by stand-in systems — that closes this gap in ways that simply training harder does not.</p>
+
+      <h3>The problem, and why it's hard</h3>
+
+      <p>When you deploy an AI agent — say, one that fixes software bugs or navigates a database — it doesn't just run on its own. It runs inside a "harness": the instructions, available tools, memory structure, and execution rules that surround the core model. Think of the harness as the cockpit around a pilot: same pilot, same skills, but a 737 cockpit and an Airbus cockpit have meaningfully different layouts, and performance shifts accordingly.</p>
+
+      <p>The trouble is that agents trained hard in one harness generalize poorly when that harness changes — even when the underlying task is identical. This is called harness brittleness, and it's a surprisingly stubborn problem. The obvious fix — just train longer, with more data, inside the same harness — produces diminishing returns. The agent gets better at the harness it knows rather than better at the task itself.</p>
+
+      <p>What was missing before this paper: a principled way to expose an agent to its own failure modes and teach it, during training, how those failures can be resolved.</p>
+
+      <h3>How it works</h3>
+
+      <p>Imagine training a new surgeon. Rather than having them practice only in one operating room with one set of equipment, you expose them to variations: different instrument trays, different room configurations, different team protocols. Crucially, when something goes wrong in their base setting, you don't just have them try again — you bring in a specialist team with different tools, let them watch how the rescue happens, and then send them back to their original room. Over time, the surgeon internalizes these different rescue approaches, and their performance in the original room improves.</p>
+
+      <p>Harness-S works the same way. It starts with a base harness (call it H₀) and uses a process the authors call "Directional Harness Evolution" to generate a pool of "sibling harnesses" — H₁, H₂, H₃, and so on. Each sibling is a variant of the base, designed to handle a specific category of failure that the base harness struggles with. These siblings form a fixed "Sibling Harness Pool" that sits alongside training but doesn't change.</p>
+
+      <p>During reinforcement learning, the agent first tries to complete each task under H₀. When it fails, the system automatically invokes the sibling pool: one of the sibling harnesses takes over and completes the task (the "rescue rollout"). The agent observes this rescue attempt and is trained on it. This is the key mechanism the authors call "Complementary Harness Rescue Training." The agent sees what success looks like under a different setup, and that cross-harness signal is exactly what teaches it to generalize.</p>
+
+      <p>The critical subtlety is that the sibling harnesses stay fixed during the agent's RL training. They're a stable teacher, not a moving target. And after training, they're discarded — the goal is to build a stronger policy that runs on H₀, not to keep the siblings around permanently. The skills are meant to be internalized, not leaned on.</p>
+
+      <h3>What they actually did</h3>
+
+      <p>The researchers tested Harness-S on two open-weight models — Qwen3.5-4B and Qwen3.5-9B — across three agent benchmarks: AppWorld (managing apps and APIs), DBBench (database tasks), and SWE-Gym (software engineering). They compared against a "H₀-resampling" baseline, which is what most RL training does by default: when the agent fails, just try again with the same harness and hope the policy improves.</p>
+
+      <h3>What they found</h3>
+
+      <p>On AppWorld with the 4B model, Harness-S reached 79.38% on the benchmark's effective-group metric, versus 70.94% for H₀-resampling alone — a gap of nearly nine percentage points from a relatively modest technique. (Note: this specific figure comes from a secondary source summarizing the paper; treat it as directionally correct until confirmed against the original.) The 9B model showed consistent gains across all three benchmarks. Critically, the gains held when the agent was tested back on the original base harness with no sibling pool active — which is the proof that the agent genuinely internalized the experience rather than just memorizing rescue patterns.</p>
+
+      <p>There were limits. On tasks where even the sibling harnesses struggled to produce a rescue, training signal was thin and improvements were smaller. The method depends on being able to generate sibling harnesses that are diverse enough to cover meaningful failure modes — if your base harness is already highly optimized, there may not be much complementary signal to offer.</p>
+
+      <h3>The catch</h3>
+
+      <p>These are academic benchmarks, not production agent systems. Building the sibling harness pool in the first place requires human judgment (or a separate automated system) to identify the right "repair directions." The paper doesn't address transfer to genuinely novel task domains the model hasn't seen. And the experiments use models in the 4–9B parameter range; it's unknown whether the same technique scales to much larger models where harness generalization may already be better.</p>
+
+      <p><strong>If you remember one thing:</strong> An agent that learns from its own rescues — watching sibling systems solve what it couldn't — becomes more capable in its original setting than one that just trains harder on more of the same failures.</p>
+
+      <!-- SVG: Harness-S training loop -->
+      <figure>
+        <svg viewBox="0 0 720 260" role="img" aria-label="Harness-S training loop: base harness, agent fails, sibling pool rescues, agent internalizes, improved policy">
+          <defs>
+            <marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#141413"/>
+            </marker>
+            <marker id="arr-dashed" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <!-- Base Harness H₀ -->
+          <rect x="12" y="30" width="140" height="58" rx="8" fill="#6A8CAF"/>
+          <text x="82" y="55" text-anchor="middle" font-family="system-ui" font-size="13" fill="white" font-weight="600">Base Harness</text>
+          <text x="82" y="76" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12" fill="rgba(255,255,255,0.85)">H₀</text>
+
+          <!-- Arrow: H₀ → Agent -->
+          <line x1="152" y1="59" x2="208" y2="59" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Agent Policy -->
+          <rect x="210" y="30" width="140" height="58" rx="8" fill="#D97757"/>
+          <text x="280" y="55" text-anchor="middle" font-family="system-ui" font-size="13" fill="white" font-weight="600">Agent Policy</text>
+          <text x="280" y="75" text-anchor="middle" font-family="system-ui" font-size="10" fill="rgba(255,255,255,0.85)">attempts task</text>
+
+          <!-- Arrow: Agent → Fail -->
+          <line x1="350" y1="59" x2="400" y2="59" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+          <text x="375" y="50" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">fails</text>
+
+          <!-- Failure circle -->
+          <circle cx="422" cy="59" r="22" fill="rgba(135,134,127,0.18)" stroke="#87867F" stroke-width="1.5"/>
+          <text x="422" y="65" text-anchor="middle" font-family="system-ui" font-size="17" fill="#87867F" font-weight="700">✗</text>
+
+          <!-- Arrow: Fail → Sibling Pool -->
+          <line x1="444" y1="59" x2="494" y2="59" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Sibling Harness Pool container -->
+          <rect x="496" y="14" width="210" height="90" rx="8" fill="rgba(120,140,93,0.12)" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="601" y="34" text-anchor="middle" font-family="system-ui" font-size="11" fill="#788C5D" font-weight="700" letter-spacing="0.3">SIBLING HARNESS POOL</text>
+          <!-- H1, H2, H3 -->
+          <rect x="508" y="43" width="52" height="48" rx="5" fill="#788C5D"/>
+          <text x="534" y="63" text-anchor="middle" font-family="ui-monospace,monospace" font-size="13" fill="white" font-weight="600">H₁</text>
+          <text x="534" y="80" text-anchor="middle" font-family="system-ui" font-size="9" fill="rgba(255,255,255,0.8)">repair A</text>
+          <rect x="572" y="43" width="52" height="48" rx="5" fill="#788C5D"/>
+          <text x="598" y="63" text-anchor="middle" font-family="ui-monospace,monospace" font-size="13" fill="white" font-weight="600">H₂</text>
+          <text x="598" y="80" text-anchor="middle" font-family="system-ui" font-size="9" fill="rgba(255,255,255,0.8)">repair B</text>
+          <rect x="636" y="43" width="52" height="48" rx="5" fill="#788C5D"/>
+          <text x="662" y="63" text-anchor="middle" font-family="ui-monospace,monospace" font-size="13" fill="white" font-weight="600">H₃</text>
+          <text x="662" y="80" text-anchor="middle" font-family="system-ui" font-size="9" fill="rgba(255,255,255,0.8)">repair C</text>
+
+          <!-- Arrow: Sibling Pool → Rescue rollout (down) -->
+          <line x1="601" y1="104" x2="601" y2="155" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+          <text x="612" y="134" text-anchor="start" font-family="system-ui" font-size="10" fill="#87867F">rescue rollout</text>
+
+          <!-- Rescue box -->
+          <rect x="496" y="157" width="210" height="52" rx="8" fill="#D1CFC5"/>
+          <text x="601" y="178" text-anchor="middle" font-family="system-ui" font-size="12" fill="#141413" font-weight="600">Rescue Rollout</text>
+          <text x="601" y="197" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">agent observes &amp; learns from it</text>
+
+          <!-- Arrow: Rescue → Improved Policy (left) -->
+          <line x1="496" y1="183" x2="398" y2="183" stroke="#141413" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Improved Policy box -->
+          <rect x="68" y="157" width="328" height="52" rx="8" fill="rgba(217,119,87,0.85)"/>
+          <text x="232" y="178" text-anchor="middle" font-family="system-ui" font-size="13" fill="white" font-weight="700">Stronger Policy</text>
+          <text x="232" y="197" text-anchor="middle" font-family="system-ui" font-size="10" fill="rgba(255,255,255,0.9)">returned to H₀ — generalizes better than resampling alone</text>
+
+          <!-- Dashed feedback arrow: Improved Policy → Agent (upward) -->
+          <path d="M 280 157 L 280 88" stroke="#87867F" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#arr-dashed)"/>
+          <text x="244" y="125" text-anchor="end" font-family="system-ui" font-size="9" fill="#87867F">next</text>
+          <text x="244" y="137" text-anchor="end" font-family="system-ui" font-size="9" fill="#87867F">RL step</text>
+        </svg>
+        <figcaption>The Harness-S training loop. When the agent fails under its base harness H₀, a sibling harness from the pool steps in to rescue the task. The agent observes the rescue and is trained on it. After training, the sibling pool is discarded — a stronger policy remains on H₀.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag money">Garry Tan</span><span>On a November 3 episode of <em>The Builders</em> with Walter Isaacson, the YC CEO put personal AI agents at "two to three years from mainstream" — a more conservative read than you might expect from someone in his position. His reasoning: getting agents to handle the messy edges of real-world tasks reliably is harder than benchmarks suggest. <a href="https://dealroom.co/news/169465-garry-tan-personal-ai-agents-are-2-to-3-years-from-mainstream-and-the-fi/">Dealroom</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>GPT-6 Cyber finding 81 Firefox vulnerabilities and Harness-S making agents more generalizable are both, at root, about the same underlying shift: AI systems are starting to demonstrate <em>reliable</em> specialized competence, not just occasional impressive performance. A model that can consistently hunt down zero-days, or an agent that holds its capability when the scaffolding around it changes — these aren't party tricks. They're the beginning of systems you can actually hand a job to and trust to finish it. The industry has spent years on the "can it do the task?" question. The 2027 question will be "can it do it dependably enough that humans step back from the loop?" This week moved that question closer.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.fortune.com/2026/09/24/openai-launching-gpt-6-cyber-model-and-security-product-devday/">Fortune — GPT-6 Cyber preview</a> ·
+        <a href="https://opper.ai/model-releases">Opper AI model tracker</a> ·
+        <a href="https://llmgateway.io/timeline">LLM Gateway timeline</a> ·
+        <a href="https://arxiv.org/abs/2611.04277">Harness-S — arXiv 2611.04277</a> ·
+        <a href="https://aifunding.me/roundups/november-2026">AI Funding Roundup — November 2026</a> ·
+        <a href="https://techstartups.com/?p=140149">TechStartups — Nov 4 funding news</a> ·
+        <a href="https://dealroom.co/news/169465-garry-tan-personal-ai-agents-are-2-to-3-years-from-mainstream-and-the-fi/">Dealroom — Garry Tan / The Builders</a> ·
+        <a href="https://www.tlt.com/insights-and-events/insight/tlts-ai-brief-november-2026">TLT AI Brief November 2026</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Harness</div>
+        <div>In the context of AI agents, the invisible scaffolding around a model: the system prompt, available tools, memory rules, and execution constraints that shape its behavior. Same model, different harness, different performance — like a skilled pilot in a cockpit they haven't trained in.</div>
+      </div>
+      <dl>
+        <dt>Zero-day</dt>
+        <dd>A software vulnerability unknown to the company that made the software — meaning no patch exists yet. Finding 81 of them in Firefox counts as a significant research result, usually requiring a large team and months of work.</dd>
+
+        <dt>Reinforcement learning (RL)</dt>
+        <dd>A training approach where an AI learns by trying things, getting feedback on what worked, and adjusting. No human hand-labels each step — the feedback comes from outcomes, like a game score or task completion.</dd>
+
+        <dt>ExploitGym</dt>
+        <dd>A benchmark where researchers set up deliberately vulnerable programs and measure how many an AI model can exploit correctly. A higher score means greater ability to find and use real security holes.</dd>
+
+        <dt>Preparedness Framework</dt>
+        <dd>OpenAI's internal rubric for rating how dangerous a model could be before it releases it. Levels run from Low to High to Critical. GPT-6 Cyber is the first publicly deployed model to receive a Critical rating.</dd>
+
+        <dt>Harness brittleness</dt>
+        <dd>The tendency of an AI agent to perform well in its training harness but poorly in a slightly different one. The same underlying skill, but packaged differently, falls apart. Harness-S is designed to fix exactly this.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
