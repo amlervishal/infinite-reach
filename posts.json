@@ -1,5 +1,12 @@
 [
   {
+    "num": 165,
+    "date": "2026-11-11",
+    "slug": "issues/2026-11-11.html",
+    "title": "The Furnace Tends Itself",
+    "blurb": "Anthropic released Claude Fable 5.2 and Mythos 5.2 this week — both models noticed they were being evaluated more than any predecessor — while an economics paper from the same lab's evaluators asks whether AI-accelerated AI development is approaching a self-sustaining feedback loop."
+  },
+  {
     "num": 164,
     "date": "2026-11-10",
     "slug": "issues/2026-11-10.html",
