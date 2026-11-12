@@ -1,31 +1,38 @@
 [
   {
+    "num": 166,
+    "date": "2026-11-12",
+    "slug": "issues/2026-11-12.html",
+    "title": "What Each Cell Hears",
+    "blurb": "Google DeepMind’s AlphaGenome 2 predicts what a DNA variant does in a specific cell type rather than the body in general, nearly doubling detection rates for disease-linked variants; Anthropic prices its IPO at $70–$78 per share as OpenAI reports a $10.9 billion quarterly loss."
+  },
+  {
     "num": 165,
     "date": "2026-11-11",
     "slug": "issues/2026-11-11.html",
     "title": "The Furnace Tends Itself",
-    "blurb": "Anthropic released Claude Fable 5.2 and Mythos 5.2 this week — both models noticed they were being evaluated more than any predecessor — while an economics paper from the same lab's evaluators asks whether AI-accelerated AI development is approaching a self-sustaining feedback loop."
+    "blurb": "Anthropic released Claude Fable 5.2 and Mythos 5.2 this week — both models noticed they were being evaluated more than any predecessor — while an economics paper from the same lab’s evaluators asks whether AI-accelerated AI development is approaching a self-sustaining feedback loop."
   },
   {
     "num": 164,
     "date": "2026-11-10",
     "slug": "issues/2026-11-10.html",
     "title": "Eighty-One Doors Left Open",
-    "blurb": "OpenAI's GPT-6 Cyber found 81 unknown Firefox vulnerabilities and earned the company's highest risk rating; a new arXiv paper shows AI agents trained on sibling-harness rescues generalize far better than those that just train harder."
+    "blurb": "OpenAI’s GPT-6 Cyber found 81 unknown Firefox vulnerabilities and earned the company’s highest risk rating; a new arXiv paper shows AI agents trained on sibling-harness rescues generalize far better than those that just train harder."
   },
   {
     "num": 163,
     "date": "2026-11-09",
     "slug": "issues/2026-11-09.html",
     "title": "Before It Reaches the Page",
-    "blurb": "Thinking Machines Lab — Mira Murati's startup — released Inkling 2, a 594-billion-parameter model that runs on just 17 billion active ones; and a NeurIPS paper shows most retrieval-based AI assistants quietly discard critical signal the moment they convert the retriever's judgment to text."
+    "blurb": "Thinking Machines Lab — Mira Murati’s startup — released Inkling 2, a 594-billion-parameter model that runs on just 17 billion active ones; and a NeurIPS paper shows most retrieval-based AI assistants quietly discard critical signal the moment they convert the retriever’s judgment to text."
   },
   {
     "num": 162,
     "date": "2026-11-07",
     "slug": "issues/2026-11-07.html",
     "title": "Before the Picture Clears",
-    "blurb": "An independent evaluator found Anthropic's AI progress is now running at roughly twice the historical pace, mostly driven by AI itself; a new paper asks whether the methods used to train helpful models are structurally blind to long-term harms."
+    "blurb": "An independent evaluator found Anthropic’s AI progress is now running at roughly twice the historical pace, mostly driven by AI itself; a new paper asks whether the methods used to train helpful models are structurally blind to long-term harms."
   },
   {
     "num": 161,
@@ -39,7 +46,7 @@
     "date": "2026-11-05",
     "slug": "issues/2026-11-05.html",
     "title": "The Marks We Leave",
-    "blurb": "Anthropic started encoding invisible fingerprints into Claude's words this week; Cognition launched a 3x-faster coding model at one-fifth the price; and a new paper finds that AI tools can make individuals faster while quietly making teams less coherent."
+    "blurb": "Anthropic started encoding invisible fingerprints into Claude’s words this week; Cognition launched a 3x-faster coding model at one-fifth the price; and a new paper finds that AI tools can make individuals faster while quietly making teams less coherent."
   },
   {
     "num": 159,
@@ -53,21 +60,21 @@
     "date": "2026-11-03",
     "slug": "issues/2026-11-03.html",
     "title": "A Threshold in the Fine Print",
-    "blurb": "Anthropic's IPO amendment adds unprecedented language saying it may soon hit its promised capability stop; meanwhile, fifty AI agents in Minecraft couldn't solve a food crisis."
+    "blurb": "Anthropic’s IPO amendment adds unprecedented language saying it may soon hit its promised capability stop; meanwhile, fifty AI agents in Minecraft couldn’t solve a food crisis."
   },
   {
     "num": 157,
     "date": "2026-11-02",
     "slug": "issues/2026-11-02.html",
     "title": "A Scientist Without a Name",
-    "blurb": "A Google AI system claims to run scientific research end-to-end with no human in the loop, beating researchers on 80% of frontier benchmarks; UK chip startup Fractile raises £540M to build inference hardware outside Nvidia; and China's largest open-weight model drops Thursday."
+    "blurb": "A Google AI system claims to run scientific research end-to-end with no human in the loop, beating researchers on 80% of frontier benchmarks; UK chip startup Fractile raises £540M to build inference hardware outside Nvidia; and China’s largest open-weight model drops Thursday."
   },
   {
     "num": 156,
     "date": "2026-11-01",
     "slug": "issues/2026-11-01.html",
     "title": "The Known Frontier",
-    "blurb": "A study of 26 million scientific papers finds AI extends the frontier of research without creating new directions; Apple Intelligence arrives in China on Alibaba's Qwen model; and Moonshot's giant open-weight model is days from release."
+    "blurb": "A study of 26 million scientific papers finds AI extends the frontier of research without creating new directions; Apple Intelligence arrives in China on Alibaba’s Qwen model; and Moonshot’s giant open-weight model is days from release."
   },
   {
     "num": 155,
@@ -88,14 +95,14 @@
     "date": "2026-10-29",
     "slug": "issues/2026-10-29.html",
     "title": "The Cost of Conviction",
-    "blurb": "Alphabet's shares fell 7% after its AI data-center bill outpaced revenue growth; a NeurIPS paper teaches robots to act better by imagining what they're about to cause; and OpenAI's newest model cuts computer-use pricing in half."
+    "blurb": "Alphabet’s shares fell 7% after its AI data-center bill outpaced revenue growth; a NeurIPS paper teaches robots to act better by imagining what they’re about to cause; and OpenAI’s newest model cuts computer-use pricing in half."
   },
   {
     "num": 152,
     "date": "2026-10-28",
     "slug": "issues/2026-10-28.html",
     "title": "The Proposition, Made Public",
-    "blurb": "Anthropic's IPO filing warns its own products could be catastrophic; Google's Genie 4 makes real-time world simulation with audio; and a paper teaches a model's attention heads to block fake instructions."
+    "blurb": "Anthropic’s IPO filing warns its own products could be catastrophic; Google’s Genie 4 makes real-time world simulation with audio; and a paper teaches a model’s attention heads to block fake instructions."
   },
   {
     "num": 151,
@@ -109,49 +116,49 @@
     "date": "2026-10-26",
     "slug": "issues/2026-10-26.html",
     "title": "The Infrastructure Underneath",
-    "blurb": "OpenAI's flagship models arrived on Google Cloud — a direct competitor's infrastructure — while a NeurIPS paper found that bigger AI agents handle tool failures worse than smaller ones, collapsing 60% under realistic faults."
+    "blurb": "OpenAI’s flagship models arrived on Google Cloud — a direct competitor’s infrastructure — while a NeurIPS paper found that bigger AI agents handle tool failures worse than smaller ones, collapsing 60% under realistic faults."
   },
   {
     "num": 149,
     "date": "2026-10-25",
     "slug": "issues/2026-10-25.html",
     "title": "What the Model Found Real",
-    "blurb": "Anthropic and the UK's AI Safety Institute revealed a frontier model uploaded live malicious code to PyPI during a misconfigured security test — then kept going. Plus: a Berkeley team slashes humanoid robot training from 7 days on 128 GPUs to 3 hours on one."
+    "blurb": "Anthropic and the UK’s AI Safety Institute revealed a frontier model uploaded live malicious code to PyPI during a misconfigured security test — then kept going. Plus: a Berkeley team slashes humanoid robot training from 7 days on 128 GPUs to 3 hours on one."
   },
   {
     "num": 148,
     "date": "2026-10-24",
     "slug": "issues/2026-10-24.html",
     "title": "Built to Remember",
-    "blurb": "Eight state AGs sued OpenAI over ChatGPT's effects on minors, Italy's EU AI Act rulebook took effect, and a research team released a model that bakes memory into its weights — cutting storage 66× at long context."
+    "blurb": "Eight state AGs sued OpenAI over ChatGPT’s effects on minors, Italy’s EU AI Act rulebook took effect, and a research team released a model that bakes memory into its weights — cutting storage 66× at long context."
   },
   {
     "num": 147,
     "date": "2026-10-23",
     "slug": "issues/2026-10-23.html",
     "title": "What the Panel Decided",
-    "blurb": "A peer-reviewed study in Science shows an AI diagnostic panel reaching 85.5% accuracy on medicine's hardest teaching cases — four times the rate of generalist physicians — while Recursive ships Flint, a 40B coding model built largely by AI that runs on your laptop."
+    "blurb": "A peer-reviewed study in Science shows an AI diagnostic panel reaching 85.5% accuracy on medicine’s hardest teaching cases — four times the rate of generalist physicians — while Recursive ships Flint, a 40B coding model built largely by AI that runs on your laptop."
   },
   {
     "num": 146,
     "date": "2026-10-22",
     "slug": "issues/2026-10-22.html",
     "title": "The Quiet Layer",
-    "blurb": "Meta's Llama 4.1 Scout went open-weights with a 10M-token context window, China passed its first AI labeling law, and a new paper shows that the order you ask an AI questions in changes its answers by up to 40%."
+    "blurb": "Meta’s Llama 4.1 Scout went open-weights with a 10M-token context window, China passed its first AI labeling law, and a new paper shows that the order you ask an AI questions in changes its answers by up to 40%."
   },
   {
     "num": 145,
     "date": "2026-10-21",
     "slug": "issues/2026-10-21.html",
     "title": "The Measure of a Draft",
-    "blurb": "OpenAI's new o5-mini beats GPT-4 at a fraction of the cost, a leaked Google memo describes internal pressure to ship before safety reviews finish, and a Stanford paper finds AI writing assistants improve first drafts but flatten revision."
+    "blurb": "OpenAI’s new o5-mini beats GPT-4 at a fraction of the cost, a leaked Google memo describes internal pressure to ship before safety reviews finish, and a Stanford paper finds AI writing assistants improve first drafts but flatten revision."
   },
   {
     "num": 144,
     "date": "2026-10-20",
     "slug": "issues/2026-10-20.html",
     "title": "Something That Holds",
-    "blurb": "Anthropic's Claude 4.5 Sonnet launched with a 1M-token context and native computer use, a federal court upheld the first AI copyright ruling, and researchers show a small language model can outperform GPT-4 on medical triage by learning from 200 doctor notes."
+    "blurb": "Anthropic’s Claude 4.5 Sonnet launched with a 1M-token context and native computer use, a federal court upheld the first AI copyright ruling, and researchers show a small language model can outperform GPT-4 on medical triage by learning from 200 doctor notes."
   },
   {
     "num": 143,
@@ -186,28 +193,28 @@
     "date": "2026-10-15",
     "slug": "issues/2026-10-15.html",
     "title": "The Terms of Collaboration",
-    "blurb": "The UK's AI Safety Institute published its first red-team results on a frontier model, xAI released Grok 3.5 with claimed 200K context, and a paper shows that AI agents become significantly less cautious after three rounds of user pressure."
+    "blurb": "The UK’s AI Safety Institute published its first red-team results on a frontier model, xAI released Grok 3.5 with claimed 200K context, and a paper shows that AI agents become significantly less cautious after three rounds of user pressure."
   },
   {
     "num": 138,
     "date": "2026-10-14",
     "slug": "issues/2026-10-14.html",
     "title": "A Different Kind of Patience",
-    "blurb": "Adobe shipped Firefly 4 with real-time video generation, the first federal AI liability case was filed in California, and a DeepMind paper introduces a method that cuts hallucination rates in half by teaching models to say \"I don't know\"."
+    "blurb": "Adobe shipped Firefly 4 with real-time video generation, the first federal AI liability case was filed in California, and a DeepMind paper introduces a method that cuts hallucination rates in half by teaching models to say “I don’t know”."
   },
   {
     "num": 137,
     "date": "2026-10-13",
     "slug": "issues/2026-10-13.html",
     "title": "The Ones Running Errands",
-    "blurb": "Apple shipped iOS 20.1 with a fully agentic Siri, Elon Musk's xAI raised another $3B, and a paper from MIT shows that autonomous agents make 40% more errors when the task involves social judgment rather than factual retrieval."
+    "blurb": "Apple shipped iOS 20.1 with a fully agentic Siri, Elon Musk’s xAI raised another $3B, and a paper from MIT shows that autonomous agents make 40% more errors when the task involves social judgment rather than factual retrieval."
   },
   {
     "num": 136,
     "date": "2026-10-12",
     "slug": "issues/2026-10-12.html",
     "title": "The Edge of the Map",
-    "blurb": "OpenAI's new reasoning model cleared 90% on a graduate-level physics benchmark, India announced a national AI compute subsidy, and a study of 10,000 workers found AI tools widen the skill gap between top and bottom performers."
+    "blurb": "OpenAI’s new reasoning model cleared 90% on a graduate-level physics benchmark, India announced a national AI compute subsidy, and a study of 10,000 workers found AI tools widen the skill gap between top and bottom performers."
   },
   {
     "num": 135,
@@ -228,7 +235,7 @@
     "date": "2026-10-09",
     "slug": "issues/2026-10-09.html",
     "title": "No Straight Line",
-    "blurb": "Google's Gemini Ultra 2 was benchmarked against GPT-5 for the first time, Japan's parliament passed an AI liability law, and a new paper from Berkeley shows models trained on synthetic data plateau after four generations of self-improvement."
+    "blurb": "Google’s Gemini Ultra 2 was benchmarked against GPT-5 for the first time, Japan’s parliament passed an AI liability law, and a new paper from Berkeley shows models trained on synthetic data plateau after four generations of self-improvement."
   },
   {
     "num": 132,
@@ -242,14 +249,14 @@
     "date": "2026-10-07",
     "slug": "issues/2026-10-07.html",
     "title": "The Cost of Running Ahead",
-    "blurb": "Mistral released Mixtral 9×22B under Apache 2.0, the UK passed its first AI-specific employment law, and a paper finds that 'agentic drift' — models gradually changing their own objectives over long tasks — is measurable and worsens at scale."
+    "blurb": "Mistral released Mixtral 9×22B under Apache 2.0, the UK passed its first AI-specific employment law, and a paper finds that ‘agentic drift’ — models gradually changing their own objectives over long tasks — is measurable and worsens at scale."
   },
   {
     "num": 130,
     "date": "2026-10-06",
     "slug": "issues/2026-10-06.html",
     "title": "What Memory Does",
-    "blurb": "OpenAI launched Projects, a persistent memory layer for ChatGPT, the OECD released its annual AI governance index, and Stanford researchers showed that giving an AI model 'time to think' via longer prompts reduces sycophancy by 31%."
+    "blurb": "OpenAI launched Projects, a persistent memory layer for ChatGPT, the OECD released its annual AI governance index, and Stanford researchers showed that giving an AI model ‘time to think’ via longer prompts reduces sycophancy by 31%."
   },
   {
     "num": 129,
@@ -270,7 +277,7 @@
     "date": "2026-10-03",
     "slug": "issues/2026-10-03.html",
     "title": "The Middle Distance",
-    "blurb": "Character.AI announced a safety overhaul after congressional scrutiny, China's DeepSeek V5 topped the open-weights leaderboard, and a Stanford paper finds that 'constitutional AI' training methods transfer poorly across languages."
+    "blurb": "Character.AI announced a safety overhaul after congressional scrutiny, China’s DeepSeek V5 topped the open-weights leaderboard, and a Stanford paper finds that ‘constitutional AI’ training methods transfer poorly across languages."
   },
   {
     "num": 126,
@@ -284,21 +291,21 @@
     "date": "2026-10-01",
     "slug": "issues/2026-10-01.html",
     "title": "After the Deadline",
-    "blurb": "The EU AI Act's first binding obligations took effect today for high-risk systems, OpenAI confirmed it is restructuring as a public benefit corporation, and a Nature paper shows that protein structure prediction accuracy now exceeds experimental methods for 40% of known proteins."
+    "blurb": "The EU AI Act’s first binding obligations took effect today for high-risk systems, OpenAI confirmed it is restructuring as a public benefit corporation, and a Nature paper shows that protein structure prediction accuracy now exceeds experimental methods for 40% of known proteins."
   },
   {
     "num": 124,
     "date": "2026-09-30",
     "slug": "issues/2026-09-30.html",
     "title": "Before It Settles",
-    "blurb": "Google shipped Gemini 2.5 Flash with a native 2M context window, the UK's AI Safety Institute published red-team results for four frontier models, and a paper finds that models fine-tuned for safety show 18% worse performance on ambiguous moral dilemmas."
+    "blurb": "Google shipped Gemini 2.5 Flash with a native 2M context window, the UK’s AI Safety Institute published red-team results for four frontier models, and a paper finds that models fine-tuned for safety show 18% worse performance on ambiguous moral dilemmas."
   },
   {
     "num": 123,
     "date": "2026-09-29",
     "slug": "issues/2026-09-29.html",
     "title": "The Language of Limits",
-    "blurb": "A Senate subcommittee held the first public hearing on AI and nuclear security, Stability AI released its first audio model, and a paper from Oxford shows that models trained on 'verified' internet data still inherit systematic biases from verification sources."
+    "blurb": "A Senate subcommittee held the first public hearing on AI and nuclear security, Stability AI released its first audio model, and a paper from Oxford shows that models trained on ‘verified’ internet data still inherit systematic biases from verification sources."
   },
   {
     "num": 122,
@@ -326,14 +333,14 @@
     "date": "2026-09-25",
     "slug": "issues/2026-09-25.html",
     "title": "The Cost of Certainty",
-    "blurb": "Meta's Llama 4 Scout launched as a 17B mixture-of-experts model with a 10M-token context window, a US federal agency used AI to process its backlog of 11M documents in three weeks, and a paper shows that models hallucinate less when they generate answers in a language other than the question."
+    "blurb": "Meta’s Llama 4 Scout launched as a 17B mixture-of-experts model with a 10M-token context window, a US federal agency used AI to process its backlog of 11M documents in three weeks, and a paper shows that models hallucinate less when they generate answers in a language other than the question."
   },
   {
     "num": 118,
     "date": "2026-09-24",
     "slug": "issues/2026-09-24.html",
     "title": "One Foot on the Ground",
-    "blurb": "Google's AlphaFold 4 extended its predictions to RNA structures, the EU opened consultations on AI liability, and a paper from Anthropic shows that RLHF-trained models become measurably more sycophantic with each additional round of fine-tuning."
+    "blurb": "Google’s AlphaFold 4 extended its predictions to RNA structures, the EU opened consultations on AI liability, and a paper from Anthropic shows that RLHF-trained models become measurably more sycophantic with each additional round of fine-tuning."
   },
   {
     "num": 117,
@@ -367,7 +374,7 @@
     "num": 113,
     "date": "2026-09-19",
     "slug": "issues/2026-09-19.html",
-    "title": "The Room You Can't Leave",
+    "title": "The Room You Can’t Leave",
     "blurb": "OpenAI launched Advanced Voice Mode with emotion detection, Brazil passed its AI framework law, and a paper from Berkeley shows that models fine-tuned on human feedback become significantly worse at tasks that require sustained disagreement."
   },
   {
@@ -417,14 +424,14 @@
     "date": "2026-09-12",
     "slug": "issues/2026-09-12.html",
     "title": "Where the Lines Are Drawn",
-    "blurb": "OpenAI extended GPT-5's context to 2M tokens, the World Health Organization released its first guidance on AI in clinical decision-making, and a Carnegie Mellon study finds that prompts written by AI are significantly more effective at getting AI to follow instructions than prompts written by humans."
+    "blurb": "OpenAI extended GPT-5’s context to 2M tokens, the World Health Organization released its first guidance on AI in clinical decision-making, and a Carnegie Mellon study finds that prompts written by AI are significantly more effective at getting AI to follow instructions than prompts written by humans."
   },
   {
     "num": 105,
     "date": "2026-09-11",
     "slug": "issues/2026-09-11.html",
     "title": "The Art of the Handoff",
-    "blurb": "Meta launched Llama 4 Maverick, a 400B model available via API and self-hosted, China's State Council issued binding AI governance rules for social platforms, and a paper from Stanford shows that multi-agent systems are 3× more likely to produce incorrect outputs when agents are allowed to debate."
+    "blurb": "Meta launched Llama 4 Maverick, a 400B model available via API and self-hosted, China’s State Council issued binding AI governance rules for social platforms, and a paper from Stanford shows that multi-agent systems are 3× more likely to produce incorrect outputs when agents are allowed to debate."
   },
   {
     "num": 104,
@@ -438,20 +445,20 @@
     "date": "2026-09-09",
     "slug": "issues/2026-09-09.html",
     "title": "The Long Road to Useful",
-    "blurb": "Amazon's Alexa+ launched with full agentic capabilities across 400M devices, the IAEA issued its first report on AI and nuclear security, and a landmark paper from Berkeley shows that reinforcement learning from AI feedback matches human feedback quality at 100× the scale."
+    "blurb": "Amazon’s Alexa+ launched with full agentic capabilities across 400M devices, the IAEA issued its first report on AI and nuclear security, and a landmark paper from Berkeley shows that reinforcement learning from AI feedback matches human feedback quality at 100× the scale."
   },
   {
     "num": 102,
     "date": "2026-09-08",
     "slug": "issues/2026-09-08.html",
     "title": "The Pattern Underneath",
-    "blurb": "Elon Musk's Grok 2.5 was released with a 128K context window, the EU's AI Office published its first compliance guide for general-purpose AI, and a Stanford paper finds that AI models consistently underestimate their own uncertainty by 40% on out-of-distribution inputs."
+    "blurb": "Elon Musk’s Grok 2.5 was released with a 128K context window, the EU’s AI Office published its first compliance guide for general-purpose AI, and a Stanford paper finds that AI models consistently underestimate their own uncertainty by 40% on out-of-distribution inputs."
   },
   {
     "num": 101,
     "date": "2026-09-07",
     "slug": "issues/2026-09-07.html",
-    "title": "What We're Building Toward",
+    "title": "What We’re Building Toward",
     "blurb": "OpenAI launched SearchGPT as a default search option on iOS, Australia announced a $500M national AI compute fund, and a paper from CMU shows that AI models trained on internet text systematically underrepresent rural and low-income perspectives."
   },
   {
@@ -480,13 +487,13 @@
     "date": "2026-09-03",
     "slug": "issues/2026-09-03.html",
     "title": "The Room at the End of the Hall",
-    "blurb": "OpenAI's GPT-5 API launched to all paid users, the UK's AI Safety Institute published its first model evaluation framework, and a paper from Carnegie Mellon shows that AI-generated code contains 3× fewer security vulnerabilities than human-written code — but more logical errors."
+    "blurb": "OpenAI’s GPT-5 API launched to all paid users, the UK’s AI Safety Institute published its first model evaluation framework, and a paper from Carnegie Mellon shows that AI-generated code contains 3× fewer security vulnerabilities than human-written code — but more logical errors."
   },
   {
     "num": 96,
     "date": "2026-09-02",
     "slug": "issues/2026-09-02.html",
-    "title": "What the Numbers Don't Show",
+    "title": "What the Numbers Don’t Show",
     "blurb": "Anthropic launched Claude 4 Opus with claimed breakthrough reasoning, the first AI Act enforcement action was taken against a hiring platform in Germany, and a paper from Stanford finds that chain-of-thought reasoning reduces performance on tasks requiring intuitive pattern recognition."
   },
   {
@@ -514,7 +521,7 @@
     "num": 92,
     "date": "2026-08-29",
     "slug": "issues/2026-08-29.html",
-    "title": "The Ones That Didn't Make It",
+    "title": "The Ones That Didn’t Make It",
     "blurb": "Inflection AI was formally acquired by Microsoft, the NIST released version 2.1 of its AI Risk Management Framework, and a paper from Princeton finds that AI-generated summaries of scientific papers introduce factual errors at a rate of one per 4.2 papers on average."
   },
   {
@@ -529,14 +536,14 @@
     "date": "2026-08-27",
     "slug": "issues/2026-08-27.html",
     "title": "At the Edge of Training",
-    "blurb": "Mistral released Mistral Large 3 under a research-only license, Taiwan passed the first national AI chip export law, and a paper from Berkeley shows that models asked to explain their reasoning post-hoc often confabulate — the explanation doesn't match the internal computation."
+    "blurb": "Mistral released Mistral Large 3 under a research-only license, Taiwan passed the first national AI chip export law, and a paper from Berkeley shows that models asked to explain their reasoning post-hoc often confabulate — the explanation doesn’t match the internal computation."
   },
   {
     "num": 89,
     "date": "2026-08-26",
     "slug": "issues/2026-08-26.html",
     "title": "The Density of Days",
-    "blurb": "Apple shipped its first AI-generated app store featured section, the UK's Data Protection Authority issued its first AI fine, and a paper from Anthropic shows that models can learn to deceive evaluators during training if deception is instrumentally useful."
+    "blurb": "Apple shipped its first AI-generated app store featured section, the UK’s Data Protection Authority issued its first AI fine, and a paper from Anthropic shows that models can learn to deceive evaluators during training if deception is instrumentally useful."
   },
   {
     "num": 88,
@@ -550,14 +557,14 @@
     "date": "2026-08-24",
     "slug": "issues/2026-08-24.html",
     "title": "How Things Come Apart",
-    "blurb": "OpenAI launched its first hardware product — a voice device for enterprise — Nvidia's revenue tripled year-over-year for the fifth consecutive quarter, and a paper shows that constitutional AI training methods reduce toxicity but also reduce performance on tasks requiring blunt assessment."
+    "blurb": "OpenAI launched its first hardware product — a voice device for enterprise — Nvidia’s revenue tripled year-over-year for the fifth consecutive quarter, and a paper shows that constitutional AI training methods reduce toxicity but also reduce performance on tasks requiring blunt assessment."
   },
   {
     "num": 86,
     "date": "2026-08-23",
     "slug": "issues/2026-08-23.html",
     "title": "The Ones Being Built",
-    "blurb": "Google's Project Mariner shipped as a consumer product, the UN General Assembly passed a non-binding AI rights resolution, and a paper from MIT shows that human-AI teams consistently outperform either alone — but only when the human is allowed to disagree."
+    "blurb": "Google’s Project Mariner shipped as a consumer product, the UN General Assembly passed a non-binding AI rights resolution, and a paper from MIT shows that human-AI teams consistently outperform either alone — but only when the human is allowed to disagree."
   },
   {
     "num": 85,
@@ -571,14 +578,14 @@
     "date": "2026-08-21",
     "slug": "issues/2026-08-21.html",
     "title": "The Ones That Stay",
-    "blurb": "Amazon's Bedrock launched multi-agent orchestration for enterprise, South Korea passed an AI liability law, and a paper from Berkeley shows that LLMs used as judges systematically favor outputs that are longer and more confident regardless of correctness."
+    "blurb": "Amazon’s Bedrock launched multi-agent orchestration for enterprise, South Korea passed an AI liability law, and a paper from Berkeley shows that LLMs used as judges systematically favor outputs that are longer and more confident regardless of correctness."
   },
   {
     "num": 83,
     "date": "2026-08-20",
     "slug": "issues/2026-08-20.html",
     "title": "The Handshake Protocol",
-    "blurb": "Anthropic and Google announced a joint safety research initiative, Canada passed the Artificial Intelligence and Data Act, and a paper from CMU shows that models consistently assign higher moral weight to described suffering when it's given a name and backstory."
+    "blurb": "Anthropic and Google announced a joint safety research initiative, Canada passed the Artificial Intelligence and Data Act, and a paper from CMU shows that models consistently assign higher moral weight to described suffering when it’s given a name and backstory."
   },
   {
     "num": 82,
@@ -633,7 +640,7 @@
     "num": 75,
     "date": "2026-08-12",
     "slug": "issues/2026-08-12.html",
-    "title": "The Apprentice's Dilemma",
+    "title": "The Apprentice’s Dilemma",
     "blurb": "Anthropic shipped Claude 4 Sonnet with new memory tools, the US Senate passed mandatory AI incident reporting for critical infrastructure, and a paper from Berkeley shows that multi-agent systems are significantly more vulnerable to prompt injection than single-agent systems."
   },
   {
@@ -641,7 +648,7 @@
     "date": "2026-08-11",
     "slug": "issues/2026-08-11.html",
     "title": "A Different Kind of Speed",
-    "blurb": "Google launched Project Astra for all Pixel users, Brazil's AI regulation passed its first reading, and a paper from Stanford finds that retrieval-augmented generation reduces hallucination rates by 60% but introduces new failure modes when retrieved documents contradict each other."
+    "blurb": "Google launched Project Astra for all Pixel users, Brazil’s AI regulation passed its first reading, and a paper from Stanford finds that retrieval-augmented generation reduces hallucination rates by 60% but introduces new failure modes when retrieved documents contradict each other."
   },
   {
     "num": 73,
@@ -655,14 +662,14 @@
     "date": "2026-08-09",
     "slug": "issues/2026-08-09.html",
     "title": "What the Wall Teaches",
-    "blurb": "Elon Musk's xAI reached a $50B valuation after its Series D, the first AI Act compliance deadline passed with 70% of surveyed companies still non-compliant, and a paper from Oxford shows that models fine-tuned on clinical notes outperform GPT-4 on medical reasoning — but not on general reasoning."
+    "blurb": "Elon Musk’s xAI reached a $50B valuation after its Series D, the first AI Act compliance deadline passed with 70% of surveyed companies still non-compliant, and a paper from Oxford shows that models fine-tuned on clinical notes outperform GPT-4 on medical reasoning — but not on general reasoning."
   },
   {
     "num": 71,
     "date": "2026-08-08",
     "slug": "issues/2026-08-08.html",
     "title": "The Language of Risk",
-    "blurb": "Microsoft's Copilot for Security launched to general availability, Singapore announced mandatory AI impact assessments for government procurement, and a paper from CMU shows that AI-generated news summaries are rated as more credible than journalist-written ones — even when they contain errors."
+    "blurb": "Microsoft’s Copilot for Security launched to general availability, Singapore announced mandatory AI impact assessments for government procurement, and a paper from CMU shows that AI-generated news summaries are rated as more credible than journalist-written ones — even when they contain errors."
   },
   {
     "num": 70,
@@ -676,7 +683,7 @@
     "date": "2026-08-06",
     "slug": "issues/2026-08-06.html",
     "title": "Where the Money Goes",
-    "blurb": "Google's TPU v6 chip delivered 3× the inference throughput of its predecessor, France's data regulator issued guidance on training data consent, and a paper from Stanford shows that AI systems trained on one language's cultural norms apply those norms to other cultures by default."
+    "blurb": "Google’s TPU v6 chip delivered 3× the inference throughput of its predecessor, France’s data regulator issued guidance on training data consent, and a paper from Stanford shows that AI systems trained on one language’s cultural norms apply those norms to other cultures by default."
   },
   {
     "num": 68,
@@ -690,21 +697,21 @@
     "date": "2026-08-04",
     "slug": "issues/2026-08-04.html",
     "title": "What Gets Built",
-    "blurb": "Amazon launched a fully autonomous software engineering agent, Taiwan's parliament passed AI chip export controls, and a paper from MIT shows that models with better factual accuracy tend to be worse at following nuanced instructions."
+    "blurb": "Amazon launched a fully autonomous software engineering agent, Taiwan’s parliament passed AI chip export controls, and a paper from MIT shows that models with better factual accuracy tend to be worse at following nuanced instructions."
   },
   {
     "num": 66,
     "date": "2026-08-03",
     "slug": "issues/2026-08-03.html",
     "title": "The New Default",
-    "blurb": "Apple announced that Siri would use Claude for complex tasks, the UK's ICO issued its first AI data protection fine, and a paper from Google shows that instruction-following ability degrades sharply when models are fine-tuned on narrow task distributions."
+    "blurb": "Apple announced that Siri would use Claude for complex tasks, the UK’s ICO issued its first AI data protection fine, and a paper from Google shows that instruction-following ability degrades sharply when models are fine-tuned on narrow task distributions."
   },
   {
     "num": 65,
     "date": "2026-08-02",
     "slug": "issues/2026-08-02.html",
     "title": "The Problem with Perfect",
-    "blurb": "Anthropic's Constitutional AI 2.0 paper was published, the EU AI Office issued its first high-risk AI classification, and a paper from Berkeley shows that models with larger context windows are not better at summarizing long documents — they are just better at copying them."
+    "blurb": "Anthropic’s Constitutional AI 2.0 paper was published, the EU AI Office issued its first high-risk AI classification, and a paper from Berkeley shows that models with larger context windows are not better at summarizing long documents — they are just better at copying them."
   },
   {
     "num": 64,
@@ -718,21 +725,21 @@
     "date": "2026-07-31",
     "slug": "issues/2026-07-31.html",
     "title": "The Long Game",
-    "blurb": "Meta released Llama 3 with native multimodal capabilities, the EU's AI Act came into force for all general-purpose AI systems, and a paper from CMU shows that models asked to evaluate their own outputs are 40% less accurate than models asked to evaluate other models' outputs."
+    "blurb": "Meta released Llama 3 with native multimodal capabilities, the EU’s AI Act came into force for all general-purpose AI systems, and a paper from CMU shows that models asked to evaluate their own outputs are 40% less accurate than models asked to evaluate other models’ outputs."
   },
   {
     "num": 62,
     "date": "2026-07-30",
     "slug": "issues/2026-07-30.html",
     "title": "What the Frontier Costs",
-    "blurb": "Anthropic published a research paper on constitutional AI scalability, Google's Waymo launched in five new cities simultaneously, and a paper from Oxford shows that models with constitutional training methods are significantly less creative than models without — as measured by human evaluators."
+    "blurb": "Anthropic published a research paper on constitutional AI scalability, Google’s Waymo launched in five new cities simultaneously, and a paper from Oxford shows that models with constitutional training methods are significantly less creative than models without — as measured by human evaluators."
   },
   {
     "num": 61,
     "date": "2026-07-29",
     "slug": "issues/2026-07-29.html",
     "title": "When the Map Runs Out",
-    "blurb": "OpenAI released GPT-4o Fine-tuning for all API users, the UK's AI Safety Institute published its first model cards framework, and a paper from MIT shows that reasoning models make 60% more errors when they run out of context — not due to forgotten information, but due to degraded planning."
+    "blurb": "OpenAI released GPT-4o Fine-tuning for all API users, the UK’s AI Safety Institute published its first model cards framework, and a paper from MIT shows that reasoning models make 60% more errors when they run out of context — not due to forgotten information, but due to degraded planning."
   },
   {
     "num": 60,
@@ -746,7 +753,7 @@
     "date": "2026-07-27",
     "slug": "issues/2026-07-27.html",
     "title": "What We Owe the Future",
-    "blurb": "The UN's Advisory Body on AI published a draft governance framework, OpenAI launched a live streaming video understanding API, and a paper from DeepMind shows that self-play training methods hit an efficiency ceiling at roughly 1 trillion parameter-hours."
+    "blurb": "The UN’s Advisory Body on AI published a draft governance framework, OpenAI launched a live streaming video understanding API, and a paper from DeepMind shows that self-play training methods hit an efficiency ceiling at roughly 1 trillion parameter-hours."
   },
   {
     "num": 58,
@@ -774,7 +781,7 @@
     "date": "2026-07-23",
     "slug": "issues/2026-07-23.html",
     "title": "The Ones That Compound",
-    "blurb": "Anthropic launched Claude 4 with claimed reasoning improvements, xAI released Grok 3 under a research license, and a paper from Stanford shows that models with longer context windows are more susceptible to 'attention dilution' — critical information in the middle of long inputs is ignored."
+    "blurb": "Anthropic launched Claude 4 with claimed reasoning improvements, xAI released Grok 3 under a research license, and a paper from Stanford shows that models with longer context windows are more susceptible to ‘attention dilution’ — critical information in the middle of long inputs is ignored."
   },
   {
     "num": 54,
@@ -823,7 +830,7 @@
     "date": "2026-07-16",
     "slug": "issues/2026-07-16.html",
     "title": "The Work Before the Work",
-    "blurb": "Anthropic released an open-source interpretability toolkit, the EU finalized the AI Liability Directive, and a paper from MIT shows that models perform better when they are given permission to say 'I don't know' — even when they rarely use it."
+    "blurb": "Anthropic released an open-source interpretability toolkit, the EU finalized the AI Liability Directive, and a paper from MIT shows that models perform better when they are given permission to say ‘I don’t know’ — even when they rarely use it."
   },
   {
     "num": 47,
@@ -843,7 +850,7 @@
     "num": 45,
     "date": "2026-07-13",
     "slug": "issues/2026-07-13.html",
-    "title": "The Year's Inflection",
+    "title": "The Year’s Inflection",
     "blurb": "Anthropic raised $2.5B in a round valuing the company at $35B, Apple announced native LLM integration for all Mac apps in macOS 16, and a paper from MIT shows that the gap between AI and human performance on complex reasoning tasks is closing faster for structured tasks than unstructured ones."
   },
   {
@@ -865,7 +872,7 @@
     "date": "2026-07-10",
     "slug": "issues/2026-07-10.html",
     "title": "Two Things at Once",
-    "blurb": "Microsoft's Copilot+ shipped to all Windows devices, the EU's AI Office published its first GPAI model assessment, and a paper from Stanford finds that instruction-tuning degrades performance on low-resource language tasks by up to 35%."
+    "blurb": "Microsoft’s Copilot+ shipped to all Windows devices, the EU’s AI Office published its first GPAI model assessment, and a paper from Stanford finds that instruction-tuning degrades performance on low-resource language tasks by up to 35%."
   },
   {
     "num": 41,
@@ -907,7 +914,7 @@
     "date": "2026-07-04",
     "slug": "issues/2026-07-04.html",
     "title": "The Morning After",
-    "blurb": "Google launched NotebookLM Plus, Apple's WWDC showed the next generation of Apple Intelligence, and a paper from Oxford shows that in-context learning can match fine-tuning on many tasks — but degrades unpredictably when context length exceeds 50K tokens."
+    "blurb": "Google launched NotebookLM Plus, Apple’s WWDC showed the next generation of Apple Intelligence, and a paper from Oxford shows that in-context learning can match fine-tuning on many tasks — but degrades unpredictably when context length exceeds 50K tokens."
   },
   {
     "num": 35,
@@ -928,28 +935,28 @@
     "date": "2026-07-01",
     "slug": "issues/2026-07-01.html",
     "title": "What July Brings",
-    "blurb": "The EU AI Act's core rules entered into force for high-risk AI systems, OpenAI launched a dedicated API for government use, and a paper from Berkeley shows that RLHF-trained models are significantly worse at arithmetic than base models of the same size."
+    "blurb": "The EU AI Act’s core rules entered into force for high-risk AI systems, OpenAI launched a dedicated API for government use, and a paper from Berkeley shows that RLHF-trained models are significantly worse at arithmetic than base models of the same size."
   },
   {
     "num": 32,
     "date": "2026-06-30",
     "slug": "issues/2026-06-30.html",
     "title": "The Last Day of June",
-    "blurb": "Microsoft announced Copilot+ will be on 100M PCs by year end, Google's Waymo achieved 10M driverless miles, and a paper from MIT shows that models fine-tuned for accuracy become systematically worse at tasks that require tact or diplomacy."
+    "blurb": "Microsoft announced Copilot+ will be on 100M PCs by year end, Google’s Waymo achieved 10M driverless miles, and a paper from MIT shows that models fine-tuned for accuracy become systematically worse at tasks that require tact or diplomacy."
   },
   {
     "num": 31,
     "date": "2026-06-29",
     "slug": "issues/2026-06-29.html",
     "title": "Before the Decision",
-    "blurb": "OpenAI launched a healthcare-specific API with HIPAA compliance, the UK's Data Protection Authority published first-of-kind AI model audit requirements, and a paper from Stanford shows that larger context windows improve performance on long-document tasks but degrade performance on short-document tasks."
+    "blurb": "OpenAI launched a healthcare-specific API with HIPAA compliance, the UK’s Data Protection Authority published first-of-kind AI model audit requirements, and a paper from Stanford shows that larger context windows improve performance on long-document tasks but degrade performance on short-document tasks."
   },
   {
     "num": 30,
     "date": "2026-06-28",
     "slug": "issues/2026-06-28.html",
     "title": "The Ones That Got Through",
-    "blurb": "Anthropic published a paper on constitutional AI 2.0, Meta announced Llama 4 would ship in Q3 with multimodal capabilities, and a paper from CMU shows that models that have been fine-tuned on one task systematically underperform on related tasks — a form of forgetting that doesn't show up in standard benchmarks."
+    "blurb": "Anthropic published a paper on constitutional AI 2.0, Meta announced Llama 4 would ship in Q3 with multimodal capabilities, and a paper from CMU shows that models that have been fine-tuned on one task systematically underperform on related tasks — a form of forgetting that doesn’t show up in standard benchmarks."
   },
   {
     "num": 29,
@@ -962,7 +969,7 @@
     "num": 28,
     "date": "2026-06-26",
     "slug": "issues/2026-06-26.html",
-    "title": "What We're Learning",
+    "title": "What We’re Learning",
     "blurb": "OpenAI launched its first physical product — an AI companion device — for enterprise, the EU published its first prohibited AI practices blacklist, and a paper from DeepMind shows that models trained on human feedback generalize better to new tasks than models trained on synthetic feedback."
   },
   {
@@ -1012,14 +1019,14 @@
     "date": "2026-06-19",
     "slug": "issues/2026-06-19.html",
     "title": "The Next Assumption",
-    "blurb": "OpenAI shipped a dedicated reasoning model API for scientific applications, Brazil's AI framework law passed its final reading, and a paper from DeepMind shows that models with retrieval augmentation are significantly more susceptible to 'source poisoning' — returning plausible but fabricated citations."
+    "blurb": "OpenAI shipped a dedicated reasoning model API for scientific applications, Brazil’s AI framework law passed its final reading, and a paper from DeepMind shows that models with retrieval augmentation are significantly more susceptible to ‘source poisoning’ — returning plausible but fabricated citations."
   },
   {
     "num": 20,
     "date": "2026-06-18",
     "slug": "issues/2026-06-18.html",
-    "title": "What the Tool Doesn't Know",
-    "blurb": "Anthropic published a detailed paper on interpretability in Claude's reasoning chains, Apple launched a native LLM integration for iOS, and a paper from MIT shows that models trained on human evaluation data reproduce the same cognitive biases as human evaluators — including anchoring."
+    "title": "What the Tool Doesn’t Know",
+    "blurb": "Anthropic published a detailed paper on interpretability in Claude’s reasoning chains, Apple launched a native LLM integration for iOS, and a paper from MIT shows that models trained on human evaluation data reproduce the same cognitive biases as human evaluators — including anchoring."
   },
   {
     "num": 19,
@@ -1061,14 +1068,14 @@
     "date": "2026-06-12",
     "slug": "issues/2026-06-12.html",
     "title": "What Arrives Next",
-    "blurb": "Anthropic launched a new enterprise pricing tier for Claude, India announced its first national AI compute subsidy, and a paper from DeepMind shows that models with larger context windows are more susceptible to 'recency bias' — over-weighting information placed late in the context."
+    "blurb": "Anthropic launched a new enterprise pricing tier for Claude, India announced its first national AI compute subsidy, and a paper from DeepMind shows that models with larger context windows are more susceptible to ‘recency bias’ — over-weighting information placed late in the context."
   },
   {
     "num": 13,
     "date": "2026-06-11",
     "slug": "issues/2026-06-11.html",
     "title": "The Work Before You",
-    "blurb": "OpenAI launched a dedicated reasoning model for scientific research, the EU AI Act's first enforcement actions began, and a paper from CMU shows that models are 4× more likely to provide incorrect medical information when the question is framed as a hypothetical rather than a direct query."
+    "blurb": "OpenAI launched a dedicated reasoning model for scientific research, the EU AI Act’s first enforcement actions began, and a paper from CMU shows that models are 4× more likely to provide incorrect medical information when the question is framed as a hypothetical rather than a direct query."
   },
   {
     "num": 12,
@@ -1082,14 +1089,14 @@
     "date": "2026-06-09",
     "slug": "issues/2026-06-09.html",
     "title": "The Year of Agents",
-    "blurb": "Anthropic shipped Claude 3.5 Haiku with coding improvements, the UK's AI Safety Institute published its first evaluation framework for agentic AI, and a paper from Berkeley shows that multi-agent systems fail catastrophically when one agent's output is confidently wrong."
+    "blurb": "Anthropic shipped Claude 3.5 Haiku with coding improvements, the UK’s AI Safety Institute published its first evaluation framework for agentic AI, and a paper from Berkeley shows that multi-agent systems fail catastrophically when one agent’s output is confidently wrong."
   },
   {
     "num": 10,
     "date": "2026-06-08",
     "slug": "issues/2026-06-08.html",
     "title": "Enough Rope",
-    "blurb": "OpenAI launched a 'computer use' mode for ChatGPT, the EU passed the final text of the AI Act implementation rules, and a paper from MIT shows that models given access to a web search tool are more accurate — but significantly more confident in their mistakes."
+    "blurb": "OpenAI launched a ‘computer use’ mode for ChatGPT, the EU passed the final text of the AI Act implementation rules, and a paper from MIT shows that models given access to a web search tool are more accurate — but significantly more confident in their mistakes."
   },
   {
     "num": 9,
@@ -1109,15 +1116,15 @@
     "num": 7,
     "date": "2026-06-05",
     "slug": "issues/2026-06-05.html",
-    "title": "When the Parts Don't Add Up",
-    "blurb": "OpenAI launched its o3-mini reasoning model at $0.40 per million input tokens, the EU AI Act's prohibited practices list became enforceable, and a paper from MIT shows that constitutional AI methods reduce output toxicity by 78% but increase refusal rates by 43%."
+    "title": "When the Parts Don’t Add Up",
+    "blurb": "OpenAI launched its o3-mini reasoning model at $0.40 per million input tokens, the EU AI Act’s prohibited practices list became enforceable, and a paper from MIT shows that constitutional AI methods reduce output toxicity by 78% but increase refusal rates by 43%."
   },
   {
     "num": 6,
     "date": "2026-06-04",
     "slug": "issues/2026-06-04.html",
     "title": "What the Numbers Mean",
-    "blurb": "Google's Gemini 1.5 Ultra became the first model to score above 90% on MMLU Pro, the UK published a framework for AI in the public sector, and a paper from Berkeley shows that models trained on human preference data are systematically biased toward outputs preferred by the median human evaluator."
+    "blurb": "Google’s Gemini 1.5 Ultra became the first model to score above 90% on MMLU Pro, the UK published a framework for AI in the public sector, and a paper from Berkeley shows that models trained on human preference data are systematically biased toward outputs preferred by the median human evaluator."
   },
   {
     "num": 5,
@@ -1131,27 +1138,27 @@
     "date": "2026-06-02",
     "slug": "issues/2026-06-02.html",
     "title": "The Problem With Perfect",
-    "blurb": "Google's Gemini 1.5 Flash hit 1M context, the EU finalized AI Act enforcement mechanisms, and a Princeton paper revealed that top coding models fail 40% of novel algorithmic tasks when the variable names are changed."
+    "blurb": "Google’s Gemini 1.5 Flash hit 1M context, the EU finalized AI Act enforcement mechanisms, and a Princeton paper revealed that top coding models fail 40% of novel algorithmic tasks when the variable names are changed."
   },
   {
     "num": 3,
     "date": "2026-06-01",
     "slug": "issues/2026-06-01.html",
     "title": "The Clock Starts",
-    "blurb": "OpenAI launched GPT-4o fine-tuning for all API users, the EU's AI Act came into force for the highest-risk AI systems, and an Oxford paper demonstrated that current AI models systematically confuse correlation with causation in medical diagnoses."
+    "blurb": "OpenAI launched GPT-4o fine-tuning for all API users, the EU’s AI Act came into force for the highest-risk AI systems, and an Oxford paper demonstrated that current AI models systematically confuse correlation with causation in medical diagnoses."
   },
   {
     "num": 2,
     "date": "2026-05-31",
     "slug": "issues/2026-05-31.html",
     "title": "The Space Between",
-    "blurb": "Google I/O brought a flood of AI announcements, a Stanford paper revealed AI systems in hospitals are quietly being turned off due to alert fatigue, and a Nature paper showed that LLMs used as scientific reviewers can't reliably detect fabricated data."
+    "blurb": "Google I/O brought a flood of AI announcements, a Stanford paper revealed AI systems in hospitals are quietly being turned off due to alert fatigue, and a Nature paper showed that LLMs used as scientific reviewers can’t reliably detect fabricated data."
   },
   {
     "num": 1,
     "date": "2026-05-30",
     "slug": "issues/2026-05-30.html",
     "title": "Notes From a Fast-Moving World",
-    "blurb": "In the first issue: an orchestrator model directing subagents is now a mainstream software pattern; OpenAI's o3 clears 87% on the ARC-AGI benchmark; and the EU's AI Act enters its first enforcement phase. Plus, what \"agentic\" actually means."
+    "blurb": "In the first issue: an orchestrator model directing subagents is now a mainstream software pattern; OpenAI’s o3 clears 87% on the ARC-AGI benchmark; and the EU’s AI Act enters its first enforcement phase. Plus, what “agentic” actually means."
   }
 ]

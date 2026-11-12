@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №166 — What Each Cell Hears · Infinite Reach</title>
+  <meta name="description" content="Google DeepMind releases AlphaGenome 2, which predicts what a DNA variant does in a specific cell type rather than the body in general — doubling detection rates for disease-linked variants. Meanwhile Anthropic prices its IPO and OpenAI posts a $10.9 billion quarterly loss." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №166 &middot; Thursday, November 12, 2026</p>
+      <h1>What Each Cell Hears</h1>
+      <p>Anthropic names a price for its stock market debut as OpenAI reports a $10.9 billion quarterly loss — both numbers are measurements of a race whose endpoint nobody can see clearly. A quieter story from the same week may matter more in a decade: a DeepMind model that reads the same genome through the eyes of a specific cell, not “the body in general,” and predicts what a mutation actually does there.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic set an expected IPO price range of <strong>$70 to $78 per share</strong>, with trading on the Nasdaq expected to begin around November 26. At the midpoint that values the company at roughly $80–90 billion — extraordinary for an organization that has never turned a profit. The same week, OpenAI disclosed a quarterly operating loss of <strong>$10.9 billion</strong>, up from the prior quarter. These two figures describe the shape of frontier model development as a business right now: enormous capital requirements, enormous expectations, and no clear path to profitability in the near term. Investors are, in effect, betting on category dominance — that whoever survives this spending race will eventually capture enough value to justify the losses. Whether that bet pays off depends entirely on how close to true the word “eventually” turns out to be.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <!-- tag classes: tech | money | policy -->
+        <li><span class="tag tech">Robotics</span><span>Google’s Gemini Robotics 2.5 was tested on a real factory floor at Mercedes-Benz and reached 96% on an automotive parts packaging task with no task-specific retraining. DeepMind says it is now also deployed with Apptronik and Boston Dynamics. <a href="https://llm-stats.com/ai-news">LLM Stats</a></span></li>
+        <li><span class="tag tech">Model</span><span>Alibaba released a two-week preview of Qwen4-Max with a 1M-token context window, set to retire on November 25. It signals continued pressure on frontier context length from the Chinese AI ecosystem. <a href="https://llm-stats.com/ai-news">LLM Stats</a></span></li>
+        <li><span class="tag tech">Tools</span><span>Claude Code 2.1.321 (November 9) made Fable 5.2 the default Fable model and introduced background MCP task support — tool calls that run as tasks now complete without blocking the main session. Version 2.1.322 added Vertex fast mode. <a href="https://code.claude.com/docs/en/changelog">Changelog</a></span></li>
+        <li><span class="tag policy">US politics</span><span>Candidates backed by AI safety groups picked up seats in the November 3 midterms, with advocacy groups spending more than $110 million on key House and Senate races — but major federal AI legislation remains stalled; the House adjourned in September without passing a single major AI bill. <a href="https://www.bloomberg.com/news/articles/2026-11-07/ai-safety-advocates-make-gains-after-110-million-midterm-fight">Bloomberg</a></span></li>
+        <li><span class="tag money">Losses</span><span>OpenAI’s $10.9 billion quarterly operating loss is the clearest single number for why AI companies are rushing toward IPOs: revenue is growing, but costs are growing faster, and outside capital is the only way to keep running. <a href="https://aiweekly.co/ai-news-today">AI Weekly</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~550-850 words -->
+      <h2>Paper, explained: reading the genome one cell at a time</h2>
+      <p class="kicker">AlphaGenome 2: Deciphering how cells read DNA to better understand disease &middot; Google DeepMind &middot; <a href="https://aiweekly.co/alerts/deepmind-launches-alphagenome-2-for-dna-variant-prediction">Announcement (Nov 11, 2026)</a></p>
+
+      <p>If you could predict exactly what a DNA mutation does — not in “the body” but in one specific immune cell right now, in a person with that cell’s particular state — you’d have a window into why some people develop autoimmune disease, diabetes, or blood cancer, and others with nearly identical genomes don’t. That is what AlphaGenome 2 from Google DeepMind is trying to do. It was released yesterday for non-commercial research, and the benchmark numbers are striking enough to pay careful attention to.</p>
+
+      <h3>The problem, and why it’s hard</h3>
+      <p>Every cell in your body carries the same roughly three billion letters of DNA — identical in a liver cell, a T-cell, and a neuron. Yet each type reads those letters through its own lens: its own combination of active and silent genes, its own regulatory state, its own way of using the same underlying code. A DNA variant (a single-letter difference from a reference genome — also called a mutation or SNP) might completely disrupt a gene that matters enormously in one cell type, while barely perturbing anything in another.</p>
+
+      <p>This cell-type specificity is exactly where most common disease risk hides. The vast majority of variants linked to conditions like lupus, type 1 diabetes, or rheumatoid arthritis don’t sit inside genes themselves. They sit in the <em>regulatory regions</em> of DNA: the switches and dials that control whether genes get turned on, and how strongly. Figuring out which variants matter requires knowing how they behave in the specific cell type where the disease originates — a variant linked to lupus might only matter in one particular subset of activated immune cells that makes up 2% of the blood. Tools that predict effects across “tissues in general,” averaging over many cell types at once, are almost blind to these specifics. That’s like diagnosing a building’s heating problem by averaging the temperature across all rooms: useful, but blind to the one frozen room that’s the actual source of the trouble.</p>
+
+      <p>The first AlphaGenome, released in 2024, made predictions for bulk tissue data. It was a significant advance. But cell-type resolution — the ability to predict what a variant does in <em>this</em> cell type, not a smear across dozens — required a different approach.</p>
+
+      <h3>How it works</h3>
+      <p>AlphaGenome 2’s key idea is simple to state: rather than producing outputs for all cell types simultaneously, evaluate one cell type at a time. You give the model two things: a DNA sequence and a description of one specific cell state. The model predicts what will happen to gene expression, RNA splicing, chromatin accessibility, and — new for this version — DNA methylation in that cell type.</p>
+
+      <p>Think of it like a musician sight-reading sheet music. The score (the DNA) doesn’t change between performances. But whether you’re playing it as jazz or classical, on a cello or a piano (the cell type), changes everything about how each phrase sounds — the dynamics, the phrasing, the character. AlphaGenome 2 learns to be a context-aware performer: given the same notes and a description of the ensemble, it tells you how the arrangement will sound.</p>
+
+      <p>The cell state is provided through a “cell encoder.” You can choose from a catalog of reference cell types that DeepMind has characterized — 68 tissues’ worth. Or you can plug in your own single-cell RNA sequencing experiment, a snapshot of which genes are active in your sample right now, and the encoder converts that into the conditioning signal the model needs. Crucially, no retraining is required: the model adapts to your cell state at inference time, treating each cell type as a first-class input rather than a fixed output slot.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 304" role="img" aria-label="AlphaGenome 2 evaluates the same DNA variant under two different cell type conditions, producing distinct predictions for each" xmlns="http://www.w3.org/2000/svg">
+          <!-- DNA variant box -->
+          <rect x="248" y="14" width="224" height="46" rx="7" fill="#D97757" fill-opacity="0.13" stroke="#D97757" stroke-width="1.7"/>
+          <text x="360" y="33" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="700">DNA variant (SNP)</text>
+          <text x="360" y="52" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#87867F">same sequence · evaluated in two cell types</text>
+
+          <defs>
+            <marker id="a166" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#141413"/>
+            </marker>
+            <marker id="a166c" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#D97757"/>
+            </marker>
+            <marker id="a166m" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <!-- Branches from DNA to cell type boxes -->
+          <line x1="298" y1="62" x2="176" y2="118" stroke="#141413" stroke-width="1.5" marker-end="url(#a166)"/>
+          <line x1="422" y1="62" x2="544" y2="118" stroke="#141413" stroke-width="1.5" marker-end="url(#a166)"/>
+
+          <!-- Left: T-cell -->
+          <rect x="58" y="120" width="236" height="46" rx="7" fill="#6A8CAF" fill-opacity="0.13" stroke="#6A8CAF" stroke-width="1.6"/>
+          <text x="176" y="139" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413" font-weight="600">Cell state: T-cell (immune)</text>
+          <text x="176" y="156" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#87867F">cell encoder → conditioning vector</text>
+
+          <!-- Right: Hepatocyte -->
+          <rect x="426" y="120" width="236" height="46" rx="7" fill="#87867F" fill-opacity="0.12" stroke="#87867F" stroke-width="1.6"/>
+          <text x="544" y="139" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#141413" font-weight="600">Cell state: Hepatocyte (liver)</text>
+          <text x="544" y="156" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#87867F">cell encoder → conditioning vector</text>
+
+          <!-- Arrows to output boxes -->
+          <line x1="176" y1="168" x2="176" y2="208" stroke="#D97757" stroke-width="1.6" marker-end="url(#a166c)"/>
+          <line x1="544" y1="168" x2="544" y2="208" stroke="#87867F" stroke-width="1.5" marker-end="url(#a166m)"/>
+
+          <!-- Left output: causal -->
+          <rect x="58" y="210" width="236" height="60" rx="7" fill="#D97757" fill-opacity="0.09" stroke="#D97757" stroke-width="1.6"/>
+          <text x="176" y="230" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#D97757" font-weight="700">Gene expression ↑  — eQTL signal</text>
+          <text x="176" y="248" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Variant is causal in this cell type</text>
+          <text x="176" y="263" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">30% recall at 90% precision (vs 16% before)</text>
+
+          <!-- Right output: benign -->
+          <rect x="426" y="210" width="236" height="60" rx="7" fill="#87867F" fill-opacity="0.09" stroke="#87867F" stroke-width="1.6"/>
+          <text x="544" y="230" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#87867F" font-weight="700">No significant change</text>
+          <text x="544" y="248" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">Variant benign in this cell type</text>
+          <text x="544" y="263" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">same DNA · different context · different result</text>
+        </svg>
+        <figcaption>AlphaGenome 2 evaluates the same DNA variant in two separate cell-type contexts and produces different predictions for each. The same mutation can be causal in an immune cell and benign in a liver cell — the model can now tell the difference at nearly twice the rate of its predecessor.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>DeepMind trained the model on more than 107 million individual cell profiles spanning 68 tissues, combining bulk sequencing data with single-cell experiments from both human and mouse samples. They added DNA methylation as a predicted output — a first for the AlphaGenome series. The evaluation benchmark is TenK10K, a dataset built from roughly 10,000 people with measurements across 28 distinct immune cell types, in which researchers have independently linked specific DNA variants to changes in gene expression. These linked variants are called eQTLs — expression quantitative trait loci — and the benchmark tests whether the model can find them.</p>
+
+      <h3>What they found</h3>
+      <p>At 90% precision — meaning nine out of ten variants the model flags are genuinely causal — AlphaGenome 2 recovered <strong>30% of putatively causal eQTL variants</strong> across those 28 immune cell types. AlphaGenome 1, fine-tuned on single-cell data, recovered only 16% at the same threshold. For predicting the <em>direction</em> of effect — whether a variant increases or decreases gene expression — AlphaGenome 2 hit 43% recall at 90% accuracy, versus 23% for its predecessor. The improvement holds consistently across cell types. The model also adds DNA methylation as a new readout, extending the picture of what a variant does beyond gene expression alone. Access is free for non-commercial research via the AlphaGenome API; a private commercial preview is also open.</p>
+
+      <h3>The catch</h3>
+      <p>The performance numbers are DeepMind’s own reported results, and independent replication has not happened yet. The model requires significantly more compute than AlphaGenome 1, so for large-scale genome-wide scans — the kind where you test millions of variants at once — the original may remain preferable on cost grounds. And 30% recall, while nearly double the previous rate, still means that seven out of ten causal variants go undetected. This is an excellent research tool, not yet something to base clinical decisions on. The model also covers cell types from a reference catalog; predicting effects in rare or poorly characterized cell states remains harder.</p>
+
+      <p><strong>If you remember one thing:</strong> The same DNA variant can be harmless in most of your cells and disruptive in one specific type — and we now have a model that can predict the difference at nearly twice the rate of anything that came before it.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>Claude Code 2.1.321 (November 9) added Claude Fable 5.2 as the default Fable model and introduced MCP background task support — when an MCP server runs a tool call as a task, Claude Code now moves it to the background and reports completion without blocking. The same release also includes a new <code>/claude-api latency-optimize</code> command (from 2.1.319) that finds where API code makes users wait and tests faster settings automatically. <a href="https://code.claude.com/docs/en/changelog">Claude Code changelog</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two stories this week pull in opposite directions. The Anthropic IPO and OpenAI’s losses measure the race in dollars — a spectacle of ambition and investor confidence that says something about the moment, but not much about whether the science actually works. AlphaGenome 2 tells you something more fundamental: there are specific problems that simply couldn’t be solved before and can now be solved. Predicting cell-type-specific gene regulation has been an open problem in genomics for decades. Getting to 30% recall at 90% precision, up from 16%, doesn’t sound like a headline — until you realize that each percentage point represents real variants that were previously invisible, potentially linked to real diseases in real people.</p>
+
+      <p>The pattern is consistent with what we’ve seen all year: the gap between what’s scientifically possible and what was possible two years ago is growing faster than it’s being communicated. The financial story and the science story are running on different clocks. The science, quietly, is ahead.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://aiweekly.co/alerts/deepmind-launches-alphagenome-2-for-dna-variant-prediction">AI Weekly — AlphaGenome 2</a> ·
+        <a href="https://www.tokenpost.com/news/technology/55130">TokenPost — AlphaGenome 2 benchmark</a> ·
+        <a href="https://finance.biggo.com/news/dcc1e30e-1367-4418-8371-e2a159a534c7">BigGo — variant detection details</a> ·
+        <a href="https://cbc.ca/news/business/anthropic-ipo-9.7418028">CBC — Anthropic IPO pricing</a> ·
+        <a href="https://aiweekly.co/ai-news-today">AI Weekly — OpenAI quarterly loss</a> ·
+        <a href="https://llm-stats.com/ai-news">LLM Stats — Gemini Robotics 2.5, Qwen4-Max</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-11-07/ai-safety-advocates-make-gains-after-110-million-midterm-fight">Bloomberg — AI safety midterms</a> ·
+        <a href="https://code.claude.com/docs/en/changelog">Claude Code changelog</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">eQTL</div>
+        <div>Pronounced “ee-QTL.” Short for <em>expression quantitative trait locus</em> — a specific location in the genome where variation from person to person predictably changes how strongly a nearby gene is expressed. Finding eQTLs is a key step in figuring out which DNA variants actually cause disease. AlphaGenome 2 is benchmarked on how well it can recover known eQTLs in specific immune cell types.</div>
+      </div>
+      <dl>
+        <dt>Cell state</dt><dd>The specific combination of active and silent genes that defines what kind of cell something is at this moment. Two cells with identical DNA can have entirely different states — a skin cell and a neuron, for example. The same DNA variant may be causal in one state and invisible in another.</dd>
+        <dt>Chromatin accessibility</dt><dd>How open or closed a stretch of DNA is to being read by the cell’s gene-expression machinery. Closed chromatin = gene silenced. Open = gene can be read. It varies by cell type and is one of the main things AlphaGenome 2 predicts.</dd>
+        <dt>DNA methylation</dt><dd>A chemical tag added to certain DNA letters that typically silences nearby genes. It’s a major on/off switch that varies across cell types and life stages, and a new output in AlphaGenome 2.</dd>
+        <dt>SNP</dt><dd>Single nucleotide polymorphism — a one-letter difference in a DNA sequence that varies between individuals. Most SNPs are harmless; some change how genes are switched on or off, and those are the ones variant-effect models like AlphaGenome 2 try to find.</dd>
+        <dt>Mixture of Experts (MoE)</dt><dd>A model design where the network is divided into many smaller “expert” sub-networks, with only a small fraction activating for each input. Meituan’s LongCat-2.5 uses it: 1.6 trillion parameters total, only ~48 billion active per token — keeping costs manageable at a size that would otherwise be prohibitive.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
