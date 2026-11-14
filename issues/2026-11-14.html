@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №167 — What We Expect Now · Infinite Reach</title>
+  <meta name="description" content="Google's fastest model outscores a bigger sibling; Anthropic's IPO pricing starts Monday; and a study of a million AI matchups finds that models aren't declining — the people judging them have quietly raised the bar." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №167 &middot; November 14, 2026</p>
+      <h1>What We Expect Now</h1>
+      <p>Google's fastest model outscores a bigger sibling; Anthropic's IPO pricing starts Monday; and a study of a million AI matchups finds that models aren't declining — the people judging them have quietly raised the bar.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Google released Gemini 4 Hydrogen on November 12 — the fast, lower-cost entry in the Gemini 4 family. The result surprised even close observers: Hydrogen outscored Gemini 4 Argon, the larger model it was supposed to sit below, on the standard intelligence index used by independent evaluators. It runs 2.5&times; faster than Google's previous Flash model and claims 5&times; fewer fabricated answers. On a benchmark that tests whether a model can autonomously complete software-engineering tasks, it cleared 57&thinsp;% — up from 18&thinsp;% for the previous Flash. The lesson seems to be that for every model that scales up, there is a moment when a smaller, better-tuned one overtakes it on the metrics that actually get used in practice.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">IPO</span><span>Anthropic is pricing its Nasdaq IPO on Monday, November 18, with first-day trading expected Tuesday. The indicative range is $70–78 per share (ticker: ANT), implying a valuation of roughly $1.1–1.4&thinsp;trillion — well below the $2 trillion figure that circulated in earlier reports.</span></li>
+        <li><span class="tag money">Funding</span><span>OpenAI has closed roughly $11&thinsp;billion of a planned $20&thinsp;billion round at a $1.25&thinsp;trillion valuation — after cutting its original target of $30&thinsp;billion. CEO Sam Altman confirmed the company will not list publicly in 2026.</span></li>
+        <li><span class="tag policy">Policy</span><span>The White House AI task force recommended on Friday that federal agencies ease cyber-liability rules to make it less risky for AI companies to report security incidents voluntarily. The stated concern: when disclosure can trigger a regulatory penalty, companies stay quiet about problems.</span></li>
+        <li><span class="tag tech">Models</span><span>IBM released experimental 3&thinsp;B and 8&thinsp;B Granite 4.1 LLMON previews using reserved tokenizer delimiters that cleanly separate instructions, data, and requirements — a small but deliberate move toward more predictable enterprise behavior.</span></li>
+        <li><span class="tag tech">Research</span><span>A new paper (arXiv: 2611.14467) formally analyzes "coverage collapse" in model fine-tuning — the tendency for a trained model to converge on a narrow band of responses and lose flexibility — and proposes periodic reference resets during post-training as a fix.</span></li>
+      </ul>
+
+      <h2>Paper, explained: the hidden drift in AI evaluation</h2>
+      <p class="kicker">"AI Isn't Getting Dumber, We're Getting Pickier: Rising Standards in Human Evaluation of Large Language Models" &middot; Zihan Chen, Lei Nico Zheng, Di Zhu &middot; <a href="https://arxiv.org/abs/2611.14333">arXiv: 2611.14333</a></p>
+      <p>You have probably heard someone complain that ChatGPT "used to be better." Maybe you've said it yourself. This paper tests whether that feeling corresponds to anything real — and finds that it mostly doesn't. The models haven't gotten worse. The people judging them have gotten pickier.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Measuring how good a language model is turns out to be genuinely difficult. Automated benchmarks (multiple-choice tests, math puzzles) can be gamed, and the best ones get saturated quickly — a model scores 95&thinsp;% and there's nothing left to distinguish it from the next one. So the community has leaned heavily on <em>human preference evaluations</em>: show two anonymous AI answers side by side, and ask a human to pick the better one. The leading platform for this is Chatbot Arena, run by researchers at Berkeley, where anyone can visit, chat with two hidden models simultaneously, and vote. The accumulated votes get turned into a live leaderboard.</p>
+      <p>The assumption baked into this method is that "human preference" is a stable measuring stick. If Model A beats Model B today and also beats Model B six months from now, the leaderboard means something. But what if the humans doing the voting are gradually changing their own standards — without anyone noticing?</p>
+
+      <h3>How it works</h3>
+      <p>Think of it like wine critics. Imagine the same bottle of wine is opened for a panel of critics once a month for fifteen months. The wine doesn't change — it's sealed, stable, identical. But the critics are going to wine tastings, reading reviews, talking to other experts. Each month they come back a little more experienced, a little more demanding. By month fifteen, the same wine that earned "pretty good" in month one earns "ordinary." Nothing changed except the judge.</p>
+      <p>That's the analogy at the heart of this paper. The researchers looked at the specific Chatbot Arena vote option that says "both are bad" — not "A won" or "B won," but a rejection of both choices. That vote is a signal of rising standards: the voter isn't choosing between two options; they're dismissing them. If voter standards were stable, the rate of "both are bad" votes should fluctuate randomly around a constant. If standards are drifting upward, that rate should climb steadily — even for models that haven't changed.</p>
+      <p>To test this, the researchers used fixed model versions. These are model snapshots that Chatbot Arena freezes in place, so a vote on a fixed version truly is a vote on the same model every time — not a model that the lab has been quietly updating. Any change in votes on a fixed version must come from somewhere else. The only candidate is the voter.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team analyzed 1,260,967 blind votes cast on Chatbot Arena between May 2023 and August 2024. For the fixed-version models in that pool, they tracked the monthly rate of "both are bad" votes. They controlled for model, prompt category, and time of day, using a regression that isolates the time trend from other confounders.</p>
+
+      <h3>What they found</h3>
+      <p>The "both are bad" rate was rising by <strong>1.71 percentage points per month</strong>, on a baseline of about 17.1&thinsp;% — a roughly 10&thinsp;% relative increase per month. By 2024, the monthly drift had steepened to <strong>1.91 percentage points</strong>. This is happening on the same, frozen models. The models didn't get worse. The panel got harder to please.</p>
+      <p>The implication for the leaderboard: a model that was genuinely state-of-the-art in early 2023 would be rated significantly worse if first evaluated in mid-2024 — not because anything changed, but because the voters comparing it to the best current models had recalibrated their expectations upward. Apparent decline was largely an artifact of an evolving measuring stick.</p>
+
+      <h3>The catch</h3>
+      <p>The study covers May 2023 to August 2024. Models have improved enormously since then, and so the gap between early-era models and current ones is now much larger — which makes it harder to attribute any observed ratings decline solely to judge drift. The analysis also can't fully separate evaluation drift from possible changes in Chatbot Arena's user population over time: a site that starts niche and goes mainstream will attract different kinds of voters. And the study doesn't claim models <em>never</em> get worse — just that the drift in human standards is a real, measurable, and previously uncounted factor that makes it harder to know when they do.</p>
+
+      <p><strong>If you remember one thing:</strong> When you say a tool "used to be better," part of what you're measuring is you.</p>
+
+      <!-- SVG figure: evaluation drift over time -->
+      <figure>
+        <svg viewBox="0 0 720 280" role="img" aria-label="Chart showing 'both are bad' vote rate rising steadily over 15 months while model quality stays flat on the same frozen models">
+          <!-- Background -->
+          <rect width="720" height="280" fill="white"/>
+          <!-- Axes -->
+          <line x1="80" y1="30" x2="80" y2="220" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="80" y1="220" x2="660" y2="220" stroke="#D1CFC5" stroke-width="1.5"/>
+          <!-- Y axis labels -->
+          <text x="68" y="224" text-anchor="end" font-family="system-ui" font-size="12" fill="#87867F">0%</text>
+          <text x="68" y="175" text-anchor="end" font-family="system-ui" font-size="12" fill="#87867F">10%</text>
+          <text x="68" y="127" text-anchor="end" font-family="system-ui" font-size="12" fill="#87867F">20%</text>
+          <text x="68" y="79" text-anchor="end" font-family="system-ui" font-size="12" fill="#87867F">30%</text>
+          <!-- Gridlines -->
+          <line x1="80" y1="175" x2="660" y2="175" stroke="#D1CFC5" stroke-width="0.75" stroke-dasharray="4,4"/>
+          <line x1="80" y1="127" x2="660" y2="127" stroke="#D1CFC5" stroke-width="0.75" stroke-dasharray="4,4"/>
+          <line x1="80" y1="79" x2="660" y2="79" stroke="#D1CFC5" stroke-width="0.75" stroke-dasharray="4,4"/>
+          <!-- X axis labels (months) -->
+          <text x="80"  y="237" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">May'23</text>
+          <text x="197" y="237" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Aug</text>
+          <text x="313" y="237" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Nov</text>
+          <text x="430" y="237" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Feb'24</text>
+          <text x="546" y="237" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">May</text>
+          <text x="660" y="237" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Aug</text>
+          <!-- Flat line: model quality (baseline) -->
+          <!-- 17.1% baseline = y=127 - (17.1/30)*(127-30) = approximately y=175 -(17.1*48.3/30) = let me recalc -->
+          <!-- Scale: 0% at y=220, 30% at y=79. So 1% = (220-79)/30 = 4.7px -->
+          <!-- 17.1% = 220 - (17.1 * 4.7) = 220 - 80.4 = 139.6 ~140 -->
+          <!-- Rising line: starts 17.1%, rises 1.71 pp/month for 15 months = 17.1 + 15*1.71 = 42.75% at end (but cap at graph) -->
+          <!-- Let's make it start at 17.1% and end at ~28% over 15 months (1.71 * 7 = 12 extra = 29.1% after 7 months shown) -->
+          <!-- Actually let me think about x positions: 15 months → x=80 to x=660, step=38px per month -->
+          <!-- Points for rising line (both are bad rate): -->
+          <!-- month 0 (May 23): 17.1% → y = 220 - 17.1*4.7 = 220 - 80.4 = 139.6 → 140 -->
+          <!-- month 3: 17.1 + 3*1.71 = 22.2% → y = 220 - 22.2*4.7 = 220 - 104.3 = 115.7 → 116 -->
+          <!-- month 6: 17.1 + 6*1.71 = 27.4% → y = 220 - 27.4*4.7 = 220 - 128.8 = 91.2 → 91 -->
+          <!-- month 9: 17.1 + 9*1.71 = 32.5% — capped at 30% = y=79 -->
+          <!-- month 12 (May 24): let's show the 2024 rate going up 1.91/mo from month 12 -->
+          <!-- month 15 (Aug 24): only 15 months total so we'll just show trend -->
+          <!-- x for each month: x = 80 + month * (660-80)/15 = 80 + month * 38.67 -->
+          <!-- Let's re-plan: 15 months across 580px wide area, so step = 38.67px -->
+          <!-- month 0: x=80, month 3: x=80+116=196, month 6: x=80+232=312, month 9: x=80+348=428, month 12: x=80+464=544, month 15: x=660 -->
+
+          <!-- Flat line: frozen model quality (conceptually at ~17.1% if measured at start) -->
+          <line x1="80" y1="140" x2="660" y2="140" stroke="#6A8CAF" stroke-width="2.5" stroke-dasharray="8,4"/>
+          <!-- Rising line: "both are bad" vote rate -->
+          <polyline points="80,140 196,116 312,91 428,70 544,53 660,38"
+                    fill="none" stroke="#D97757" stroke-width="2.5" stroke-linejoin="round"/>
+          <!-- Dot at start -->
+          <circle cx="80" cy="140" r="5" fill="#D97757"/>
+          <!-- Dot at end -->
+          <circle cx="660" cy="38" r="5" fill="#D97757"/>
+          <!-- Legend -->
+          <line x1="90" y1="258" x2="120" y2="258" stroke="#D97757" stroke-width="2.5"/>
+          <circle cx="105" cy="258" r="4" fill="#D97757"/>
+          <text x="128" y="262" font-family="system-ui" font-size="12" fill="#141413">"Both are bad" vote rate (rising)</text>
+          <line x1="390" y1="258" x2="420" y2="258" stroke="#6A8CAF" stroke-width="2.5" stroke-dasharray="8,4"/>
+          <text x="428" y="262" font-family="system-ui" font-size="12" fill="#141413">Same frozen model (unchanged)</text>
+          <!-- Title -->
+          <text x="370" y="22" text-anchor="middle" font-family="ui-serif" font-size="14" fill="#141413" font-style="italic">Judge drift on Chatbot Arena, May 2023 – Aug 2024</text>
+        </svg>
+        <figcaption>The same frozen models were voted on each month. The share of "both are bad" votes rose by roughly 1.7 percentage points per month — not because the models degraded, but because the voters' standards climbed. Clay line = observed voting drift; blue dashed = no change in underlying model quality.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Built <a href="https://aiweekly.co/alerts/karpathy-builds-hackertube-from-6454-hn-recommended-videos-in-two-hours-with">HackerTube</a> in roughly two hours using Claude Opus 5.5 — a YouTube-style site built entirely from videos that Hacker News users had recommended in comments. He filtered 43 million comments down to 6,454 videos across 150 topics. The interesting bit isn't the site, it's the method: a weekend project that used to require a backend engineer and a dataset pipeline now fits in a conversation with a model. Worth a look if you've ever wanted a recommendation engine that is literally just accumulated human judgment with no algorithm attached.</span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The thread running through today's stories is a question about measurement: how do we know when something is actually getting better or worse, and when are we just moving the goalposts? Gemini 4 Hydrogen outscoring the larger Argon shows that the benchmarks used to rank models can flip with each new release — the smaller model winning on the metric that matters most this month. The Chatbot Arena paper shows the same dynamic in human judgment: the same model, frozen in time, looks worse as the voters around it evolve. And Anthropic is days away from letting public markets render a third kind of judgment — one that will be updated in real time, by millions of people who have all been watching the AI wave for years and grown considerably harder to impress. The bar keeps moving, and the systems we build keep chasing it.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2611.14333">arXiv: 2611.14333 (paper)</a> ·
+        <a href="https://github.com/datnguyenquy94/news-radar/issues/1043">arXiv AI Research Digest, Nov 11</a> ·
+        <a href="https://www.neowin.net/news/googles-gemini-4-hydrogen-beats-gpt-61-terra-on-most-key-ai-benchmarks/">Neowin: Gemini 4 Hydrogen benchmarks</a> ·
+        <a href="https://the-decoder.com/googles-gemini-4-hydrogen-outscores-the-bigger-argon-just-four-weeks-after-its-launch/">The Decoder: Hydrogen vs Argon</a> ·
+        <a href="https://artificialanalysis.ai/models/releases/gemini-4-hydrogen">Artificial Analysis: Gemini 4 Hydrogen</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-11-02/anthropic-ipo-explained-s-1-filing-nasdaq-listing-and-key-risks">Bloomberg: Anthropic IPO</a> ·
+        <a href="https://fourweekmba.com/ai-anthropics-ipo-day-by-day-pricing-18-nov-trading-19-nov/">FourWeekMBA: Anthropic IPO timeline</a> ·
+        <a href="https://fourweekmba.com/ai-openai-said-to-close-11b-at-1-25t-round-may-reach-20b/">FourWeekMBA: OpenAI funding</a> ·
+        <a href="https://www.bloomberg.com/news/articles/2026-11-14/white-house-urges-easing-liability-to-encourage-ai-disclosure">Bloomberg: White House AI liability</a> ·
+        <a href="https://aiweekly.co/alerts/karpathy-builds-hackertube-from-6454-hn-recommended-videos-in-two-hours-with">AI Weekly: Karpathy HackerTube</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Evaluation drift</div>
+        <div>When the people scoring a system quietly upgrade their own standards over time — so the system looks like it's declining even if nothing about it has changed. The issue is in the judge, not what's being judged. Wine critics who keep going to tastings will eventually find the same bottle ordinary.</div>
+      </div>
+      <dl>
+        <dt>Chatbot Arena</dt>
+        <dd>A web platform where users compare two AI answers side by side — without knowing which model produced each — and pick a winner. The accumulated votes form a live leaderboard that the industry treats as a rough measure of real-world quality.</dd>
+        <dt>Hallucination</dt>
+        <dd>When an AI model confidently states something factually wrong. Called a hallucination because the model produces an answer that isn't grounded in anything real — it fills a gap with plausible-sounding invention.</dd>
+        <dt>Agentic</dt>
+        <dd>Describes a model that works through a task in steps — writing code, running it, reading the output, trying again — rather than just producing a single response and stopping. The model acts more like a problem-solver than a search engine.</dd>
+        <dt>Coverage collapse</dt>
+        <dd>A failure mode in model fine-tuning where the model gets so focused on being rewarded for one type of response that it loses flexibility everywhere else — like a musician who practices one piece so much they can't improvise.</dd>
+        <dt>Inference throughput</dt>
+        <dd>How many responses an AI system can produce per second. Higher throughput means lower latency for users and lower cost per query for the company running the model.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
