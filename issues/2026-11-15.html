@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №168 — What the Robot Imagines · Infinite Reach</title>
+  <meta name="description" content="NVIDIA's GR00T 2 teaches robots new tasks by predicting video of their own future; Anthropic sets its IPO price range at $70–$78 this week, targeting a $1.4 trillion valuation." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №168 &middot; Sunday, November 15, 2026</p>
+      <h1>What the Robot Imagines</h1>
+      <p>NVIDIA's new robot foundation model learns to pick up objects from a single human demonstration — not by memorizing the motions, but by simultaneously predicting a short video of its own future. Meanwhile, Anthropic opens the books on the most expensive AI stock offering in history.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic — the maker of Claude — launched its IPO roadshow on November 10 with a price range of $70–$78 per share. Pricing is expected Thursday, November 18, with Nasdaq trading (ticker: ANT) beginning the following day. At the top of the range, the company would carry a fully diluted valuation of roughly $1.41 trillion. Seven strategic partners, including Google and Nvidia, have committed to buying $26 billion in non-voting stock at the IPO price. The company reported $19.7 billion in revenue in the twelve months ending June 2026, and the roadshow deck names "compute access" 49 times — a signal of where the company thinks growth will come from. The S-1 also disclosed a striking dispute: the U.S. Pentagon designated Anthropic a "supply chain risk," a label normally reserved for companies with ties to adversaries; Anthropic has since filed suit against the Defense Department in two federal courts.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Robots</span><span>NVIDIA unveiled GR00T 2 at the Conference on Robot Learning in Austin on November 9 — a 2-billion-parameter robot foundation model that succeeds on 71% of manipulation tasks with one human demo, rising to 95% with five.</span></li>
+        <li><span class="tag tech">Models</span><span>Google released Gemini 4 Hydrogen on November 13, the newest update to its fast, cheap Flash tier — the model tier most developers reach for first.</span></li>
+        <li><span class="tag policy">Courts</span><span>Four nonprofits filed in San Francisco Superior Court on November 12 for an emergency order halting new training runs at Anthropic, OpenAI, Google, Meta, and SpaceX's AI unit, citing California's Unfair Competition Law. Legal observers give the suit long odds of success.</span></li>
+        <li><span class="tag tech">OpenAI</span><span>OpenAI dissolved its standalone robotics team for the second time in six years and launched ChatGPT Wallet — letting AI agents pay for things via a network token rather than a user's real credit card.</span></li>
+        <li><span class="tag money">Meta</span><span>Meta halted its Muse Image model after backlash over AI-generated content risks — a rare public reversal for a flagship AI product.</span></li>
+      </ul>
+
+      <h2>Paper, explained: the robot that imagines its future</h2>
+      <p class="kicker">GR00T 2 (Generalist Robot 00 Technology 2) &middot; NVIDIA GEAR Lab &middot; <a href="https://research.nvidia.com/labs/gear/gr00t-2">whitepaper</a></p>
+
+      <p>Most robots learn to do a task by watching it and copying the motions. GR00T 2 does something subtly different: while it plans its actions, it also predicts what the world will look like in the next moment. That small addition turns out to matter enormously for how well the robot generalizes.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Teaching a robot to handle physical objects is deceptively difficult. A human can watch someone pick up a glass once and immediately generalize — they understand glass-ness, friction, the arc of a wrist. Robots, historically, could not do that. The standard method, called behavior cloning, records a human doing a task and trains the robot to predict the next joint movement from its sensors. It works reasonably well on narrow tasks with many examples. But change the cup's color, or the light, or the table height, and the robot falters. It learned the motions without learning why those motions make sense.</p>
+      <p>Large language and vision models solved a related problem in a different way: they trained on vast amounts of data and learned to predict the next token or image patch. That prediction task forced them to build a rich internal model of how language and images work — not just to memorize sequences. Could robots learn physical intuition the same way, by predicting what comes next in the visual world?</p>
+
+      <h3>How it works</h3>
+      <p>Here is an analogy. Imagine learning to parallel-park by memorizing only your exact steering-wheel movements from one successful attempt. You would probably fail on a different street, in a different car, in different light. Now imagine you also had to, simultaneously, predict a video of what the car would look like from a street camera as you parked it. To make that prediction accurate, you would have to build a genuine mental model of how the car moves through space. The prediction task forces understanding, not just imitation.</p>
+      <p>GR00T 2 works like the second student. It is a 2-billion-parameter diffusion transformer — a type of model that starts from noise and gradually refines its answer, the way a sculptor removes material from a block. Given three inputs — recent camera frames from the robot's point of view, the robot's current joint positions and velocities, and a plain-English instruction like "pick up the screwdriver" — it simultaneously denoises two outputs at once: a short clip of what the robot will see next, and the sequence of joint movements that will get it there. Both predictions share the same network pass; neither is treated as an afterthought.</p>
+      <p>The technical name for this is joint world-action modeling. The model cannot ignore the video half — the loss function penalizes bad video predictions as much as bad action predictions. So it must develop internal representations that actually describe the physics of the scene: how objects move, how surfaces interact, what a grasp looks like from outside. That knowledge, baked in during training on 100,000 hours of human egocentric video and diverse robot teleoperation data, is what lets it generalize.</p>
+      <p>The model also includes a monitoring loop: a separate reasoning component watches the robot's progress, compares the actual incoming video to what GR00T 2 predicted, and triggers replanning when they diverge — if the screwdriver slips, the prediction breaks, and the model knows to try again. NVIDIA calls this the recovery loop.</p>
+
+      <h3>What they actually did</h3>
+      <p>NVIDIA tested GR00T 2 on 50 real manipulation tasks — picking objects, stacking cups, sorting by color — using real robot hardware, not simulation. They gave the robot zero to five human demonstrations per task (a demonstration is a person operating the robot arm by hand once). They also ran a separate set of 50 tasks the model had never seen during training, to test zero-shot generalization. All testing used physical robots in a lab setting.</p>
+
+      <h3>What they found</h3>
+      <p>With one demonstration, GR00T 2 succeeded on 71% of its 50 test tasks on average. With five demonstrations, success rose to 95%. On the 50 completely unseen tasks — zero demonstrations, the model had to draw entirely on what it learned during training — it still achieved 40% success. For context, prior approaches that do not use joint video prediction typically score near 20–30% on zero-shot manipulation; getting to 40% without any task-specific examples is a meaningful step forward. Foxconn is already applying the model to server assembly, Nexuni to robotic laundry handling, and Siemens to industrial uses. NVIDIA also released new benchmarks, DexBench and VABAR, alongside the model for the broader research community to use.</p>
+
+      <h3>The catch</h3>
+      <p>GR00T 2 requires substantial GPU compute — this is not running on a cheap arm. All the numbers above come from NVIDIA's own evaluations, on NVIDIA-designed benchmarks, before independent replication by external labs. The model code will not be publicly available until December 2026. And a 50-task lab test, however well-designed, is a small slice of the messy variety of real industrial and domestic environments. The 71% and 95% figures should be treated as promising indicators, not proof of general-purpose robustness.</p>
+
+      <p><strong>If you remember one thing:</strong> Robots are getting much better at learning new tasks from almost no examples — not because they memorized more, but because they learned to imagine the consequences of their own actions.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="GR00T 2 architecture: three inputs feed into one diffusion transformer that jointly denoises future video and an action sequence">
+          <defs>
+            <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#141413"/>
+            </marker>
+          </defs>
+          <rect width="720" height="310" fill="#FAF9F6" rx="6"/>
+
+          <!-- Input column label -->
+          <text x="95" y="52" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F" font-weight="600" letter-spacing="0.08em">INPUTS</text>
+
+          <!-- Camera frames box -->
+          <rect x="22" y="62" width="146" height="52" rx="6" fill="#6A8CAF" opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="95" y="84" text-anchor="middle" font-family="system-ui" font-size="12" fill="#141413" font-weight="500">Camera frames</text>
+          <text x="95" y="102" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">what the robot sees now</text>
+
+          <!-- Robot state box -->
+          <rect x="22" y="128" width="146" height="52" rx="6" fill="#6A8CAF" opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="95" y="150" text-anchor="middle" font-family="system-ui" font-size="12" fill="#141413" font-weight="500">Robot state</text>
+          <text x="95" y="168" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">joint positions + speeds</text>
+
+          <!-- Text instruction box -->
+          <rect x="22" y="194" width="146" height="52" rx="6" fill="#6A8CAF" opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="95" y="216" text-anchor="middle" font-family="system-ui" font-size="12" fill="#141413" font-weight="500">Text instruction</text>
+          <text x="95" y="234" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">"pick up the screwdriver"</text>
+
+          <!-- Arrows to transformer -->
+          <line x1="170" y1="88" x2="258" y2="148" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr2)"/>
+          <line x1="170" y1="154" x2="258" y2="170" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr2)"/>
+          <line x1="170" y1="220" x2="258" y2="192" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+          <!-- Center transformer label -->
+          <text x="360" y="52" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F" font-weight="600" letter-spacing="0.08em">ONE SHARED NETWORK</text>
+
+          <!-- Diffusion transformer box -->
+          <rect x="260" y="115" width="200" height="110" rx="10" fill="#D97757" opacity="0.12" stroke="#D97757" stroke-width="2"/>
+          <text x="360" y="157" text-anchor="middle" font-family="ui-serif" font-size="15" font-weight="bold" fill="#141413">Diffusion</text>
+          <text x="360" y="176" text-anchor="middle" font-family="ui-serif" font-size="15" font-weight="bold" fill="#141413">Transformer</text>
+          <text x="360" y="200" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">jointly denoises both outputs</text>
+
+          <!-- Arrows from transformer to outputs -->
+          <line x1="462" y1="150" x2="548" y2="105" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr2)"/>
+          <line x1="462" y1="190" x2="548" y2="230" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+          <!-- Output column label -->
+          <text x="625" y="52" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F" font-weight="600" letter-spacing="0.08em">OUTPUTS</text>
+
+          <!-- Future video output -->
+          <rect x="550" y="62" width="148" height="64" rx="6" fill="#788C5D" opacity="0.15" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="624" y="86" text-anchor="middle" font-family="system-ui" font-size="12" fill="#141413" font-weight="500">Future video clip</text>
+          <text x="624" y="103" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">what the world will look like</text>
+          <text x="624" y="119" text-anchor="middle" font-family="system-ui" font-size="11" fill="#D97757">→ recovery loop</text>
+
+          <!-- Action sequence output -->
+          <rect x="550" y="200" width="148" height="52" rx="6" fill="#788C5D" opacity="0.15" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="624" y="222" text-anchor="middle" font-family="system-ui" font-size="12" fill="#141413" font-weight="500">Action sequence</text>
+          <text x="624" y="240" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">joint movements → robot arm</text>
+
+          <!-- Bottom caption line -->
+          <text x="360" y="288" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F" font-style="italic">The key novelty: one network predicts both the future scene and the actions simultaneously — forcing it to model physics, not just movements.</text>
+        </svg>
+        <figcaption>GR00T 2's architecture. One diffusion transformer takes camera frames, robot state, and a text instruction, then jointly denoises both a future video clip and the action sequence. The video prediction is what forces the model to build physical intuition rather than just copy motion patterns.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy launched <strong>HackerTube</strong> on October 31 — a YouTube-style discovery site indexing 6,454 videos recommended in Hacker News threads, spanning 2007 to 2026. He built the whole thing in roughly two hours using Claude. A quiet illustration of what one person can ship in 2026. <a href="https://karpathy.ai">karpathy.ai</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things are converging this week that point to the same underlying question. Robots are becoming dramatically cheaper to teach — not because someone wrote better programs, but because they can now build a mental model of the physical world from raw experience. And the companies doing this work are stepping into full public-markets accountability, with investors setting a price on what they think the whole enterprise is worth. GR00T 2 suggests the foundation-model moment for robotics may already have arrived — the equivalent of GPT-3 landing for language, four years ago. The Anthropic IPO, meanwhile, will tell us what public markets actually believe: not in pitch decks, but in dollar terms. Both events are answers to the same question. How much is the ability to generalize — to pick up a screwdriver you've never seen before, to reason about a problem no one anticipated — actually worth?</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://research.nvidia.com/labs/gear/gr00t-2">NVIDIA GEAR Lab — GR00T 2 whitepaper</a> ·
+        <a href="https://leverageshares.com/us/anthropic-ipo-tracker/">Leverage Shares — Anthropic IPO tracker</a> ·
+        <a href="https://www.mexc.com/learn/article/anthropic-ipo-roadshow">MEXC — Anthropic IPO roadshow details</a> ·
+        <a href="https://fortune.com/2026/11/10/anthropic-ipo-price-range-ai-stock-sell-off/">Fortune — Anthropic sets IPO range</a> ·
+        <a href="https://techweez.com/2026/11/14/nonprofits-sue-openai-google-meta-anthropic-spacex/">Techweez — AI freeze lawsuit (Nov 14)</a> ·
+        <a href="https://byobot.ai/ai-news/ai-daily-newsstand-november-14-2026">Byobot — AI Daily Newsstand Nov 14, 2026</a> ·
+        <a href="https://aiweekly.co/alerts/karpathy-ships-hackertube-in-2-hours-with-claude-opus-55">AI Weekly — Karpathy / HackerTube</a> ·
+        <a href="https://github.com/datnguyenquy94/news-radar/issues/1043">arXiv AI Digest Nov 11, 2026</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Diffusion model</div>
+        <div>A type of generative model that works by starting from pure noise and gradually "denoising" it toward a target — like a sculptor who begins with a rough block and chisels away everything that isn't the final shape. Used in image generators like Midjourney and Stable Diffusion, and now in robotics.</div>
+      </div>
+      <dl>
+        <dt>Foundation model</dt><dd>A large model trained on enormous, diverse data that can be adapted to many specific tasks without being retrained from scratch. The name comes from a building analogy: lay the foundation once, construct many things on top of it.</dd>
+        <dt>Embodied AI</dt><dd>An AI with a physical body — typically a robot — rather than one that only processes text or images. "Embodied" because it must deal with the actual physical world: gravity, friction, objects that don't sit where the model expects them.</dd>
+        <dt>Zero-shot</dt><dd>A model completing a task it was never explicitly trained on, relying on general knowledge baked in during training. Zero demonstrations. When it works, it's evidence the model understood something rather than just memorized it.</dd>
+        <dt>Behavior cloning</dt><dd>Teaching a robot by recording a human doing a task, then training the robot to copy those movements. Simple and reliable for narrow tasks; fails badly when conditions change even slightly, because the robot learned the motions but not the physics behind them.</dd>
+        <dt>IPO</dt><dd>Initial public offering — the first time a private company sells its shares on a public stock exchange. The IPO price is set during the roadshow, when banks gauge how much investors are willing to pay. All the Anthropic pricing news this week is about fixing that first number.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
