@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №169 — What the Weights Said · Infinite Reach</title>
+  <meta name="description" content="Anthropic heads into its IPO pricing week at $70–78/share targeting a $1.2 trillion valuation; MIT CSAIL researchers showed a frontier model can edit a smaller model's weights directly, raising its math score from 7.9% to 48.1% with no training." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №169 &middot; Monday, November 16, 2026</p>
+      <h1>What the Weights Said</h1>
+      <p>Anthropic heads into the most consequential week in its history as the company's IPO is set to price on Tuesday. Meanwhile, out of MIT, a small team has shown something that could matter a great deal for how we build and fix AI systems: a large language model can read the internal parameters of a smaller one and surgically edit them — no training required.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic is expected to price its shares on Tuesday, November 18, and begin trading on the Nasdaq as "ANT" on Wednesday, November 19. The company filed to sell 825 million Class A shares at $70 to $78 each, implying a fully diluted market value of roughly $1.2 trillion — one of the largest initial public offerings in history. Anthropic reported $19.7 billion in revenue in the twelve months through June 2026, and its co-founders have pledged 80% of their personal equity to charitable causes. The IPO comes with an unusual footnote: the company's own public filings include language warning that its products may one day pose serious risks to society, and separately, Anthropic has sued the United States Defense Department after the Pentagon designated the company a "supply chain risk" — a designation that arrived while the roadshow was underway.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Models</span><span>Alibaba opened a two-week preview of Qwen4-Max, its next flagship, with a 1-million-token context window and image and video inputs — but published no benchmarks, parameter count, or downloadable weights. Access requires a paid subscription plan; the preview window closes November 25.</span></li>
+        <li><span class="tag tech">Agents</span><span>Google's Antigravity /teamwork feature, which lets teams of AI agents coordinate on a problem over hours or days, reportedly solved seven open mathematics problems in automated runs and independently built a cycle-accurate RISC-V CPU simulator that boots xv6, an operating system widely used in computer science education.</span></li>
+        <li><span class="tag tech">Open source</span><span>Developer Simon Willison reproduced a core weight-reading experiment on a laptop using a 17 GB local model, suggesting the ability to "read" a neural network's weights may already be accessible to ordinary hardware, not just frontier systems.</span></li>
+        <li><span class="tag policy">Legal</span><span>Anthropic filed suit in two U.S. federal courts after the Pentagon designated it a "supply chain risk," a ruling with potential implications for government contracts that arrived mid-roadshow.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~550-850 words -->
+      <h2>Paper, explained: when a big model edits a small one</h2>
+      <p class="kicker">"Sparks of Weight-Space Programming" &middot; Takehi, Teoh, Zhang &amp; Khattab (MIT CSAIL) &middot; <a href="https://github.com/rikiyat">November 2, 2026</a></p>
+      <p>An 800-million-parameter language model's math score jumped from 7.9% to 48.1%. No training. No gradient steps. A larger model read its parameters and edited 0.016% of them. That is the headline from a blog post published two weeks ago by four researchers at MIT CSAIL, and it has been making the rounds ever since.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When an AI model is bad at something — say, arithmetic — the standard fix is retraining: gather examples, run them through the model thousands of times, and let the numbers inside adjust very slowly in response. This works, but it is expensive, slow, and hard to control. If you want to fix one narrow problem, you often end up inadvertently changing other things. The model learns, but you don't get to choose exactly what it learns.</p>
+
+      <p>The question the MIT CSAIL team posed is simpler and stranger: does anyone actually need to do it that way? A neural network is, at root, a very large table of numbers. Those numbers encode knowledge — about language, mathematics, reasoning. If another system is capable enough to understand what those numbers mean, could it not simply write the right values directly? The barrier has always been that neural network weights are not human-readable. Each weight is a floating-point number that only makes sense in relation to millions of others. Working out what a given weight "does" is itself a hard research problem — the whole field of mechanistic interpretability exists largely to answer it. The MIT team's bet was that a frontier language model, trained on vast amounts of human knowledge including published interpretability research, might be able to do that interpretation automatically and act on it.</p>
+
+      <h3>How it works</h3>
+      <p>Think of a neural network's parameters as sheet music. Training changes the music the slow way: the orchestra rehearses for weeks, playing the same piece again and again until the musicians internalize the right notes. Weight-space programming is different. It is like bringing in a master arranger who can read the sheet music on paper, notice which passage is off, and simply cross out those measures and write the correct ones — without anyone picking up an instrument.</p>
+
+      <p>Rikiya Takehi, Jayden Teoh, Alex Zhang, and Omar Khattab gave GPT-6 Astra access to the numerical weights of Qwen3.5-0.8B, a small but capable 800-million-parameter language model. They asked Astra to reason about those weights: which layers seemed to handle which kinds of knowledge, where the mathematical reasoning appeared to live, and which values seemed inconsistent with the behaviour they wanted. Astra then proposed specific edits — not broad strokes across the whole network, but a targeted intervention on a narrow slice. It modified roughly 0.016% of the model's weights: a small surgical change, not a rewrite.</p>
+
+      <p>The analogy the authors use is "programming" rather than "training." Training says: show the system inputs and outputs, run feedback loops, let the numbers find their own way to the right values. Weight-space programming says: reason about the structure, decide what needs to change, and change it. The arranger, not the rehearsal.</p>
+
+      <h3>What they actually did</h3>
+      <p>The main experiment targeted mathematical ability as measured by MATH-500, a standard benchmark of 500 high-school and competition math problems. Qwen3.5-0.8B started at 7.9% — low, as you would expect from a very small model. After GPT-6 Astra's weight edits, the score rose to 48.1%. Ahsen Khaliq at Hugging Face independently rebuilt the edited checkpoint from the published logs and re-ran the benchmark, reaching 51.0% — a slightly higher result, but under the same conditions. That outside replication matters: it suggests the effect is real, not a fluke of one particular run.</p>
+
+      <p>The team also tried two things that did not work: they attempted to use the same technique on Gemma 3 270M (a comparably small model from Google) targeting the same math capability — the edits produced no improvement. And they tried to edit out sycophantic behaviour (the tendency to agree with users regardless of whether they are right) — that also failed.</p>
+
+      <h3>What they found</h3>
+      <p>The results point in two directions simultaneously. On the upside: it is possible for a capable model to interpret and modify another model's weights in a targeted way, at least in some cases. The technique is fast, requires no training data, and produced a sixfold improvement in math ability on a model that was genuinely struggling. On the downside: it is brittle. It worked on a localized, well-defined capability in one small model, and failed on a more diffuse behaviour and a different architecture. The gap between "it works here" and "it works reliably" is wide.</p>
+
+      <h3>The catch</h3>
+      <p>The team is explicit that these are early results on small models. All the successful experiments used models with fewer than a billion parameters. There is no evidence yet that the technique scales to frontier-sized systems. Even for small models, the failure rate is high, and the researchers do not fully understand which models and capabilities are amenable. They are building a public benchmark and harness — so this is a beginning, not a finished method.</p>
+
+      <p>The result also carries an implication that goes unspoken in the post: if a model can be edited without retraining, the same technique could be used to degrade a model's behaviour silently, not just improve it. As language models become infrastructure — deployed in hospitals, courts, schools — the security dimension matters as much as the upside.</p>
+
+      <p><strong>If you remember one thing:</strong> A team at MIT showed that a large language model can read the weights of a smaller one and edit them precisely — no training, no gradient steps — which hints that the future of fixing broken AI might look less like school and more like surgery.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 240" role="img" aria-label="Weight-space programming: GPT-6 Astra reads and edits Qwen3.5-0.8B's weights, raising its MATH-500 score from 7.9% to 48.1%">
+          <defs>
+            <marker id="arr-grey" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#87867F"/>
+            </marker>
+            <marker id="arr-clay" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#D97757"/>
+            </marker>
+          </defs>
+
+          <!-- Left box: original model -->
+          <rect x="28" y="55" width="185" height="130" rx="8" fill="#FAF9F7" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="120" y="84" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" font-weight="600" fill="#141413">Qwen3.5-0.8B</text>
+          <text x="120" y="104" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">original model</text>
+          <rect x="58" y="118" width="124" height="30" rx="4" fill="#D97757" fill-opacity="0.12" stroke="#D97757" stroke-width="1"/>
+          <text x="120" y="138" text-anchor="middle" font-family="ui-monospace, monospace" font-size="13" fill="#D97757">MATH-500: 7.9%</text>
+          <text x="120" y="168" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">800M parameters</text>
+
+          <!-- Center box: GPT-6 Astra -->
+          <rect x="262" y="32" width="196" height="176" rx="8" fill="#6A8CAF" fill-opacity="0.07" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="360" y="68" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" font-weight="600" fill="#141413">GPT-6 Astra</text>
+          <text x="360" y="88" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6A8CAF">weight-space programmer</text>
+          <line x1="300" y1="98" x2="420" y2="98" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="360" y="116" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">① reads weights</text>
+          <text x="360" y="136" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">② reasons about structure</text>
+          <text x="360" y="156" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">③ edits 0.016% of weights</text>
+          <text x="360" y="176" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">④ no training, no data</text>
+
+          <!-- Right box: edited model -->
+          <rect x="507" y="55" width="185" height="130" rx="8" fill="#FAF9F7" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="600" y="84" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" font-weight="600" fill="#141413">Qwen3.5-0.8B</text>
+          <text x="600" y="104" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">after edit</text>
+          <rect x="538" y="118" width="124" height="30" rx="4" fill="#788C5D" fill-opacity="0.14" stroke="#788C5D" stroke-width="1"/>
+          <text x="600" y="138" text-anchor="middle" font-family="ui-monospace, monospace" font-size="13" fill="#788C5D">MATH-500: 48.1%</text>
+          <text x="600" y="168" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">replicated: 51.0%</text>
+
+          <!-- Arrow: original → Astra (read) -->
+          <line x1="214" y1="119" x2="260" y2="119" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr-grey)"/>
+          <text x="237" y="112" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#87867F">read</text>
+
+          <!-- Arrow: Astra → edited (write) -->
+          <line x1="460" y1="119" x2="505" y2="119" stroke="#D97757" stroke-width="2" marker-end="url(#arr-clay)"/>
+          <text x="483" y="112" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#D97757">write</text>
+        </svg>
+        <figcaption>GPT-6 Astra reads Qwen3.5-0.8B's parameters, reasons about their structure, and edits a tiny fraction of them directly. No training data, no gradient descent — just targeted surgery. MATH-500 score rises from 7.9% to 48.1%; an independent replication reached 51.0%.</figcaption>
+      </figure>
+
+      <h2>Why it matters</h2>
+      <p>Two stories this week point in the same direction: the gap between understanding AI systems and controlling them is narrowing, faster than most observers expected.</p>
+
+      <p>Anthropic's IPO is not just a financial milestone. It marks the first moment a company whose core business is building increasingly powerful language models becomes directly accountable to public markets, quarterly earnings, and shareholder scrutiny — alongside a stated safety mission that explicitly acknowledges existential risk in its own filings. That is a genuinely new kind of pressure, and no one yet knows how those two forces will interact. The Pentagon story running in parallel — a U.S. agency designating the company a security risk the same week it goes public — adds another layer of institutional uncertainty around how governments and AI labs will relate to each other.</p>
+
+      <p>The weight-space programming result is earlier-stage but raises a question that will keep growing louder: once AI systems can read and rewrite each other's internals, who is in charge of the edits? The technique's near-term upside is real — cheaper, faster fixes for model misbehaviour. But the same capability is also a new attack surface. The researchers at MIT who published this work are building safety tests alongside the benchmark. That instinct is the right one.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.renaissancecapital.com/IPO-Center/News/122657/anthropic-sets-terms-for-61-billion-ipo-targeting-a-1.2-trillion-market-cap">Renaissance Capital — Anthropic IPO terms</a> ·
+        <a href="https://stocktwits.com/news-articles/markets/equity/anthropic-retracts-reported-70-80-ipo-price-range-says-pricing-update-is-coming-listing-expected-next-week/cNGud3sR970">Stocktwits — Anthropic price range clarification</a> ·
+        <a href="https://cryptobriefing.com/anthropic-ipo-1-4-trillion-valuation/">CryptoBriefing — Anthropic IPO valuation context</a> ·
+        <a href="https://antigravity.google/blog/teamwork-when-ai-becomes-a-research-partner">Google Antigravity — /teamwork blog post</a> ·
+        <a href="https://www.techwyse.com/news/ai-search/google-antigravity-teamwork-multi-agent-gemini-math-engineering">Techwyse — Antigravity /teamwork details</a> ·
+        <a href="https://www.orcarouter.ai/en/blog/qwen-4-max-lineup-announced-apsara-2026">OrcaRouter — Qwen4-Max preview</a> ·
+        <a href="https://github.com/rikiyat">MIT CSAIL — Sparks of Weight-Space Programming (original post)</a> ·
+        <a href="https://letsdatascience.com/news/willison-replicates-mit-weight-reading-test-on-laptop-with-q-3488f9da">LetsDatScience — Willison replication</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Weight-space programming</div>
+        <div>The idea of treating a neural network's learned parameters as a medium you can read and rewrite — the way a programmer edits source code — rather than changing them only through the indirect process of training. MIT CSAIL's November 2 post is the first credible demonstration that a frontier model can do this in a targeted, useful way.</div>
+      </div>
+      <dl>
+        <dt>Weights</dt><dd>The numbers inside a neural network that determine how it behaves. Training slowly adjusts millions of these values toward better answers. Weight-space programming proposes to change them directly, like editing a file rather than rerunning a build.</dd>
+        <dt>MATH-500</dt><dd>A benchmark of 500 math problems — from high-school to competition level — used to gauge a model's mathematical reasoning. A score of 7.9% means roughly 1 in 13 correct; 48.1% is nearly 1 in 2.</dd>
+        <dt>Mechanistic interpretability</dt><dd>A field of AI research that tries to understand what individual parts of a neural network are "doing" — which neurons respond to which ideas, and why. The MIT team's weight-editing approach builds on this tradition.</dd>
+        <dt>IPO</dt><dd>Initial public offering: the first time a company sells shares to the general public on a stock exchange. Anthropic's ticker will be "ANT" on the Nasdaq; pricing is expected Tuesday, trading Wednesday.</dd>
+        <dt>Gradient descent</dt><dd>The mathematical process by which neural networks learn during training: the system measures how wrong it was, then nudges all its weights slightly in the direction that reduces that error. Repeating millions of times produces a trained model. Weight-space programming skips this entirely.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

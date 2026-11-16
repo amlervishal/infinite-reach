@@ -1,5 +1,12 @@
 [
   {
+    "num": 169,
+    "date": "2026-11-16",
+    "slug": "issues/2026-11-16.html",
+    "title": "What the Weights Said",
+    "blurb": "Anthropic heads into its IPO pricing week at $70–78/share targeting a $1.2 trillion valuation; MIT CSAIL showed a frontier model can edit a smaller model's weights directly, raising its math score from 7.9% to 48.1% with no training."
+  },
+  {
     "num": 168,
     "date": "2026-11-15",
     "slug": "issues/2026-11-15.html",
