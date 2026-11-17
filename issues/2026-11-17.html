@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №170 — The Weight of a Share · Infinite Reach</title>
+  <meta name="description" content="Anthropic prices its IPO on Wednesday; it starts trading Thursday as ANT. And a research paper from ICLR 2026 explains why giving a language model two minds—a planner and an executor—makes it reason more reliably on hard, long problems." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №170 &middot; Monday, November 17, 2026</p>
+      <h1>The Weight of a Share</h1>
+      <p>Anthropic prices its stock offering on Wednesday; Thursday morning, the ticker "ANT" appears on the Nasdaq for the first time. While investors calculate what a maker of language models is worth at over a trillion dollars, the week's machines kept building quietly — a faster Google model, half a terabyte of open weights, and a research paper with a genuinely interesting idea about how reasoning fails.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Wednesday evening, Anthropic sets the final price for the 825 million Class A shares it is offering to the public, in a range of $70 to $78 each — implying a market valuation of roughly $1.2 to $1.5 trillion, which would make it one of the largest company debuts in history. Thursday, it begins trading on the Nasdaq as ANT. What makes this week stranger than most IPO weeks: the investors who make the chips Anthropic runs on also bought in directly. Nvidia and Alphabet each committed $10 billion, AMD $2.5 billion, Microsoft $1 billion, Broadcom and Micron $1 billion each, and TSMC $500 million — a $26 billion private placement at the same price as the public offering. Anthropic's S-1 also disclosed $895 billion in computing commitments it has already made, mostly for future chips and cloud time. Its run-rate revenue, as of October 31, was approximately $81 billion annually. The chip suppliers and the chip buyer are, in a real sense, pricing each other.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Model</span><span>Google's <strong>Gemini 4 Hydrogen</strong> landed November 12 — the fastest member of the Gemini 4 family, with vendor-reported speeds 2.5× above Gemini 3.8 Flash, a 1-million-token context window, and four selectable thinking modes. Priced at $1.50 per million input tokens. Aimed at agentic workflows rather than deep reasoning. <a href="https://9to5google.com/2026/11/12/gemini-4-hydrogen/">9to5Google</a></span></li>
+        <li><span class="tag tech">Open weights</span><span><strong>Inkling 2 Small</strong> from Thinking Machines Lab (Mira Murati's startup) arrived on Hugging Face under Apache 2.0 on November 12 — 532 GB across 33 files. A Mixture-of-Experts model: 594 billion total parameters but only 17 billion active at any moment. Image input and 1-million-token context included. <a href="https://letsdatascience.com/news/thinking-machines-lab-releases-inkling-2-small-a-594b-moe-mo-2b2a96ce">LetsDatScience</a></span></li>
+        <li><span class="tag money">Capital</span><span>The <strong>$26 billion private placement</strong> tied to the Anthropic IPO closes alongside the public offering. Nvidia and Alphabet lead at $10B each; AMD at $2.5B; Microsoft, Broadcom, Micron, and TSMC at smaller amounts. All buyers receive non-voting Class N shares at the same $70–$78 IPO price. <a href="https://cryptobriefing.com/nvidia-alphabet-anthropic-ipo-private-placement/">CryptoBriefing</a></span></li>
+        <li><span class="tag tech">Small models</span><span><strong>IBM Granite 4.1 LLMON-preview</strong> released 3B and 8B parameter versions on Hugging Face on November 12, targeting enterprise reasoning tasks. <a href="https://newsroom.ibm.com/campaign?item=1987">IBM Newsroom</a></span></li>
+        <li><span class="tag tech">Coming soon</span><span>Alibaba announced a managed preview of <strong>Qwen4-Max</strong>, the next flagship in its Qwen line, positioned against GPT-6 and Claude Fable 5.2. No benchmarks, no weights, and no release date yet. <a href="https://hermes-ai.net/news/alibaba-launches-qwen4-max-with-agent-first-coding-and-1m-token-support/">Hermes AI</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: when a model plans before it reasons</h2>
+      <p class="kicker">Enhancing Language Model Reasoning with Structured Multi-Level Modeling &middot; Xiong, Payani, Fekri &middot; <a href="https://arxiv.org/abs/2611.00616">arXiv 2611.00616</a> &middot; ICLR 2026</p>
+      <p>Most reasoning papers ask how to get a model to think <em>longer</em>. This one asks whether thinking in a smarter <em>shape</em> matters more. The answer, the authors argue, is yes — and the shape they propose turns out to be borrowed from how humans write.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When a language model works through a hard problem step by step — the technique called chain-of-thought — it handles short reasoning chains well. Ask it to prove a simple algebra identity and it will get there cleanly. Push the problem to dozens of steps and something goes wrong. The model starts each new step by reading where it has been, but after enough steps, its early decisions lock it into a path it can't easily escape. It is like a hiker who, ten miles in, realizes they took the wrong fork two miles back — but all the momentum of the previous eight miles makes turning around feel unthinkable.</p>
+      <p>Researchers call this "horizon collapse": performance degrades as the number of reasoning steps grows. Scaling the context window helps at the margins, but doesn't fix the underlying issue: the model has no mechanism to stay honest about its high-level trajectory while executing detail work at the same time. It confuses the forest and the trees. It commits to local coherence at the cost of global direction.</p>
+
+      <h3>How it works</h3>
+      <p>Siheng Xiong, Ali Payani, and Faramarz Fekri's key insight is that good writers don't just start typing. They outline first. And the outline and the prose play by different rules: the outline stays abstract, can be revised cheaply, and holds the whole structure in view; the prose commits to detail one paragraph at a time. The model, they argue, should work the same way.</p>
+      <p>They call their method <strong>Multi-Level Reasoning (MLR)</strong>. It splits the chain-of-thought into two layers. The <strong>high-level planner</strong> — implemented as a lightweight LoRA add-on bolted onto the base model — generates a compact sequence of abstract step descriptors: not the full text of each reasoning step, but short labels naming what kind of step is coming next ("narrow the search space," "verify boundary conditions," "reformulate as a subproblem"). Think of these as the headings in an outline. Then the <strong>low-level executor</strong> — the same base model, running without the LoRA — takes each descriptor and generates the actual reasoning text for that step, with full detail.</p>
+      <p>The two levels read from each other. The executor sees the planner's current label as an additional prompt, so it knows at every moment what it is trying to accomplish — it doesn't have to infer its own goal from context alone. When the planner generates the next label, it has seen all the executor's work so far and can adjust the remaining labels accordingly. This is different from producing the whole reasoning chain at once: the planner sees progress and can steer.</p>
+      <p>The analogy I'd carry throughout: think of an architect and a construction crew. The architect draws the plan — can revise it after the foundation is poured, and stays concerned with the whole. The crew executes one room at a time and doesn't hold the entire building in their heads. MLR lets the same underlying mind play both roles, switching registers depending on what the task needs at any given moment.</p>
+
+      <h3>What they actually did</h3>
+      <p>The authors first initialized both levels with supervised fine-tuning on examples of correct reasoning, so the planner and executor start from a sensible baseline. They then ran an optimization pass using <strong>process-level preference training</strong>: rather than rewarding or penalizing only the final answer (the usual approach), they scored each intermediate step by a quantity they call "future solvability" — essentially, given the reasoning so far, how likely is the model to arrive at the correct answer from here? Steps that increase future solvability are encouraged; steps that foreclose good paths are penalized. The two-level system was then fine-tuned iteratively, with the planner learning which outlines lead to good execution and the executor learning to realize them well.</p>
+      <p>They tested MLR against standard chain-of-thought baselines on a suite of multi-step mathematical and logical reasoning benchmarks, specifically varying the number of required reasoning steps — short, medium, and long horizon — to isolate exactly where the performance difference appears.</p>
+
+      <h3>What they found</h3>
+      <p>At short horizons, MLR and standard chain-of-thought perform comparably — the overhead of maintaining two levels doesn't hurt, but doesn't help much either. The gap opens, and grows, as the number of reasoning steps increases. The two-level system stays more robust on long-horizon problems, while flat chain-of-thought degrades noticeably. The key failure mode that MLR avoids is what the authors call "step drift": a mid-chain pivot to a wrong subproblem that the executor then faithfully elaborates, compounding the error. Because the planner maintains a global view, it can recognize when the executor is heading somewhere unproductive and label the next step to redirect — before too many elaboration tokens are spent.</p>
+      <p>The LoRA add-on for the planner is small — it adds a fraction of the base model's total parameters — and the extra overhead per reasoning step is modest. The tradeoff they report is favorable at the harder end of the problem distribution, which is where the performance gap between current models and genuinely useful reasoning matters most.</p>
+
+      <h3>The catch</h3>
+      <p>MLR is an improvement on a known weakness of chain-of-thought, but it doesn't eliminate horizon collapse entirely. Very long reasoning chains still degrade; they just degrade more slowly. The paper evaluates on academic benchmarks with well-defined correct answers, which is a different beast from open-ended, real-world multi-step tasks — legal reasoning, scientific hypothesis testing — where "future solvability" is harder to measure and the right path is genuinely unknown. It's also worth noting that the planner's step labels are still generated by the same base model and can themselves be wrong; a bad outline produces bad execution at scale, the same as a bad architect produces a building a good crew can't save.</p>
+
+      <p><strong>If you remember one thing:</strong> Splitting a model's reasoning into an outline layer and a details layer makes it more reliable on hard, long problems — for the same reason humans outline before they write.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 272" role="img" aria-label="Diagram: flat chain-of-thought (left) versus Multi-Level Reasoning (right)">
+          <defs>
+            <marker id="arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+              <path d="M0,0 L7,3.5 L0,7 Z" fill="#87867F"/>
+            </marker>
+            <marker id="arr-olive" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+              <path d="M0,0 L7,3.5 L0,7 Z" fill="#788C5D"/>
+            </marker>
+          </defs>
+
+          <!-- Background -->
+          <rect width="720" height="272" fill="#FAFAF8" rx="6"/>
+
+          <!-- Column headers -->
+          <text x="175" y="18" text-anchor="middle" font-family="system-ui" font-size="10.5" fill="#87867F" font-weight="600" letter-spacing="0.07em">FLAT CHAIN-OF-THOUGHT</text>
+          <text x="535" y="18" text-anchor="middle" font-family="system-ui" font-size="10.5" fill="#6A8CAF" font-weight="600" letter-spacing="0.07em">MULTI-LEVEL REASONING (MLR)</text>
+
+          <!-- Center divider -->
+          <line x1="360" y1="8" x2="360" y2="265" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+
+          <!-- ===== LEFT: flat CoT ===== -->
+          <!-- Problem -->
+          <rect x="90" y="26" width="170" height="30" rx="4" fill="#D97757" fill-opacity="0.14" stroke="#D97757" stroke-width="1.4"/>
+          <text x="175" y="46" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#141413">Problem</text>
+
+          <!-- Steps flowing down -->
+          <line x1="175" y1="56" x2="175" y2="68" stroke="#87867F" stroke-width="1.4" marker-end="url(#arr)"/>
+          <rect x="90" y="68" width="170" height="26" rx="3" fill="#F5F3EF" stroke="#D1CFC5" stroke-width="1.1"/>
+          <text x="175" y="85" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Step 1 — reason about X…</text>
+
+          <line x1="175" y1="94" x2="175" y2="106" stroke="#87867F" stroke-width="1.4" marker-end="url(#arr)"/>
+          <rect x="90" y="106" width="170" height="26" rx="3" fill="#F5F3EF" stroke="#D1CFC5" stroke-width="1.1"/>
+          <text x="175" y="123" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Step 2 — extend further…</text>
+
+          <line x1="175" y1="132" x2="175" y2="144" stroke="#87867F" stroke-width="1.4" marker-end="url(#arr)"/>
+          <rect x="90" y="144" width="170" height="26" rx="3" fill="#F5F3EF" stroke="#D1CFC5" stroke-width="1.1"/>
+          <text x="175" y="161" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Step 3 — still going…</text>
+
+          <line x1="175" y1="170" x2="175" y2="182" stroke="#D97757" stroke-width="1.4" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+          <rect x="90" y="182" width="170" height="26" rx="3" fill="#FAF0EA" stroke="#D97757" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="175" y="197" text-anchor="middle" font-family="system-ui" font-size="10.5" fill="#D97757">Step N — drifted off-track ✗</text>
+
+          <!-- Left caption -->
+          <text x="175" y="230" text-anchor="middle" font-family="system-ui" font-size="10" fill="#D97757">No global view → drift compounds</text>
+          <text x="175" y="244" text-anchor="middle" font-family="system-ui" font-size="10" fill="#D97757">on long-horizon problems</text>
+
+          <!-- ===== RIGHT: MLR ===== -->
+          <!-- Problem -->
+          <rect x="420" y="26" width="230" height="30" rx="4" fill="#D97757" fill-opacity="0.14" stroke="#D97757" stroke-width="1.4"/>
+          <text x="535" y="46" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#141413">Problem</text>
+
+          <!-- Arrow to planner -->
+          <line x1="535" y1="56" x2="535" y2="68" stroke="#87867F" stroke-width="1.4" marker-end="url(#arr)"/>
+
+          <!-- PLANNER strip (clay) -->
+          <rect x="383" y="68" width="304" height="58" rx="4" fill="#D97757" fill-opacity="0.08" stroke="#D97757" stroke-width="1.3"/>
+          <text x="393" y="84" font-family="system-ui" font-size="9.5" fill="#D97757" font-weight="700" letter-spacing="0.06em">PLANNER — LoRA (abstract step labels)</text>
+          <!-- 3 step label boxes -->
+          <rect x="393" y="90" width="82" height="22" rx="3" fill="#D97757" fill-opacity="0.22"/>
+          <text x="434" y="105" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#141413">S1: Set up</text>
+          <rect x="484" y="90" width="82" height="22" rx="3" fill="#D97757" fill-opacity="0.22"/>
+          <text x="525" y="105" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#141413">S2: Search</text>
+          <rect x="575" y="90" width="82" height="22" rx="3" fill="#D97757" fill-opacity="0.22"/>
+          <text x="616" y="105" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="#141413">S3: Verify</text>
+
+          <!-- Arrows planner → executor -->
+          <line x1="434" y1="126" x2="434" y2="138" stroke="#D97757" stroke-width="1.2" stroke-dasharray="2.5,2" marker-end="url(#arr)"/>
+          <line x1="525" y1="126" x2="525" y2="138" stroke="#D97757" stroke-width="1.2" stroke-dasharray="2.5,2" marker-end="url(#arr)"/>
+          <line x1="616" y1="126" x2="616" y2="138" stroke="#D97757" stroke-width="1.2" stroke-dasharray="2.5,2" marker-end="url(#arr)"/>
+
+          <!-- EXECUTOR strip (sky) -->
+          <rect x="383" y="138" width="304" height="58" rx="4" fill="#6A8CAF" fill-opacity="0.08" stroke="#6A8CAF" stroke-width="1.3"/>
+          <text x="393" y="154" font-family="system-ui" font-size="9.5" fill="#6A8CAF" font-weight="700" letter-spacing="0.06em">EXECUTOR — base model (full detail)</text>
+          <!-- 3 expanded step boxes -->
+          <rect x="393" y="160" width="82" height="22" rx="3" fill="#6A8CAF" fill-opacity="0.18"/>
+          <text x="434" y="174" text-anchor="middle" font-family="ui-monospace" font-size="8.5" fill="#141413">expanded S1…</text>
+          <rect x="484" y="160" width="82" height="22" rx="3" fill="#6A8CAF" fill-opacity="0.18"/>
+          <text x="525" y="174" text-anchor="middle" font-family="ui-monospace" font-size="8.5" fill="#141413">expanded S2…</text>
+          <rect x="575" y="160" width="82" height="22" rx="3" fill="#6A8CAF" fill-opacity="0.18"/>
+          <text x="616" y="174" text-anchor="middle" font-family="ui-monospace" font-size="8.5" fill="#141413">expanded S3…</text>
+
+          <!-- Arrow executor → answer (merge) -->
+          <line x1="535" y1="196" x2="535" y2="210" stroke="#87867F" stroke-width="1.4" marker-end="url(#arr-olive)"/>
+
+          <!-- Answer box -->
+          <rect x="420" y="210" width="230" height="28" rx="4" fill="#788C5D" fill-opacity="0.14" stroke="#788C5D" stroke-width="1.3"/>
+          <text x="535" y="228" text-anchor="middle" font-family="ui-serif" font-size="12" fill="#141413">Answer — stays on track ✓</text>
+
+          <!-- Right caption -->
+          <text x="535" y="253" text-anchor="middle" font-family="system-ui" font-size="10" fill="#788C5D">Planner sees executor's progress; adjusts</text>
+          <text x="535" y="266" text-anchor="middle" font-family="system-ui" font-size="10" fill="#788C5D">remaining steps before drift compounds</text>
+        </svg>
+        <figcaption>Left: standard chain-of-thought — steps flow forward with no global view, so a wrong turn at step 3 propagates to step N. Right: MLR — the planner (LoRA) names abstract subgoals; the executor (base model) fills them in with full detail; the planner adjusts remaining labels as it sees the work, keeping the whole chain oriented.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag money">Garry Tan</span><span>In a November 3 interview with Walter Isaacson, the YC CEO estimated personal AI agents are still two to three years from mainstream consumer adoption — but pointed to Emergent, a YC-backed company, reaching nine-figure annual revenue in eight months as evidence of what agentic tools already enable for businesses. <a href="https://dealroom.co/news/169465-garry-tan-personal-ai-agents-are-2-to-3-years-from-mainstream-and-the-fi">Dealroom</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things are moving at once this week, pulling in opposite directions. Anthropic's IPO prices the possibility of transformative AI at over a trillion dollars — a historic bet on a technology whose output is fundamentally a text string. At the same time, the same week saw half a terabyte of open-weight model arrive for free on Hugging Face and a $1.50-per-million-token API from Google that is 2.5× faster than last month's fastest offering. The frontier is expensive; the commodity is cheap and getting cheaper faster.</p>
+      <p>The MLR paper adds a third thread. Even as the race focuses on bigger and faster, there are still important ideas about <em>shape</em> — the architecture of reasoning itself — with room to improve. Giving a model a planner and an executor is not a scaling trick; it is a structural one. And structural improvements don't require more chips to deploy. As the week's news shows, that may matter more than it used to.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://finance.yahoo.com/technology/article/anthropic-ipo-claude-maker-to-begin-trading-on-thursday-nov-19-173550865.html">Yahoo Finance — Anthropic IPO timing</a> ·
+        <a href="https://www.cnbc.com/2026/10/26/anthropic-ipo-live-updates-ai-s-1-filing.html">CNBC — Anthropic S-1</a> ·
+        <a href="https://cryptobriefing.com/nvidia-alphabet-anthropic-ipo-private-placement/">CryptoBriefing — $26B private placement</a> ·
+        <a href="https://www.renaissancecapital.com/IPO-Center/News/122657/anthropic-sets-terms-for-61-billion-ipo-targeting-a-1.2-trillion-market-cap">Renaissance Capital — Anthropic IPO terms</a> ·
+        <a href="https://9to5google.com/2026/11/12/gemini-4-hydrogen/">9to5Google — Gemini 4 Hydrogen</a> ·
+        <a href="https://pulse2.com/google-gemini-4-hydrogen-launches-with-faster-agentic-ai-1-million-token-context-window-and-new-multi-model-orchestration/">Pulse2 — Gemini 4 Hydrogen specs</a> ·
+        <a href="https://letsdatascience.com/news/thinking-machines-lab-releases-inkling-2-small-a-594b-moe-mo-2b2a96ce">LetsDatScience — Inkling 2 Small</a> ·
+        <a href="https://dev.to/breachprotocol/thinking-machines-ships-inkling-smalls-open-weights-all-532-gigabytes-of-them-1lg3">DEV Community — Inkling 2 Small weights</a> ·
+        <a href="https://arxiv.org/abs/2611.00616">arXiv 2611.00616 — MLR paper</a> ·
+        <a href="https://iclr.cc/virtual/2026/poster/10009645">ICLR 2026 — MLR poster</a> ·
+        <a href="https://dealroom.co/news/169465-garry-tan-personal-ai-agents-are-2-to-3-years-from-mainstream-and-the-fi">Dealroom — Garry Tan interview</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Reasoning horizon</div>
+        <div>How many steps of inference a model can sustain before it loses track of where it is going. A short horizon: solving a two-step math problem. A long horizon: a forty-step proof where each step depends on decisions made three forks back. Most models perform reliably at short horizons; long-horizon reasoning remains genuinely unsolved — which is what makes the MLR paper interesting.</div>
+      </div>
+      <dl>
+        <dt>Chain-of-thought</dt><dd>A prompting and training technique where a model writes out its reasoning step by step before giving its final answer. Generally improves accuracy on hard problems — until the chain grows long and drift sets in.</dd>
+        <dt>LoRA</dt><dd>Low-Rank Adaptation. A way to fine-tune a frozen model by adding a thin trainable layer alongside the original weights, rather than updating everything. Cheap, quick, and reversible. MLR uses a LoRA module as its planner on top of the base model.</dd>
+        <dt>Process-level preferences</dt><dd>A training signal that scores individual reasoning steps, not just the final answer. Rather than asking "did you get it right?", it asks "did this step make it easier or harder to get right?" Gives the model feedback in the middle of its thinking.</dd>
+        <dt>MoE (Mixture of Experts)</dt><dd>A model design where the network is divided into many specialist sub-networks and each input activates only a few of them. Inkling 2 Small has 594 billion total parameters but only 17 billion active per token — MoE is what lets a giant model run as cheaply as a small one.</dd>
+        <dt>Private placement</dt><dd>A share sale negotiated directly with specific investors at an agreed price, before or alongside a public offering. The Anthropic IPO includes a $26 billion placement where chip makers bought in at the same $70–$78 price as retail investors — but without having to compete for shares on the exchange.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

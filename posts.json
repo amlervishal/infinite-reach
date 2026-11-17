@@ -1,5 +1,12 @@
 [
   {
+    "num": 170,
+    "date": "2026-11-17",
+    "slug": "issues/2026-11-17.html",
+    "title": "The Weight of a Share",
+    "blurb": "Anthropic prices its IPO on Wednesday and starts trading Thursday as ANT; Nvidia and Alphabet each committed $10B to a $26B private placement; and an ICLR paper explains why splitting reasoning into a planner and executor makes models more reliable on hard, long problems."
+  },
+  {
     "num": 169,
     "date": "2026-11-16",
     "slug": "issues/2026-11-16.html",
