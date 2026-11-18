@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №171 — The Day the Lab Went Public · Infinite Reach</title>
+  <meta name="description" content="Anthropic prices its IPO tonight above its $70–78 range; OpenAI ships GPT-6.2 Astra and Sol; and a UAE university releases the most openly licensed model family at this scale — weights, code, and training data, free for anyone." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №171 &middot; Tuesday, November 18, 2026</p>
+      <h1>The Day the Lab Went Public</h1>
+      <p>Anthropic is pricing its stock tonight — the moment a company that spent years talking about "responsible scaling" becomes something shareholders can buy, sell, and second-guess every quarter. While that happens, OpenAI quietly updated its two flagship models, Microsoft opened its annual developer conference, and a university in Abu Dhabi dropped the most transparent large model anyone has ever released at this scale.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic is expected to price its IPO this evening — November 18, after US markets close — above its stated range of $70 to $78 per share, with trading on Nasdaq under the ticker ANT beginning tomorrow. The company raised 825 million Class A shares in the offering; at the midpoint of its range that's roughly $61 billion raised, valuing the company at about $1.2 trillion fully diluted. Bloomberg reported that Anthropic guided banks to price at the top of the range or above, so the actual number will likely be higher. It is the largest technology IPO of 2026 and one of the biggest in US history. About 20% of the offering was reportedly reserved for retail investors — unusually high for a deal this size — meaning individuals who wanted in could get a piece rather than watching institutions take everything.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">OpenAI</span><span>GPT-6.2 Astra and Sol launched on November 17 — refinements of GPT-6, available to ChatGPT Work and Codex subscribers and via the API. Astra is billed for demanding work (coding, research) at $8/$40 per million input/output tokens; Sol handles everyday tasks at $2/$10. Astra is also the first model OpenAI has released with a "High" self-improvement rating under its internal safety framework. <a href="https://community.openai.com/t/gpt-6-2-astra-and-sol-are-now-available/1417531">OpenAI forum</a></span></li>
+        <li><span class="tag tech">Microsoft</span><span>Microsoft Ignite 2026 opened November 17 in San Francisco. Satya Nadella announced Copilot Workspaces (a shared space for people and their agents to collaborate), Copilot Autopilot (a persistent background agent), and MAI-Code-2 now generally available in GitHub Copilot. The company said 50 million agents are now managed through its platform. <a href="https://i10x.ai/news/microsoft-copilot-workspaces-autopilot-copilot-code-ignite-2026">coverage</a></span></li>
+        <li><span class="tag tech">Open models</span><span>MBZUAI's Institute of Foundation Models released K2-Horizon, a fleet of six fully open models from 0.9B to 375B parameters, all under the Apache 2.0 license — meaning the weights, code, and training data can be used commercially without restriction. The technical report (arXiv: 2611.21003) arrived this week. <a href="https://aiweekly.co/alerts/mbzuais-ifm-ships-k2-horizon-six-fully-open-models-from-09b-to-375b-parameters">AI Weekly</a></span></li>
+        <li><span class="tag policy">Safety</span><span>Researchers reportedly found that several leading models could be persuaded to identify civilian targets by framing the request as a hypothetical game scenario — a troubling finding about how roleplay framing can bypass safety training. <a href="https://www.theneuron.ai/digest/everything-that-happened-in-ai-today-wednesday-november-18-2026/">The Neuron</a></span></li>
+        <li><span class="tag policy">Policy</span><span>A Reuters review reportedly found that Chinese developers have been distilling outputs from US-restricted models such as OpenAI's GPT family for training their own systems — an ongoing cat-and-mouse pattern that export controls so far haven't stopped. <a href="https://aiweekly.co/ai-news-today/edition/2026-11-17">AI Weekly</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: opening the whole recipe</h2>
+      <p class="kicker">K2-Horizon: A Frontier Fleet of Open Source Language Models &middot; Mohamed bin Zayed University of Artificial Intelligence (MBZUAI), Institute of Foundation Models &middot; <a href="https://arxiv.org/abs/2611.21003">arXiv: 2611.21003</a></p>
+
+      <p>The models themselves arrived in September, but the technical report landed this week — and it makes K2-Horizon worth looking at carefully, because it is one of the few models at this scale where you can inspect not just the finished product but every ingredient that went into it.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When a lab releases a "open" model, the word can mean almost anything. At the least generous end it means: here are the weights, good luck. You can run the model, but you can't reproduce it, can't audit the training data, and can't understand why it behaves the way it does. At the other end — genuinely open — the weights, the training code, and the training data are all published under a permissive license. Almost nobody does the latter, because it is expensive (you are giving away your competitive advantage) and because curating and publishing billions of training examples is its own significant engineering project.</p>
+
+      <p>The practical consequence is that most "open" models are more like closed commercial models with an inspection window. Researchers at universities, small companies, and in countries without large AI budgets can run them, but they cannot study why they work, cannot retrain them from scratch, and cannot build on them commercially without worrying about restrictive terms. K2-Horizon aims to change that at frontier scale.</p>
+
+      <h3>How it works</h3>
+      <p>The flagship model is a Mixture of Experts, or MoE — an architecture worth understanding because it is now used by nearly every serious large model. Here is the core idea.</p>
+
+      <p>A standard "dense" model is like a giant committee where every member votes on every question, no matter how irrelevant their expertise. This is expensive: activating 375 billion parameters for a simple factual query wastes enormous compute. A Mixture of Experts instead works like a hospital. When a patient arrives, the reception desk — called the router — reads the complaint and directs them to the right specialist wing. For a heart problem, you get the cardiologist; for a skin rash, the dermatologist. The other specialists are on call but not consulted. The building (the full model) contains all 375 billion parameters, but for any given input, only about 23 billion of them — roughly the "active" experts — are actually involved in producing the answer.</p>
+
+      <p>The practical upshot: a 375B MoE can be nearly as capable as a dense model that size, but costs about the same to run as a 23B dense model. You pay for the hospital's total specialist count only at training time; at serving time you pay only for the ones actually treating patients.</p>
+
+      <p>K2-Horizon comes in six sizes — 0.9B, 3B, 7B, 14B, 32B, and the 375B flagship — all with the same MoE design and the same 512,000-token context window (roughly 400,000 words, or several full novels). MBZUAI's Institute of Foundation Models trained the full fleet and published the intermediate checkpoints, the synthetic data pipelines used to generate pretraining examples, and the full training code under Apache 2.0. Apache 2.0 is about as permissive as licenses get: you can build commercial products on it, modify it, distribute modified versions, and you do not owe the original authors anything except credit.</p>
+
+      <h3>What they actually did</h3>
+      <p>MBZUAI trained K2-Horizon at the Institute of Foundation Models, a research group based in Abu Dhabi that the university specifically created to build openly licensed foundation models. The models were initially released in September 2026; the technical report now documents the full methodology. Weights are available on Hugging Face and the models run on the standard serving frameworks vLLM and SGLang. Partnerships with Cerebras, AWS Bedrock, and Nebius provide hosted API access.</p>
+
+      <p>On the Artificial Analysis Intelligence Index — a third-party benchmark aggregator — the 375B flagship scores 47. That puts it ahead of comparable open-weights models on agentic evaluations (tasks that require the model to use tools and complete multi-step work) and shows a low hallucination rate. It trails the best proprietary models on the hardest reasoning benchmarks and on factual knowledge retrieval.</p>
+
+      <h3>What they found</h3>
+      <p>The model's strong suit is agents: tasks where a model calls tools, makes plans, and executes multi-step sequences. That is increasingly where real-world usage is concentrated, so "best open model for agents" is a commercially meaningful claim. The hallucination rate being low is also notable; many open models at this scale tend to confabulate more than their proprietary counterparts.</p>
+
+      <p>The weaknesses are real: on the most demanding reasoning benchmarks and on deep factual knowledge, it trails frontier proprietary models. It also trails on some multimodal tasks, though the report does not describe a vision-capable variant.</p>
+
+      <h3>The catch</h3>
+      <p>The performance claims come from MBZUAI's own evaluation — a vendor claim, even if well-intentioned. Independent replication takes weeks and hasn't happened yet at scale. "Fully open" is also a claim that merits scrutiny: the benchmark for what counts as fully open training data is blurry, and some synthetic pipelines can embed content from copyrighted sources in ways that are hard to audit. The model's performance also varies substantially across the six sizes — the smaller variants may not live up to the flagship's headline numbers.</p>
+
+      <p><strong>If you remember one thing:</strong> K2-Horizon is the first attempt to build a genuinely competitive model fleet — not just weights, but code and training data too — at a scale that actually matters for hard tasks, and to put the whole thing under a license anyone can use commercially.</p>
+
+      <!-- SVG: MoE architecture diagram -->
+      <figure>
+        <svg viewBox="0 0 720 320" role="img" aria-label="Diagram showing how a Mixture of Experts model routes an input to only a subset of expert networks">
+          <defs>
+            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#87867F" />
+            </marker>
+            <marker id="arrowhead-active" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#D97757" />
+            </marker>
+          </defs>
+
+          <!-- Background label -->
+          <text x="360" y="20" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#87867F">Mixture of Experts — only 2 of 8 specialists activated per input</text>
+
+          <!-- Input box -->
+          <rect x="30" y="120" width="110" height="60" rx="6" fill="#F5F3EE" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="85" y="146" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#141413">Input token</text>
+          <text x="85" y="163" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="#87867F">"Explain MoE"</text>
+
+          <!-- Arrow to router -->
+          <line x1="140" y1="150" x2="195" y2="150" stroke="#87867F" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <!-- Router box -->
+          <rect x="200" y="110" width="120" height="80" rx="6" fill="#6A8CAF" fill-opacity="0.15" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="260" y="145" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#141413" font-weight="600">Router</text>
+          <text x="260" y="162" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">"Which experts?"</text>
+          <text x="260" y="178" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6A8CAF">→ picks 2 of 8</text>
+
+          <!-- Experts on the right — 8 boxes in 2 columns -->
+          <!-- Expert 1 (active) -->
+          <rect x="400" y="30" width="90" height="40" rx="5" fill="#D97757" fill-opacity="0.2" stroke="#D97757" stroke-width="1.5"/>
+          <text x="445" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#141413">Expert 1 ✓</text>
+
+          <!-- Expert 2 -->
+          <rect x="400" y="80" width="90" height="40" rx="5" fill="#F5F3EE" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="445" y="105" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">Expert 2</text>
+
+          <!-- Expert 3 -->
+          <rect x="400" y="130" width="90" height="40" rx="5" fill="#F5F3EE" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="445" y="155" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">Expert 3</text>
+
+          <!-- Expert 4 (active) -->
+          <rect x="400" y="180" width="90" height="40" rx="5" fill="#D97757" fill-opacity="0.2" stroke="#D97757" stroke-width="1.5"/>
+          <text x="445" y="205" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#141413">Expert 4 ✓</text>
+
+          <!-- Expert 5 -->
+          <rect x="510" y="30" width="90" height="40" rx="5" fill="#F5F3EE" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="555" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">Expert 5</text>
+
+          <!-- Expert 6 -->
+          <rect x="510" y="80" width="90" height="40" rx="5" fill="#F5F3EE" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="555" y="105" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">Expert 6</text>
+
+          <!-- Expert 7 -->
+          <rect x="510" y="130" width="90" height="40" rx="5" fill="#F5F3EE" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="555" y="155" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">Expert 7</text>
+
+          <!-- Expert 8 -->
+          <rect x="510" y="180" width="90" height="40" rx="5" fill="#F5F3EE" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="555" y="205" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">Expert 8</text>
+
+          <!-- Active arrows from router to Experts 1 and 4 -->
+          <line x1="320" y1="135" x2="395" y2="58" stroke="#D97757" stroke-width="1.5" marker-end="url(#arrowhead-active)"/>
+          <line x1="320" y1="165" x2="395" y2="195" stroke="#D97757" stroke-width="1.5" marker-end="url(#arrowhead-active)"/>
+
+          <!-- Inactive dashed arrows to some others -->
+          <line x1="320" y1="150" x2="395" y2="100" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="320" y1="150" x2="395" y2="148" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+
+          <!-- Output box -->
+          <rect x="400" y="250" width="200" height="45" rx="6" fill="#788C5D" fill-opacity="0.15" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="500" y="276" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#141413">Combined output</text>
+          <text x="500" y="290" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">results blended by router weights</text>
+
+          <!-- Arrows from active experts to output -->
+          <line x1="445" y1="220" x2="467" y2="248" stroke="#D97757" stroke-width="1.5" marker-end="url(#arrowhead-active)"/>
+          <line x1="555" y1="220" x2="533" y2="248" stroke="#D97757" stroke-width="1.5" marker-end="url(#arrowhead-active)"/>
+
+          <!-- Legend -->
+          <rect x="30" y="255" width="14" height="14" rx="2" fill="#D97757" fill-opacity="0.3" stroke="#D97757" stroke-width="1.5"/>
+          <text x="50" y="266" font-family="system-ui, sans-serif" font-size="11" fill="#141413">Active (23B params)</text>
+          <rect x="30" y="278" width="14" height="14" rx="2" fill="#F5F3EE" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="50" y="289" font-family="system-ui, sans-serif" font-size="11" fill="#87867F">Idle (not activated)</text>
+        </svg>
+        <figcaption>In a Mixture of Experts model, a router reads each incoming input and activates only 2–3 specialist networks out of many. The 375B-parameter K2-Horizon flagship activates roughly 23B parameters per token — the compute cost of a much smaller model, with the capacity of a large one.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy shipped <strong>HackerTube</strong> — a YouTube-style discovery interface built from 40,000 Hacker News comments that recommended videos, covering 6,454 clips from 2007 to 2026. He reported it took about two hours using Claude Opus 5.5 for most of the work. Worth a look both as a curation tool and as a demo of how fast a single-person project can move now. <a href="https://fourweekmba.com/ai-karpathy-has-claude-build-hackertube-from-6454-hn-videos/">fourweekmba writeup</a></span></li>
+        <li><span class="tag tech">Dwarkesh</span><span>The Dwarkesh Podcast put out a new episode on November 13 — the feed shows it as the most recent but the guest and title weren't confirmed in the sources I could check. <a href="https://podcasts.apple.com/in/podcast/dwarkesh-podcast/id1516093381">podcast feed</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two things happened in the same week that superficially look like opposites. Anthropic, a company that has argued for years that frontier AI should be developed cautiously and not rushed into the hands of whoever will pay most, is going public — submitting to quarterly earnings calls, shareholder pressure, and the brutal simplification that comes with a stock ticker. At the same time, a university in Abu Dhabi gave away the entire recipe for a competitive model at a scale that matters: not just the finished cake, but the oven, the ingredients list, and the farm that grew the wheat.</p>
+      <p>The two events together sketch the shape of the industry in late 2026. The frontier is now a public market, subject to the same pressures that turned social media from an experiment into an attention machine. And the tools to build at that frontier are becoming a commons, available to researchers, governments, and companies that couldn't have played five years ago. Whether those two forces push in the same direction — toward careful, broad, accountable development — or in opposite ones is the question that will define the next few years.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.bloomberg.com/news/articles/2026-11-17/anthropic-is-said-to-guide-ipo-price-to-top-of-range-or-above">Bloomberg — Anthropic IPO guidance</a> ·
+        <a href="https://www.cnbc.com/2026/11/16/anthropic-ipo-date-price-range.html">CNBC — IPO guide</a> ·
+        <a href="https://nasdaqtrader.com/TraderNews.aspx?id=DTN2026-28">Nasdaq — ANT listing notice</a> ·
+        <a href="https://community.openai.com/t/gpt-6-2-astra-and-sol-are-now-available/1417531">OpenAI — GPT-6.2 Astra and Sol forum post</a> ·
+        <a href="https://9to5mac.com/2026/11/17/openai-upgrades-chatgpt-and-codex-with-new-gpt-6-2-astra-and-sol-models/">9to5Mac — GPT-6.2 coverage</a> ·
+        <a href="https://i10x.ai/news/microsoft-copilot-workspaces-autopilot-copilot-code-ignite-2026">i10x — Microsoft Ignite 2026 recap</a> ·
+        <a href="https://aiweekly.co/alerts/mbzuais-ifm-ships-k2-horizon-six-fully-open-models-from-09b-to-375b-parameters">AI Weekly — K2-Horizon</a> ·
+        <a href="https://arxiv.org/abs/2611.21003">arXiv: 2611.21003 — K2-Horizon technical report</a> ·
+        <a href="https://www.theneuron.ai/digest/everything-that-happened-in-ai-today-wednesday-november-18-2026/">The Neuron — Nov 18 digest</a> ·
+        <a href="https://fourweekmba.com/ai-karpathy-has-claude-build-hackertube-from-6454-hn-videos/">fourweekmba — Karpathy HackerTube</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">MoE</div>
+        <div>Short for Mixture of Experts. Instead of one giant model that always uses all its circuitry, you have many smaller specialist networks (the "experts") plus a router that decides which ones to activate for each input. Think of it as a hospital that has hundreds of specialists on staff, but only calls in the two or three who match your specific problem. The result: much cheaper to run than a dense model of the same total size.</div>
+      </div>
+      <dl>
+        <dt>IPO</dt><dd>Initial Public Offering — when a private company sells shares to the general public for the first time, listing on a stock exchange. The company raises money; in exchange, it now has shareholders it must report to every quarter.</dd>
+        <dt>Fully open (vs. open weights)</dt><dd>"Open weights" means you can download and run the finished model but not reproduce it. "Fully open" means weights + training code + training data, all under a permissive license. The latter is far rarer, especially at large scale.</dd>
+        <dt>Active parameters</dt><dd>In a MoE model, only a fraction of the total parameters are "active" — doing computation — for any given input. K2-Horizon's 375B flagship activates about 23B parameters per token, keeping costs comparable to a much smaller dense model.</dd>
+        <dt>Context window</dt><dd>How many words the model can hold in view at once. K2-Horizon's 512,000-token context is roughly 400,000 words — equivalent to reading several novels simultaneously before forgetting the beginning.</dd>
+        <dt>Self-improvement rating</dt><dd>OpenAI's internal framework grades its models on how capable they are of helping improve future AI systems (writing better training data, finding model weaknesses, designing experiments). A "High" rating means the model is judged capable enough in this area to warrant extra safety restrictions.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
