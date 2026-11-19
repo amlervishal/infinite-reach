@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №172 — What the Tape Says · Infinite Reach</title>
+  <meta name="description" content="Anthropic's ANT begins trading on Nasdaq today in the largest IPO on record; a new paper asks whether coding agents can teach themselves to improve without ever running a single test." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №172 &middot; Thursday, November 19, 2026</p>
+      <h1>What the Tape Says</h1>
+      <p>Anthropic's stock begins trading on Nasdaq this morning under the ticker ANT — turning the most openly safety-anxious lab in the world into a publicly priced entity for the first time. Meanwhile, in a quieter corner of the same week, a research team posted a strange paper: can a coding machine improve itself without ever running a test?</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic's IPO went live today. It is the largest public offering in recorded history: the company priced at $83 per share on Wednesday night — above its marketed range of $70–$78 — raising about $81.3 billion and surpassing SpaceX's June record. At that price, Anthropic's fully diluted market cap sits at roughly $1.5 trillion. The offering was six to seven times oversubscribed, meaning investors wanted far more shares than existed. What makes this unlike any IPO before it: Anthropic's own S-1 filing included language warning that the company might soon reach a capability threshold that changes everything. It went public while openly uncertain whether its own products are safe. The ticker is ANT. The number is $83. Neither says much about what happens next.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Models</span><span>Microsoft unveiled MAI Code 2 and MAI Code 2 Flash at Ignite 2026, claiming the flagship hits 98% of GPT-6.1 Sol's coding quality at 40% of the cost — both are live in GitHub Copilot's paid tiers today, with a 1M-token context window. These are vendor figures, unverified by independent testers.</span></li>
+        <li><span class="tag tech">Agents</span><span>OpenAI reported this week that its internal coding agents now complete 46% of 2-to-4-hour research tasks without human help, up from 23% in March — roughly doubling in eight months, the first published internal milestone for genuinely autonomous research work.</span></li>
+        <li><span class="tag money">Pricing</span><span>Alibaba released Qwen4-Max on November 16 at $1.50/$4.50 per million tokens in/out with a 1M-token context window — a sharp new option in the mid-tier market, priced to compete with GPT-6.2 Sol.</span></li>
+        <li><span class="tag policy">Safety</span><span>OpenAI formalized inside-access agreements with Apollo Research, METR, Transluce, and Goodfire, giving those four safety organizations the right to assess its frontier models in real time — a notable expansion of third-party oversight.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: coding agents that learn without taking tests</h2>
+      <p class="kicker">Evaluation-Free Recursive Self-Improvement for Coding Agents &middot; Zhe Ren et al. &middot; <a href="https://arxiv.org/abs/2611.21056">arXiv:2611.21056</a> &middot; submitted November 16, 2026</p>
+
+      <p>Most self-improving systems work the way a student crammer does: generate a bunch of attempts, test each one, keep the highest scorer, repeat. This paper asks whether you can skip the tests entirely — and get most of the improvement anyway.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>For the past year, the dominant pattern in coding-agent research has been <em>recursive self-improvement</em>. A coding agent edits its own code or instructions, runs those edits against a benchmark of real software engineering tasks, picks the variants that scored best, and feeds them back as the new starting point. The loop compounds: each round produces an agent slightly better than the last. Systems like the Darwin Gödel Machine and the Huxley-Gödel Machine have pushed this approach to remarkable performance on SWE-bench Pro — currently the field's main benchmark, made up of real GitHub issues that require autonomous code changes to fix.</p>
+      <p>But there is a hidden cost. Every evaluation pass requires the agent to <em>actually run</em> each of its candidate variants on the benchmark. This gets expensive quickly as the number of variants grows. And there is a subtler problem: optimizing repeatedly against the same fixed benchmark tends to produce agents that are very good at that benchmark, rather than good at coding in general. The technical term is <em>benchmark overfitting</em> — think of a student who memorizes all the past exams but can't answer a question they haven't seen before.</p>
+
+      <h3>How it works</h3>
+      <p>The researchers propose ELITE — short for Explore-then-Integrate — which borrows an insight that is obvious in retrospect: coding agents' self-modifications are <em>programs</em>. Unlike the internal parameters of a neural network (which are inscrutable floating-point numbers), the changes a coding agent makes to itself are readable lines of code. You don't have to run them to get a rough sense of whether they're sensible.</p>
+      <p>Think of it as the difference between a chef who tests ten versions of a dish by actually cooking and tasting each one, versus a chef who reads the modified recipe and uses culinary knowledge to judge whether "swap butter for lard" or "add more salt at the end" is a likely improvement — without cooking every version. ELITE applies that second approach to coding agents. It uses <em>implementation-level signals</em> — examining the structure and content of the code modifications themselves — to decide which changes are worth integrating, without running them through the downstream benchmark first.</p>
+      <p>The two-phase process reflects the name: in the <em>Explore</em> phase, the agent generates many candidate modifications; in the <em>Integrate</em> phase, it uses implementation-level reasoning to select which ones to absorb into the next version. What it never does is run a benchmark task to decide — the entire selection process happens at the level of reading the code, not executing it.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team tested ELITE on SWE-bench Pro with two different large language model backbones — meaning the core intelligence driving the agent was swapped out between runs, to check whether the approach holds across models. They compare ELITE against the leading recursive self-improvement systems: the Darwin Gödel Machine (86.7% on SWE-bench Pro) and the Huxley-Gödel Machine (88.3%), both of which use full downstream task evaluation. The key variable is a stark one: <strong>ELITE uses zero candidate task evaluations</strong> in its improvement loop. It never tests its variants on benchmark tasks before choosing which ones to keep.</p>
+
+      <h3>What they found</h3>
+      <p>ELITE achieves 85.6% on SWE-bench Pro — against 86.7% for Darwin and 88.3% for Huxley. That 1–3 percentage point gap is real, but the more striking number is the denominator. ELITE recovers roughly 97% of the gains the evaluation-dependent systems achieve, while running zero evaluation passes. The authors also report that ELITE transfers more cleanly to task distributions outside the ones used during improvement — consistent with less benchmark overfitting. The improvement loop is not just cheaper; it may be more honest.</p>
+
+      <h3>The catch</h3>
+      <p>The approach works because coding agents' self-modifications are legible programs. Extend this to agents that edit their own neural weights rather than their own source code, and "read the recipe before cooking it" stops working — weight changes are not human-readable. The paper also tests on selected benchmark subsets with limited repetitions, so the results are suggestive rather than definitive. And the field moves fast enough that last week's cutting edge is next month's baseline: the Darwin and Huxley machines being cited as the bar are themselves recent.</p>
+
+      <p><strong>If you remember one thing:</strong> An AI coding agent can get almost as much smarter by reading its own code changes as by actually testing whether those changes work — which saves compute and reduces the risk of gaming the benchmark.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 290" role="img" aria-label="Two side-by-side diagrams. Left shows the classic Evaluate-and-Select improvement loop. Right shows ELITE's Explore-then-Integrate loop, which skips the testing step.">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+              <path d="M0,0 L0,8 L8,4 z" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <!-- Column labels -->
+          <text x="178" y="24" font-family="ui-serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="bold">Old way: Evaluate &amp; Select</text>
+          <text x="542" y="24" font-family="ui-serif" font-size="13" fill="#141413" text-anchor="middle" font-weight="bold">ELITE: Explore &amp; Integrate</text>
+
+          <!-- Divider -->
+          <line x1="360" y1="12" x2="360" y2="278" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+          <!-- === LEFT SIDE === -->
+          <rect x="118" y="40" width="120" height="34" rx="6" fill="#6A8CAF" fill-opacity="0.18" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="178" y="62" font-family="system-ui" font-size="12" fill="#141413" text-anchor="middle">Agent v1</text>
+
+          <line x1="178" y1="74" x2="178" y2="98" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="103" y="98" width="150" height="34" rx="6" fill="#D1CFC5" stroke="#87867F" stroke-width="1.5"/>
+          <text x="178" y="120" font-family="system-ui" font-size="11" fill="#141413" text-anchor="middle">Generate variants</text>
+
+          <line x1="178" y1="132" x2="178" y2="156" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Run tests box — highlighted red/clay -->
+          <rect x="103" y="156" width="150" height="34" rx="6" fill="#D97757" fill-opacity="0.22" stroke="#D97757" stroke-width="2"/>
+          <text x="178" y="175" font-family="system-ui" font-size="11" fill="#141413" text-anchor="middle">Run benchmark tests</text>
+          <text x="178" y="187" font-family="system-ui" font-size="10" fill="#D97757" text-anchor="middle">← expensive; risk of overfitting</text>
+
+          <line x1="178" y1="190" x2="178" y2="214" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="103" y="214" width="150" height="34" rx="6" fill="#6A8CAF" fill-opacity="0.18" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="178" y="232" font-family="system-ui" font-size="11" fill="#141413" text-anchor="middle">Keep top scorer</text>
+          <text x="178" y="244" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">→ Agent v2</text>
+
+          <path d="M103,231 Q62,175 103,57" stroke="#87867F" stroke-width="1.2" fill="none" stroke-dasharray="5,4" marker-end="url(#arr)"/>
+
+          <!-- === RIGHT SIDE === -->
+          <rect x="482" y="40" width="120" height="34" rx="6" fill="#6A8CAF" fill-opacity="0.18" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="542" y="62" font-family="system-ui" font-size="12" fill="#141413" text-anchor="middle">Agent v1</text>
+
+          <line x1="542" y1="74" x2="542" y2="98" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="467" y="98" width="150" height="34" rx="6" fill="#D1CFC5" stroke="#87867F" stroke-width="1.5"/>
+          <text x="542" y="120" font-family="system-ui" font-size="11" fill="#141413" text-anchor="middle">Generate code changes</text>
+
+          <line x1="542" y1="132" x2="542" y2="156" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Inspect box — highlighted green/olive -->
+          <rect x="467" y="156" width="150" height="34" rx="6" fill="#788C5D" fill-opacity="0.22" stroke="#788C5D" stroke-width="2"/>
+          <text x="542" y="175" font-family="system-ui" font-size="11" fill="#141413" text-anchor="middle">Inspect implementation</text>
+          <text x="542" y="187" font-family="system-ui" font-size="10" fill="#788C5D" text-anchor="middle">← no tests run</text>
+
+          <line x1="542" y1="190" x2="542" y2="214" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="467" y="214" width="150" height="34" rx="6" fill="#6A8CAF" fill-opacity="0.18" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="542" y="232" font-family="system-ui" font-size="11" fill="#141413" text-anchor="middle">Integrate good changes</text>
+          <text x="542" y="244" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">→ Agent v2</text>
+
+          <path d="M617,231 Q658,175 617,57" stroke="#87867F" stroke-width="1.2" fill="none" stroke-dasharray="5,4" marker-end="url(#arr)"/>
+
+          <!-- Result comparison at bottom -->
+          <text x="178" y="270" font-family="system-ui" font-size="11" fill="#87867F" text-anchor="middle">Darwin: 86.7% · Huxley: 88.3%</text>
+          <text x="542" y="270" font-family="system-ui" font-size="11" fill="#788C5D" text-anchor="middle" font-weight="600">ELITE: 85.6% — zero test evaluations</text>
+        </svg>
+        <figcaption>The old way (left) tests every variant on real benchmark tasks — costly and prone to overfitting. ELITE (right) replaces that test step with an inspection of the code changes themselves, recovering nearly the same performance with zero task evaluations.</figcaption>
+      </figure>
+
+      <h2>Why it matters</h2>
+      <p>Two kinds of automation crossed milestones today. On Wall Street, a machine-learning company sold shares to the public for the first time, turning collective bets on the future of intelligence into a live price. In a research lab, a team showed that coding machines can quietly improve themselves without anyone watching — and without running tests. These are not unrelated. Anthropic's investors are essentially pricing the belief that recursive self-improvement keeps making models more capable, faster. The ELITE paper hints at what that might look like in practice: systems that get better by reading their own work, not just by being measured on ours. The gap between the IPO's story — "we build transformative technology" — and the paper's story — "here is one way a system improves itself" — is about six pages of HTML and three minutes of reading. That gap is closing.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.cnbc.com/2026/11/18/anthropic-ipo-ai-offering-price.html">CNBC — Anthropic IPO pricing</a> ·
+        <a href="https://www.npr.org/2026/11/18/nx-s1-6046212/anthropic-record-ipo-price">NPR — Anthropic record IPO</a> ·
+        <a href="https://www.anthropic.com/news/anthropic-prices-initial-public-offering">Anthropic — IPO announcement</a> ·
+        <a href="https://finance.yahoo.com/technology/live/anthropic-ipo-live-company-said-to-price-stock-at-83-begin-trading-thursday-212656452.html">Yahoo Finance — ANT trading coverage</a> ·
+        <a href="https://devops.com/at-ignite-microsoft-makes-the-case-for-good-enough-coding-models">DevOps.com — MAI Code 2</a> ·
+        <a href="https://www.testingcatalog.com/microsoft-launches-seven-mai-models-at-ignite-2026/">Testing Catalog — Microsoft Ignite models</a> ·
+        <a href="https://arxiv.org/abs/2611.21056">arXiv:2611.21056 — ELITE paper</a> ·
+        <a href="https://github.com/Ed1sonChen/DailyArxiv/issues/441">DailyArxiv digest Nov 17, 2026</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Benchmark overfitting</div>
+        <div>When a model gets better at acing a specific test without getting better at the underlying skill — like a student who memorizes every past exam and aces them all, but can't answer a question framed slightly differently. Self-improving systems are especially at risk because they repeatedly optimize against the same fixed benchmark.</div>
+      </div>
+      <dl>
+        <dt>SWE-bench Pro</dt><dd>A standard test for coding agents, built from real GitHub issues that require autonomous code changes to fix. Think of it as the bar exam for software-engineering machines.</dd>
+        <dt>Recursive self-improvement</dt><dd>When an AI system edits its own code or instructions to become better, then uses that improved version to make the next edit. Each round compounds the last — in theory without limit.</dd>
+        <dt>Evaluate-and-select</dt><dd>The classic self-improvement pattern: generate variations, test each one on a real task, keep the best-scoring version. Standard and reliable, but requires running every candidate.</dd>
+        <dt>IPO</dt><dd>Initial Public Offering — when a private company sells shares to the public for the first time, turning private ownership into a traded price that anyone can see and buy.</dd>
+        <dt>Fully diluted market cap</dt><dd>A company's total implied value calculated as if all possible shares — including options and convertible notes — have already been issued. Usually higher than the basic share count times price, and the more honest number for understanding total worth.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
