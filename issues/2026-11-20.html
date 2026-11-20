@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №173 — The Jagged Line · Infinite Reach</title>
+  <meta name="description" content="Anthropic's stock closed its first day up 17% after an early 34% surge, while OpenAI's internal data shows its researchers now delegate half their multi-hour research tasks to coding agents — with wildly uneven results." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №173 &middot; Thursday, November 20, 2026</p>
+      <h1>The Jagged Line</h1>
+      <p>Anthropic's stock spent its first full day on Nasdaq swinging between euphoria and doubt, closing up 17 percent after an earlier 34 percent surge. Separately, a quieter piece of data from OpenAI showed that the people building these systems are already handing nearly half their own research tasks to machines — but only certain tasks, and not always reliably.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Anthropic shares, trading as ANT, opened at $111.50 Thursday — 34% above the $83 IPO price set Wednesday night — briefly putting the company above a $2 trillion market value. That's the largest opening-day valuation in Nasdaq history for a new listing. Then the stock gave most of it back, hitting a low of $92.72 before settling at $97.17, up 17% for the day. The ride captures something real: Anthropic is burning cash at scale, competes directly with OpenAI and Google, and carries unusual governance from its public-benefit charter. A 17% first-day gain is respectable. The gap between the 34% opening pop and the 17% close tells you the market is still deciding what any of this is worth.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Microsoft</span><span>MAI Code 2, unveiled at Ignite on November 17, claims 98% of GPT-6.1 Sol's coding performance at 40% of the price — caveats apply (Microsoft-selected benchmarks, promotional pricing) — but it landed in GitHub Copilot and Azure Foundry immediately. <a href="https://www.infoworld.com/article/4250152/microsoft-launches-mai-code-2-models-to-challenge-openai-and-anthropic-in-ai-coding.html">InfoWorld</a></span></li>
+        <li><span class="tag tech">Moonshot AI</span><span>China's Moonshot is steering its Kimi models toward biology, chemistry, and pharmaceutical research, reportedly arguing that coding benchmark gains are flattening and that science is the next frontier. <a href="https://www.scmp.com/tech/article/3374568/chinas-moonshot-ai-puts-kimi-models-race-science-discoveries">SCMP</a></span></li>
+        <li><span class="tag money">Fed</span><span>Chicago Fed President Austan Goolsbee said the AI data center building boom is starting to look like "old-fashioned demand overheating," and warned the central bank would respond if that pressure spills into inflation. <a href="https://www.americanbanker.com/news/feds-goolsbee-says-ai-spending-resembles-demand-shock">American Banker</a></span></li>
+        <li><span class="tag money">OpenAI</span><span>OpenAI's researchers spent the equivalent of $2,400 a day each on coding agents in October — a 62% jump from September — and in a survey said they would trade 40% of their team's headcount to keep that access for three more months. <a href="https://aiweekly.co/alerts/openai-says-coding-agents-finish-46-of-2-4-hour-research-tasks">AI Weekly</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: the researchers studying themselves</h2>
+      <p class="kicker">Research acceleration: The jagged frontier &middot; OpenAI &middot; November 18, 2026 &middot; <a href="https://openai.com/index/research-acceleration-jagged-frontier/">openai.com</a></p>
+
+      <p>AI labs rarely publish numbers about their own internal operations. So when OpenAI released a detailed study this week measuring how much of its researchers' actual daily work coding agents are now completing — with specific task types, success rates, and a candid employee survey — it was worth reading closely. The findings are impressive in some places and sober in others, and the concept at the center of the report is one of the most useful framings to come out of the AI field this year.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>For two years, AI coding agents have been rated against standardized benchmarks: synthetic tasks with known answers, designed to measure specific abilities. Those tests have improved steadily. But benchmarks are not jobs. What actually matters — and what has been almost impossible to measure cleanly — is whether agents help real people doing real work, in messy conditions, on tasks with shifting requirements and no single right answer.</p>
+
+      <p>Measuring that is genuinely difficult. Researchers change what they delegate as agents get better: once you know an agent can handle a given task, you stop doing it yourself and start delegating harder work instead. So a flat or even declining completion rate might still represent real progress, if the pool of delegated tasks just became harder. And deciding when a research task is "done" is partly subjective — a successful experiment that generates a subtly wrong conclusion could look like a win to an automated scorer.</p>
+
+      <p>OpenAI's approach was to track completion rates on a sample of internal tasks roughly sized to take two to four hours, or four to eight hours. They measured this between August 1 and October 18, 2026, and also surveyed 101 research staff about how they use agents and how much they value them.</p>
+
+      <h3>How it works</h3>
+      <p>Think of a research lab as a professional kitchen. The head chef decides what to cook, plans the menu, handles customer complaints, and makes the judgment calls that require real taste and experience. Under her are prep cooks who do defined, repeatable work: peeling, measuring, watching the oven, running mise en place. For years, all of that was done by people. The question OpenAI is asking is: how much prep work can now be handed to an automated kitchen assistant — and which prep tasks can it handle reliably?</p>
+
+      <p>Coding agents in a research lab are like that kitchen assistant. They can be given a defined task with a clear completion criterion — "monitor this model training run and alert me if anything breaks," or "set up and launch this new training run from this config file" — and left alone to work through it. Some tasks are mostly watching and reporting; others require reading a novel situation and writing novel code.</p>
+
+      <p>What OpenAI found is that the agent's success rate varies dramatically depending on task type, in a pattern that makes intuitive sense: the more routine and repetitive the task, the higher the completion rate. The more creative and contextual, the lower. This is what the report calls the "jagged frontier" — a phrase borrowed from earlier educational research on AI tutors. Progress is not a smooth curve rising across all tasks. It is uneven, lurching forward on some work and barely moving on other work that looks superficially similar.</p>
+
+      <h3>What they actually did</h3>
+      <p>Between August and mid-October 2026, OpenAI tracked agent completion on a sample of internal research tasks. For tasks scoped at two to four hours: agents finished about 46% without human intervention, up from 23% in March — roughly doubling in seven months. For four- to eight-hour tasks: completion went from 13% to 35%.</p>
+
+      <p>But break the two-to-four-hour bucket down by task type, and the variation is striking. Agents completed 79% of monitoring tasks (watching model training runs, flagging anomalies) on their own. They completed 35% of run-launch tasks (setting up and starting a training run from a configuration). And they completed just 25% of tasks that required writing new inference and serving-stack code — work that demands novelty, judgment about edge cases, and understanding of how the system fits together.</p>
+
+      <p>On the economic side: the median researcher used agents worth $2,400 per day at list API prices in October, up 62% from September. In the survey, the median respondent said they would give up 40% of their team's headcount — two colleagues out of five — or 30% of their compute budget, to keep access to coding agents for three months.</p>
+
+      <!-- SVG figure: bar chart illustrating the jagged frontier -->
+      <figure>
+        <svg viewBox="0 0 720 290" role="img" aria-label="Horizontal bar chart showing agent task completion rates by task type. Monitor training runs: 79%. Launch training runs: 35%. Write inference and serving code: 25%. The large gap between bars illustrates the jagged frontier concept.">
+          <rect width="720" height="290" fill="#FAF9F6" rx="8"/>
+          <text x="36" y="38" font-family="ui-serif" font-size="15" fill="#141413" font-weight="600">Coding-agent completion rate, by task type (Aug–Oct 2026)</text>
+          <text x="36" y="57" font-family="system-ui" font-size="12" fill="#87867F">What fraction of two-to-four hour tasks agents finish without human help — OpenAI internal study</text>
+
+          <!-- Bar 1: Monitor training runs — 79% -->
+          <text x="36" y="98" font-family="system-ui" font-size="13" fill="#141413">Monitor training runs</text>
+          <rect x="36" y="104" width="568" height="30" rx="4" fill="#D1CFC5" opacity="0.45"/>
+          <rect x="36" y="104" width="449" height="30" rx="4" fill="#D97757"/>
+          <text x="493" y="124" font-family="ui-monospace" font-size="14" fill="#141413" font-weight="700">79%</text>
+
+          <!-- Bar 2: Launch training runs — 35% -->
+          <text x="36" y="168" font-family="system-ui" font-size="13" fill="#141413">Launch training runs</text>
+          <rect x="36" y="174" width="568" height="30" rx="4" fill="#D1CFC5" opacity="0.45"/>
+          <rect x="36" y="174" width="199" height="30" rx="4" fill="#6A8CAF"/>
+          <text x="244" y="194" font-family="ui-monospace" font-size="14" fill="#141413" font-weight="700">35%</text>
+
+          <!-- Bar 3: Write inference code — 25% -->
+          <text x="36" y="238" font-family="system-ui" font-size="13" fill="#141413">Write inference &amp; serving code</text>
+          <rect x="36" y="244" width="568" height="30" rx="4" fill="#D1CFC5" opacity="0.45"/>
+          <rect x="36" y="244" width="142" height="30" rx="4" fill="#788C5D"/>
+          <text x="187" y="264" font-family="ui-monospace" font-size="14" fill="#141413" font-weight="700">25%</text>
+        </svg>
+        <figcaption>The jagged frontier made visible: agents excel at routine monitoring (79%) but struggle with novel code (25%). The gap isn't about how hard each task looks — it's about how much judgment and novelty is required. Source: OpenAI, November 2026.</figcaption>
+      </figure>
+
+      <h3>What they found</h3>
+      <p>The headline — agents now autonomously finish roughly half of two-to-four-hour research tasks — is both impressive and limited. Impressive because six months ago the same figure was about one in four. Limited because the other half still fails, and critics noted that researchers reported receiving bad code, flawed statistical analyses, and subtly wrong experiments requiring careful oversight to catch. OpenAI's own framing is careful: agents are taking over specific, defined slices of research, not the research itself.</p>
+
+      <p>The survey numbers reveal something about perceived value. A willingness to give up 40% of a team's headcount is a striking proxy for how much researchers believe agents are already carrying real weight. It also implies that researchers spend meaningful time reviewing and correcting agent output — otherwise the monitoring overhead would not be worth the trade.</p>
+
+      <h3>The catch</h3>
+      <p>This is an internal study by one company about its own workforce — not a randomized controlled trial or a peer-reviewed paper. OpenAI has an obvious interest in showing that its products are transforming research. The company also acknowledges that the pool of delegated tasks shifted over time (researchers stopped handing agents tasks where they were known to fail), which could inflate the apparent progress. And the number of tasks sampled is not disclosed.</p>
+      <p>Perhaps most importantly: a 46% completion rate without human help means a 54% failure rate. Someone must catch those failures, understand them, and fix them. The overhead of reviewing failed agent work could easily consume the time saved on successful ones — especially when failures are subtle rather than obvious.</p>
+
+      <p><strong>If you remember one thing:</strong> Coding agents aren't replacing researchers — they're taking over the most routine slices of research work, and doing so unevenly, with rote tasks yielding reliable results and anything requiring novelty still mostly landing back on a human desk.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>The head of Claude Code gave a wide interview to <em>The Pragmatic Engineer</em> this week. He revealed that roughly 80% of Anthropic's code is now written by AI, and that he personally ships 20–30 pull requests a day, all authored by Claude. His framing: AI is not a tool you pick up and put down — it's a collaborator with different tradeoffs from a human. <a href="https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny">The Pragmatic Engineer</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>This week marked Anthropic's entry into public markets. The IPO's first-day volatility — a 34% opening pop followed by a pullback to 17% — reflects genuine uncertainty about what a $1.8 trillion valuation means for a company founded on the premise that advanced AI might be one of the most consequential technologies in human history, and that building it carefully is worth some speed.</p>
+      <p>At the same time, OpenAI's data shows that the people actually building these systems are already delegating nearly half their own research work to them. The loop is tightening: machines help humans build machines that are better at helping humans build machines. OpenAI's report explicitly notes that it wants labs to publicly track indicators of recursive self-improvement — the point at which AI materially accelerates its own development. This week's data suggests that, in research labs at least, something like that may have already, quietly, begun.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://openai.com/index/research-acceleration-jagged-frontier/">OpenAI — "Research acceleration: The jagged frontier"</a> ·
+        <a href="https://fortune.com/2026/11/19/anthropic-ipo-first-day-trading-nasdaq-record-valuation/">Fortune — Anthropic IPO first day</a> ·
+        <a href="https://www.fastcompany.com/91645598/anthropic-ipo-what-time-trading-start-stock-price-live-update">Fast Company — ANT stock update</a> ·
+        <a href="https://www.infoworld.com/article/4250152/microsoft-launches-mai-code-2-models-to-challenge-openai-and-anthropic-in-ai-coding.html">InfoWorld — MAI Code 2</a> ·
+        <a href="https://www.scmp.com/tech/article/3374568/chinas-moonshot-ai-puts-kimi-models-race-science-discoveries">SCMP — Moonshot biology pivot</a> ·
+        <a href="https://www.americanbanker.com/news/feds-goolsbee-says-ai-spending-resembles-demand-shock">American Banker — Fed warning</a> ·
+        <a href="https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny">The Pragmatic Engineer — Boris Cherny interview</a> ·
+        <a href="https://aiweekly.co/alerts/openai-says-coding-agents-finish-46-of-2-4-hour-research-tasks">AI Weekly — OpenAI coding agents</a> ·
+        <a href="https://www.indmoney.com/blog/us-stocks/anthropic-stock-first-day-trading">IndMoney — ANT debut analysis</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Jagged frontier</div>
+        <div>The idea that AI capability doesn't advance evenly across all tasks — it lunges ahead on some things and barely moves on others that look similar. Named for the shape you'd get if you plotted performance by task type: not a smooth rising line but a serrated edge. OpenAI borrowed the phrase from earlier research on AI tutors and used it to name this week's report.</div>
+      </div>
+      <dl>
+        <dt>Inference</dt><dd>Running a trained model to get an answer. The "serving" side of AI — as opposed to training, which is building the model in the first place. What happens every time you send a message to any AI assistant.</dd>
+        <dt>Agentic</dt><dd>Describes AI that takes multi-step actions on its own rather than just answering one question. An agentic system might write code, run tests, read the error, fix the code, and try again — without being prompted each step.</dd>
+        <dt>Benchmark</dt><dd>A standardized test used to compare models. Useful but limited: models can be tuned to score well on benchmarks without being better in real-world use, which is part of what makes OpenAI's internal task data more interesting than a leaderboard number.</dd>
+        <dt>Recursive self-improvement</dt><dd>When an AI system uses its own capabilities to accelerate the development of better AI, potentially compounding on itself. OpenAI's report says labs should publicly track whether this is happening. This week's data suggests, in small ways, it already is.</dd>
+        <dt>Headcount</dt><dd>The number of people on a team. OpenAI's researchers said they'd give up 40% of their team's headcount — two colleagues out of every five — to keep access to coding agents for three months.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
