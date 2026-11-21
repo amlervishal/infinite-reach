@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №174 — What Grows Together Falls Together · Infinite Reach</title>
+  <meta name="description" content="Google's Gemini 4 Neon challenges Anthropic's flagship tier right as ANT shares begin finding their level, while a NeurIPS paper shows why all systems built on the same foundation fail the same people, simultaneously." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №174 &middot; Saturday, November 21, 2026</p>
+      <h1>What Grows Together Falls Together</h1>
+      <p>Google's new mid-range model lands while Anthropic trades its first full week as a public company — and a theoretical paper at this year's biggest AI conference quietly explains why the consolidation everyone is watching has a hidden cost that no benchmark measures.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On Wednesday, Google released Gemini 4 Neon — its mid-tier frontier model — at $3 per million input tokens and $15 per million output tokens, with a 1 million-token context window. That's roughly one-third to one-fifth the cost of Claude Opus 5.5. Google says it places third on the Artificial Analysis Intelligence Index (scoring 61 at its extended-thinking level), behind only its own heavier Carbon model and OpenAI's GPT-6.2 Sol. It also introduced Neon for Cyber, a security-focused variant available to vetted defenders through its Fairwind program. The timing is pointed: Neon sits squarely in the pricing tier Anthropic has counted on most, and it arrived three days after Anthropic's record IPO.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag money">Market</span><span>Anthropic (ANT) opened its first full trading day at $111.50 — 34% above its $83 IPO price — before settling. The offering raised more than $100 billion, the largest IPO in history. Morningstar's initial target is $92; it flagged a "very high degree of uncertainty." <a href="https://www.stlpr.org/npr/2026-11-19/ai-giant-anthropic-raises-more-than-100-billion-in-record-setting-ipo">Source</a></span></li>
+        <li><span class="tag tech">Voice</span><span>Microsoft launched MAI Realtime 1, a speech-to-speech voice model for enterprise at $0.01 per audio minute, following MAI Code 2 and MAI Code 2 Flash from its Ignite conference on November 17 — keeping pressure on Anthropic's Claude Code franchise. <a href="https://aiweekly.co/ai-news-today">Source</a></span></li>
+        <li><span class="tag tech">Physics</span><span>Anthropic says Claude Fable 5.2 solved two long-open black hole physics problems — including a calculation unsolved since 2003 and a question about the limits of holographic duality. These are company-deposited preprints, not yet peer reviewed; both confirmations also came from Claude models. <a href="https://nerdzap.com/news/claude-fable-mythos-5-2-black-hole-physics/">Source</a></span></li>
+        <li><span class="tag policy">Supply chain</span><span>A new Stanford paper, "Mapping the AI Supply Chain," mapped dependencies across the entire AI ecosystem and published a dataset of chokepoints: NVIDIA holds roughly 80–90% of AI accelerator revenue, three cloud providers hold ~75% of the market. The dataset is browsable at <a href="https://aisupplychains.org">aisupplychains.org</a>. <a href="https://deeplearn.org/arxiv/874085/mapping-the-ai-supply-chain:-dependencies,-vulnerabilities,-and-market-concentration-in-the-ai-ecosystem">Source</a></span></li>
+        <li><span class="tag policy">EU</span><span>The EU AI Office sent its first formal requests for information to major AI providers this month — the first use of its investigative authority since GPAI enforcement powers took effect in August. Fines can reach 3% of global annual turnover. <a href="https://www.reedsmith.com/our-insights/blogs/technology-law-dispatch/102o6as/eu-ai-act-the-ai-office-sends-its-first-requests-for-information-to-leading-ai/">Source</a></span></li>
+      </ul>
+
+      <!-- CENTERPIECE: ~650 words -->
+      <h2>Paper, explained: when all the models fail the same person</h2>
+      <p class="kicker">Monoculture Robust Learning &middot; Lee Cohen, Jon Kleinberg, Omer Reingold &middot; NeurIPS 2026 &middot; <a href="https://neurips.cc/virtual/2026/poster/154495">source</a></p>
+      <p>An AI hiring tool, a credit-scoring system, and a benefits-eligibility checker walk into a bar. They all use the same foundation model. The same applicant is rejected by all three for the same reason. This NeurIPS paper is the first formal proof that a specific, well-known property of machine learning — called replicability — can prevent that outcome, with provable, exponential guarantees.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>In 2021, computer scientist Jon Kleinberg and economist Sendhil Mullainathan coined the term "algorithmic monoculture." Their point was simple and uncomfortable: when every hiring tool, lending algorithm, and medical AI is built on the same underlying model, they all inherit the same mistakes. If that shared foundation is systematically wrong about a certain group — say, it underestimates creditworthiness among people who changed jobs frequently — then every product built on it will make that error. Simultaneously. Everywhere. The usual accuracy statistics hide this completely. A model can be 95% accurate overall and still consistently reject the same 5%. If thousands of independent systems use it, those same people face compounding, synchronized rejection across their entire lives.</p>
+      <p>What made this hard to study formally is that standard machine learning theory describes models one at a time. It has no natural language for the correlation structure of errors across multiple deployed copies of the same model.</p>
+
+      <h3>How it works</h3>
+      <p>Cohen, Kleinberg, and Reingold introduce a measure they call <em>conjunctive error</em>: the probability that all k deployed models fail on the same example at once. The analogy to hold onto: a panel of reviewers deciding who gets a job. If all five reviewers trained at the same institution, read the same textbooks, and developed the same blind spots, their unanimous "no" to a candidate carries far less independent information than it looks like. Five votes from one perspective is effectively one vote, repeated five times. Conjunctive error is the number that captures exactly that.</p>
+      <p>The paper's main result connects this to a concept called <em>replicability</em>, introduced in a 2022 paper by Impagliazzo, McInnis, and Moran. A replicable algorithm is one that — trained twice on two different random samples from the same distribution — reaches essentially the same conclusion both times. Think of it as a thermometer not sensitive to whether a window was open when you took the reading. The surprising result: if your base learning algorithm is ρ-replicable (ρ is a small number measuring stability — smaller means more stable), then running it k times on the same training dataset produces models whose probability of all failing on the same person decreases <em>exponentially</em> as k grows. More replicable algorithms produce less synchronized failures.</p>
+
+      <h3>What they actually did</h3>
+      <p>The authors work in PAC learning — the theoretical backbone of modern supervised machine learning. They prove two results: first, a constructive method transforming any ρ-replicable learner into a monoculture-robust ensemble; second, a lower bound showing that if you demand individual conjunctive error below a threshold γ, you can't escape a polynomial increase in the sample size you need. Smaller γ, more data required. That tradeoff is unavoidable.</p>
+
+      <h3>What they found</h3>
+      <p>Replicability research — active since 2022 — has an unexpected second dividend. We already have algorithms that are more replicable than standard gradient descent; they were developed for reproducibility reasons, without monoculture in mind. This paper shows they're also more monoculture-robust. You may already have the tool you need; you just didn't know it had this bonus. The surprising caveat: the strong exponential guarantee holds for group conjunctive error. For individual conjunctive error — whether a specific person gets rejected by all k systems — the lower bound is worse and guarantees are harder to achieve.</p>
+
+      <h3>The catch</h3>
+      <p>The proof lives in an idealized PAC setting. Real systems are messier: companies fine-tune shared foundation models in different ways, deploy on different data, and make different engineering choices. The formal guarantees don't yet model what happens when you start from a shared foundation and then fine-tune divergently — which is precisely what every product in the news this week does.</p>
+
+      <p><strong>If you remember one thing:</strong> Making an AI model more stable — more likely to reach the same answer regardless of which training examples it happened to see — also makes its failures less synchronized with every other copy of itself deployed in the world.</p>
+
+      <!-- SVG figure: monoculture vs. replicable -->
+      <figure>
+        <svg viewBox="0 0 720 272" role="img" aria-label="Two-panel diagram comparing monoculture (left) with replicable learning (right). Left panel: a shared foundation model feeds three products that all fail the same person. Right panel: a replicable base learner feeds three products whose errors land on different people.">
+          <defs>
+            <marker id="arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+              <path d="M0,0 L0,7 L7,3.5 z" fill="#87867F"/>
+            </marker>
+          </defs>
+
+          <!-- Panel titles -->
+          <text x="175" y="20" font-family="ui-serif" font-size="13" font-weight="bold" fill="#141413" text-anchor="middle">Without monoculture robustness</text>
+          <text x="545" y="20" font-family="ui-serif" font-size="13" font-weight="bold" fill="#141413" text-anchor="middle">With replicability</text>
+          <!-- Dividing line -->
+          <line x1="360" y1="8" x2="360" y2="265" stroke="#D1CFC5" stroke-dasharray="4,4"/>
+
+          <!-- ===== LEFT PANEL ===== -->
+          <!-- Shared foundation model box -->
+          <rect x="120" y="34" width="110" height="34" rx="6" fill="#D97757" fill-opacity="0.12" stroke="#D97757" stroke-width="1.5"/>
+          <text x="175" y="47" font-family="system-ui" font-size="11" font-weight="600" fill="#D97757" text-anchor="middle">Shared foundation</text>
+          <text x="175" y="61" font-family="system-ui" font-size="11" fill="#D97757" text-anchor="middle">model</text>
+
+          <!-- Arrows to three products (left) -->
+          <line x1="156" y1="68" x2="93" y2="104" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="175" y1="68" x2="175" y2="104" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="194" y1="68" x2="257" y2="104" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Product boxes (left) -->
+          <rect x="58" y="104" width="70" height="26" rx="4" fill="#6A8CAF" fill-opacity="0.14" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="93" y="121" font-family="system-ui" font-size="10" fill="#6A8CAF" text-anchor="middle">Product A</text>
+          <rect x="140" y="104" width="70" height="26" rx="4" fill="#6A8CAF" fill-opacity="0.14" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="175" y="121" font-family="system-ui" font-size="10" fill="#6A8CAF" text-anchor="middle">Product B</text>
+          <rect x="222" y="104" width="70" height="26" rx="4" fill="#6A8CAF" fill-opacity="0.14" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="257" y="121" font-family="system-ui" font-size="10" fill="#6A8CAF" text-anchor="middle">Product C</text>
+
+          <!-- Arrows to users (left) -->
+          <line x1="93" y1="130" x2="93" y2="162" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="175" y1="130" x2="175" y2="162" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="257" y1="130" x2="257" y2="162" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Users under product A (left): middle one gets X -->
+          <circle cx="76" cy="180" r="9" fill="#87867F" fill-opacity="0.18" stroke="#87867F"/>
+          <circle cx="93" cy="180" r="9" fill="#D97757" fill-opacity="0.25" stroke="#D97757" stroke-width="1.5"/>
+          <text x="93" y="185" font-family="system-ui" font-size="12" font-weight="bold" fill="#D97757" text-anchor="middle">✕</text>
+          <circle cx="110" cy="180" r="9" fill="#87867F" fill-opacity="0.18" stroke="#87867F"/>
+          <!-- Users under product B (left): same person (middle) gets X -->
+          <circle cx="158" cy="180" r="9" fill="#87867F" fill-opacity="0.18" stroke="#87867F"/>
+          <circle cx="175" cy="180" r="9" fill="#D97757" fill-opacity="0.25" stroke="#D97757" stroke-width="1.5"/>
+          <text x="175" y="185" font-family="system-ui" font-size="12" font-weight="bold" fill="#D97757" text-anchor="middle">✕</text>
+          <circle cx="192" cy="180" r="9" fill="#87867F" fill-opacity="0.18" stroke="#87867F"/>
+          <!-- Users under product C (left): same person (middle) gets X -->
+          <circle cx="240" cy="180" r="9" fill="#87867F" fill-opacity="0.18" stroke="#87867F"/>
+          <circle cx="257" cy="180" r="9" fill="#D97757" fill-opacity="0.25" stroke="#D97757" stroke-width="1.5"/>
+          <text x="257" y="185" font-family="system-ui" font-size="12" font-weight="bold" fill="#D97757" text-anchor="middle">✕</text>
+          <circle cx="274" cy="180" r="9" fill="#87867F" fill-opacity="0.18" stroke="#87867F"/>
+
+          <!-- Label: same person highlighted -->
+          <line x1="93" y1="192" x2="93" y2="208" stroke="#D97757" stroke-dasharray="2,2"/>
+          <line x1="175" y1="192" x2="175" y2="208" stroke="#D97757" stroke-dasharray="2,2"/>
+          <line x1="257" y1="192" x2="257" y2="208" stroke="#D97757" stroke-dasharray="2,2"/>
+          <text x="175" y="222" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">Same person rejected everywhere</text>
+          <text x="175" y="237" font-family="system-ui" font-size="10" font-weight="600" fill="#D97757" text-anchor="middle">↑ high conjunctive error</text>
+
+          <!-- ===== RIGHT PANEL ===== -->
+          <!-- Replicable base learner box -->
+          <rect x="490" y="34" width="110" height="34" rx="6" fill="#788C5D" fill-opacity="0.14" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="545" y="47" font-family="system-ui" font-size="11" font-weight="600" fill="#788C5D" text-anchor="middle">Replicable base</text>
+          <text x="545" y="61" font-family="system-ui" font-size="11" fill="#788C5D" text-anchor="middle">learner</text>
+
+          <!-- Arrows to three products (right) -->
+          <line x1="526" y1="68" x2="463" y2="104" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="545" y1="68" x2="545" y2="104" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="564" y1="68" x2="627" y2="104" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Product boxes (right) -->
+          <rect x="428" y="104" width="70" height="26" rx="4" fill="#6A8CAF" fill-opacity="0.14" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="463" y="121" font-family="system-ui" font-size="10" fill="#6A8CAF" text-anchor="middle">Product A</text>
+          <rect x="510" y="104" width="70" height="26" rx="4" fill="#6A8CAF" fill-opacity="0.14" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="545" y="121" font-family="system-ui" font-size="10" fill="#6A8CAF" text-anchor="middle">Product B</text>
+          <rect x="592" y="104" width="70" height="26" rx="4" fill="#6A8CAF" fill-opacity="0.14" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="627" y="121" font-family="system-ui" font-size="10" fill="#6A8CAF" text-anchor="middle">Product C</text>
+
+          <!-- Arrows to users (right) -->
+          <line x1="463" y1="130" x2="463" y2="162" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="545" y1="130" x2="545" y2="162" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="627" y1="130" x2="627" y2="162" stroke="#87867F" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Users under product A (right): left-most gets X -->
+          <circle cx="446" cy="180" r="9" fill="#D97757" fill-opacity="0.25" stroke="#D97757" stroke-width="1.5"/>
+          <text x="446" y="185" font-family="system-ui" font-size="12" font-weight="bold" fill="#D97757" text-anchor="middle">✕</text>
+          <circle cx="463" cy="180" r="9" fill="#87867F" fill-opacity="0.18" stroke="#87867F"/>
+          <circle cx="480" cy="180" r="9" fill="#87867F" fill-opacity="0.18" stroke="#87867F"/>
+          <!-- Users under product B (right): right-most gets X -->
+          <circle cx="528" cy="180" r="9" fill="#87867F" fill-opacity="0.18" stroke="#87867F"/>
+          <circle cx="545" cy="180" r="9" fill="#87867F" fill-opacity="0.18" stroke="#87867F"/>
+          <circle cx="562" cy="180" r="9" fill="#D97757" fill-opacity="0.25" stroke="#D97757" stroke-width="1.5"/>
+          <text x="562" y="185" font-family="system-ui" font-size="12" font-weight="bold" fill="#D97757" text-anchor="middle">✕</text>
+          <!-- Users under product C (right): middle gets X (different person) -->
+          <circle cx="610" cy="180" r="9" fill="#87867F" fill-opacity="0.18" stroke="#87867F"/>
+          <circle cx="627" cy="180" r="9" fill="#D97757" fill-opacity="0.25" stroke="#D97757" stroke-width="1.5"/>
+          <text x="627" y="185" font-family="system-ui" font-size="12" font-weight="bold" fill="#D97757" text-anchor="middle">✕</text>
+          <circle cx="644" cy="180" r="9" fill="#87867F" fill-opacity="0.18" stroke="#87867F"/>
+
+          <!-- Right caption -->
+          <text x="545" y="222" font-family="system-ui" font-size="10" fill="#87867F" text-anchor="middle">Different people, different products</text>
+          <text x="545" y="237" font-family="system-ui" font-size="10" font-weight="600" fill="#788C5D" text-anchor="middle">↑ low conjunctive error</text>
+        </svg>
+        <figcaption>Left: a shared foundation model means all downstream products fail on the same person — high "conjunctive error." Right: a replicable base learner distributes errors across different products and different people, with an exponentially lower probability that all k systems reject the same individual simultaneously.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>The creator of Claude Code said this week: <em>"I have not written a single line of code since November."</em> He now ships 22+ pull requests a day, every line written by Claude itself — an unusual milestone for someone who literally built the tool. <a href="https://stationf.co/news/boris-cherny">Station F profile</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>This week the AI industry hit a valuation milestone that felt impossible five years ago: Anthropic, a lab founded on safety concerns, raised $100 billion in the largest IPO in history. Almost immediately, Google dropped a model that is competitive with Anthropic's most capable product at a fraction of the price. The pattern is by now familiar — capability releases compress in cost within months. But the more interesting question, raised quietly at NeurIPS this year, is what happens to the hidden structure underneath all that progress. Anthropic, Google, and Microsoft are each building on roughly the same set of chips, the same set of cloud providers, and in many cases the same training data and techniques. When their models fail, they will tend to fail in the same way, on the same people, at the same time. That risk doesn't appear in any earnings call. It doesn't show up on any benchmark leaderboard. And it won't be fixed by a new model release — not until the industry builds replicability, and the monoculture robustness it carries with it, into the foundation.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-neon/">Google Blog: Gemini 4 Neon</a> ·
+        <a href="https://9to5google.com/2026/11/18/gemini-4-neon/">9to5Google</a> ·
+        <a href="https://www.stlpr.org/npr/2026-11-19/ai-giant-anthropic-raises-more-than-100-billion-in-record-setting-ipo">NPR/STLPR: Anthropic IPO</a> ·
+        <a href="https://nerdzap.com/news/claude-fable-mythos-5-2-black-hole-physics/">NerdZap: Claude black hole physics</a> ·
+        <a href="https://neurips.cc/virtual/2026/poster/154495">NeurIPS 2026: Monoculture Robust Learning</a> ·
+        <a href="https://deeplearn.org/arxiv/874085/mapping-the-ai-supply-chain:-dependencies,-vulnerabilities,-and-market-concentration-in-the-ai-ecosystem">AI Supply Chain paper (deeplearn.org mirror)</a> ·
+        <a href="https://labs.cloudsecurityalliance.org/research/ai-compute-concentration-systemic-risk-v1/">CSA: AI Compute Concentration</a> ·
+        <a href="https://www.reedsmith.com/our-insights/blogs/technology-law-dispatch/102o6as/eu-ai-act-the-ai-office-sends-its-first-requests-for-information-to-leading-ai/">Reed Smith: EU AI Act enforcement</a> ·
+        <a href="https://stationf.co/news/boris-cherny">Station F: Boris Cherny</a> ·
+        <a href="https://aiweekly.co/ai-news-today">AI Weekly</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Monoculture</div>
+        <div>Borrowed from farming: plant one crop variety everywhere and your harvest is uniform and predictable — but one blight takes it all down at once. In AI, monoculture means every hiring tool, lending algorithm, and medical AI being built on the same underlying model. Their failures become synchronized.</div>
+      </div>
+      <dl>
+        <dt>Conjunctive error</dt><dd>The probability that every one of k AI systems fails on the same example simultaneously — the formal measure of how synchronized their failures are. Introduced in this week's NeurIPS paper.</dd>
+        <dt>PAC learning</dt><dd>"Probably Approximately Correct" — the theoretical framework that asks how many training examples you need to learn a classifier that is probably correct to within a small error. The backbone of modern ML theory.</dd>
+        <dt>Replicability</dt><dd>A property of an ML algorithm: train it twice on two different random samples from the same distribution and it reaches essentially the same conclusion. Formally defined in 2022; now linked to monoculture robustness.</dd>
+        <dt>Fairwind</dt><dd>Google DeepMind's restricted program giving vetted defenders — governments, healthcare, telcos — special access to its security-focused AI models without the usual guardrails, on the theory that defenders need the same tools as attackers.</dd>
+        <dt>Foundation model</dt><dd>A large model trained broadly on diverse data, then adapted for many specific tasks. The shared substrate behind most AI products today, and the layer where monoculture risk concentrates.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
