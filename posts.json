@@ -1,5 +1,12 @@
 [
   {
+    "num": 175,
+    "date": "2026-11-22",
+    "slug": "issues/2026-11-22.html",
+    "title": "The Distance in a Single Frame",
+    "blurb": "Apple releases open research weights for a model that reads exact distances from a single photo; Moonshot AI publishes the full weights of Kimi K3.1 Pro Prime, a coding model that scores within 0.7 points of Claude Opus 5.5 on coding benchmarks."
+  },
+  {
     "num": 174,
     "date": "2026-11-21",
     "slug": "issues/2026-11-21.html",

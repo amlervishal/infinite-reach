@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №175 — The Distance in a Single Frame · Infinite Reach</title>
+  <meta name="description" content="Apple releases open research weights for a model that reads exact distances from a single photo. The same week, Moonshot AI publishes the full weights of a coding model that scores within a hair of Anthropic's most capable system — and anyone can download it." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №175 &middot; Sunday, November 22, 2026</p>
+      <h1>The Distance in a Single Frame</h1>
+      <p>Apple releases research weights for a model that reads exact distances from a photo — no extra sensors, no calibration. The same week, China's Moonshot AI publishes the full weights of a coding model that scores within a hair of Anthropic's most capable system.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On Thursday, Moonshot AI released Kimi K3.1 Pro Prime under a permissive licence — a 2.8-trillion-parameter coding model that scores 65.7% on Terminal-Bench 4.0, just 0.7 percentage points behind Claude Opus 5.5. Developers can download the weights, run the model on their own hardware, or wire it into tools like Claude Code. For three years, the best open-weight models trailed frontier proprietary ones on coding by comfortable margins. That gap has now closed to rounding error — and the weights belong to anyone who wants them.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Vision</span><span>Apple published <strong>Depth Pro 2</strong> (arXiv 2611.26603) alongside research weights — a model that places a precise distance in metres on every pixel of a photo or video from a single ordinary camera. Four model sizes, 24M to 872M parameters, research-only licence. Code and weights at <a href="https://github.com/apple-aiml-research/ml-depth-pro-2">apple-aiml-research/ml-depth-pro-2</a>.</span></li>
+        <li><span class="tag money">Funding</span><span><strong>DeepSeek</strong> closed a round worth roughly 100 billion yuan (~$15 billion) on November 20 — primarily from domestic Chinese institutions — making it one of the largest AI fundraises recorded outside the United States.</span></li>
+        <li><span class="tag money">Deals</span><span>Coding-agent company <strong>Cognition</strong> is reportedly in talks to raise at a $75 billion valuation, per Bloomberg — nearly 2.5× its last round. No deal has been confirmed.</span></li>
+        <li><span class="tag tech">Maths</span><span>Google's <strong>Antigravity /teamwork</strong> multi-agent system (announced November 13) helped prove the Courtade–Kumar conjecture — a 13-year-old open problem in information theory — with a Lean 4 machine-verified proof, in collaboration with researchers at CUHK, USC, and CMU. The full proof runs to 50 million lines of Lean; roughly 239,000 of those are human-readable argument steps, with the rest machine-generated verification certificates.</span></li>
+        <li><span class="tag policy">Safety</span><span>Moonshot confirmed it deliberately removed cyber-exploitation training data from Kimi K3.1 Pro before releasing the weights, dropping the model's internal exploit benchmark from 90.5% to 81.0% — one of the first open-weight releases to publicly document a voluntary capability restriction before publication.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: seeing distance in a flat image</h2>
+      <p class="kicker">Depth Pro 2: Sharp and Temporally Consistent Metric Monocular Depth &middot; Peiyun Hu et al. (Apple) &middot; <a href="https://arxiv.org/abs/2611.26603">arXiv 2611.26603</a></p>
+      <p>Apple quietly released the weights of a model this week that most people would scroll past — it predicts, in metres, how far away every single pixel in a photo or video is. That sounds like a tool for robotics engineers. But the same capability sits inside AR glasses that need to know where to draw a label, search engines that want to know what size a product actually is, and apps that let a phone understand the shape of a room. Apple published the research weights on GitHub and the paper on arXiv simultaneously, under a research-only licence.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Your phone's camera is flat. It records colour and brightness, but throws away almost all information about distance. A cup in a photo could be 20 centimetres from the lens or 2 metres away — the image looks identical if the cup is big in one case and small in the other. This is the fundamental ambiguity of a single-camera view: scale and distance are tangled together, and separating them requires information the image itself does not contain.</p>
+      <p>Computer vision researchers have tried to recover depth from a single image for decades. Stereo cameras (like eyes, or the dual cameras in some phones) can compare two slightly different views to triangulate distance. LIDAR sensors on autonomous vehicles fire laser pulses and time the reflections. But what if you only have one ordinary camera? Earlier deep-learning methods could rank objects by rough proximity — "this sofa is closer than that door" — but they could not say how far, in metres, either one was. And in video, each frame was estimated independently, so the depth map flickered frame to frame, like a candle rather than a lamp. Two problems in one: no scale, and no stability over time.</p>
+
+      <h3>How it works</h3>
+      <p>Think of it like a skilled estimator at a property viewing. Asked to guess how wide a room is, they would do two things: step back to take in the whole layout ("the skirting boards go back at least eight metres"), then zoom into details ("that door frame is a standard 2.1 metres — so the wall is about 3 metres further back"). Depth Pro 2 operates the same way in software. It processes the image at multiple scales at once: one stream grasps the global structure of the whole scene, another processes high-resolution tiles to capture fine edges — the gap between a person's arm and their body, the wire of a fence, individual blades of grass. The two streams are fused into a single depth estimate at full resolution.</p>
+      <p>Getting actual metres rather than relative estimates requires knowing how the camera was set up — specifically its focal length, which controls how much a distant object is compressed. Depth Pro 2 learns to estimate this from the image content itself: a person of typical height standing in the frame provides a cue, as does a standard doorway, a car of a known rough size. A companion focal-length estimator (there is a separate model in the release, <em>DepthPro2-focal</em>) handles this conversion from shape-relative to distance-absolute. It is not perfect, but it is accurate enough to be useful outside a controlled lab.</p>
+      <p>For video, the team added a temporal-consistency module. Instead of treating each frame as an independent puzzle, it passes information forward through time — anchoring the current frame's depth estimates to those of previous frames so the depth map does not jump between exposures. The analogy is a surveyor who does not re-measure every landmark from scratch each second: they update incrementally as they move through a space, keeping earlier measurements in memory and revising only when something in the scene clearly changes.</p>
+
+      <h3>What they actually did</h3>
+      <p>The paper introduces four model sizes: S (24 million parameters), B, L, and H+, the largest at 872 million parameters and 3.5 GB on disk. All four sizes were evaluated on standard metric depth benchmarks that measure absolute error in metres as well as edge-accuracy metrics — specifically at fine object boundaries where previous models blurred depth across contrast edges. The team also ran video evaluations across driving and indoor sequences, measuring temporal stability: how much the depth estimate for a given surface fluctuates from one frame to the next. All four model weights, the focal-length estimator, and inference code are publicly available in the GitHub repository.</p>
+
+      <h3>What they found</h3>
+      <p>The models improve on their predecessor, Depth Pro (released 2024), on both sharpness at edges and consistency across video. The H+ model achieves the strongest results on the depth benchmarks; the S model — 24 million parameters, fast enough to run on mobile hardware — still produces clean depth maps with well-defined object edges. On video, the temporal-consistency module eliminates the frame-to-frame flickering that plagued earlier single-camera methods: depth tracks smoothly as the camera moves through a room or down a street. The clearest gains are at fine-boundary regions — hair, fur, railings, foliage — where earlier models had most obviously failed, smearing depth across the gap between foreground and background.</p>
+
+      <h3>The catch</h3>
+      <p>The licence is research-only, so commercial products cannot ship these weights without a separate arrangement with Apple. The focal-length estimator works best when the scene contains recognisable objects of known rough size; abstract or macro photography — where there are no scale cues — will produce less reliable metric estimates. The paper also does not claim to solve depth in fast-moving scenes where motion blur disrupts edge quality. And metric accuracy is only as good as the focal-length guess: in images captured with unusual focal lengths (fisheye lenses, heavily cropped crops from a telephoto), errors in that estimate propagate into the depth output.</p>
+
+      <p><strong>If you remember one thing:</strong> A model that assigns a real-world distance in metres to every pixel of an ordinary photo is now publicly available for researchers to study, dissect, and build on — representing spatial understanding that used to require expensive specialised sensors.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 290" role="img" aria-label="A pipeline diagram: a single input photo on the left passes through Depth Pro 2 in the centre, producing a colour-coded depth map on the right where warm colours indicate nearby objects and cool colours indicate distant ones">
+          <!-- Outer background -->
+          <rect width="720" height="290" fill="#FAF9F7" rx="6"/>
+
+          <!-- Panel labels -->
+          <text x="160" y="20" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#87867F">Input photo</text>
+          <text x="560" y="20" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#87867F">Depth map (metres per pixel)</text>
+
+          <!-- LEFT PANEL: input photo -->
+          <rect x="22" y="28" width="276" height="230" rx="8" fill="#E8E6DF" stroke="#D1CFC5" stroke-width="1.5"/>
+          <!-- sky -->
+          <rect x="22" y="28" width="276" height="72" rx="8" fill="#C2D0D9"/>
+          <rect x="22" y="88" width="276" height="12" fill="#C2D0D9"/>
+          <!-- distant building -->
+          <rect x="148" y="55" width="72" height="92" fill="#A8A49F"/>
+          <rect x="163" y="72" width="13" height="16" fill="#87867F" rx="1"/>
+          <rect x="186" y="72" width="13" height="16" fill="#87867F" rx="1"/>
+          <!-- car (mid-distance) -->
+          <rect x="68" y="150" width="102" height="46" fill="#8C8880" rx="5"/>
+          <rect x="82" y="134" width="74" height="24" fill="#7A7672" rx="3"/>
+          <ellipse cx="90" cy="198" rx="11" ry="11" fill="#484542"/>
+          <ellipse cx="158" cy="198" rx="11" ry="11" fill="#484542"/>
+          <!-- road -->
+          <rect x="22" y="192" width="276" height="66" fill="#AAA49E"/>
+          <!-- lane markings -->
+          <rect x="152" y="207" width="16" height="9" fill="#C8C2BB" rx="1" opacity="0.65"/>
+          <rect x="152" y="228" width="16" height="9" fill="#C8C2BB" rx="1" opacity="0.65"/>
+
+          <!-- CENTRE ARROW + LABEL -->
+          <line x1="310" y1="143" x2="395" y2="143" stroke="#D97757" stroke-width="2.5"/>
+          <polygon points="395,136 412,143 395,150" fill="#D97757"/>
+          <rect x="308" y="118" width="106" height="50" fill="#FAF9F7" rx="6" stroke="#D1CFC5" stroke-width="1"/>
+          <text x="361" y="135" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413" font-weight="bold">Depth Pro 2</text>
+          <text x="361" y="150" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">arXiv 2611.26603</text>
+          <text x="361" y="163" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#87867F">Peiyun Hu et al. (Apple)</text>
+
+          <!-- RIGHT PANEL: depth map -->
+          <rect x="422" y="28" width="276" height="230" rx="8" fill="#E8E6DF" stroke="#D1CFC5" stroke-width="1.5"/>
+          <!-- sky = far = sky-blue -->
+          <rect x="422" y="28" width="276" height="72" rx="8" fill="#6A8CAF"/>
+          <rect x="422" y="88" width="276" height="12" fill="#6A8CAF"/>
+          <!-- building = far = darker sky -->
+          <rect x="548" y="55" width="72" height="92" fill="#4E7295"/>
+          <rect x="563" y="72" width="13" height="16" fill="#3C5D7F" rx="1"/>
+          <rect x="586" y="72" width="13" height="16" fill="#3C5D7F" rx="1"/>
+          <!-- car = mid = olive -->
+          <rect x="468" y="150" width="102" height="46" fill="#788C5D" rx="5"/>
+          <rect x="482" y="134" width="74" height="24" fill="#637A4E" rx="3"/>
+          <ellipse cx="490" cy="198" rx="11" ry="11" fill="#3E4D2C"/>
+          <ellipse cx="558" cy="198" rx="11" ry="11" fill="#3E4D2C"/>
+          <!-- road = near = clay -->
+          <rect x="422" y="192" width="276" height="66" fill="#D97757"/>
+
+          <!-- Distance labels -->
+          <text x="690" y="68" text-anchor="end" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#FFFFFF" font-weight="bold">~18 m</text>
+          <text x="690" y="175" text-anchor="end" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#FFFFFF" font-weight="bold">~5 m</text>
+          <text x="690" y="232" text-anchor="end" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#FFFFFF" font-weight="bold">~1 m</text>
+
+          <!-- Legend -->
+          <rect x="422" y="265" width="13" height="13" fill="#D97757" rx="2"/>
+          <text x="440" y="276" font-family="system-ui, sans-serif" font-size="11" fill="#141413">Near</text>
+          <rect x="484" y="265" width="13" height="13" fill="#788C5D" rx="2"/>
+          <text x="502" y="276" font-family="system-ui, sans-serif" font-size="11" fill="#141413">Mid</text>
+          <rect x="544" y="265" width="13" height="13" fill="#6A8CAF" rx="2"/>
+          <text x="562" y="276" font-family="system-ui, sans-serif" font-size="11" fill="#141413">Far</text>
+        </svg>
+        <figcaption>Depth Pro 2 converts a flat 2D image into a metric depth map where every pixel carries a real-world distance in metres. The model infers scale from scene content — recognisable objects like cars, doorways, and people — rather than requiring a calibrated sensor. Near objects (road surface) appear in clay; mid-distance objects (car) in olive; far objects (buildings, sky) in sky-blue.</figcaption>
+      </figure>
+
+      <h2>Why it matters</h2>
+      <p>Two stories this week share the same current underneath them. Apple's depth model gives any researcher — without a LIDAR rig, without a stereo camera, without lab hardware — a way to build applications that understand real-world space. Moonshot's open weights give any developer — without a contract with Anthropic, without an OpenAI API key — a coding assistant that competes with the frontier. These are different kinds of "open": Apple's licence is research-only, and Moonshot's weights come with a carefully limited cyber-safety profile. But the direction is the same. The capabilities that matter most are spreading outward, and the edge they confer is shrinking faster than most industry observers expected twelve months ago.</p>
+      <p>The Antigravity math proof, announced a week ago and easy to miss against the noise of the Anthropic IPO aftermath, points somewhere subtler. It is not about weights or licences. It is about what happens when human mathematicians frame the right question, AI systems generate and check candidate reasoning steps, and a proof assistant guarantees the logic holds. A 13-year-old open problem in information theory — one with implications for how networks communicate efficiently — is now closed. The researchers were not all at the same institution, and the AI did not replace any of them. It made the collaboration faster. That is the quieter version of the same story.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://github.com/apple-aiml-research/ml-depth-pro-2">GitHub — Depth Pro 2 (apple-aiml-research)</a> ·
+        <a href="https://arxiv.org/abs/2611.26603">arXiv 2611.26603 — Depth Pro 2 paper</a> ·
+        <a href="https://huggingface.co/papers/2611.26603">Hugging Face — Depth Pro 2 paper page</a> ·
+        <a href="https://cryptobriefing.com/moonshot-ai-launches-kimi-k3-1-pro-closing-in-on-claude-opus-5-5-in-coding-performance/">CryptoBriefing — Kimi K3.1 Pro launch</a> ·
+        <a href="https://www.vktr.com/ai-platforms/kimi-k31-pro-nears-top-proprietary-models-as-moonshot-limits-its-cyber-skills/">VKTR — Kimi K3.1 Pro and cyber capability restriction</a> ·
+        <a href="https://aifundingtracker.com/ai-funding-news-november-20-2026/">AI Funding Tracker — DeepSeek round (Nov 20)</a> ·
+        <a href="https://aifundingtracker.com/ai-funding-news-november-21-2026/">AI Funding Tracker — Cognition talks (Nov 21)</a> ·
+        <a href="https://dev.to/ahtisham_lala_a1af953f29b/googles-antigravity-teamwork-just-proved-a-13-year-old-math-conjecture-heres-what-it-means-for-4imj">DEV Community — Antigravity /teamwork proof</a> ·
+        <a href="https://mathworld.wolfram.com/Courtade-KumarConjecture.html">Wolfram MathWorld — Courtade–Kumar conjecture background</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">metric depth</div>
+        <div>Depth estimates given in real units — metres, feet — rather than just relative ordering. "This is closer than that" is relative depth; "this is 4.2 metres away" is metric depth. The difference matters the moment anything needs to interact physically with the world: a robot arm, an augmented-reality overlay, a tape-measure app.</div>
+      </div>
+      <dl>
+        <dt>monocular</dt><dd>From a single camera. "Mono" = one, "ocular" = eye. The challenge is that two eyes (or cameras) give parallax — slightly different views that together reveal depth — but one camera gives only a flat image with no inherent scale.</dd>
+        <dt>mixture of experts (MoE)</dt><dd>An architecture that splits a large model into many specialist sub-networks, activating only a few for any given input. It lets a model have huge total capacity (2.8 trillion parameters in Kimi K3) while running cheaply, since only a small fraction is active at once.</dd>
+        <dt>Lean 4</dt><dd>A proof assistant: software that checks whether a mathematical proof is logically valid, step by step, leaving no room for human oversight mistakes. Used by Google's Antigravity team to verify the Courtade–Kumar proof beyond any reasonable doubt.</dd>
+        <dt>open weights</dt><dd>A model whose trained parameters are publicly downloadable, so anyone can run it on their own hardware. This is different from "open source," which also implies access to training code and data. Most major releases this year — including Kimi K3.1 Pro — are open weights but not open source.</dd>
+        <dt>temporal consistency</dt><dd>In video, keeping estimates stable across frames rather than recalculating everything from scratch each time. Without it, a depth map flickers; with it, the depth of a table stays the same as the camera pans across a room.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
