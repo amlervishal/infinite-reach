@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №176 — The Evidence Consolidates · Infinite Reach</title>
+  <meta name="description" content="Nvidia's founder exits under a spreading government inquiry, Ant Group open-sources a medical model family, and a NeurIPS paper shows that a model studying its own draft reasoning outperforms one that just votes." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №176 &middot; November 23, 2026</p>
+      <h1>The Evidence Consolidates</h1>
+      <p>Nvidia's founder exits under a spreading government inquiry, Ant Group open-sources a medical model family, and a NeurIPS paper shows that a model that studies its own draft reasoning outperforms one that simply counts votes.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Jensen Huang resigned as Nvidia's CEO on November 11 over what the board described as personal conduct inconsistent with company policy, and the fallout has broadened. The Wall Street Journal reported a civil SEC inquiry into whether Nvidia's disclosures gave investors the full picture — though neither the company nor the regulator has confirmed it. Huang's conduct involved a relationship with an executive at Megaspeed, a Singapore data-center firm that U.S. intelligence officials believe has ties to Chinese intelligence services; the Commerce and Justice Departments have confirmed a separate criminal investigation into Megaspeed's purchases of restricted chips. Huang is set to appear before a House committee on December 1. CFO Colette Kress is now interim CEO, and Nvidia's stock fell more than 10% before partly recovering on strong earnings.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Medical AI</span><span>Ant Group's health app Afu released LingSante today — an open-weight medical AI model family starting with two models, LingSante-3.1-air-VL and LingSante-3.1-flash, intended for clinical and consumer health use.</span></li>
+        <li><span class="tag money">Finance</span><span>The U.S. Federal Reserve issued its first formal warning that failed AI investments could spread losses from tech companies into banks and broader financial markets, flagging the sector as a potential systemic risk.</span></li>
+        <li><span class="tag policy">Enforcement</span><span>New York Attorney General Letitia James launched an AI Safety, Standards, Enforcement and Transparency Unit — the first of its kind at a state level — to enforce New York's RAISE Act starting January 1.</span></li>
+        <li><span class="tag money">Funding</span><span>Canada added C$500 million to its regional AI initiative, bringing total federal AI commitments to C$700 million over five years, as Ottawa accelerates its national compute strategy.</span></li>
+        <li><span class="tag tech">Tooling</span><span>Claude Code shipped versions 2.1.326 and 2.1.327 (November 16–17), tightening permissions and sandbox controls — incremental but steady hardening for teams running it in automated pipelines.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE: Paper, explained -->
+      <h2>Paper, explained: Teaching a model to study its own drafts</h2>
+      <p class="kicker">Consolidating Reasoning with Test-Time Training &middot; Haotian Wu, Zeming Chen, Hao Zhao, Antoine Bosselut &middot; <a href="https://arxiv.org/abs/2611.02104">arXiv:2611.02104</a> &middot; NeurIPS 2026</p>
+      <p>When you ask a modern reasoning model the same hard question multiple times, it doesn't always reach the same answer. The usual fix — generate a dozen reasoning chains and count which final answer appears most often — leaves an enormous amount of information on the floor. This paper asks whether you can do better by actually reading the drafts.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Large language models generate text one token at a time, and there's a small element of randomness at each step. Ask the same question ten times and you get ten subtly different reasoning chains. The research community discovered that <em>parallel sampling</em> helps: generate many chains, aggregate the results. The standard aggregation methods — majority vote, best-of-N, weighted voting — look only at the final answer each chain produces, then tally them up. Everything the model wrote along the way is discarded. It's like asking someone to solve a puzzle ten times and tallying only the final answers without reading any of their work. The obvious waste is that an incorrect chain can still contain partial insights: a student who gets the wrong answer on a maths problem may still have identified the right formula three steps from the end. Can you harvest that signal?</p>
+
+      <p>The obstacle is that reasoning chains are unstructured natural language, not structured data you can easily merge. You can't just average the intermediate steps. And doing a full re-training pass each time you answer a question would be prohibitively slow. The question CORAL's authors set out to answer: is there a lightweight way to encode what all those imperfect traces collectively "know" before the model commits to its final answer?</p>
+
+      <h3>How it works</h3>
+      <p>Think of a student taking an exam who is allowed to draft their answer ten times before submitting. The naive approach is to glance at all ten final answers and pick the most common one. CORAL's approach is different: the student actually reads back through every draft, writes a quick study note to themselves — marking what each attempt got right, where they diverged, what partial insight even the wrong attempts contained — and then writes a fresh final answer informed by that note.</p>
+
+      <p>Technically, the "study note" is a LoRA adapter: a small set of extra weight adjustments layered on top of the frozen base model. At test time, those parallel reasoning traces are used to train this adapter in a few gradient steps — this is the "test-time training" part, where the model does a mini learning step on the spot, using its own drafts as the training signal. The adapter is tiny compared to the full model, so this is fast enough to be practical.</p>
+
+      <p>But how does the system know what a "good" consolidation looks like? That's where the outer loop comes in. During development, the team trained the meta-parameters — the instructions for how to run the inner consolidation step — using bi-level optimization on a large corpus of problems. The outer loop sees whether the final answer (after consolidation) was correct, and adjusts the meta-parameters so future consolidations are more useful. The result is a system that has learned, in general, how to study drafts productively — and at test time, applies that skill to whatever new problem it encounters.</p>
+
+      <p>To build the training corpus, the team constructed OpenParallelThinking: 12,810 math problems, each paired with reasoning traces from six different LLMs, mixing correct and incorrect solutions deliberately. Training on this mixture is crucial — it forces the consolidation mechanism to find signal even in wrong chains, which no vote-based method can do.</p>
+
+      <!-- SVG diagram -->
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="CORAL method diagram: a query produces parallel reasoning traces, which train a LoRA adapter, which then informs the final answer">
+          <defs>
+            <marker id="arrowhead" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+              <polygon points="0 0, 7 3.5, 0 7" fill="#87867F"/>
+            </marker>
+          </defs>
+          <rect width="720" height="310" fill="#FAF9F7" rx="8"/>
+
+          <!-- Query box -->
+          <rect x="22" y="120" width="100" height="60" rx="6" fill="#6A8CAF"/>
+          <text x="72" y="142" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="white" text-anchor="middle">Query</text>
+          <text x="72" y="158" font-family="system-ui,sans-serif" font-size="10" fill="#C8DCF0" text-anchor="middle">hard question</text>
+          <text x="72" y="172" font-family="system-ui,sans-serif" font-size="10" fill="#C8DCF0" text-anchor="middle">asked once</text>
+
+          <!-- Arrows: query → traces -->
+          <line x1="122" y1="137" x2="192" y2="92" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <line x1="122" y1="150" x2="192" y2="150" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <line x1="122" y1="163" x2="192" y2="208" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <!-- Trace 1 -->
+          <rect x="194" y="68" width="128" height="48" rx="5" fill="#D97757" opacity="0.9"/>
+          <text x="258" y="88" font-family="system-ui,sans-serif" font-size="11" font-weight="600" fill="white" text-anchor="middle">Trace 1</text>
+          <text x="258" y="104" font-family="system-ui,sans-serif" font-size="9" fill="#FAD5C9" text-anchor="middle">partial insight, wrong answer</text>
+
+          <!-- Trace 2 -->
+          <rect x="194" y="126" width="128" height="48" rx="5" fill="#D97757" opacity="0.9"/>
+          <text x="258" y="146" font-family="system-ui,sans-serif" font-size="11" font-weight="600" fill="white" text-anchor="middle">Trace 2</text>
+          <text x="258" y="162" font-family="system-ui,sans-serif" font-size="9" fill="#FAD5C9" text-anchor="middle">correct reasoning, right answer</text>
+
+          <!-- Trace N -->
+          <rect x="194" y="184" width="128" height="48" rx="5" fill="#D97757" opacity="0.9"/>
+          <text x="258" y="204" font-family="system-ui,sans-serif" font-size="11" font-weight="600" fill="white" text-anchor="middle">Trace 3 … N</text>
+          <text x="258" y="220" font-family="system-ui,sans-serif" font-size="9" fill="#FAD5C9" text-anchor="middle">mixed quality</text>
+
+          <!-- Arrows: traces → LoRA -->
+          <line x1="322" y1="92" x2="395" y2="142" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <line x1="322" y1="150" x2="395" y2="155" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <line x1="322" y1="208" x2="395" y2="168" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <!-- LoRA adapter box -->
+          <rect x="397" y="122" width="148" height="70" rx="6" fill="#788C5D"/>
+          <text x="471" y="143" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="white" text-anchor="middle">LoRA adapter</text>
+          <text x="471" y="159" font-family="system-ui,sans-serif" font-size="10" fill="#D6E0CB" text-anchor="middle">test-time training</text>
+          <text x="471" y="174" font-family="system-ui,sans-serif" font-size="9" fill="#C0D0B0" text-anchor="middle">few gradient steps on all traces</text>
+          <text x="471" y="186" font-family="system-ui,sans-serif" font-size="9" fill="#C0D0B0" text-anchor="middle">"study note" written to weights</text>
+
+          <!-- Arrow: LoRA → Final -->
+          <line x1="545" y1="157" x2="610" y2="157" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <!-- Final answer box -->
+          <rect x="612" y="130" width="88" height="54" rx="6" fill="#141413"/>
+          <text x="656" y="152" font-family="system-ui,sans-serif" font-size="11" font-weight="600" fill="white" text-anchor="middle">Final</text>
+          <text x="656" y="168" font-family="system-ui,sans-serif" font-size="11" font-weight="600" fill="white" text-anchor="middle">answer</text>
+
+          <!-- Caption bar -->
+          <text x="360" y="292" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" text-anchor="middle">Unlike majority vote, CORAL reads all traces before answering — extracting signal even from wrong reasoning chains</text>
+        </svg>
+        <figcaption>CORAL generates multiple reasoning traces in parallel, trains a tiny LoRA adapter on all of them in real time, then produces the final answer through the adapted model. The critical difference from voting: it can extract useful signal from traces that were mostly wrong.</figcaption>
+      </figure>
+
+      <h3>What they actually did</h3>
+      <p>The experiments used Qwen2.5-32B as the base model and ran it on challenging math and STEM benchmarks where simple majority voting already performs respectably well. The team compared CORAL against the best available aggregation baselines under matched compute: both CORAL and the baselines received the same number of reasoning traces to work with, so the comparison isolates the consolidation mechanism rather than raw compute budget. The OpenParallelThinking corpus contained 12,810 problems paired with traces from six different LLMs, with correct and incorrect solutions mixed. The inner loop for test-time training ran for a fixed number of gradient steps on each question; the outer meta-parameters were frozen at test time.</p>
+
+      <h3>What they found</h3>
+      <p>CORAL outperforms the best simple aggregation baselines by roughly 20% on challenging math benchmarks. The gap is especially pronounced on the hardest problems — the ones where majority voting most often fails because no single correct answer dominates. The method retains most of its advantage even when the majority of input traces are wrong: it can find partial signal in bad reasoning chains where a vote would fail entirely. The gains scale with model size, and they remain robust under matched compute and runtime settings — meaning CORAL's advantage isn't just an artifact of spending more time thinking.</p>
+
+      <p>The main failure mode is memory. Test-time training requires gradients and optimizer states to be held in GPU memory simultaneously with the model weights, so the peak memory footprint is meaningfully higher than inference alone. On hardware with tight memory budgets, the advantage shrinks because you're forced to run fewer parallel traces.</p>
+
+      <h3>The catch</h3>
+      <p>The benchmarks are almost entirely math and formal reasoning. The paper is explicit that it is unknown whether these gains transfer to domains where "right" and "wrong" are fuzzier — writing, strategy, medical advice, open-ended analysis. The mechanistic story is also incomplete: the authors don't fully explain what the LoRA adapter actually learns from wrong traces, so there's no guarantee the method generalizes to new problem types without retraining on representative data from those domains. And it requires a large corpus of parallel traces to meta-train on, which isn't readily available outside mathematics.</p>
+
+      <p><strong>If you remember one thing:</strong> When a model is thinking through a hard question in multiple ways at once, the most informative thing to do with those drafts isn't to count votes — it's to teach the model to study them.</p>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Boris Cherny</span><span>Claude Code shipped two rapid incremental updates this week — versions 2.1.326 and 2.1.327 — tightening permissions logic and sandbox boundary enforcement. Small changes, but permissions are where security mistakes compound. <a href="https://claudekit.io/en/updates/claude-code-2-1-326/">Release notes</a></span></li>
+        <li><span class="tag tech">Dwarkesh Patel</span><span>His November 13 episode features Gwern Branwen — the pseudonymous researcher who has been tracking AI trajectory for years — talking about how much of the field's current direction he saw coming, and what still surprises him. One of the clearest thinkers in the space, in a long, unhurried conversation. <a href="https://podcasts.apple.com/us/podcast/dwarkesh-podcast/id1516093381">Podcast</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The Nvidia story is easy to read as a corporate governance saga — a founder's private conduct, a board that acted, a regulator that may be watching. But the deeper significance is structural. The world's most important semiconductor company built its dominance by selling everywhere, and the question of where advanced chips actually go — and who the ultimate buyers ultimately work for — has become a matter of federal criminal investigation. The Federal Reserve's new warning adds a second layer: the mainstream financial system is now paying close attention to AI investment risk in ways it wasn't a year ago. That is different pressure on the sector than benchmark competition or product safety rules.</p>
+
+      <p>The CORAL paper points to something the field keeps rediscovering in different forms: scaling the number of reasoning steps (thinking harder) hits diminishing returns faster when you just vote. The productive direction is better digestion — absorbing what your own attempts at a problem reveal, even when those attempts are wrong. The analogy to human learning is obvious, and probably not coincidental.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.investmentnews.com/equities/embattled-nvidia-faces-sec-probe-as-california-attorney-general-eyes-action/269054">InvestmentNews — Nvidia SEC probe</a> ·
+        <a href="https://www.crowdfundinsider.com/?p=323680">CrowdFundInsider — SEC inquiry details</a> ·
+        <a href="https://www.khaleejtimes.com/business/nvidia-wont-rehire-jensen-huang-sec-probing-chipmaker">Khaleej Times — Huang/Nvidia</a> ·
+        <a href="https://finance.yahoo.com/healthcare/articles/ant-group-ai-app-afu-071000237.html">Yahoo Finance — LingSante release</a> ·
+        <a href="https://arxiv.org/abs/2611.02104">arXiv:2611.02104 — CORAL paper</a> ·
+        <a href="https://neurips.cc/virtual/2026/poster/150965">NeurIPS 2026 — CORAL poster</a> ·
+        <a href="https://claudekit.io/en/updates/claude-code-2-1-326/">ClaudeKit — Claude Code 2.1.326</a> ·
+        <a href="https://claudekit.io/en/updates/claude-code-2-1-327/">ClaudeKit — Claude Code 2.1.327</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">LoRA</div>
+        <div>Low-Rank Adaptation. A technique for adding a small set of trainable weight adjustments on top of a frozen model — think of it as a thin sticky note attached to a textbook, rather than rewriting the textbook itself. It's fast and cheap to train, which is why CORAL can apply it on the fly for each new question.</div>
+      </div>
+      <dl>
+        <dt>Parallel sampling</dt><dd>Asking a model the same question several times independently to get multiple different reasoning paths. Used to reduce errors through aggregation — typically majority voting.</dd>
+        <dt>Test-time training (TTT)</dt><dd>Doing a small training step on a model while it is answering a question, using information from that question itself. Unusual because normally training and inference are strictly separated.</dd>
+        <dt>Bi-level optimization</dt><dd>A training approach where an outer loop learns how to improve an inner loop. In CORAL, the outer loop adjusts the consolidation instructions so that the inner loop's LoRA adapter becomes more useful downstream.</dd>
+        <dt>Parametric memory</dt><dd>Information stored in a model's weights, as opposed to context (information in the prompt window). CORAL moves the insights from reasoning traces into parametric memory via the adapter, so the model "knows" them when generating its final answer.</dd>
+        <dt>SEC civil probe</dt><dd>An investigation by the U.S. Securities and Exchange Commission into whether a company's disclosures to investors were complete and accurate. Civil — not criminal — means the potential outcomes are fines and injunctions, not jail time.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
