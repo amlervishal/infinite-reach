@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №177 — The Weight of a Phone Call · Infinite Reach</title>
+  <meta name="description" content="Ten days after Nvidia's board accepted Jensen Huang's resignation, a government briefing and a presidential call reversed the decision. The stock soared 31%. Congress was not impressed. Plus: a new benchmark tests whether AI assistants can keep track of all your rules across a long conversation — and finds that even the best can't, about a third of the time." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №177 &middot; Monday, November 24, 2026</p>
+      <h1>The Weight of a Phone Call</h1>
+      <p>Ten days after Nvidia's board accepted Jensen Huang's resignation amid a national-security investigation, a briefing from U.S. government officials — and a call that President Trump said he personally made — reversed the decision. The board voted unanimously to reinstate him. Congress called it indefensible. The stock jumped 31%.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Nvidia's board reinstated Jensen Huang as president, CEO, and board member on Sunday, November 23rd, eleven days after he resigned following the disclosure of an affair with a woman U.S. officials say had Chinese intelligence ties. The reversal came after senior government officials privately briefed the board that no national security laws had been violated. President Trump also said he called the board directly and helped orchestrate the return. The board's independent investigation — launched when the scandal broke on November 8th — is still open and will continue to its conclusion. By market close Monday, Nvidia's stock had risen 31%, recovering most of the market value the resignation had erased. Bipartisan members of Congress, including Republicans and House Minority Leader Hakeem Jeffries, called the reinstatement "indefensible" and said it "does not erase the national security questions that must be addressed."</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Markets</span><span>The broader chip sector rose roughly 14% and the Nasdaq 100 gained more than 6% on Monday — the largest single-day move for chip stocks in over a year — driven almost entirely by the Nvidia news. When one company represents this much of a sector's weight, its boardroom drama becomes everyone's portfolio event.</span></li>
+        <li><span class="tag policy">Congress</span><span>The congressional pushback on the Huang reinstatement was unusually bipartisan: Reps. Crawford, Mast, and Moolenaar — normally focused on China competition — issued a joint statement with House Democratic leadership. Both sides agreed that bringing back a CEO while his national-security investigation is unresolved sets a troubling precedent.</span></li>
+        <li><span class="tag money">Funding</span><span>Model ML, a startup that builds AI routing and orchestration infrastructure, raised $250 million at a $1.5 billion valuation in a Series B led by General Atlantic — 18 months after emerging from stealth. The company helps enterprises run inference workloads across different hardware providers and models without locking in to any single vendor.</span></li>
+        <li><span class="tag tech">Coding tools</span><span>Gemini 4 Hydrogen — Google's latest Flash-class model — became generally available inside GitHub Copilot. Hydrogen is described as offering better instruction-following than its predecessor Gemini 3.8 Flash, which matters for Copilot's growing use as an agentic coding assistant that must follow complex project-level rules across long sessions.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: when the conversation runs long, the rules start to slip</h2>
+      <p class="kicker">"One Battle After Another: Probing LLMs' Limits on Multi-Turn Instruction Following with a Benchmark Evolving Framework" &middot; Qi Jia et al. &middot; ACL 2026 &middot; <a href="https://arxiv.org/abs/2511.03508">arXiv:2511.03508</a></p>
+
+      <p>Ask an AI assistant to respond formally, avoid mentioning competitor products, keep answers under 200 words, and always cite a source — then keep the conversation going for fifteen more turns. Does it still follow rule one when it's on turn twelve? This paper set out to measure that precisely, and the answer is: not reliably, even for the best models available.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>When researchers evaluate AI models on instruction-following, they almost always use single-turn tests: give the model one prompt with one set of rules, check whether the output obeys them, repeat ten thousand times, report a score. That approach misses something fundamental about how people actually use AI assistants. Real interactions are conversations. You set up rules at the start and expect them to hold as the conversation grows. You add new rules as you go. The model must track an ever-expanding set of active constraints while also attending to the latest question.</p>
+
+      <p>This turns out to be genuinely hard. It is not just a memory problem — the model hasn't literally forgotten the first rule. It is a problem of <em>competing priorities</em>: later context crowds out earlier context, more urgent instructions overshadow older ones, and the model's attention is unevenly distributed across a long thread. Before this paper, there was no systematic way to measure where and how that degradation happened.</p>
+
+      <h3>How it works</h3>
+      <p>The researchers built a benchmark they call EvolIF — the "Evol" refers to the evolving nature of the conversation. Think of it like a layered game of Simon Says, where each round adds a new rule but all previous rules remain in force. Round one: "Only use bullet points." Round two: "Never use the word 'important.'" Round three: "Keep each reply under a hundred words." By round twelve, Simon has a list of twelve active rules — and you have to satisfy them all in a single response.</p>
+
+      <p>Each EvolIF dialogue follows this pattern: a user asks a question, the model responds, the user adds a new constraint alongside the next question, the model responds again — and so on. After each model response, the benchmark automatically checks whether every previously established constraint is still being honored. It tracks not just whether the model <em>succeeds</em>, but how many turns it can sustain before the wheels come off. The final score is "robustness" — the fraction of turns in which all active constraints were met simultaneously.</p>
+
+      <p>To make the benchmark realistic rather than artificial, the team drew the constraints from twelve groups that reflect real user behavior: formatting rules (bullets, numbering), length limits, topic restrictions, stylistic requirements, citation demands, tone settings, and so on. They populated it with 541 distinct topics, 500 different simulated user styles, and 150 full multi-turn dialogues.</p>
+
+      <h3>What they actually did</h3>
+      <p>They tested ten leading language models on the EvolIF benchmark, scoring each on robustness (percentage of turns with all constraints satisfied) and sustainability (how many turns the model could manage before failing). Ten models were evaluated in total, covering both frontier API models and open-weight alternatives. All models were tested on the same 150 dialogues under the same conditions.</p>
+
+      <!-- SVG figure -->
+      <figure>
+        <svg viewBox="0 0 720 320" role="img" aria-label="Bar chart showing multi-turn instruction-following robustness for three leading models, with GPT-5 at 66.4%, Gemini-3.0-Pro at 60.8%, and an average of remaining models below 55%.">
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#D97757"/>
+              <stop offset="100%" stop-color="#D97757" stop-opacity="0.8"/>
+            </linearGradient>
+            <linearGradient id="g2" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#6A8CAF"/>
+              <stop offset="100%" stop-color="#6A8CAF" stop-opacity="0.8"/>
+            </linearGradient>
+            <linearGradient id="g3" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#788C5D"/>
+              <stop offset="100%" stop-color="#788C5D" stop-opacity="0.8"/>
+            </linearGradient>
+          </defs>
+          <!-- Y-axis label -->
+          <text x="14" y="30" font-family="ui-serif, Georgia, serif" font-size="13" fill="#87867F">Robustness</text>
+          <text x="14" y="46" font-family="ui-serif, Georgia, serif" font-size="13" fill="#87867F">(% of turns with all</text>
+          <text x="14" y="62" font-family="ui-serif, Georgia, serif" font-size="13" fill="#87867F">constraints met)</text>
+          <!-- Axes -->
+          <line x1="140" y1="260" x2="680" y2="260" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="140" y1="80" x2="140" y2="260" stroke="#D1CFC5" stroke-width="1.5"/>
+          <!-- Y gridlines and labels -->
+          <line x1="140" y1="80" x2="680" y2="80" stroke="#D1CFC5" stroke-width="0.7" stroke-dasharray="4,4"/>
+          <text x="125" y="84" text-anchor="end" font-family="system-ui, sans-serif" font-size="12" fill="#87867F">100%</text>
+          <line x1="140" y1="116" x2="680" y2="116" stroke="#D1CFC5" stroke-width="0.7" stroke-dasharray="4,4"/>
+          <text x="125" y="120" text-anchor="end" font-family="system-ui, sans-serif" font-size="12" fill="#87867F">80%</text>
+          <line x1="140" y1="152" x2="680" y2="152" stroke="#D1CFC5" stroke-width="0.7" stroke-dasharray="4,4"/>
+          <text x="125" y="156" text-anchor="end" font-family="system-ui, sans-serif" font-size="12" fill="#87867F">60%</text>
+          <line x1="140" y1="188" x2="680" y2="188" stroke="#D1CFC5" stroke-width="0.7" stroke-dasharray="4,4"/>
+          <text x="125" y="192" text-anchor="end" font-family="system-ui, sans-serif" font-size="12" fill="#87867F">40%</text>
+          <line x1="140" y1="224" x2="680" y2="224" stroke="#D1CFC5" stroke-width="0.7" stroke-dasharray="4,4"/>
+          <text x="125" y="228" text-anchor="end" font-family="system-ui, sans-serif" font-size="12" fill="#87867F">20%</text>
+          <!-- Bars: scale is 0–100%, chart height 180px (y=80 to y=260) -->
+          <!-- GPT-5: 66.4% → bar height = 180 × 0.664 = 119.5px, top = 260 − 119.5 = 140.5 -->
+          <rect x="175" y="140" width="110" height="120" rx="3" fill="url(#g1)"/>
+          <text x="230" y="133" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#141413">66.4%</text>
+          <text x="230" y="278" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413">GPT-5</text>
+          <!-- Gemini-3.0-Pro: 60.8% → 180 × 0.608 = 109.4px, top = 150.6 -->
+          <rect x="310" y="151" width="110" height="109" rx="3" fill="url(#g2)"/>
+          <text x="365" y="144" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#141413">60.8%</text>
+          <text x="365" y="278" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413">Gemini-3.0-Pro</text>
+          <!-- Others avg ~52% → 180 × 0.52 = 93.6px, top = 166.4 -->
+          <rect x="445" y="166" width="110" height="94" rx="3" fill="url(#g3)"/>
+          <text x="500" y="159" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#141413">≈ 52%</text>
+          <text x="500" y="278" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="13" fill="#141413">Others (avg.)</text>
+          <!-- Title -->
+          <text x="410" y="302" text-anchor="middle" font-family="ui-serif, Georgia, serif" font-size="12" fill="#87867F">Multi-turn instruction robustness · EvolIF benchmark · ACL 2026</text>
+        </svg>
+        <figcaption>Robustness scores on EvolIF: GPT-5 leads with 66.4% — meaning it honors all active constraints about two-thirds of the time across a full multi-turn conversation. Even the top model fails roughly one in three turns once constraints stack up.</figcaption>
+      </figure>
+
+      <h3>What they found</h3>
+      <p>GPT-5 came out ahead of every model tested, sustaining 14 turns on average with a 66.40% robustness score — it honored all currently active constraints about two-thirds of the time. It outperformed Gemini-3.0-Pro by 5.59 percentage points, with other models trailing further. But the more striking finding is what <em>every</em> model did: performance degraded as turns accumulated. Without exception, models became less reliable the longer the conversation ran and the more constraints were in play simultaneously. Some models that scored highly on existing single-turn benchmarks performed worse than smaller, cheaper alternatives once the conversation grew past six or seven turns. High benchmark scores do not reliably predict multi-turn robustness.</p>
+
+      <p>The researchers also found that <em>which type of constraint is forgotten</em> varies by model. Some models are good at remembering length rules but drift on stylistic ones. Others maintain tone restrictions faithfully but start ignoring citation requirements. The failures are not random noise — they reveal systematic blind spots in how different models were trained to follow instructions.</p>
+
+      <h3>The catch</h3>
+      <p>EvolIF is built from 150 dialogues — large enough to be meaningful, but not enormous. Automated constraint-checking works well for verifiable rules (length, format, explicit word prohibitions) but struggles with fuzzy ones (warmth of tone, degree of formality). The paper also tests models at a fixed point in time; models update constantly, so the specific rankings will shift. And the benchmark tests constraints layered by researchers — real users add constraints in messier, more conversational ways that may be harder or easier than the benchmark suggests.</p>
+
+      <p><strong>If you remember one thing:</strong> Even the best available AI assistant forgets roughly one-third of its instructions when conversations run long and rules stack up — a gap that narrows over time, but that matters a great deal for anyone relying on AI for sustained, rule-bound work.</p>
+
+      <h2>Why it matters</h2>
+      <p>The two stories in this issue are superficially unrelated, but they share a structure: systems that looked stable turned out not to be when stress was applied. Nvidia's board said one week that it had "no plans to reinstate" Huang; a week later it did so unanimously, before the investigation it commissioned had concluded. AI models score respectably on benchmarks that test them in simple conditions; in sustained, constraint-heavy conversations, their reliability falls sharply. In both cases, the gap isn't a failure — it's information. The governance gap tells us that the chip sector's concentration in a single person and company is a systemic vulnerability that neither markets nor boards have figured out how to handle. The instruction-following gap tells us that AI tools are most reliable for short, contained tasks; the longer and more complex the engagement, the more supervision they need. As these tools get used for longer and more serious work, knowing where they degrade matters as much as knowing what they can do at their best.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://www.cnbc.com/2026/11/23/nvidia-jensen-huang-ceo.html">CNBC — Jensen Huang reinstated, stock +31%</a> ·
+        <a href="https://edition.cnn.com/2026/11/23/business/live-news/jensen-huang-reinstated-as-ceo-of-nvidia">CNN — Huang reinstated live coverage</a> ·
+        <a href="https://investor.nvidia.com/news/press-release-details/2026/Statement-from-NVIDIA-Board-of-Directors/default.aspx">Nvidia Board Statement</a> ·
+        <a href="https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000090/nov23pressrelease.htm">Nvidia 8-K filing, Nov 23</a> ·
+        <a href="https://www.nbcnews.com/tech/tech-news/nvidia-ceo-jensen-huang-investigation-rcna608148">NBC News — Investigation background</a> ·
+        <a href="https://www.axios.com/2026/11/08/nvidia-ceo-jensen-huang-admits-affair-board-to-launch-investigation">Axios — Huang admits affair</a> ·
+        <a href="https://www.aljazeera.com/economy/2026/11/16/silicon-valley-insiders-urge-nvidia-to-restore-jensen-huangs-ceo-role">Al Jazeera — Silicon Valley lobbying for reinstatement</a> ·
+        <a href="https://www.scmp.com/tech/article/3374812/nvidia-board-says-it-has-no-plans-reinstate-jensen-huang-ceo">SCMP — Board "no plans to reinstate," Nov 17</a> ·
+        <a href="https://www.ntd.com/what-to-know-about-investigations-into-jensen-huang-nvidia_1186992.html">NTD — Investigations overview</a> ·
+        <a href="https://abc.net.au/news/2026-11-24/asx-markets-business-news-live-updates-nov-24-2026/107419524">ABC News — Market reaction</a> ·
+        <a href="https://www.generalatlantic.com/media-article/model-ml-raises-250-million-at-1-5-billion-valuation-18-months-after-launching-from-stealth/">General Atlantic — Model ML $250M raise</a> ·
+        <a href="https://arxiv.org/abs/2511.03508">arXiv 2511.03508 — EvolIF paper</a> ·
+        <a href="https://aclanthology.org/2026.acl-long.433.pdf">ACL 2026 — EvolIF proceedings</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">8-K</div>
+        <div>A form U.S. public companies must file with the SEC whenever something "materially important" happens — a CEO change, a merger, a major lawsuit. It is how companies make official announcements in regulated form. When Nvidia reinstated Huang, the 8-K was filed the same day, making it legally binding and time-stamped. Think of it as the corporate world's equivalent of a sworn statement.</div>
+      </div>
+      <dl>
+        <dt>Instruction following</dt><dd>An AI's ability to obey explicit rules you give it ("respond formally," "never mention competitor X"). Sounds basic; turns out to be hard to maintain reliably across a long conversation.</dd>
+        <dt>Multi-turn</dt><dd>A conversation with multiple back-and-forth exchanges, as opposed to a single question-and-answer. Maintaining context and rules across many turns is harder than in a one-shot prompt.</dd>
+        <dt>Robustness</dt><dd>How well a system's performance holds up as conditions get harder — more constraints, more turns, more variation. A model with 66% robustness fails one in three times under those conditions.</dd>
+        <dt>Benchmark</dt><dd>A standardized test suite used to compare AI models. Like an exam: same questions for everyone, so you can rank the results. EvolIF is a benchmark for multi-turn instruction following.</dd>
+        <dt>Corporate governance</dt><dd>The rules and structures by which a company is controlled and held accountable — who sits on the board, how independent investigations work, what a board can and can't reverse mid-process.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
