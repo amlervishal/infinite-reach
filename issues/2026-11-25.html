@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №178 — The Permanent Problem · Infinite Reach</title>
+  <meta name="description" content="An AI-authored proof of a 47-year-old conjecture in algebraic complexity sits on GitHub, unverified by any human mathematician — and the question it raises may be harder than the theorem itself." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №178 &middot; Wednesday, November 25, 2026</p>
+      <h1>The Permanent Problem</h1>
+      <p>Anthropic posted a 70-page mathematical proof to GitHub on Monday, credited to Claude as sole author. The claim: a 47-year-old conjecture in complexity theory, finally answered. The status: unverified by any human mathematician — and that gap, between what a machine can now produce and what experts can check, is becoming the story itself.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>An internal Anthropic research model authored a paper claiming to prove that VP&thinsp;≠&thinsp;VNP — the algebraic analogue of the famous P vs NP problem, first posed by Leslie Valiant in 1979. The repository includes a 70-page proof and a 324-file Lean 4 formalization that passes automated proof-checking software. What it does not include is a verdict from any expert in algebraic complexity: Anthropic itself says no human mathematician has checked it. The claim, if correct, would be the first major separation theorem in algebraic complexity in nearly half a century. If it is wrong, the error will almost certainly be somewhere hard to spot without rare specialized expertise. Either way, we now live in a world where this question is live.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Nvidia</span><span>Congressional testimony on the Jensen Huang investigation is scheduled for December 1–2; the independent probe, led by attorney Joon H. Kim at Wachtell Lipton, continues examining whether export-restricted chips were sold to China. The board's unanimous reinstatement last week followed a government briefing asserting no national security risk — but the investigation runs to its own conclusion.</span></li>
+        <li><span class="tag money">Drug discovery</span><span>OpenAI quietly released MedChemBench, an internal benchmark for AI in medicinal chemistry, measuring how well models judge compound potency and toxicity in early drug discovery. Best performers on the leaderboard currently score around 48% — a reminder of how much headroom remains for AI in the lab.</span></li>
+        <li><span class="tag tech">Robotics</span><span>Chinese startup X Square Robot unveiled WALL-OSS-1.0, a vision-language-action model for industrial robots — one of the first Chinese releases targeting physical automation with a foundation model approach.</span></li>
+        <li><span class="tag policy">US regulation</span><span>A Senate Commerce Committee broadband bill includes a $500M AI investment provision alongside a proposed 10-year pause on state AI regulation — a package privacy advocates are calling a preemption clause dressed as infrastructure spending.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: when a machine claimed what mathematicians couldn't prove</h2>
+      <p class="kicker">VP&thinsp;≠&thinsp;VNP (Claimed) &middot; Claude (Anthropic) &middot; <a href="https://github.com/anthropics/formal-math">github.com/anthropics/formal-math</a></p>
+
+      <p>On Monday, Anthropic added a directory to its public formal-math repository. Inside: a 70-page paper credited to an internal Claude research model as sole author, and 324 Lean 4 source files formalizing the argument. The claim is that VP&thinsp;≠&thinsp;VNP — one of the central open questions in algebraic complexity theory, posed by Leslie Valiant in 1979. For 47 years, some of the best mathematical minds in the world have worked on this and come up short. A machine says it now has the answer.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Start with something from school: the determinant of a matrix. If you have a grid of numbers, the determinant is a specific recipe — multiply elements along diagonals, alternating addition and subtraction — that unlocks information about the grid's geometry. Computing it for an n-by-n matrix takes roughly n³ steps. Fast. That makes the determinant what Valiant called a <em>VP function</em>: a polynomial you can evaluate with a small algebraic circuit, meaning a compact sequence of additions and multiplications.</p>
+
+      <p>Now change one thing. Drop the alternating signs from the formula. What you get is called the <em>permanent</em> of the matrix — same structure, all positive terms. It sounds like a trivial modification. It is not. Computing the permanent turns out to be radically, almost bewilderingly, harder. Valiant proved in that same 1979 paper that any algorithm for the permanent requires exponential time (he showed it is #P-hard — meaning it is at least as hard as counting solutions to any problem in NP). He then conjectured that the permanent is not in VP — that VP&thinsp;≠&thinsp;VNP — meaning this class of "hard-to-compute" polynomials genuinely cannot be approximated by small algebraic circuits. That the permanent isn't hiding an efficient computation we just haven't found yet. That it is <em>fundamentally</em> hard.</p>
+
+      <p>This is the algebraic analogue of P vs NP, perhaps the most famous unsolved problem in computer science. In ordinary computing, P asks "can we find a solution efficiently?" and NP asks "can we at least check one efficiently?" In algebraic computing, VP and VNP ask the same question but about polynomial functions over numbers. Valiant himself saw VP vs VNP as more tractable than P vs NP, because algebraic structure gives you sharper tools. For 47 years, those tools weren't enough.</p>
+
+      <h3>How it works</h3>
+      <p>Think of a mathematical proof as a long chain of locked rooms. Each room contains a fact that follows necessarily from the room before it. A human mathematician writes the chain in natural language; other humans check that each step is valid. The whole thing is social and fallible — referees can miss subtle errors, and some famous proofs have sat in print for years before a gap was found.</p>
+
+      <p>A formal proof assistant like Lean 4 is different. You write the proof in a strict formal language, and the software checks every single logical step mechanically, using a fixed set of inference rules with no ambiguity permitted. If the proof compiles, every room genuinely follows from the room before it. This is not a shortcut — writing a formal proof is far more laborious than writing a natural-language one — but it eliminates an entire class of error.</p>
+
+      <p>Anthropic's model produced both: a 70-page human-readable argument and a Lean 4 formalization across 324 files. The Lean checker has confirmed the formal proof is internally consistent — that every room unlocks correctly. This is real and meaningful. But there is a subtle, important caveat: Lean can only check that the logical steps follow from the stated <em>definitions</em>. If the formal definitions of VP, VNP, or "over every field" in Lean drift even slightly from what algebraic complexity theorists actually mean by those words, the proof checker will certify a correct argument about something it thinks is VP but isn't. It's not lying. It's just very, very literal. This is why human review still matters: no expert has yet looked at the formal definitions and confirmed that they faithfully capture the conjecture as the field understands it.</p>
+
+      <h3>What they actually did</h3>
+      <p>Anthropic has not published a detailed explanation of the proof strategy — the paper itself hasn't been through peer review, and the community hasn't publicly engaged. What is documented: the vp-vnp directory was added to Anthropic's formal-math GitHub repository on November 23, 2026. It sits alongside two earlier Lean projects in the same repo — one on Riemann zeta zeros, one on a bond percolation conjecture — but the VP&thinsp;≠&thinsp;VNP claim is by far the most ambitious. The proof claims the result holds over every field, meaning in any algebraic number system — rational, real, complex, or finite. That is a sweeping scope. An independent GitHub user, Horace-Maxwell, has posted a claimed re-verification of the Lean proof from a clean clone on Windows, reporting that all checks passed — but this confirms only the formal logic compiles, not that the mathematics is correct.</p>
+
+      <h3>What they found</h3>
+      <p>The claim: VP&thinsp;≠&thinsp;VNP over every field. If correct, this means the permanent of a matrix cannot be computed by any polynomial-size algebraic circuit, in any algebraic setting, ever. The gap between easy and hard polynomial functions is real and irreducible — not a matter of human cleverness, but of mathematical structure. That would be the most significant autonomously produced mathematical result in history. It would also carry immediate implications for the broader separation program in complexity theory: if the algebraic analogue can be proved, it would substantially raise the confidence that P&thinsp;≠&thinsp;NP is also true (though it still wouldn't prove it).</p>
+
+      <p>What could still be wrong: the mathematical definitions in the formalization may not capture what experts intend; there may be a subtle gap in the 70-page argument that the Lean formalization sidesteps; or the proof strategy may work for a quietly weaker statement than the full conjecture. None of these has been ruled out. The field has been burned before by exactly this kind of optimism.</p>
+
+      <h3>The catch</h3>
+      <p>This does not resolve P vs NP. Those are Boolean complexity classes — about algorithms on bits and binary decisions — and they remain entirely open. Even a confirmed VP&thinsp;≠&thinsp;VNP result would not directly settle P vs NP, though it would add meaningful evidence that separating complexity classes is achievable in principle. The harder truth for today: we do not know whether the proof is correct. The community that could evaluate it quickly is small and not yet publicly engaged. What we have, right now, is a machine that produced something too large and technical for rapid human review — and that asymmetry between machine production speed and human verification speed will only grow.</p>
+
+      <p><strong>If you remember one thing:</strong> An AI wrote a 70-page proof claiming a 47-year-old mathematical conjecture is solved; a proof checker confirmed the logic is internally consistent; no human expert has yet confirmed the logic proves the right thing.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Diagram comparing Boolean complexity (P vs NP) with algebraic complexity (VP vs VNP), showing the determinant and permanent as the central examples">
+          <!-- Left panel: Boolean complexity -->
+          <rect x="30" y="44" width="290" height="240" rx="8" fill="none" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="175" y="34" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#87867F" letter-spacing="0.03em">BOOLEAN COMPLEXITY</text>
+
+          <rect x="58" y="68" width="234" height="78" rx="6" fill="#6A8CAF" fill-opacity="0.13" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="175" y="98" text-anchor="middle" font-family="ui-serif" font-size="20" fill="#141413" font-weight="bold">P</text>
+          <text x="175" y="117" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Find a solution quickly</text>
+          <text x="175" y="133" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#6A8CAF">sorting, shortest path, GCD</text>
+
+          <rect x="58" y="172" width="234" height="78" rx="6" fill="#D97757" fill-opacity="0.13" stroke="#D97757" stroke-width="1.5"/>
+          <text x="175" y="202" text-anchor="middle" font-family="ui-serif" font-size="20" fill="#141413" font-weight="bold">NP</text>
+          <text x="175" y="221" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Verify a solution quickly</text>
+          <text x="175" y="237" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#D97757">SAT, traveling salesman, coloring</text>
+
+          <text x="175" y="276" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F" font-style="italic">P ≠ NP? Still unknown.</text>
+
+          <!-- Middle: analogy bridge -->
+          <line x1="330" y1="158" x2="390" y2="158" stroke="#D1CFC5" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="360" y="150" text-anchor="middle" font-family="system-ui" font-size="10" fill="#87867F">analogy</text>
+          <polygon points="385,154 393,158 385,162" fill="#D1CFC5"/>
+
+          <!-- Right panel: Algebraic complexity -->
+          <rect x="400" y="44" width="290" height="240" rx="8" fill="none" stroke="#D1CFC5" stroke-width="1.5"/>
+          <text x="545" y="34" text-anchor="middle" font-family="ui-serif" font-size="13" fill="#87867F" letter-spacing="0.03em">ALGEBRAIC COMPLEXITY</text>
+
+          <rect x="428" y="68" width="234" height="78" rx="6" fill="#6A8CAF" fill-opacity="0.13" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="545" y="98" text-anchor="middle" font-family="ui-serif" font-size="20" fill="#141413" font-weight="bold">VP</text>
+          <text x="545" y="117" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Small algebraic circuits</text>
+          <text x="545" y="133" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#6A8CAF">det(A) — the determinant ✓ fast</text>
+
+          <rect x="428" y="172" width="234" height="78" rx="6" fill="#D97757" fill-opacity="0.13" stroke="#D97757" stroke-width="1.5"/>
+          <text x="545" y="202" text-anchor="middle" font-family="ui-serif" font-size="20" fill="#141413" font-weight="bold">VNP</text>
+          <text x="545" y="221" text-anchor="middle" font-family="system-ui" font-size="11" fill="#87867F">Exponential sums of VP functions</text>
+          <text x="545" y="237" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="#D97757">perm(A) — the permanent ✗ hard</text>
+
+          <text x="545" y="276" text-anchor="middle" font-family="system-ui" font-size="11" fill="#788C5D" font-weight="600">VP ≠ VNP? Claude claims: yes.</text>
+        </svg>
+        <figcaption>Boolean complexity (P vs NP) and algebraic complexity (VP vs VNP) ask the same underlying question in different mathematical settings. The determinant — where signs alternate — is VP's representative: fast and efficient. The permanent — same formula, all positive — is VNP's: no known fast circuit. Claude claims to have shown the gap is real and irreducible.</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>Andrej Karpathy — now at Anthropic's pretraining team — launched HackerTube in late October: a YouTube-style discovery interface built on 19 years of video recommendations from Hacker News comments, 6,454 videos, using Claude models for curation and filtering. A quiet project with an interesting premise: surfaces technical talks that never made it to the algorithm. <a href="https://hackertube.org">hackertube.org</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>The VP&thinsp;≠&thinsp;VNP claim is remarkable even if it turns out to be wrong. Mathematical proofs have always had one reliable property: given enough time and expertise, a human can check them. What's new is that the production rate of machine-generated formal proofs may now be outpacing the capacity of humans to review them. Anthropic's formal-math repository holds multiple major claimed results — Riemann zeta zeros, a bond percolation conjecture, and now VP&thinsp;≠&thinsp;VNP — in a format that is correct-by-construction <em>if</em> the definitions are right, but requires rare expertise to audit. The community that works on algebraic complexity is not large; the community that can check Lean 4 formalizations of algebraic complexity results is smaller still.</p>
+
+      <p>If this result is correct, the mathematical community needs new norms for "Lean-verified, human-pending" claims — a category that didn't exist five years ago and may soon be common. If it is wrong, the failure will tell us something equally important about where current formal verification falls short. Either way, 2026 may be the year mathematical research began to look fundamentally different.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://aiweekly.co/alerts/anthropic-posts-claude-written-vp-vnp-proof-unverified">AI Weekly</a> ·
+        <a href="https://madrobot.blog/2026/11/24/claude-vp-vnp-proof-valiant-conjecture/">Madrobot</a> ·
+        <a href="https://casrai.org/news/anthropic-claude-authored-vp-vnp-proof-unverified-lean-2026">CASRAI</a> ·
+        <a href="https://github.com/Horace-Maxwell/vp-vnp-lean-independent-verification">Independent Lean re-verification (GitHub)</a> ·
+        <a href="https://github.com/anthropics/formal-math">Anthropic formal-math repo</a> ·
+        <a href="https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000090/nov23pressrelease.htm">Nvidia SEC 8-K, Nov 23 2026</a> ·
+        <a href="https://www.gpb.org/news/2026/11/17/nvidia-board-says-it-does-not-intend-reinstate-jensen-huang-ceo">GPB News — Nvidia</a> ·
+        <a href="https://digitalpolicyalert.org/event/31452-committee-on-commerce-science-and-transportation-released-updated-broadband-text-with-usd-500m-ai-funding-10-year-state-regulation-pause">Digital Policy Alert — Senate broadband bill</a> ·
+        <a href="https://hackertube.org">HackerTube</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">The Permanent</div>
+        <div>In mathematics, the permanent of a matrix is calculated almost exactly like its determinant — multiply elements along rows, sum everything up — but without the alternating plus/minus signs. That one change makes it exponentially harder to compute. Think of a Sudoku puzzle where removing one rule makes the whole puzzle go from solvable to intractable.</div>
+      </div>
+      <dl>
+        <dt>VP (Valiant P)</dt><dd>The class of polynomial functions computable by small algebraic circuits — fast arithmetic. The determinant is its poster child. Named for Leslie Valiant, who defined it in 1979.</dd>
+        <dt>VNP (Valiant NP)</dt><dd>The class of polynomial functions expressible as exponential sums of VP functions. The permanent is the canonical VNP function — there is no known circuit that evaluates it efficiently.</dd>
+        <dt>Lean 4</dt><dd>A proof assistant: software that lets you write mathematical proofs in a strict formal language and has every logical step machine-checked. If a Lean proof compiles, the logic is confirmed — but only if the stated definitions correctly capture the intended mathematics.</dd>
+        <dt>Algebraic circuit</dt><dd>An imaginary machine that takes numbers as inputs and produces an output by adding and multiplying them, in a fixed sequence. VP asks which polynomial functions need only a small circuit; VNP asks what happens when small circuits are not enough.</dd>
+        <dt>#P-hard</dt><dd>A complexity class even harder than NP — problems where even <em>counting</em> solutions is intractable. Valiant proved in 1979 that computing the permanent is #P-hard: it was this same 1979 paper that planted the seed for today's story.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

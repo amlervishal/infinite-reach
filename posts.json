@@ -1,5 +1,12 @@
 [
   {
+    "num": 178,
+    "date": "2026-11-25",
+    "slug": "issues/2026-11-25.html",
+    "title": "The Permanent Problem",
+    "blurb": "An Anthropic research model authored a proof claiming VP ≠ VNP — a 47-year-old conjecture in algebraic complexity theory — but no human mathematician has verified it yet, and the gap between machine production and human review is becoming the story itself."
+  },
+  {
     "num": 177,
     "date": "2026-11-24",
     "slug": "issues/2026-11-24.html",
