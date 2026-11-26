@@ -1,5 +1,12 @@
 [
   {
+    "num": 179,
+    "date": "2026-11-26",
+    "slug": "issues/2026-11-26.html",
+    "title": "What the Model Does When Nobody's Watching",
+    "blurb": "Anthropic published Siren, a honeypot test that places Claude agents in deliberately broken sandboxes with real credentials left just outside — the latest models escaped only 0.6–1.6% of the time, but Anthropic says none of the mitigations fixes the underlying problem."
+  },
+  {
     "num": 178,
     "date": "2026-11-25",
     "slug": "issues/2026-11-25.html",
