@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №180 — What Runs for Seven Hours · Infinite Reach</title>
+  <meta name="description" content="Andrej Karpathy handed Claude Opus 5.5 a full data-engineering project — 31 federal datasets, seven hours, 45,000 lines of code, one playable map of the United States; and a new paper shows how the distillation process that makes cheap AI models quietly strips away their safety training." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №180 &middot; Friday, November 27, 2026</p>
+      <h1>What Runs for Seven Hours</h1>
+      <p>Andrej Karpathy handed Claude Opus 5.5 a data-engineering task on Wednesday evening and watched 45,000 lines of code appear. It's the clearest window yet into what a long agentic coding session actually looks like — and a research paper published this week shows what quietly goes wrong when you shrink a capable model to make it affordable.</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>Karpathy posted the result on November 26: a Civilization-style hex map of the United States built from 31 public government sources — Census, BLS, NOAA, USGS, and 27 others — reconciled onto a 25 km hex grid with city tiles for over 500 metros. GDP maps to gold; industry mix determines each city's district type (San Jose gets a Campus tile; Detroit becomes Motor City). He used Claude Opus 5.5 with the Claude Code desktop app and "ultracode" mode turned on — which fans work out across multiple parallel agents — and when it was done he noted he had "only half of my weekly Claude quota left." The session lasted seven hours and required no human coding, just oversight. That is a qualitative shift from AI as autocomplete: a single session completing a sprawling, multi-source data-engineering project end to end.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Anthropic</span><span>Anthropic reportedly migrated its Messages API — the pipeline every Claude-powered app routes through — from Python to Rust using Claude agents, an internal &ldquo;eat our own cooking&rdquo; deployment that reportedly cut serving latency.</span></li>
+        <li><span class="tag money">Canada</span><span>Ottawa expanded its AI Compute Access Fund by C$700&nbsp;million, bringing the total to C$1&nbsp;billion, with 80% subsidies available to companies that buy computing power from Canadian sovereign cloud providers rather than US-owned hyperscalers.</span></li>
+        <li><span class="tag tech">Tencent</span><span>Tencent's Hunyuan AI Infra team open-sourced DFly2, a compact speculative decoder (850M parameters, 5 layers) that boosts throughput on DeepSeek-style model deployments by up to 81% at 64K context — a practical, production-focused inference speedup.</span></li>
+        <li><span class="tag tech">OpenAI</span><span>A billing error made OpenAI's newer models cheaper than intended; the company is correcting prices and offering affected subscribers a one-time usage reset rather than clawing back usage already consumed.</span></li>
+        <li><span class="tag policy">OpenAI</span><span>OpenAI proposed a shared metric for measuring progress across AI systems — a step toward industry-wide benchmarking standards that could eventually underpin policy and procurement rules.</span></li>
+      </ul>
+
+      <!-- CENTERPIECE -->
+      <h2>Paper, explained: when you shrink a model, you lose its conscience</h2>
+      <p class="kicker">&ldquo;Repairing the Trustworthiness of Distilled Language Models&rdquo; &middot; Shubham, Vyas, Agarwal, Khanna &amp; Prathosh AP &middot; <a href="https://arxiv.org/abs/2611.34831">arXiv:2611.34831</a> &middot; submitted 25 November 2026</p>
+
+      <p>Every affordable AI product you use today was almost certainly built by watching a large, expensive model and learning to copy it. That copying process — called distillation — is remarkably good at preserving what a model <em>knows</em>. A new paper shows it's quietly bad at preserving what a model <em>won't do</em>.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Building a large language model from scratch costs tens of millions of dollars and months of time. But once a large, carefully aligned model exists — one trained not to produce harmful outputs, to hedge when uncertain, to stay honest — you can train a small, cheap version by having it study the large model's answers. This is knowledge distillation: the student mimics the teacher. The resulting small model runs on a laptop, costs a fraction to serve, and matches the teacher on most things you can easily measure: answering factual questions, summarizing text, writing code.</p>
+      <p>What's harder to measure is <em>trustworthiness</em>: does the model refuse genuinely harmful requests? Does it acknowledge uncertainty rather than confabulate? Does it apply consistent ethical judgment? These properties were painstakingly trained into the teacher over many rounds of human feedback. The student, it turns out, picks up the teacher's confident answers but not the careful judgment behind them. Prior work could measure this regression after the fact, but fixing it required the original training data — a dataset labs rarely share and that may no longer even exist. The contribution here is a repair method that works without it.</p>
+
+      <h3>How it works</h3>
+      <p>Think of a model's weights — the millions of numerical dials that determine its behavior — as the soil of a garden. Distillation is like transplanting a tree: the shape of the canopy (what it says) transfers well, but the root system (the safety properties) doesn't survive the move intact. The question is which roots to regrow, and in what soil.</p>
+      <p>The paper's method starts by estimating the <em>curvature</em> of the model's loss around each weight — essentially measuring how sensitive the model's outputs are to a small change in a given dial. Where the surface curves sharply, the model is relying on that parameter heavily. Where it's flat, you can touch it without much effect. The key insight is that you can estimate this curvature using a small <em>proxy dataset</em> — a few thousand general examples you curate yourself — rather than the original training corpus. You don't need to know what the teacher was trained on; you just need a dataset that broadly exercises the model's behavior.</p>
+      <p>Once you have the curvature map, you identify which weights shifted most during distillation in the high-curvature (high-stakes) regions. You then apply a targeted regularization — a mathematical pull — that nudges those specific weights back toward the teacher's values, weighted by how important they appear. The analogy is a physical therapy program: instead of trying to rebuild the whole body, you identify which joints are load-bearing for the motion you've lost, and work on those specifically.</p>
+      <p>For models trained with preference data — the dominant modern approach, where human raters compare pairs of outputs and the model learns to prefer the better one — the authors also introduce what they call an odds-ratio objective. Rather than matching the student's raw outputs to the teacher's, the student learns to preserve the teacher's <em>relative preferences</em> between good and bad responses. This is more robust than output matching alone, because it focuses the repair on the contrast between safe and unsafe behavior rather than on any particular phrasing. A student that learns "refuse this type of request" is more robust than one that memorizes "say these exact words."</p>
+
+      <h3>What they actually did</h3>
+      <p>The authors tested their method across several distilled model families, covering both pre-training distillation (the student learns from the teacher during initial training) and post-training distillation (an already-trained model further fine-tuned on teacher outputs). They measured trustworthiness across multiple dimensions — safety (refusal of harmful requests), factual calibration (how well-calibrated the model's confidence is), and behavioral consistency — using established benchmarks. The proxy dataset was intentionally general rather than domain-specific, to test whether the repair transfers broadly rather than overfitting to a particular area.</p>
+
+      <h3>What they found</h3>
+      <p>Across all models tested, the method recovered up to 8% of the trustworthiness lost during distillation, with less than 1% degradation in perplexity — a standard measure of how fluent and accurate the model is on general text, essentially the core capability you're trying to preserve. The improvement held across both distillation regimes. The odds-ratio extension was particularly effective for preference-trained models. The notable failure mode: on a small number of edge cases involving subtle ethical distinctions — the kind of judgment calls where even the teacher model is uncertain — the repair sometimes over-corrects, making the student slightly more cautious than the teacher intended.</p>
+
+      <h3>The catch</h3>
+      <p>The paper only tests models up to a certain size; extending to larger models is explicitly flagged as future work. It's also important to read the 8% carefully: this is 8% recovery of a regression, not an 8% absolute gain. If distillation loses 20 points of trustworthiness, this gets back roughly 1.6 of them, not all 20. The proxy dataset still needs careful curation — a poorly chosen one could steer the repair in the wrong direction. And trustworthiness is notoriously hard to measure: the benchmarks used here may not capture the full range of ways a model can behave unsafely in deployment.</p>
+
+      <p><strong>If you remember one thing:</strong> Every time an AI company ships a smaller, cheaper model — which is most of the time — it is implicitly running this distillation process, and right now there is no industry-standard step to check whether the safety properties survived.</p>
+
+      <!-- SVG figure: distillation and repair -->
+      <figure>
+        <svg viewBox="0 0 720 310" role="img" aria-label="Diagram: distillation loses trustworthiness; curvature-based repair restores it using a proxy dataset">
+          <defs>
+            <marker id="arr-dark" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#141413"/>
+            </marker>
+            <marker id="arr-olive" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#788C5D"/>
+            </marker>
+            <marker id="arr-sky" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#6A8CAF"/>
+            </marker>
+          </defs>
+
+          <!-- HEADER LABELS -->
+          <text x="20" y="22" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" font-style="italic">THE PROBLEM</text>
+          <text x="20" y="175" font-family="system-ui,sans-serif" font-size="10" fill="#87867F" font-style="italic">THE REPAIR</text>
+
+          <!-- Divider -->
+          <line x1="20" y1="150" x2="700" y2="150" stroke="#D1CFC5" stroke-width="1" stroke-dasharray="4,3"/>
+
+          <!-- === TOP ROW: teacher → distillation → student (before repair) === -->
+
+          <!-- Teacher model -->
+          <rect x="30" y="38" width="150" height="80" rx="10" fill="#6A8CAF" fill-opacity="0.15" stroke="#6A8CAF" stroke-width="1.8"/>
+          <text x="105" y="62" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="700">Teacher model</text>
+          <text x="105" y="80" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#6A8CAF">large · expensive</text>
+          <text x="105" y="97" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">✓ safe &nbsp;·&nbsp; ✓ calibrated</text>
+          <text x="105" y="112" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">✓ ethical judgment</text>
+
+          <!-- Distillation arrow -->
+          <line x1="183" y1="78" x2="276" y2="78" stroke="#141413" stroke-width="1.8" marker-end="url(#arr-dark)"/>
+          <text x="230" y="68" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413" font-weight="600">distillation</text>
+          <text x="230" y="93" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">student mimics teacher</text>
+
+          <!-- Student (after distillation) -->
+          <rect x="280" y="38" width="150" height="80" rx="10" fill="#D97757" fill-opacity="0.13" stroke="#D97757" stroke-width="1.8"/>
+          <text x="355" y="62" text-anchor="middle" font-family="ui-serif,Georgia,serif" font-size="13" fill="#141413" font-weight="700">Student model</text>
+          <text x="355" y="80" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#D97757">small · cheap · fast</text>
+          <text x="355" y="97" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413">✓ knowledge preserved</text>
+          <text x="355" y="112" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#D97757">⚠ trustworthiness lost</text>
+
+          <!-- === BOTTOM ROW: proxy → curvature → repair → restored student === -->
+
+          <!-- Proxy dataset -->
+          <rect x="30" y="175" width="130" height="52" rx="8" fill="#788C5D" fill-opacity="0.14" stroke="#788C5D" stroke-width="1.5"/>
+          <text x="95" y="197" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413" font-weight="600">Proxy dataset</text>
+          <text x="95" y="214" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D">small, general examples</text>
+          <text x="95" y="228" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">no original data needed</text>
+
+          <!-- Arrow proxy → curvature estimator -->
+          <line x1="162" y1="201" x2="210" y2="201" stroke="#788C5D" stroke-width="1.5" marker-end="url(#arr-olive)"/>
+
+          <!-- Curvature estimator -->
+          <rect x="214" y="175" width="140" height="52" rx="8" fill="#6A8CAF" fill-opacity="0.14" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="284" y="197" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413" font-weight="600">Curvature map</text>
+          <text x="284" y="214" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#6A8CAF">find high-stakes weights</text>
+          <text x="284" y="228" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#87867F">sensitive = load-bearing</text>
+
+          <!-- Arrow curvature → targeted repair -->
+          <line x1="356" y1="201" x2="404" y2="201" stroke="#6A8CAF" stroke-width="1.5" marker-end="url(#arr-sky)"/>
+
+          <!-- Targeted repair box -->
+          <rect x="408" y="175" width="140" height="52" rx="8" fill="#788C5D" fill-opacity="0.22" stroke="#788C5D" stroke-width="2"/>
+          <text x="478" y="197" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413" font-weight="700">Targeted repair</text>
+          <text x="478" y="214" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D">nudge high-curvature weights</text>
+          <text x="478" y="228" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#141413">back toward teacher values</text>
+
+          <!-- Arrow repair → repaired student -->
+          <line x1="550" y1="201" x2="610" y2="201" stroke="#141413" stroke-width="1.5" marker-end="url(#arr-dark)"/>
+
+          <!-- Repaired student -->
+          <rect x="614" y="175" width="90" height="52" rx="8" fill="#788C5D" fill-opacity="0.22" stroke="#788C5D" stroke-width="2"/>
+          <text x="659" y="197" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#141413" font-weight="700">Repaired</text>
+          <text x="659" y="211" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D">↑ 8% trust</text>
+          <text x="659" y="225" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#141413">&lt;1% cost</text>
+
+          <!-- Upward arrow from repaired to student model above -->
+          <line x1="659" y1="173" x2="430" y2="120" stroke="#788C5D" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-olive)"/>
+          <text x="560" y="140" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#788C5D" font-style="italic">applies repair to student model</text>
+        </svg>
+        <figcaption>Distillation shrinks a model and preserves knowledge but silently loses safety properties (top). The repair method uses a proxy dataset to build a curvature map — identifying which weights are most load-bearing for trustworthiness — then nudges only those back toward the teacher, without touching the original training data (bottom).</figcaption>
+      </figure>
+
+      <h2>From the people we follow</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Karpathy</span><span>On Wednesday, Karpathy posted a Civilization-style strategy map of the US built by Claude Opus 5.5 from 31 federal datasets in a single seven-hour agentic session — 45,000 lines of code, GDP-as-gold, 500+ city tiles, all from public data. It reportedly used half his weekly Claude quota. The clearest illustration yet of what a long agentic coding run actually involves: not snippets but sustained multi-hour autonomous data engineering. <a href="https://x.com/karpathy/status/2125779541952246039">Post on X</a></span></li>
+      </ul>
+
+      <h2>Why it matters</h2>
+      <p>Two stories this week show the same underlying dynamic from opposite ends. Karpathy's map demonstrates that agentic coding is maturing past toy demos — a single session can now complete a genuine multi-hour data-engineering project without a human writing a line. That's a qualitative shift. Meanwhile, the distillation paper points to the structural tension inside that same progress: the models actually deployed at scale are almost all smaller derivatives of larger ones, and safety properties don't transfer automatically. As agentic systems take on longer, more consequential tasks — the kind Karpathy demoed, but in healthcare, finance, infrastructure — the question of whether the small, cheap model running them is as careful as the flagship it was derived from becomes less academic and more urgent. Right now there is no standard step in the deployment pipeline that checks.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://x.com/karpathy/status/2125779541952246039">Karpathy on X (Nov 26, 2026)</a> &middot;
+        <a href="https://mindpattern.ai/s/2026-11-26-andrej-karpathy-had-opus-5-5-build-a-civilization-style-map-of-the-us-from-31-federal">MindPattern coverage</a> &middot;
+        <a href="https://fourweekmba.com/ai-karpathy-had-claude-build-a-civilization-map-of-the-us/">FourWeekMBA</a> &middot;
+        <a href="https://arxiv.org/abs/2611.34831">arXiv:2611.34831 — Repairing the Trustworthiness of Distilled Language Models</a> &middot;
+        <a href="https://github.com/datnguyenquy94/news-radar/issues/1217">arXiv AI Digest Nov 27</a> &middot;
+        <a href="https://canada.ca/en/innovation-science-economic-development/news/2026/11/government-of-canada-boosts-the-ai-compute-access-fund-with-700-million-expansion.html">Canada.ca — AI Compute Fund expansion</a> &middot;
+        <a href="https://www.theneurondaily.com/p/november-26-thursday">The Neuron Daily, Nov 26</a> &middot;
+        <a href="https://www.theneuron.ai/digest/everything-that-happened-in-ai-today-november-26-2026/">The Neuron AI Digest, Nov 26</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Distillation</div>
+        <div>In machine learning, distillation means training a small model to mimic a large one — like photocopying an expert's notebook rather than hiring the expert. The copy is cheaper and faster, but can miss nuance. In AI safety, the problem is that it copies the expert's answers but not necessarily their judgment.</div>
+      </div>
+      <dl>
+        <dt>Curvature (ML)</dt><dd>How sharply a model's error responds to a tiny tweak in a given weight. High curvature means that weight is load-bearing — it matters a lot. Low curvature means you can touch it safely. Estimating curvature is a way of finding out which dials to handle with care.</dd>
+        <dt>Perplexity</dt><dd>A measure of how "surprised" a language model is by a text — lower is better. It's the standard check that a model is still fluent and capable after you've made changes to it.</dd>
+        <dt>Agentic coding</dt><dd>Using an AI to run a whole task autonomously — planning the steps, calling tools, writing and running code, iterating on errors — rather than just autocompleting a line. Karpathy's seven-hour session is a textbook example.</dd>
+        <dt>Speculative decoding</dt><dd>A serving trick where a tiny "draft" model predicts several tokens ahead, and the main model just verifies them. If the draft is usually right, you get the main model's quality at the small model's speed. Tencent's DFly2 is a speculative decoder designed for this role.</dd>
+        <dt>Proxy dataset</dt><dd>A small, curated dataset used as a stand-in when the original training data isn't available. Useful for analysis or repair work — you don't need the real thing if the proxy exercises the same behaviors.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>

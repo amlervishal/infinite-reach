@@ -1,5 +1,12 @@
 [
   {
+    "num": 180,
+    "date": "2026-11-27",
+    "slug": "issues/2026-11-27.html",
+    "title": "What Runs for Seven Hours",
+    "blurb": "Andrej Karpathy handed Claude Opus 5.5 a full data-engineering project — 31 federal datasets, seven hours, 45,000 lines of code, one playable map of the United States; and a new paper shows how the distillation process that makes cheap AI models quietly strips away their safety training."
+  },
+  {
     "num": 179,
     "date": "2026-11-26",
     "slug": "issues/2026-11-26.html",
