@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Issue №181 — What the Cloud Cannot Carry · Infinite Reach</title>
+  <meta name="description" content="America's new export rule extends chip restrictions into cloud access itself; and a NeurIPS paper shows how agents that test lessons before writing them down make far fewer costly mistakes." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="../index.html">Infinite Reach</a>
+    <p class="tagline">Notes from a fast-moving world.</p>
+  </header>
+
+  <div class="issue-grid">
+    <article class="article">
+      <a class="backlink" href="../index.html">&larr; All issues</a>
+      <p class="kicker">Issue №181 &middot; Saturday, November 28, 2026</p>
+      <h1>What the Cloud Cannot Carry</h1>
+      <p>America closed a loophole this week that had let foreign companies rent the chips they were no longer allowed to buy. Elsewhere, a paper at this year's big machine-learning conference asks a deceptively simple question: should an agent bother to remember what it just experienced?</p>
+
+      <div class="callout">
+        <p class="label">The one thing</p>
+        <p>On November 16, the US Commerce Department published a rule — taking effect November 19 — that requires a license to export advanced AI chips or servers to data centres anywhere in the world if those chips might give compute access to companies in China or other restricted countries. The rule explicitly targets "remote access": a gap in earlier restrictions that allowed Chinese firms to rent time on US-made hardware in cloud data centres abroad, rather than buying the chips outright. Singapore, Malaysia, Indonesia, Thailand, and Brazil are named as countries that present a "higher-than-normal risk of diversion" and now need licences too. The rule simultaneously rescinds the Biden-era AI Diffusion Rule, replacing its country-tier structure with a licensing regime that extends to the cloud itself.</p>
+      </div>
+
+      <h2>The rest of the week, quickly</h2>
+      <ul class="hits">
+        <li><span class="tag tech">Model</span><span>Tencent released Hy4, a 770-billion-parameter open-weight model for coding and research, now publicly accessible on Tencent Cloud TokenHub at half price through December. A lighter Flash version is coming soon. Tencent acknowledged the model still trails the best closed-source systems on some tasks.</span></li>
+        <li><span class="tag tech">Hardware</span><span>Huawei unveiled HiBL, its first in-house high-bandwidth memory chip, targeting 1.6 terabytes per second of bandwidth. It will ship inside the Ascend 950PR accelerator in early 2027 — a direct response to US controls limiting China's access to foreign HBM from Samsung and SK Hynix.</span></li>
+        <li><span class="tag money">Policy</span><span>Canada committed up to C$1 billion to build public AI supercomputing infrastructure, the centrepiece of its AI for All strategy. The goal: give Canadian universities, startups, and researchers access to frontier-scale compute without routing through US cloud providers.</span></li>
+        <li><span class="tag tech">Tool</span><span>DeepL launched Aure v2 on November 26 for existing DeepL Voice customers, cutting the lag in real-time voice-to-voice translation across English, German, French, Spanish, Japanese, and Korean.</span></li>
+        <li><span class="tag tech">Model</span><span>OpenAI patched a billing error in its GPT-6.2 family; the fix correctly charged for tokens that had been underpriced, with the side effect that users are now hitting their usage limits roughly 40% faster than before.</span></li>
+      </ul>
+
+      <h2>Paper, explained: testing lessons before writing them down</h2>
+      <p class="kicker">When Should Agents Remember? Falsification-Gated Self-Evolution for LLM Agents &middot; Runxuan Tang, Haoyu Gao, Yuyan Ding, Junyi Yao, Zihao Zheng et al. &middot; <a href="https://arxiv.org/abs/2611.14326">arXiv 2611.14326</a>, NeurIPS 2026</p>
+      <p>Most software agents that learn from experience just write their lessons straight into memory. This paper asks whether that is actually a good idea — and finds, pretty convincingly, that it usually isn't.</p>
+
+      <h3>The problem, and why it's hard</h3>
+      <p>Imagine a software agent managing travel bookings. It makes a mistake — picking the cheapest flight when the customer didn't explicitly ask for economy. Afterward, it updates its own knowledge: <em>"Avoid selecting the cheapest option unless the customer specifically asks."</em> That sounds reasonable. But what happens when the same rule, applied universally, fires during a school-trip booking where cheap is precisely what matters? The agent has generalised from one experience in a way that quietly breaks other situations.</p>
+      <p>This is the core problem with what researchers call <em>reflective memory</em> — the standard approach where an agent reads back what just happened and writes a note to itself. It works on average, but there is no quality gate. Any badly-phrased lesson, any overfitting to a rare edge case, any update that conflicts with an earlier skill, goes straight into memory. The more the agent learns, the worse this can get.</p>
+
+      <h3>How it works</h3>
+      <p>Think of a scientist who keeps a lab notebook. The rule in good science is: you do not write "X causes Y" into the notebook just because you saw it once. You form a hypothesis, test it in a new setting, check it doesn't contradict earlier experiments, and write it down only then — with its conditions and limits clearly stated. FGSE (Falsification-Gated Self-Evolution) applies exactly this logic to AI agents.</p>
+      <p>When the agent has an experience worth learning from, it does not immediately update its memory. Instead it generates a structured <em>hypothesis</em> — not just a rule, but a small package with four parts: a <strong>precondition</strong> (when does this apply?), a <strong>behaviour change</strong> (what should the agent do differently?), an <strong>expected effect</strong> (what outcome should improve?), and a <strong>verifier</strong> (how would you check?). Think of it as a mini-proposal sitting in a holding area, not yet written into the notebook.</p>
+      <p>The proposal then has to survive three tests before it is committed. First, the <strong>target-transfer probe</strong>: does applying the lesson actually improve performance on the kind of task it was derived from? Second, the <strong>falsification probe</strong>: can the agent find even one scenario where the lesson makes things worse? (If so, the lesson is too broad — it needs to be narrowed.) Third, the <strong>archived-regression probe</strong>: does the new lesson break anything the agent already knew how to do well? Only if a lesson passes all three does it get written into memory. If it fails, it is either revised (narrowed, clarified) or discarded entirely.</p>
+      <p>The analogy carries all the way through: the scientist who would not write "aspirin cures all headaches" after a single test is doing exactly what FGSE does for every candidate rule.</p>
+
+      <h3>What they actually did</h3>
+      <p>The team tested FGSE on four benchmarks. <strong>WebArena</strong> is a simulator for real-looking browser tasks — booking, searching, filling in forms. <strong>AppWorld</strong> covers mobile-app interactions across categories such as shopping, travel, and finance. <strong>&tau;-Retail</strong> and <strong>&tau;-Airline</strong> are scripted customer-service environments with strict correctness rules. In all tests, the agent starts with minimal prior knowledge and accumulates experience across many episodes, updating its memory using either a standard reflective approach or FGSE.</p>
+
+      <h3>What they found</h3>
+      <p>The FGSE agents reached <strong>39.8% task success on WebArena</strong> and <strong>78.8% average completion on AppWorld</strong> — both above reflective baselines. The failure metrics are equally telling: only <strong>5.0% of committed updates</strong> later led to falsification failures (meaning: a lesson the agent wrote down was clearly wrong in a testable situation). Regression damage — cases where learning something new broke an existing skill — fell to <strong>1.3%</strong>. Harmful committed updates (lessons that actively degraded performance) sat at <strong>3.6%</strong>. The gate catches most of the bad stuff before it lodges.</p>
+      <p>The agents also behaved more predictably: because the testing phase forces them to articulate preconditions, their actions come with explicit conditions attached, making it easier to audit why they acted as they did.</p>
+
+      <h3>The catch</h3>
+      <p>Running three probes for every candidate lesson costs additional compute. The paper does not fully account for how that scales when an agent runs for thousands of episodes with complex, real-world tasks. There is also a subtler issue: the falsification and regression probes are generated by the same underlying model, which means blind spots can be shared — the agent may not test the scenario it most needs to test. The benchmarks, while rigorous, are simulated. Whether the approach holds up when actions are real and irreversible remains open.</p>
+
+      <p><strong>If you remember one thing:</strong> An agent that checks whether a lesson holds before writing it down makes far fewer confident mistakes than one that simply remembers — the extra step is not overhead, it is the point.</p>
+
+      <figure>
+        <svg viewBox="0 0 720 260" role="img" aria-label="Diagram of the FGSE pipeline: experience flows through hypothesis formation, three probes, then either commits to memory or is revised and rejected">
+          <defs>
+            <marker id="arr181" markerWidth="8" markerHeight="8" refX="6" refY="3.5" orient="auto">
+              <polygon points="0 0, 8 3.5, 0 7" fill="#D1CFC5"/>
+            </marker>
+            <marker id="arr181g" markerWidth="8" markerHeight="8" refX="6" refY="3.5" orient="auto">
+              <polygon points="0 0, 8 3.5, 0 7" fill="#788C5D"/>
+            </marker>
+          </defs>
+
+          <!-- Experience box -->
+          <rect x="12" y="100" width="90" height="60" rx="6" fill="#6A8CAF" fill-opacity="0.12" stroke="#6A8CAF" stroke-width="1.5"/>
+          <text x="57" y="126" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" fill="#141413" font-weight="600">Experience</text>
+          <text x="57" y="143" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">task outcome</text>
+
+          <!-- Arrow 1 -->
+          <line x1="102" y1="130" x2="145" y2="130" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr181)"/>
+
+          <!-- Hypothesis box -->
+          <rect x="148" y="80" width="118" height="100" rx="6" fill="#D97757" fill-opacity="0.1" stroke="#D97757" stroke-width="1.5"/>
+          <text x="207" y="104" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10.5" fill="#141413" font-weight="600">Hypothesis</text>
+          <text x="207" y="122" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8.5" fill="#87867F">precondition</text>
+          <text x="207" y="137" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8.5" fill="#87867F">behaviour change</text>
+          <text x="207" y="152" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8.5" fill="#87867F">expected effect</text>
+          <text x="207" y="167" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8.5" fill="#87867F">verifier</text>
+
+          <!-- Branch line to probes -->
+          <line x1="266" y1="130" x2="303" y2="130" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="303" y1="52" x2="303" y2="208" stroke="#D1CFC5" stroke-width="1.5"/>
+          <line x1="303" y1="52" x2="323" y2="52" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr181)"/>
+          <line x1="303" y1="130" x2="323" y2="130" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr181)"/>
+          <line x1="303" y1="208" x2="323" y2="208" stroke="#D1CFC5" stroke-width="1.5" marker-end="url(#arr181)"/>
+
+          <!-- Probe 1 -->
+          <rect x="325" y="33" width="145" height="38" rx="5" fill="#788C5D" fill-opacity="0.13" stroke="#788C5D" stroke-width="1.4"/>
+          <text x="397" y="49" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9.5" fill="#141413" font-weight="600">① Target Transfer</text>
+          <text x="397" y="63" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8.5" fill="#87867F">does it help the task?</text>
+
+          <!-- Probe 2 -->
+          <rect x="325" y="111" width="145" height="38" rx="5" fill="#D97757" fill-opacity="0.13" stroke="#D97757" stroke-width="1.4"/>
+          <text x="397" y="127" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9.5" fill="#141413" font-weight="600">② Falsification</text>
+          <text x="397" y="141" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8.5" fill="#87867F">any case that fails?</text>
+
+          <!-- Probe 3 -->
+          <rect x="325" y="189" width="145" height="38" rx="5" fill="#6A8CAF" fill-opacity="0.13" stroke="#6A8CAF" stroke-width="1.4"/>
+          <text x="397" y="205" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9.5" fill="#141413" font-weight="600">③ Regression</text>
+          <text x="397" y="219" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8.5" fill="#87867F">breaks existing skills?</text>
+
+          <!-- Merge line from probes -->
+          <line x1="470" y1="52" x2="503" y2="52" stroke="#D1CFC5" stroke-width="1.4"/>
+          <line x1="470" y1="130" x2="503" y2="130" stroke="#D1CFC5" stroke-width="1.4"/>
+          <line x1="470" y1="208" x2="503" y2="208" stroke="#D1CFC5" stroke-width="1.4"/>
+          <line x1="503" y1="52" x2="503" y2="208" stroke="#D1CFC5" stroke-width="1.4"/>
+
+          <!-- Pass arrow (solid, green) -->
+          <line x1="503" y1="104" x2="535" y2="104" stroke="#788C5D" stroke-width="1.6" marker-end="url(#arr181g)"/>
+          <!-- Fail arrow (dashed) -->
+          <line x1="503" y1="170" x2="535" y2="170" stroke="#D1CFC5" stroke-width="1.4" stroke-dasharray="4,3" marker-end="url(#arr181)"/>
+
+          <!-- Label: pass / fail -->
+          <text x="519" y="99" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8" fill="#788C5D">pass</text>
+          <text x="519" y="165" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8" fill="#87867F">fail</text>
+
+          <!-- Commit box -->
+          <rect x="537" y="83" width="120" height="44" rx="6" fill="#788C5D" fill-opacity="0.18" stroke="#788C5D" stroke-width="1.8"/>
+          <text x="597" y="102" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413" font-weight="700">Commit</text>
+          <text x="597" y="118" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">written to memory</text>
+
+          <!-- Revise/Reject box -->
+          <rect x="537" y="150" width="120" height="44" rx="6" fill="#87867F" fill-opacity="0.1" stroke="#87867F" stroke-width="1.4" stroke-dasharray="5,3"/>
+          <text x="597" y="169" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#141413" font-weight="600">Revise / Reject</text>
+          <text x="597" y="185" text-anchor="middle" font-family="system-ui,sans-serif" font-size="9" fill="#87867F">not committed</text>
+        </svg>
+        <figcaption>The FGSE pipeline. Each experience generates a structured hypothesis that must pass three probes — target-transfer, falsification, and regression — before being written to memory. Most raw lessons fail at least one test; only those that pass all three are committed.</figcaption>
+      </figure>
+
+      <h2>Why it matters</h2>
+      <p>Two stories this week point at the same underlying question. The chip-access rule is partly a hardware story, but it is really about control over capability: who is allowed to run the most powerful compute, and where. The answer is shifting — not just about owning chips, but accessing them, which means the cloud itself is now part of the regulated infrastructure. For countries outside the US-allied core, this narrows options significantly. Huawei building its own memory chips is the direct response: when the door to the supply chain closes, build a new door.</p>
+      <p>Meanwhile, the FGSE paper is a small but telling sign of where the development of intelligent software is heading. The frontier models themselves are expensive and slow to retrain; getting more out of them means letting them learn from experience more efficiently — but doing that well turns out to require the same discipline that good science has always required. As agents take on longer, more consequential tasks, the question of <em>what they remember and why</em> stops being academic. The difference between an agent that tests its lessons and one that simply collects them may be the difference between a system you can trust and one you can't.</p>
+
+      <div class="sources">
+        <strong>Sources:</strong>
+        <a href="https://arxiv.org/abs/2611.14326">arXiv 2611.14326 — FGSE paper</a> ·
+        <a href="https://neurips.cc/virtual/2026/poster/154558">NeurIPS 2026 poster page</a> ·
+        <a href="https://techcrunch.com/2026/11/16/us-tightens-ai-chip-export-controls-to-deter-chinese-companies-from-accessing-compute-remotely/">TechCrunch — US chip export rule</a> ·
+        <a href="https://www.orrick.com/en/Insights/2026/11/US-Government-Establishes-Export-Controls-to-Address-China-AI-Remote-Access-Concerns">Orrick — rule summary</a> ·
+        <a href="https://www.scmp.com/tech/big-tech/article/3373227/tencent-unveils-hy4-open-weight-ai-race-deepseek-zai-alibaba-heats">SCMP — Tencent Hy4</a> ·
+        <a href="https://www.trendforce.com/news/2025/09/18/news-huawei-unveils-ascend-950-with-in-house-hbm-in-2026-touts-superpod-to-rival-nvidia/">TrendForce — Huawei HiBL memory</a> ·
+        <a href="https://www.canada.ca/en/innovation-science-economic-development/news/2026/04/canada-launches-national-initiative-to-build-large-scale-ai-supercomputing-capacity.html">Government of Canada — compute fund</a> ·
+        <a href="https://www.theneuron.ai/digest/everything-that-happened-in-ai-today-november-27-2026/">The Neuron — Nov 27 digest</a> ·
+        <a href="https://www.aiimpacthub.com/ai-news/2026-11-28">AI Impact Hub — Nov 28 briefing</a>
+      </div>
+    </article>
+
+    <aside class="glossary">
+      <h3>Decoder</h3>
+      <div class="wod">
+        <div class="lbl">Word of the day</div>
+        <div class="term">Falsification</div>
+        <div>A test that could prove something wrong. The philosopher Karl Popper argued that a claim is only scientific if you can imagine evidence that would disprove it. In the FGSE paper, an agent treats each learned lesson the same way: before it is committed to memory, the agent actively tries to find a case where the lesson fails. If it cannot be falsified at all, it is probably too vague to be useful.</div>
+      </div>
+      <dl>
+        <dt>HBM (High-Bandwidth Memory)</dt><dd>The memory chips that sit alongside a GPU or AI accelerator, feeding it data far faster than ordinary RAM can. HBM is a key bottleneck in AI training, and Huawei building its own version (HiBL) is a response to US controls blocking access to South Korean HBM from Samsung and SK Hynix.</dd>
+        <dt>Export controls</dt><dd>Government rules requiring a licence before selling certain technologies abroad. For AI chips, the US has used these since 2022 to limit China's access to Nvidia H100s and similar hardware. The new rule extends the logic to <em>renting</em> that hardware in a data centre, not just buying it outright.</dd>
+        <dt>Reflective memory</dt><dd>An approach where an AI agent reads back what just happened and writes a summary lesson to itself. Simple and fast, but no one checks whether the lesson is accurate before it goes into memory.</dd>
+        <dt>WebArena</dt><dd>A benchmark test where an AI agent tries to complete real-looking browser tasks — booking, searching, filling in forms — in a sandboxed environment. A 39.8% score means the agent completed roughly four in ten tasks correctly from scratch.</dd>
+        <dt>Precondition</dt><dd>The "when this applies" part of a rule. FGSE forces every lesson to have one, so an agent doesn't apply a lesson from a flight-booking context to a school-trip context where the conditions are different.</dd>
+      </dl>
+    </aside>
+  </div>
+</body>
+</html>
